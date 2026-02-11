@@ -77,9 +77,29 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
+        .map-container {
+            margin-top: 40px;
+            width: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
+            height: 400px;
+        }
+
+        /* Map Theme Switching using CSS Filters */
+        [data-theme="dark"] .map-container iframe,
+        [data-theme="dark"] .map-container ymaps {
+            filter: invert(90%) hue-rotate(180deg) brightness(0.9) contrast(1.1);
+        }
+
         @media (max-width: 900px) {
             .about-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .map-container {
+                margin-top: 20px;
             }
         }
     </style>
@@ -122,8 +142,14 @@
         <section class="about-content">
             <div class="container">
                 <div class="about-grid">
-                    <div class="about-image" data-tilt>
-                        <img src="IMG_8077-e1536932079653.jpg" alt="Офис АО «Центр развития закупок РТ»" />
+                    <div class="about-image-wrapper">
+                        <div class="about-image" data-tilt>
+                            <img src="IMG_8077-e1536932079653.jpg" alt="Офис АО «Центр развития закупок РТ»" />
+                        </div>
+                        <div class="map-container">
+                            <script type="text/javascript" charset="utf-8" async
+                                src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A7dd3f4724618bc5ea0e7837aa507aef288c7e94323aca6f6abfa60186cd81cb3&amp;width=100%25&amp;height=400&amp;lang=ru_RU&amp;scroll=true"></script>
+                        </div>
                     </div>
                     <div class="about-text">
                         <h2>О нас</h2>
