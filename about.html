@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>О нас | CRZRT</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .about-hero {
+            padding: 180px 0 80px;
+            text-align: center;
+        }
+
+        .about-content {
+            padding: 60px 0 100px;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-image {
+            width: 100%;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .about-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .about-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .services-list {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .service-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 20px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            transition: transform 0.3s ease;
+        }
+
+        .service-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        @media (max-width: 900px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor-dot" data-cursor-dot></div>
+    <div class="cursor-outline" data-cursor-outline></div>
+
+    <header class="header">
+        <div class="container header-content">
+            <a href="index.html" class="logo">АО «Центр развития закупок РТ»</a>
+            <nav class="nav">
+                <a href="index.html#courses" class="nav-link">Курсы</a>
+                <a href="index.html#services" class="nav-link">Услуги</a>
+                <a href="about.html" class="nav-link">О нас</a>
+                <a href="index.html#contacts" class="nav-link">Контакты</a>
+            </nav>
+            <div class="header-actions">
+                <button id="theme-toggle" class="btn-icon" aria-label="Toggle Theme">
+                    <span class="icon-sun">☀</span>
+                    <span class="icon-moon">☾</span>
+                </button>
+                <a href="#" class="btn-primary">Личный кабинет</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="about-hero">
+            <div class="container">
+                <h1 class="hero-title reveal-text">Профессионализм и Опыт</h1>
+                <p class="hero-subtitle">АО «Центр развития закупок РТ» — ваш надежный партнер в мире тендеров.</p>
+            </div>
+        </section>
+
+        <section class="about-content">
+            <div class="container">
+                <div class="about-grid">
+                    <div class="about-image" data-tilt>
+                        <img src="IMG_8077-e1536932079653.jpg" alt="Офис АО «Центр развития закупок РТ»" />
+                    </div>
+                    <div class="about-text">
+                        <h2>О нас</h2>
+                        <p>Акционерное общество «Центр развития закупок Республики Татарстан» является подведомственной
+                            организацией Государственного комитета Республики Татарстан по закупкам.</p>
+                        <p>Наш офис расположен в самом сердце Казани, на улице Петербургская 86. Мы объединяем экспертов
+                            с многолетним опытом работы в сфере государственного заказа.</p>
+
+                        <div class="services-list">
+                            <div class="service-item">Сопровождение 44-ФЗ и 223-ФЗ</div>
+                            <div class="service-item">Обучение и консалтинг</div>
+                            <div class="service-item">Электронная подпись</div>
+                            <div class="service-item">Площадка Etpzakupki.tatar</div>
+                            <div class="service-item">Юридические услуги</div>
+                            <div class="service-item">Независимые гарантии</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4>АО «Центр развития закупок РТ»</h4>
+                <p>© 2026 Центр развития закупок РТ</p>
+            </div>
+            <div class="footer-col">
+                <h4>Обучение</h4>
+                <a href="courses.html">Заказчикам</a>
+                <a href="courses.html">Поставщикам</a>
+                <a href="#">Календарь</a>
+            </div>
+            <div class="footer-col">
+                <h4>Компания</h4>
+                <a href="about.html">О нас</a>
+                <a href="index.html#contacts">Контакты</a>
+                <a href="#">Карьера</a>
+            </div>
+            <div class="footer-col">
+                <h4>Связаться</h4>
+                <a href="tel:88001017892">8 (800) 101-78-92</a>
+                <div class="socials">
+                    <a href="#">TG</a>
+                    <a href="#">VK</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
