@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Reveal functionality
-    const revealElements = document.querySelectorAll('.hero-title, .hero-subtitle, .why-card, .direction-tile, .section-title, .tag, .testimonial-card, .testimonials-header');
+    const revealElements = document.querySelectorAll('.hero-title, .hero-subtitle, .why-card, .direction-tile, .section-title, .tag, .testimonial-card');
 
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -117,9 +117,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedTheme) {
         document.documentElement.setAttribute('data-theme', savedTheme);
     } else {
-        // Default to dark if no preference
-        document.documentElement.setAttribute('data-theme', 'dark');
+        // Default to light
+        document.documentElement.setAttribute('data-theme', 'light');
     }
+
+    // Smooth Scroll for Header Nav Bar
+    const navBarItems = document.querySelectorAll('.nav-bar-item');
+
+    navBarItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            const targetId = item.getAttribute('href');
+            if (targetId.startsWith('#')) {
+                e.preventDefault();
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const headerHeight = document.querySelector('.header').offsetHeight;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    });
 
     themeToggle.addEventListener('click', () => {
         const currentTheme = document.documentElement.getAttribute('data-theme');
