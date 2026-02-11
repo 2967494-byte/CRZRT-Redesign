@@ -118,6 +118,17 @@ ul {
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-img {
+    height: 40px;
+    /* Squeezed height */
+    width: auto;
+    border-radius: 8px;
+    object-fit: contain;
 }
 
 .nav {
