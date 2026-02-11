@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Reveal functionality
-    const revealElements = document.querySelectorAll('.hero-title, .hero-subtitle, .why-card, .direction-tile, .section-title, .tag');
+    const revealElements = document.querySelectorAll('.hero-title, .hero-subtitle, .why-card, .direction-tile, .section-title, .tag, .testimonial-card, .testimonials-header');
 
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {

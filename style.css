@@ -347,32 +347,23 @@ ul {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
-.why-icon {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    display: block;
-}
-
-/* Directions Section - The 4 Equal Tiles */
+/* Directions Section - 4 Full-Width Square Tiles */
 .directions-section {
-    padding-bottom: 120px;
-}
-
-.section-header-centered {
-    text-align: center;
-    margin-bottom: 60px;
+    padding: 0;
+    margin: 0;
+    width: 100%;
 }
 
 .tiles-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 350px);
-    gap: 30px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    width: 100%;
 }
 
 .direction-tile {
     position: relative;
-    border-radius: 40px;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     padding: 50px;
     display: flex;
@@ -381,40 +372,115 @@ ul {
     text-decoration: none;
     color: white;
     transition: all 0.5s var(--ease-custom);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: none;
 }
 
 .tile-bg {
     position: absolute;
     inset: 0;
     z-index: 1;
-    transition: transform 0.8s var(--ease-custom);
+    transition: transform 1.2s var(--ease-custom);
     background-size: cover;
     background-position: center;
 }
 
+/* Testimonials Section */
+.testimonials-section {
+    padding: 100px 0;
+    overflow: hidden;
+    background: var(--bg-color);
+}
+
+.testimonials-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.marquee-container {
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    overflow: hidden;
+    width: 100%;
+}
+
+.marquee-content {
+    display: flex;
+    gap: 30px;
+    width: max-content;
+    animation: marquee 40s linear infinite;
+}
+
+.marquee-content:hover {
+    animation-play-state: paused;
+}
+
+.testimonial-card {
+    width: 400px;
+    padding: 40px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 25px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.testimonial-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-5px);
+}
+
+.client-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: var(--accent-color);
+}
+
+.testimonial-card p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    font-style: italic;
+    opacity: 0.9;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(-50% - 15px));
+    }
+}
+
+/* Base Gradients for Tiles */
 .tile-edu .tile-bg {
-    background: linear-gradient(135deg, #2997ff, #0055ff);
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)), #2997ff;
 }
 
 .tile-support .tile-bg {
-    background: linear-gradient(135deg, #ac44ff, #6b00c9);
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)), #ac44ff;
 }
 
 .tile-etp .tile-bg {
-    background: linear-gradient(135deg, #00d2ff, #00a1ff);
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)), #00d2ff;
 }
 
 .tile-legal .tile-bg {
-    background: linear-gradient(135deg, #ff4d4d, #c90000);
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)), #ff4d4d;
 }
 
 .direction-tile::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+    background: rgba(0, 0, 0, 0.2);
     z-index: 2;
+    transition: background 0.3s ease;
+}
+
+.direction-tile:hover::after {
+    background: rgba(0, 0, 0, 0.4);
 }
 
 .tile-content {
@@ -423,25 +489,18 @@ ul {
     transition: transform 0.5s var(--ease-custom);
 }
 
-.tile-icon {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    transform: translateY(10px);
-    transition: transform 0.5s var(--ease-custom);
-}
-
 .direction-tile h3 {
-    font-size: 2rem;
+    font-size: 1.75rem;
     margin-bottom: 15px;
     font-weight: 700;
 }
 
 .direction-tile p {
-    font-size: 1.1rem;
+    font-size: 1rem;
     opacity: 0.9;
     margin-bottom: 25px;
-    max-width: 400px;
     line-height: 1.4;
+    max-width: 100%;
     transform: translateY(20px);
     opacity: 0;
     transition: all 0.5s var(--ease-custom);
@@ -449,17 +508,13 @@ ul {
 
 .tile-link {
     font-weight: 600;
+    font-size: 0.875rem;
     display: flex;
     align-items: center;
     gap: 10px;
     transform: translateY(20px);
     opacity: 0;
     transition: all 0.5s var(--ease-custom);
-}
-
-.direction-tile:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
 }
 
 .direction-tile:hover .tile-bg {
@@ -470,14 +525,29 @@ ul {
     transform: translateY(-20px);
 }
 
-.direction-tile:hover .tile-icon {
-    transform: translateY(0);
-}
-
 .direction-tile:hover p,
 .direction-tile:hover .tile-link {
     transform: translateY(0);
     opacity: 1;
+}
+
+/* Remove all icons */
+.why-icon,
+.tile-icon,
+.category-icon {
+    display: none !important;
+}
+
+@media (max-width: 1200px) {
+    .tiles-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .tiles-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 900px) {
