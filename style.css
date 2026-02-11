@@ -603,3 +603,116 @@ ul {
 :root:not([data-theme="light"]) .icon-sun {
     display: block;
 }
+
+/* Courses Sidebar Layout */
+.courses-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 40px;
+    padding-bottom: 80px;
+}
+
+.courses-sidebar {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+}
+
+.category-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.category-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 16px;
+    border-radius: 18px;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.3s var(--ease-custom);
+}
+
+.category-item:hover {
+    background: var(--card-bg);
+    border-color: var(--card-border);
+    transform: translateX(5px);
+}
+
+.category-item.active {
+    background: var(--card-bg);
+    border-color: var(--accent-color);
+}
+
+.category-icon {
+    font-size: 1.5rem;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(41, 151, 255, 0.1);
+    border-radius: 12px;
+}
+
+.category-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.category-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.category-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 1024px) {
+    .courses-container {
+        grid-template-columns: 1fr;
+    }
+
+    .courses-sidebar {
+        position: static;
+        margin-bottom: 30px;
+    }
+
+    .category-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .category-item {
+        flex-shrink: 0;
+        min-width: 250px;
+    }
+}
+
+.courses-main .filter-bar {
+    justify-content: flex-start;
+}
+
+/* Animations for Categories */
+@keyframes slideInSidebar {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.courses-sidebar {
+    animation: slideInSidebar 0.8s var(--ease-custom) forwards;
+}

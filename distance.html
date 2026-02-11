@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Курсы | CRZRT</title>
+    <title>Дистанционное обучение | CRZRT</title>
     <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -13,43 +13,9 @@
             text-align: center;
         }
 
-        .filter-bar {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 50px;
-        }
-
-        .filter-btn {
-            background: transparent;
-            border: 1px solid var(--text-secondary);
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .filter-btn.active,
-        .filter-btn:hover {
-            background: var(--text-primary);
-            color: var(--bg-color);
-            border-color: var(--text-primary);
-        }
-
-        .course-meta {
-            display: flex;
-            gap: 15px;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-top: 15px;
-        }
-
-        .course-price {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-top: 10px;
+        .category-item.active {
+            background: var(--card-bg);
+            border-color: var(--accent-color);
         }
     </style>
 </head>
@@ -83,8 +49,8 @@
     <main>
         <section class="page-header">
             <div class="container">
-                <h1 class="hero-title" style="font-size: 3rem;">Образовательные программы</h1>
-                <p class="hero-subtitle">Системные знания для успешной работы в госзакупках.</p>
+                <h1 class="hero-title" style="font-size: 3rem;">Дистанционное обучение</h1>
+                <p class="hero-subtitle">Учитесь в удобном темпе из любой точки мира.</p>
             </div>
         </section>
 
@@ -93,14 +59,14 @@
                 <!-- Sidebar Navigation -->
                 <aside class="courses-sidebar">
                     <nav class="category-nav">
-                        <a href="courses.html" class="category-item active">
+                        <a href="courses.html" class="category-item">
                             <span class="category-icon">🏛️</span>
                             <div class="category-info">
                                 <span class="category-name">Очное обучение</span>
                                 <span class="category-label">Повышение квалификации</span>
                             </div>
                         </a>
-                        <a href="distance.html" class="category-item">
+                        <a href="distance.html" class="category-item active">
                             <span class="category-icon">💻</span>
                             <div class="category-info">
                                 <span class="category-name">Дистанционное обучение</span>
@@ -149,74 +115,38 @@
                 <div class="courses-main">
                     <div class="filter-bar">
                         <button class="filter-btn active">Все</button>
-                        <button class="filter-btn">44-ФЗ</button>
-                        <button class="filter-btn">223-ФЗ</button>
+                        <button class="filter-btn">Для Поставщиков</button>
+                        <button class="filter-btn">Для Заказчиков</button>
                     </div>
 
                     <div class="courses-grid">
-                        <!-- Course 1 -->
                         <div class="course-card" data-tilt>
                             <div class="course-content">
-                                <span class="tag">44-ФЗ / Заказчикам</span>
-                                <h3 class="course-title">Очный курс: 44-ФЗ (108 ак. ч)</h3>
-                                <p class="course-desc">Комплексная программа повышения квалификации. Изучение
-                                    законодательства, практика на ЭТП.</p>
+                                <span class="tag">Онлайн / Популярное</span>
+                                <h3 class="course-title">Специалист в сфере закупок (44-ФЗ)</h3>
+                                <p class="course-desc">Программа профессиональной переподготовки (256 ак.ч.). Диплом
+                                    государственного образца.</p>
                                 <div class="course-meta">
-                                    <span>23-27 марта</span>
-                                    <span>108 ак.ч.</span>
+                                    <span>В любое время</span>
+                                    <span>256 ак.ч.</span>
                                 </div>
-                                <div class="course-price">23 700 ₽</div>
+                                <div class="course-price">12 500 ₽</div>
                                 <a href="#" class="btn-link" style="margin-top: 20px;">Записаться <span
                                         class="arrow">→</span></a>
                             </div>
                         </div>
 
-                        <!-- Course 2 -->
-                        <div class="course-card featured" data-tilt>
-                            <div class="course-content">
-                                <span class="tag">Спецпредложение</span>
-                                <h3 class="course-title">44-ФЗ + Весенняя Казань</h3>
-                                <p class="course-desc">Обучение в сочетании с культурной программой в одном из
-                                    красивейших городов России.</p>
-                                <div class="course-meta">
-                                    <span>23-27 марта</span>
-                                    <span>108 ак.ч.</span>
-                                </div>
-                                <div class="course-price">40 470 ₽</div>
-                                <a href="#" class="btn-link" style="margin-top: 20px;">Подробнее <span
-                                        class="arrow">→</span></a>
-                            </div>
-                        </div>
-
-                        <!-- Course 3 -->
                         <div class="course-card" data-tilt>
                             <div class="course-content">
-                                <span class="tag">223-ФЗ / Заказчикам</span>
-                                <h3 class="course-title">Повышение квалификации 223-ФЗ</h3>
-                                <p class="course-desc">Для заказчиков, работающих по 223-ФЗ. Особенности и последние
-                                    изменения.</p>
+                                <span class="tag">Онлайн / 223-ФЗ</span>
+                                <h3 class="course-title">Закупки по 223-ФЗ для начинающих</h3>
+                                <p class="course-desc">Короткий и емкий курс для тех, кто только начинает работать с
+                                    закупками отдельными видами юрлиц.</p>
                                 <div class="course-meta">
-                                    <span>25-27 марта</span>
+                                    <span>Онлайн</span>
                                     <span>72 ак.ч.</span>
                                 </div>
-                                <div class="course-price">16 200 ₽</div>
-                                <a href="#" class="btn-link" style="margin-top: 20px;">Записаться <span
-                                        class="arrow">→</span></a>
-                            </div>
-                        </div>
-
-                        <!-- Course 4 -->
-                        <div class="course-card" data-tilt>
-                            <div class="course-content">
-                                <span class="tag">Поставщикам</span>
-                                <h3 class="course-title">Очный курс для поставщиков</h3>
-                                <p class="course-desc">Базовый курс по 44-ФЗ и 223-ФЗ для тех, кто хочет эффективно
-                                    участвовать в тендерах.</p>
-                                <div class="course-meta">
-                                    <span>11-13 мая</span>
-                                    <span>40 ак.ч.</span>
-                                </div>
-                                <div class="course-price">20 000 ₽</div>
+                                <div class="course-price">8 900 ₽</div>
                                 <a href="#" class="btn-link" style="margin-top: 20px;">Записаться <span
                                         class="arrow">→</span></a>
                             </div>
@@ -233,7 +163,6 @@
                 <h4>АО «Центр развития закупок РТ»</h4>
                 <p>© 2026 Центр развития закупок РТ</p>
             </div>
-            <!-- Same footer content -->
         </div>
     </footer>
     <script src="script.js"></script>

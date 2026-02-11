@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Преподаватели | CRZRT</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s var(--ease-custom);
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-color);
+        }
+
+        .team-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            overflow: hidden;
+        }
+
+        .team-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .team-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor-dot" data-cursor-dot></div>
+    <div class="cursor-outline" data-cursor-outline></div>
+
+    <header class="header">
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <img src="logo.png" alt="Logo" class="logo-img">
+                <span>АО «Центр развития закупок РТ»</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html#courses" class="nav-link">Курсы</a>
+                <a href="index.html#services" class="nav-link">Услуги</a>
+                <a href="about.html" class="nav-link">О нас</a>
+                <a href="index.html#contacts" class="nav-link">Контакты</a>
+            </nav>
+            <div class="header-actions">
+                <button id="theme-toggle" class="btn-icon" aria-label="Toggle Theme">
+                    <span class="icon-sun">☀</span>
+                    <span class="icon-moon">☾</span>
+                </button>
+                <a href="#" class="btn-primary">Личный кабинет</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1 class="hero-title" style="font-size: 3rem;">Наши эксперты</h1>
+                <p class="hero-subtitle">Профессионалы-практики с многолетним опытом в сфере госзакупок.</p>
+            </div>
+        </section>
+
+        <section class="courses-layout">
+            <div class="container courses-container">
+                <aside class="courses-sidebar">
+                    <nav class="category-nav">
+                        <a href="courses.html" class="category-item">
+                            <span class="category-icon">🏛️</span>
+                            <div class="category-info">
+                                <span class="category-name">Очное обучение</span>
+                                <span class="category-label">Повышение квалификации</span>
+                            </div>
+                        </a>
+                        <a href="distance.html" class="category-item">
+                            <span class="category-icon">💻</span>
+                            <div class="category-info">
+                                <span class="category-name">Дистанционное обучение</span>
+                                <span class="category-label">Учитесь где угодно</span>
+                            </div>
+                        </a>
+                        <a href="seminars.html" class="category-item">
+                            <span class="category-icon">👥</span>
+                            <div class="category-info">
+                                <span class="category-name">Семинары</span>
+                                <span class="category-label">Обмен опытом</span>
+                            </div>
+                        </a>
+                        <a href="webinars.html" class="category-item">
+                            <span class="category-icon">🌐</span>
+                            <div class="category-info">
+                                <span class="category-name">Вебинары</span>
+                                <span class="category-label">Прямые эфиры</span>
+                            </div>
+                        </a>
+                        <a href="individual.html" class="category-item">
+                            <span class="category-icon">🤝</span>
+                            <div class="category-info">
+                                <span class="category-name">Индивидуальное обучение</span>
+                                <span class="category-label">Персональный подход</span>
+                            </div>
+                        </a>
+                        <a href="testing.html" class="category-item">
+                            <span class="category-icon">📝</span>
+                            <div class="category-info">
+                                <span class="category-name">Пробное тестирование</span>
+                                <span class="category-label">Проверьте свои знания</span>
+                            </div>
+                        </a>
+                        <a href="team.html" class="category-item active">
+                            <span class="category-icon">🎓</span>
+                            <div class="category-info">
+                                <span class="category-name">Преподаватели</span>
+                                <span class="category-label">Наши эксперты</span>
+                            </div>
+                        </a>
+                    </nav>
+                </aside>
+                <div class="courses-main">
+                    <div class="team-grid">
+                        <div class="team-card">
+                            <div class="team-photo">👨‍🏫</div>
+                            <h3>Александр Иванов</h3>
+                            <p>Эксперт-практик в сфере 44-ФЗ. Опыт работы в контролирующих органах более 10 лет.</p>
+                        </div>
+                        <div class="team-card">
+                            <div class="team-photo">👩‍💼</div>
+                            <h3>Елена Петрова</h3>
+                            <p>Специалист по закупкам по 223-ФЗ. Автор многочисленных публикаций и методических пособий.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4>АО «Центр развития закупок РТ»</h4>
+                <p>© 2026 Центр развития закупок РТ</p>
+            </div>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
