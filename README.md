@@ -1,4 +1,4 @@
-# АО «Центр развития закупок РТ» Redesign Concept
+# Центр развития закупок Redesign Concept
 
 This is a conceptual redesign of the Zakupki Tatar website, focusing on a modern, "Apple-style" aesthetic and educational content.
 
