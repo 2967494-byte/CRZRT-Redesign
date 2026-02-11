@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Reveal functionality
-    const revealElements = document.querySelectorAll('.hero-title, .hero-subtitle, .hero-actions, .stat-card, .course-card, .bento-item');
+    const revealElements = document.querySelectorAll('.hero-title, .hero-subtitle, .why-card, .direction-tile, .section-title, .tag');
 
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Tilt Effect for Cards
-    const cards = document.querySelectorAll('.course-card, .stat-card, .bento-item');
+    const cards = document.querySelectorAll('.why-card, .course-card');
 
     cards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
