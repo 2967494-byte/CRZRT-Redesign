@@ -845,14 +845,27 @@ ul {
 }
 
 .category-icon {
-    font-size: 1.5rem;
     min-width: 40px;
     height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(41, 151, 255, 0.1);
+    color: var(--accent-color);
     border-radius: 12px;
+    transition: all 0.3s var(--ease-custom);
+}
+
+.category-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+.category-item:hover .category-icon,
+.category-item.active .category-icon {
+    background: var(--accent-color);
+    color: white;
 }
 
 .category-info {
