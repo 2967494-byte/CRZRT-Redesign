@@ -12,8 +12,7 @@
 </head>
 
 <body>
-    <div class="cursor-dot" data-cursor-dot></div>
-    <div class="cursor-outline" data-cursor-outline></div>
+
 
     <header class="header">
         <div class="container header-content">
@@ -38,36 +37,52 @@
 
         <!-- COMPACT DIRECTIONS BAR -->
         <div class="header-nav-bar">
-            <a href="courses.html" class="nav-bar-item nav-edu">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
-                <span>Образовательный центр</span>
+            <div class="nav-bar-item nav-edu">
+                <a href="courses.html" class="nav-item-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                    </svg>
+                    <span>Образовательный центр</span>
+                </a>
                 <div class="mega-menu">
                     <div class="mega-grid">
                         <div class="mega-col">
-                            <h4>Обучение</h4>
-                            <a href="courses.html">Все курсы</a>
-                            <a href="distance.html">Дистанционно</a>
-                            <a href="individual.html">Индивидуально</a>
+                            <h4>Очное обучение</h4>
+                            <a href="courses.html">44-ФЗ (108 ак. ч)</a>
+                            <a href="courses.html">44-ФЗ + Весенняя Казань</a>
+                            <a href="courses.html">223-ФЗ (72 ак. ч)</a>
                         </div>
                         <div class="mega-col">
-                            <h4>Слушателям</h4>
+                            <h4>Дистанционно</h4>
+                            <a href="distance.html">Переподготовка</a>
+                            <a href="distance.html">Повышение квалификации</a>
+                            <a href="distance.html">Электронные курсы</a>
+                        </div>
+                        <div class="mega-col">
+                            <h4>Events</h4>
+                            <a href="seminars.html">Семинары в Казани</a>
+                            <a href="webinars.html">Вебинары</a>
+                            <a href="#">Календарь событий</a>
+                        </div>
+                        <div class="mega-col">
+                            <h4>Сервисы</h4>
+                            <a href="individual.html">Индивидуальные курсы</a>
                             <a href="testing.html">Тестирование</a>
-                            <a href="#">Вебинары</a>
-                            <a href="#">Календарь</a>
+                            <a href="team.html">Преподаватели</a>
                         </div>
                     </div>
                 </div>
-            </a>
-            <a href="#" class="nav-bar-item nav-support">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-                <span>Сопровождение</span>
+            </div>
+            <div class="nav-bar-item nav-support">
+                <a href="#" class="nav-item-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    <span>Сопровождение</span>
+                </a>
                 <div class="mega-menu">
                     <div class="mega-grid">
                         <div class="mega-col">
@@ -84,14 +99,16 @@
                         </div>
                     </div>
                 </div>
-            </a>
-            <a href="https://etp.zakupki.tatar" target="_blank" class="nav-bar-item nav-etp">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-                    <line x1="8" y1="21" x2="16" y2="21" />
-                    <line x1="12" y1="17" x2="12" y2="21" />
-                </svg>
-                <span>ЭТП</span>
+            </div>
+            <div class="nav-bar-item nav-etp">
+                <a href="https://etp.zakupki.tatar" target="_blank" class="nav-item-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                        <line x1="8" y1="21" x2="16" y2="21" />
+                        <line x1="12" y1="17" x2="12" y2="21" />
+                    </svg>
+                    <span>ЭТП</span>
+                </a>
                 <div class="mega-menu">
                     <div class="mega-grid">
                         <div class="mega-col">
@@ -108,16 +125,18 @@
                         </div>
                     </div>
                 </div>
-            </a>
-            <a href="#" class="nav-bar-item nav-legal">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                    <path d="M10 9H8" />
-                </svg>
-                <span>Консалтинг</span>
+            </div>
+            <div class="nav-bar-item nav-legal">
+                <a href="#" class="nav-item-link">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <path d="M10 9H8" />
+                    </svg>
+                    <span>Консалтинг</span>
+                </a>
                 <div class="mega-menu">
                     <div class="mega-grid">
                         <div class="mega-col">
@@ -134,7 +153,7 @@
                         </div>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
     </header>
 
@@ -150,10 +169,7 @@
                     Единая экосистема для заказчиков и поставщиков. <br />
                     От обучения до сопровождения сложных тендеров.
                 </p>
-                <div class="hero-scroll-indicator">
-                    <div class="mouse"></div>
-                    <span>Листайте ниже</span>
-                </div>
+
             </div>
         </section>
 

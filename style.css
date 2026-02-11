@@ -57,35 +57,6 @@ ul {
     padding: 0 20px;
 }
 
-/* Cursor Dot (Optional - for extra flair) */
-.cursor-dot {
-    width: 5px;
-    height: 5px;
-    background-color: var(--text-primary);
-    border-radius: 50%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    z-index: 9999;
-}
-
-.cursor-outline {
-    width: 30px;
-    height: 30px;
-    border: 1px solid var(--text-primary);
-    border-radius: 50%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    z-index: 9998;
-    transition: width 0.2s, height 0.2s, background-color 0.2s, opacity 0.5s;
-    opacity: 0.5;
-}
-
 /* Header */
 .header {
     position: fixed;
@@ -98,9 +69,10 @@ ul {
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--card-border);
     padding: 0;
-    /* Removed padding to accommodate the bar */
     transition: background-color 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
     color: var(--text-primary);
+    overflow: visible;
+    /* Ensure mega menu isn't clipped */
 }
 
 .header-content {
@@ -116,9 +88,10 @@ ul {
     display: flex;
     width: 100%;
     height: 42px;
-    /* Slightly taller for icons */
     border-top: 1px solid var(--card-border);
     background: rgba(255, 255, 255, 0.02);
+    position: relative;
+    z-index: 10;
 }
 
 .nav-bar-item {
@@ -136,8 +109,55 @@ ul {
     transition: all 0.4s var(--ease-custom);
     border-bottom: 2px solid transparent;
     opacity: 0.7;
-    position: relative;
-    /* For popover positioning */
+}
+
+.nav-bar-item {
+    flex: 1;
+    /* Removed position: relative to allow mega-menu to anchor to .header-nav-bar */
+}
+
+.nav-item-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: 0.8px;
+    width: 100%;
+    height: 100%;
+    transition: all 0.4s var(--ease-custom);
+    border-bottom: 2px solid transparent;
+    opacity: 0.7;
+}
+
+.nav-bar-item:hover .nav-item-link {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Specific Accent Colors for the Links */
+.nav-edu:hover .nav-item-link {
+    color: #2997ff;
+    border-bottom-color: #2997ff;
+}
+
+.nav-support:hover .nav-item-link {
+    color: #ac44ff;
+    border-bottom-color: #ac44ff;
+}
+
+.nav-etp:hover .nav-item-link {
+    color: #00d2ff;
+    border-bottom-color: #00d2ff;
+}
+
+.nav-legal:hover .nav-item-link {
+    color: #ff4d4d;
+    border-bottom-color: #ff4d4d;
 }
 
 /* Apple-style Mega Menu */
@@ -145,7 +165,8 @@ ul {
     position: absolute;
     top: 100%;
     left: 0;
-    width: 100%;
+    width: 100vw;
+    /* Using vw to ensure it hits edges easily */
     background: var(--glass-bg);
     backdrop-filter: blur(50px);
     -webkit-backdrop-filter: blur(50px);
@@ -153,44 +174,24 @@ ul {
     border-bottom: 1px solid var(--card-border);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-5px);
+    transform: translateY(-10px);
     transition: all 0.4s var(--ease-custom);
     padding: 60px 0;
     z-index: 1000;
+    pointer-events: none;
 }
 
+/* Fixed header and nav bar constraints */
 .header {
     position: fixed;
-    /* Header remains positioned */
-}
-
-/* Ensure mega menu takes full width even if parent is flex item */
-.header-nav-bar {
-    position: static;
-    /* Required for full-width child */
-}
-
-/* Correct positioning logic */
-.nav-edu .mega-menu {
-    left: 0;
-}
-
-.nav-support .mega-menu {
-    left: 0;
-}
-
-.nav-etp .mega-menu {
-    left: 0;
-}
-
-.nav-legal .mega-menu {
-    left: 0;
+    overflow: visible;
 }
 
 .nav-bar-item:hover .mega-menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
 }
 
 .mega-grid {
@@ -226,29 +227,36 @@ ul {
     transition-delay: 0.2s;
 }
 
+.nav-bar-item:hover .mega-col:nth-child(4) {
+    transition-delay: 0.25s;
+}
+
 .mega-col h4 {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 1.2px;
-    margin-bottom: 30px;
-    font-weight: 500;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+    font-weight: 600;
 }
 
 .mega-col a {
     display: block;
-    font-size: 22px;
-    font-weight: 600;
+    font-size: 15px;
+    /* Clean, modern size */
+    font-weight: 500;
     color: var(--text-primary);
     text-decoration: none;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     transition: all 0.3s ease;
     text-transform: none;
+    line-height: normal;
 }
 
 .mega-col a:hover {
     color: var(--accent-color);
-    transform: translateX(3px);
+    opacity: 0.7;
+    transform: translateX(4px);
 }
 
 .nav-icon {
@@ -471,53 +479,7 @@ ul {
     z-index: 3;
 }
 
-.hero-scroll-indicator {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-    animation: fadeInUp 1s var(--ease-custom) 1s forwards;
-    opacity: 0;
-}
 
-.mouse {
-    width: 25px;
-    height: 40px;
-    border: 2px solid currentColor;
-    border-radius: 15px;
-    position: relative;
-}
-
-.mouse::before {
-    content: '';
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    width: 4px;
-    height: 4px;
-    background: currentColor;
-    margin-left: -2px;
-    border-radius: 50%;
-    animation: mouseScroll 2s infinite;
-}
-
-@keyframes mouseScroll {
-    0% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-
-    100% {
-        transform: translateY(15px);
-        opacity: 0;
-    }
-}
 
 /* Why Us Section - The Main Block */
 .why-us-section {

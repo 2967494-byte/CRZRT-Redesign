@@ -73,24 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Custom Cursor
-    const cursorDot = document.querySelector('[data-cursor-dot]');
-    const cursorOutline = document.querySelector('[data-cursor-outline]');
 
-    window.addEventListener('mousemove', (e) => {
-        const posX = e.clientX;
-        const posY = e.clientY;
-
-        // Dot follows instantly
-        cursorDot.style.left = `${posX}px`;
-        cursorDot.style.top = `${posY}px`;
-
-        // Outline follows with lag (managed by CSS transition, or we can use JS for more fluid lag)
-        cursorOutline.animate({
-            left: `${posX}px`,
-            top: `${posY}px`
-        }, { duration: 500, fill: "forwards" });
-    });
 
     // Header Blur Effect on Scroll
     const header = document.querySelector('.header');
