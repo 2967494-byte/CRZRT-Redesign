@@ -544,6 +544,16 @@
                     </svg>
                     Главная страница
                 </div>
+                <div class="nav-item" data-target="consulting">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <path d="M10 9H8"></path>
+                    </svg>
+                    Консалтинг
+                </div>
                 <div class="nav-item" data-target="users">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -707,6 +717,12 @@
                                 </div>
                                 <div class="checkbox-group">
                                     <label>
+                                        <input type="checkbox" class="perm-checkbox" value="consulting">
+                                        Редактирование раздела "Консалтинг"
+                                    </label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <label>
                                         <input type="checkbox" class="perm-checkbox" value="users">
                                         Управление пользователями
                                     </label>
@@ -738,6 +754,25 @@
                             <!-- Users will go here -->
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <div id="consultingBlock" class="admin-block" data-required-role="consulting">
+                <div class="admin-card">
+                    <div class="card-header">Лица раздела (Авторы)</div>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">
+                        Укажите информацию об авторах, которые будут выводиться в каждой услуге раздела Консалтинг.
+                    </p>
+                    <div id="consultingAuthorsAdmin"></div>
+                </div>
+
+                <div class="admin-card">
+                    <div class="card-header">Услуги консалтинга</div>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">
+                        Отредактируйте тексты для каждой из услуг. Пункты списка начинайте с новой строки, можно
+                        использовать тире (-).
+                    </p>
+                    <div id="consultingServicesAdmin" style="display: flex; flex-direction: column; gap: 30px;"></div>
                 </div>
             </div>
 
@@ -922,6 +957,7 @@
             blocks.forEach(block => {
                 const blockTargetMap = {
                     'main-page': 'mainPageBlock',
+                    'consulting': 'consultingBlock',
                     'users': 'usersBlock',
                     'settings': 'settingsBlock'
                 };
@@ -989,6 +1025,7 @@
             const permNames = {
                 'superuser': '<span style="color:var(--accent-color);font-weight:bold;">Полный доступ</span>',
                 'main-page': 'Ред. главной',
+                'consulting': 'Консалтинг',
                 'users': 'Упр. пользователями',
                 'settings': 'Настройки'
             };
@@ -1181,7 +1218,110 @@
             croppedResultContainer.style.display = 'block'; // Show previous result
         });
 
+        // =======================
+        // Consulting Admin Logic
+        // =======================
+
+        const defaultConsultingData = {
+            authors: [
+                { id: '1', avatarText: 'Д', name: 'Дмитрий', phone: '+7 900 000-00-00', email: 'dima@crzrt.ru' },
+                { id: '2', avatarText: 'ИИ', name: 'Иванов И.И.', phone: '+7 900 000-00-01', email: 'ivanov@crzrt.ru' }
+            ],
+            services: [
+                { id: 'business', title: 'Решения для бизнеса', highlight: 'Юридические решения – это не расходы, а защита ваших денег и времени.', benefits: 'анализ бизнес-модели на предмет потенциальных рисков: исков, штрафов, претензий\nшаблоны рабочих документов: договоры, приказы, положение о закупках (223-ФЗ)\nпрактические советы и стратегии минимизации негативных последствий', disclaimer: '' },
+                { id: 'deals', title: 'Сопровождение сделок', highlight: 'Сопровождение сделки абсолютно необходимо для минимизации рисков и безопасности всех сторон.', benefits: 'Правовую экспертизу объектов перед сделкой\nподготовка полного и юридически выверенного пакета документов\nорганизацию безопасных расчетов между контрагентами\nсопровождение сделки и проверку «чистоты» подписания', disclaimer: '' },
+                { id: 'disputes', title: 'Сложные судебные споры', highlight: 'Суд - крайняя стадия конфликтной ситуации, и к ней нужно быть готовым заранее.', benefits: 'правовой аудит ситуации и досудебную подготовку (медиация)\nформирование железной доказательной базы и процессуальных документов\nпредставительство ваших интересов в судах всех инстанций\nсопровождение на этапе исполнительного производства', disclaimer: '' },
+                { id: 'corporate', title: 'Корпоративное право', highlight: 'В процессе деятельности любое юридическое лицо руководствуется прежде всего нормами корпоративного права, и их исполнение лучше доверить профессионалам.', benefits: 'Система «под ключ»: регистрация, ликвидация или реорганизация юридических лиц, в том числе унитарных предприятий\nподготовка решений и протоколов собраний\nдетальная правовая экспертиза и структурирование сделок\nразработка и внедрение корпоративных договоров и опционных программ для сотрудников', disclaimer: '' },
+                { id: 'public', title: 'Поддержка госзаказчиков', highlight: 'Поможем понять структуры работы с 44-ФЗ и госзакупками в целом, снять излишние риски с должностных лиц.', benefits: 'правовая экспертиза закупочной документации еще на стадии планирования\nкомплексное сопровождение заключения и исполнения контракта\nпретензионно-исковая работа и взыскание неустоек\nзащита при проверках контролирующих органов и обжалование решений, предписаний, постановлений КоАП\nметодологическое обеспечение закупочной деятельности (положения, регламенты)', disclaimer: '' },
+                { id: 'competitor', title: 'Конкурентный консалтинг', highlight: 'Работа с поставщиками – одно из наших приоритетных направлений. Постоянные изменения в законодательстве требуют всегда быть в курсе новых судебных практик.', benefits: 'анализ закупочной документации и проверка «подводных камней».\nпрактические рекомендации и оценка возможностей участия в торгах\nПодготовка и тщательная проверка заявки на участие (решения об одобрении сделки, отсутствие оснований для отклонения)\nсопровождение «антимонопольного этапа» и подача запросов на разъяснение (жалобы, представление интересов)\nЮридическая поддержка при исполнении контракта\nзащита интересов при спорах о включении в РНП*', disclaimer: '* Реестр недобросовестных поставщиков (ст. 104 Закона о контрактной системе 44-ФЗ)' }
+            ]
+        };
+
+        let consultingData = JSON.parse(localStorage.getItem('crzrt_consulting_data')) || defaultConsultingData;
+        const consultingAuthorsAdmin = document.getElementById('consultingAuthorsAdmin');
+        const consultingServicesAdmin = document.getElementById('consultingServicesAdmin');
+
+        function renderConsultingAdmin() {
+            // Render Authors
+            consultingAuthorsAdmin.innerHTML = '';
+            consultingData.authors.forEach((author, index) => {
+                const authorHTML = `
+                    <div style="border-left: 3px solid var(--accent-color); padding-left: 15px; margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 15px; font-weight: 600;">Автор ${index + 1}</h4>
+                        <div style="display: grid; grid-template-columns: 80px 1fr 1fr 1fr; gap: 15px; align-items: start;">
+                            <div class="form-group">
+                                <label>Аватарка</label>
+                                <input type="text" class="form-control" id="c_author_avatar_${index}" value="${author.avatarText || ''}" placeholder="ИИ" maxlength="4">
+                            </div>
+                            <div class="form-group">
+                                <label>ФИО</label>
+                                <input type="text" class="form-control" id="c_author_name_${index}" value="${author.name || ''}" placeholder="Иванов И.И.">
+                            </div>
+                            <div class="form-group">
+                                <label>Телефон</label>
+                                <input type="text" class="form-control" id="c_author_phone_${index}" value="${author.phone || ''}" placeholder="+7 ...">
+                            </div>
+                            <div class="form-group">
+                                <label>E-mail</label>
+                                <input type="email" class="form-control" id="c_author_email_${index}" value="${author.email || ''}" placeholder="mail@domain.ru">
+                            </div>
+                        </div>
+                    </div>
+                `;
+                consultingAuthorsAdmin.insertAdjacentHTML('beforeend', authorHTML);
+            });
+
+            // Render Services
+            consultingServicesAdmin.innerHTML = '';
+            consultingData.services.forEach((service, index) => {
+                const serviceHTML = `
+                    <div style="background: rgba(0,0,0,0.05); padding: 20px; border-radius: 12px; border: 1px solid var(--card-border);">
+                        <h3 style="margin-bottom: 15px; font-weight: 600; color: var(--accent-color);">${service.title}</h3>
+                        <input type="hidden" id="c_service_id_${index}" value="${service.id}">
+                        
+                        <div class="form-group">
+                            <label>Название услуги</label>
+                            <input type="text" class="form-control" id="c_service_title_${index}" value="${service.title || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Выделенная цитата (Главная мысль)</label>
+                            <textarea class="form-control" id="c_service_highlight_${index}" style="min-height: 80px;">${service.highlight || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Список получаемых результатов (каждый пункт с новой строки, без тире)</label>
+                            <textarea class="form-control" id="c_service_benefits_${index}" style="min-height: 120px;">${service.benefits || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Мелкий шрифт (сноска, если есть)</label>
+                            <input type="text" class="form-control" id="c_service_disclaimer_${index}" value="${service.disclaimer || ''}">
+                        </div>
+                    </div>
+                `;
+                consultingServicesAdmin.insertAdjacentHTML('beforeend', serviceHTML);
+            });
+        }
+
+        renderConsultingAdmin();
+
         document.getElementById('globalSaveBtn').addEventListener('click', () => {
+            if (currentTarget === 'consulting') {
+                consultingData.authors.forEach((author, index) => {
+                    author.avatarText = document.getElementById(`c_author_avatar_${index}`).value;
+                    author.name = document.getElementById(`c_author_name_${index}`).value;
+                    author.phone = document.getElementById(`c_author_phone_${index}`).value;
+                    author.email = document.getElementById(`c_author_email_${index}`).value;
+                });
+
+                consultingData.services.forEach((service, index) => {
+                    service.title = document.getElementById(`c_service_title_${index}`).value;
+                    service.highlight = document.getElementById(`c_service_highlight_${index}`).value;
+                    service.benefits = document.getElementById(`c_service_benefits_${index}`).value;
+                    service.disclaimer = document.getElementById(`c_service_disclaimer_${index}`).value;
+                });
+
+                localStorage.setItem('crzrt_consulting_data', JSON.stringify(consultingData));
+            }
+
             // Button animation class
             const btn = document.getElementById('globalSaveBtn');
             const originalText = btn.innerText;
