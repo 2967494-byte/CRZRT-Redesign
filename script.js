@@ -124,6 +124,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+    // === DYNAMIC CONTENT FOR MAIN PAGE ===
+    const mainPageData = JSON.parse(localStorage.getItem('crzrt_main_page_data'));
+    if (mainPageData) {
+        // Hero Section
+        const heroTitle = document.querySelector('.hero-title');
+        const heroSubtitle = document.querySelector('.hero-subtitle');
+        if (heroTitle && mainPageData.heroTitle) {
+            // Split title if needed or just replace
+            heroTitle.innerHTML = mainPageData.heroTitle.replace('госзакупках.', '<span class="gradient-text">госзакупках.</span>');
+        }
+        if (heroSubtitle && mainPageData.heroSubtitle) {
+            heroSubtitle.innerText = mainPageData.heroSubtitle;
+        }
+
+        // Why Us Grid
+        const orgGrid = document.getElementById('mainOrgGrid');
+        if (orgGrid && mainPageData.orgBlocks) {
+            orgGrid.innerHTML = mainPageData.orgBlocks.map(b => `
+                <div class="why-card">
+                    <h3>${b.title}</h3>
+                    <p>${b.text}</p>
+                </div>
+            `).join('');
+        }
+
+        // Testimonials Marquee
+        const marquee = document.getElementById('mainTestimonialsMarquee');
+        if (marquee && mainPageData.testimonials) {
+            const renderCard = (t) => `
+                <div class="testimonial-card">
+                    <div class="client-name">${t.client}</div>
+                    <p>${t.text}</p>
+                </div>
+            `;
+            const content = mainPageData.testimonials.map(renderCard).join('');
+            // Double the content for seamless loop
+            marquee.innerHTML = content + content;
+        }
+
+        // Re-catch newly added cards for tilt and reveal effects
+        const newRevealElements = document.querySelectorAll('.why-card, .testimonial-card');
+        newRevealElements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            revealObserver.observe(el);
+
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -5;
+                const rotateY = ((x - centerX) / centerX) * 5;
+                el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        });
+    }
+
     // === DYNAMIC MEGA MENU FOR CONSULTING ===
     const consultingMegaGrid = document.querySelector('.nav-legal .mega-grid');
     if (consultingMegaGrid) {
