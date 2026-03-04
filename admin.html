@@ -1225,6 +1225,7 @@
             item.addEventListener('click', () => {
                 navItems.forEach(n => n.classList.remove('active'));
                 item.classList.add('active');
+                currentTarget = item.getAttribute('data-target');
                 document.getElementById('pageTitle').innerText = item.innerText.trim();
                 // Reset active indices on tab change
                 window.activeAuthorIndex = null;
