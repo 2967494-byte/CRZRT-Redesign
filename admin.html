@@ -813,7 +813,33 @@
             'users@crzrt.ru': { password: 'password', name: 'Менеджер Кадров', permissions: ['users'] }
         };
 
-        let usersDb = JSON.parse(localStorage.getItem('crzrt_users')) || defaultUsers;
+        let usersDb = JSON.parse(localStorage.getItem('crzrt_users'));
+
+        // Миграция со старой версии или инициализация по умолчанию
+        if (usersDb) {
+            for (const email in usersDb) {
+                const user = usersDb[email];
+                // Если осталась старая роль вместо массива прав
+                if (user.role && !user.permissions) {
+                    if (user.role === 'superuser') user.permissions = ['superuser'];
+                    else if (user.role === 'editor_main') user.permissions = ['main-page'];
+                    else if (user.role === 'editor_other') user.permissions = ['users'];
+                    else user.permissions = [];
+                    user.name = user.name || 'Без имени';
+                    delete user.role;
+                }
+            }
+            // Жестко гарантируем, что суперпользователь хотя бы один есть и работает
+            if (usersDb['admin@crzrt.ru']) {
+                usersDb['admin@crzrt.ru'].permissions = ['superuser'];
+                usersDb['admin@crzrt.ru'].name = usersDb['admin@crzrt.ru'].name || 'Администратор';
+            } else {
+                usersDb['admin@crzrt.ru'] = defaultUsers['admin@crzrt.ru'];
+            }
+        } else {
+            usersDb = defaultUsers;
+        }
+
         localStorage.setItem('crzrt_users', JSON.stringify(usersDb));
 
         const blocks = document.querySelectorAll('.admin-block');
