@@ -1284,8 +1284,19 @@
                 }
 
                 // Save hero background image
-                if (croppedResult) {
-                    mainPageData.heroBgImage = croppedResult.src || '';
+                // mainPageData.heroBgImage is already correctly set in memory
+                // by clearHeroBgImage() or the crop callback, so we just
+                // use it as-is. Only override from src if the container is visible
+                // and src is a real image (data URI or file path, not a page URL).
+                if (croppedResultContainer && croppedResultContainer.style.display !== 'none') {
+                    const src = croppedResult ? croppedResult.src : '';
+                    if (src && (src.startsWith('data:') || (!src.startsWith('http') && !src.startsWith('blob:') && src !== window.location.href))) {
+                        mainPageData.heroBgImage = src;
+                    }
+                    // else: keep mainPageData.heroBgImage as already set (e.g. 'Pic12.png' default)
+                } else {
+                    // Container hidden = image was deleted
+                    mainPageData.heroBgImage = '';
                 }
 
                 if (Array.isArray(mainPageData.orgBlocks)) {
