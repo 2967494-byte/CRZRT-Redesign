@@ -133,4 +133,26 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
     });
+
+    // === DYNAMIC MEGA MENU FOR CONSULTING ===
+    const consultingMegaGrid = document.querySelector('.nav-legal .mega-grid');
+    if (consultingMegaGrid) {
+        const localData = JSON.parse(localStorage.getItem('crzrt_consulting_data'));
+        if (localData && localData.services && localData.services.length > 0) {
+            consultingMegaGrid.innerHTML = '';
+
+            // Split into two columns for layout balance
+            const half = Math.ceil(localData.services.length / 2);
+            const col1 = localData.services.slice(0, half);
+            const col2 = localData.services.slice(half);
+
+            const renderCol = (title, items) => {
+                if (items.length === 0) return '';
+                let links = items.map(s => `<a href="consulting.html#${s.id}">${s.title}</a>`).join('');
+                return `<div class="mega-col" style="min-width: 200px;"><h4>${title}</h4>${links}</div>`;
+            };
+
+            consultingMegaGrid.innerHTML = renderCol('Бизнес и сделки', col1) + renderCol('Споры и закупки', col2);
+        }
+    }
 });

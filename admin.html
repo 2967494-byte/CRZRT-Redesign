@@ -773,6 +773,9 @@
                         использовать тире (-).
                     </p>
                     <div id="consultingServicesAdmin" style="display: flex; flex-direction: column; gap: 30px;"></div>
+                    <button class="btn-secondary" id="btnAddConsultingService"
+                        style="margin-top: 20px; width: 100%; border: 1px dashed var(--text-secondary);">+ Добавить
+                        услугу</button>
                 </div>
             </div>
 
@@ -1241,6 +1244,19 @@
         const consultingAuthorsAdmin = document.getElementById('consultingAuthorsAdmin');
         const consultingServicesAdmin = document.getElementById('consultingServicesAdmin');
 
+        window.handleAuthorPhoto = function (input, index) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('c_author_photo_preview_' + index).src = e.target.result;
+                    document.getElementById('c_author_photo_preview_' + index).style.display = 'block';
+                    document.getElementById('c_author_photo_text_' + index).style.display = 'none';
+                    document.getElementById('c_author_avatarUrl_' + index).value = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
         function renderConsultingAdmin() {
             // Render Authors
             consultingAuthorsAdmin.innerHTML = '';
@@ -1250,8 +1266,18 @@
                         <h4 style="margin-bottom: 15px; font-weight: 600;">Автор ${index + 1}</h4>
                         <div style="display: grid; grid-template-columns: 80px 1fr 1fr 1fr; gap: 15px; align-items: start;">
                             <div class="form-group">
-                                <label>Аватарка</label>
-                                <input type="text" class="form-control" id="c_author_avatar_${index}" value="${author.avatarText || ''}" placeholder="ИИ" maxlength="4">
+                                <label>Фото (Аватар)</label>
+                                <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--card-border); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;" onclick="document.getElementById('c_author_photo_input_${index}').click()">
+                                    <img id="c_author_photo_preview_${index}" src="${author.avatarUrl || ''}" style="width: 100%; height: 100%; object-fit: cover; display: ${author.avatarUrl ? 'block' : 'none'};">
+                                    <span id="c_author_photo_text_${index}" style="font-size: 1.5rem; font-weight: 700; color: var(--text-secondary); display: ${author.avatarUrl ? 'none' : 'block'};">${author.avatarText || 'ИИ'}</span>
+                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); font-size: 0.6rem; text-align: center; color: white; padding: 2px 0;">Изм.</div>
+                                </div>
+                                <input type="file" id="c_author_photo_input_${index}" accept="image/*" style="display: none;" onchange="handleAuthorPhoto(this, ${index})">
+                                <input type="hidden" id="c_author_avatarUrl_${index}" value="${author.avatarUrl || ''}">
+                                <div style="margin-top: 5px;">
+                                    <label style="font-size:0.75rem;">Инициалы (если нет фото):</label>
+                                    <input type="text" class="form-control" style="padding: 8px;" id="c_author_avatar_${index}" value="${author.avatarText || ''}" placeholder="ИИ" maxlength="4">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>ФИО</label>
@@ -1295,6 +1321,7 @@
                             <label>Мелкий шрифт (сноска, если есть)</label>
                             <input type="text" class="form-control" id="c_service_disclaimer_${index}" value="${service.disclaimer || ''}">
                         </div>
+                        <button class="btn-delete" style="margin-top: 15px;" onclick="window.removeConsultingService(${index})">Удалить услугу</button>
                     </div>
                 `;
                 consultingServicesAdmin.insertAdjacentHTML('beforeend', serviceHTML);
@@ -1303,22 +1330,56 @@
 
         renderConsultingAdmin();
 
+        function saveConsultingStateToMemory() {
+            consultingData.authors.forEach((author, index) => {
+                author.avatarText = document.getElementById(`c_author_avatar_${index}`).value;
+                author.avatarUrl = document.getElementById(`c_author_avatarUrl_${index}`).value;
+                author.name = document.getElementById(`c_author_name_${index}`).value;
+                author.phone = document.getElementById(`c_author_phone_${index}`).value;
+                author.email = document.getElementById(`c_author_email_${index}`).value;
+            });
+
+            consultingData.services.forEach((service, index) => {
+                service.title = document.getElementById(`c_service_title_${index}`).value;
+                service.highlight = document.getElementById(`c_service_highlight_${index}`).value;
+                service.benefits = document.getElementById(`c_service_benefits_${index}`).value;
+                service.disclaimer = document.getElementById(`c_service_disclaimer_${index}`).value;
+                // Add an ID if it's new
+                if (!service.id) service.id = 'service_' + Date.now() + Math.floor(Math.random() * 1000);
+            });
+        }
+
+        window.removeConsultingService = function (index) {
+            if (confirm('Вы уверены, что хотите удалить эту услугу?')) {
+                saveConsultingStateToMemory();
+                consultingData.services.splice(index, 1);
+                renderConsultingAdmin();
+            }
+        };
+
+        const btnAddConsultingService = document.getElementById('btnAddConsultingService');
+        if (btnAddConsultingService) {
+            btnAddConsultingService.addEventListener('click', () => {
+                saveConsultingStateToMemory();
+                consultingData.services.push({
+                    id: 'service_' + Date.now(),
+                    title: 'Новая услуга',
+                    highlight: '',
+                    benefits: '',
+                    disclaimer: ''
+                });
+                renderConsultingAdmin();
+                // scroll to bottom of services
+                setTimeout(() => {
+                    const block = document.getElementById('consultingServicesAdmin');
+                    block.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }, 100);
+            });
+        }
+
         document.getElementById('globalSaveBtn').addEventListener('click', () => {
             if (currentTarget === 'consulting') {
-                consultingData.authors.forEach((author, index) => {
-                    author.avatarText = document.getElementById(`c_author_avatar_${index}`).value;
-                    author.name = document.getElementById(`c_author_name_${index}`).value;
-                    author.phone = document.getElementById(`c_author_phone_${index}`).value;
-                    author.email = document.getElementById(`c_author_email_${index}`).value;
-                });
-
-                consultingData.services.forEach((service, index) => {
-                    service.title = document.getElementById(`c_service_title_${index}`).value;
-                    service.highlight = document.getElementById(`c_service_highlight_${index}`).value;
-                    service.benefits = document.getElementById(`c_service_benefits_${index}`).value;
-                    service.disclaimer = document.getElementById(`c_service_disclaimer_${index}`).value;
-                });
-
+                saveConsultingStateToMemory();
                 localStorage.setItem('crzrt_consulting_data', JSON.stringify(consultingData));
             }
 
