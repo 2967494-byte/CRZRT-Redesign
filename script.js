@@ -138,6 +138,22 @@ document.addEventListener('DOMContentLoaded', () => {
             heroSubtitle.innerText = mainPageData.heroSubtitle;
         }
 
+        // Feature Cards (2x2 Grid)
+        if (mainPageData.featureCards) {
+            mainPageData.featureCards.forEach((c, i) => {
+                const card = document.getElementById(`feature-card-${i + 1}`);
+                if (card) {
+                    const title = card.querySelector('h3');
+                    const bg = card.querySelector('.feature-card-bg');
+                    if (title) title.innerText = c.title;
+                    if (c.link) card.href = c.link;
+                    if (bg && c.image) {
+                        bg.style.backgroundImage = `url(${c.image})`;
+                    }
+                }
+            });
+        }
+
         // Why Us Grid
         const orgGrid = document.getElementById('mainOrgGrid');
         if (orgGrid && mainPageData.orgBlocks) {
