@@ -6,13 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <img src="logo.png" alt="Logo" class="logo-img">
                 <span>Центр развития закупок</span>
             </a>
-            <nav class="nav">
-                <a href="courses.html" class="nav-link">Курсы</a>
-                <a href="index.html#services" class="nav-link">Услуги</a>
-                <a href="consulting.html" class="nav-link">Консалтинг</a>
-                <a href="about.html" class="nav-link">О нас</a>
-            </nav>
             <div class="header-actions">
+                <a href="tel:88001017892" id="h-phone-link" class="header-phone" style="margin-right: 20px; font-weight: 600; font-size: 1rem; color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity: 0.8;">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    <span id="h-phone-val">8 (800) 101-78-92</span>
+                </a>
                 <button id="theme-toggle" class="btn-icon" aria-label="Toggle Theme">
                     <span class="icon-sun" style="display: flex;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -33,7 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         </svg>
                     </span>
                 </button>
-                <a href="admin.html" class="btn-primary">Личный кабинет</a>
+                <a href="admin.html" class="btn-primary" style="display: flex; align-items: center; gap: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>Личный кабинет</span>
+                </a>
             </div>
         </div>
 
@@ -217,6 +223,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     border-bottom-color: ${categoryColor} !important;
                 }
             `;
+        }
+
+        // Phone Update Logic
+        const contactsData = JSON.parse(localStorage.getItem('crzrt_contacts'));
+        if (contactsData && contactsData.phone) {
+            const phoneVal = container.querySelector('#h-phone-val');
+            const phoneLink = container.querySelector('#h-phone-link');
+            if (phoneVal) phoneVal.innerText = contactsData.phone;
+            if (phoneLink) {
+                const numericPhone = contactsData.phone.replace(/\D/g, '');
+                phoneLink.href = `tel:${numericPhone}`;
+            }
         }
     }
 

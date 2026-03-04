@@ -226,24 +226,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // === DYNAMIC MEGA MENU FOR CONSULTING ===
-    const consultingMegaGrid = document.querySelector('.nav-legal .mega-grid');
-    if (consultingMegaGrid) {
+    function renderConsultingMegaMenu() {
+        const consultingMegaGrid = document.querySelector('.nav-legal .mega-grid');
+        if (!consultingMegaGrid) return;
+
+        const defaultConsultingMenu = [
+            { id: 'business', title: 'Решения для бизнеса' },
+            { id: 'deals', title: 'Сопровождение сделок' },
+            { id: 'disputes', title: 'Судебные споры' },
+            { id: 'corporate', title: 'Корпоративное право' },
+            { id: 'public', title: 'Поддержка госзаказчиков' },
+            { id: 'competitor', title: 'Конкурентный консалтинг' }
+        ];
+
         const localData = JSON.parse(localStorage.getItem('crzrt_consulting_data'));
-        if (localData && localData.services && localData.services.length > 0) {
-            consultingMegaGrid.innerHTML = '';
+        const services = (localData && localData.services && localData.services.length > 0) ? localData.services : defaultConsultingMenu;
 
-            // Split into two columns for layout balance
-            const half = Math.ceil(localData.services.length / 2);
-            const col1 = localData.services.slice(0, half);
-            const col2 = localData.services.slice(half);
+        consultingMegaGrid.innerHTML = '';
 
-            const renderCol = (title, items) => {
-                if (items.length === 0) return '';
-                let links = items.map(s => `<a href="consulting.html#${s.id}">${s.title}</a>`).join('');
-                return `<div class="mega-col" style="min-width: 200px;"><h4>${title}</h4>${links}</div>`;
-            };
+        // Split into two columns for layout balance
+        const half = Math.ceil(services.length / 2);
+        const col1 = services.slice(0, half);
+        const col2 = services.slice(half);
 
-            consultingMegaGrid.innerHTML = renderCol('Бизнес и сделки', col1) + renderCol('Споры и закупки', col2);
-        }
+        const renderCol = (title, items) => {
+            if (items.length === 0) return '';
+            let links = items.map(s => `<a href="consulting.html#${s.id}">${s.title}</a>`).join('');
+            return `<div class="mega-col" style="min-width: 250px; opacity: 1; transform: translateY(0);"><h4>${title}</h4>${links}</div>`;
+        };
+
+        consultingMegaGrid.innerHTML = renderCol('Бизнес и сделки', col1) + renderCol('Споры и закупки', col2);
     }
+
+    // Initial call in case header is already in HTML (rare)
+    renderConsultingMegaMenu();
+
+    // Listen for header loaded event from header.js
+    document.addEventListener('headerLoaded', renderConsultingMegaMenu);
 });

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 
 <head>
@@ -20,8 +20,9 @@
     <main>
         <section class="about-hero">
             <div class="container">
-                <h1 class="hero-title reveal-text">Профессионализм и Опыт</h1>
-                <p class="hero-subtitle">Центр развития закупок — ваш надежный партнер в мире тендеров.</p>
+                <h1 class="hero-title reveal-text" id="a_hero_title_val">Профессионализм и Опыт</h1>
+                <p class="hero-subtitle" id="a_hero_subtitle_val">Центр развития закупок — ваш надежный партнер в мире
+                    тендеров.</p>
             </div>
         </section>
 
@@ -30,7 +31,7 @@
                 <div class="about-grid">
                     <div class="about-image-wrapper">
                         <div class="about-image" data-tilt>
-                            <img src="IMG_8077-e1536932079653.jpg" alt="Офис Центр развития закупок" />
+                            <img id="a_image_val" src="IMG_8077-e1536932079653.jpg" alt="Офис Центр развития закупок" />
                         </div>
                         <div class="map-container">
                             <script type="text/javascript" charset="utf-8" async
@@ -38,13 +39,16 @@
                         </div>
                     </div>
                     <div class="about-text">
-                        <h2>О нас</h2>
-                        <p>Акционерное общество «Центр развития закупок Республики Татарстан» является подведомственной
-                            организацией Государственного комитета Республики Татарстан по закупкам.</p>
-                        <p>Наш офис расположен в самом сердце Казани, на улице Петербургская 86. Мы объединяем экспертов
-                            с многолетним опытом работы в сфере государственного заказа.</p>
+                        <h2 id="a_main_title_val">О нас</h2>
+                        <div id="a_p_container">
+                            <p>Акционерное общество «Центр развития закупок Республики Татарстан» является
+                                подведомственной организацией Государственного комитета Республики Татарстан по
+                                закупкам.</p>
+                            <p>Наш офис расположен в самом сердце Казани, на улице Петербургская 86. Мы объединяем
+                                экспертов с многолетним опытом работы в сфере государственного заказа.</p>
+                        </div>
 
-                        <div class="services-list">
+                        <div class="services-list" id="a_services_list_val">
                             <div class="service-item">Сопровождение 44-ФЗ и 223-ФЗ</div>
                             <div class="service-item">Обучение и консалтинг</div>
                             <div class="service-item">Электронная подпись</div>
@@ -78,7 +82,7 @@
             </div>
             <div class="footer-col">
                 <h4>Связаться</h4>
-                <a href="tel:88001017892">8 (800) 101-78-92</a>
+                <a href="tel:88001017892" id="f_phone_link">8 (800) 101-78-92</a>
                 <div class="socials">
                     <a href="#">TG</a>
                     <a href="#">VK</a>
@@ -87,6 +91,44 @@
         </div>
     </footer>
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const aboutData = JSON.parse(localStorage.getItem('crzrt_about_data'));
+            if (aboutData) {
+                if (aboutData.heroTitle) document.getElementById('a_hero_title_val').innerText = aboutData.heroTitle;
+                if (aboutData.heroSubtitle) document.getElementById('a_hero_subtitle_val').innerText = aboutData.heroSubtitle;
+                if (aboutData.mainTitle) document.getElementById('a_main_title_val').innerText = aboutData.mainTitle;
+
+                const pContainer = document.getElementById('a_p_container');
+                if (pContainer) {
+                    pContainer.innerHTML = '';
+                    if (aboutData.p1) pContainer.innerHTML += `<p>${aboutData.p1}</p>`;
+                    if (aboutData.p2) pContainer.innerHTML += `<p>${aboutData.p2}</p>`;
+                }
+
+                const servicesList = document.getElementById('a_services_list_val');
+                if (servicesList && aboutData.services) {
+                    servicesList.innerHTML = aboutData.services.split('\n')
+                        .filter(s => s.trim() !== '')
+                        .map(s => `<div class="service-item">${s}</div>`)
+                        .join('');
+                }
+
+                if (aboutData.image) {
+                    document.getElementById('a_image_val').src = aboutData.image;
+                }
+            }
+
+            const contactsData = JSON.parse(localStorage.getItem('crzrt_contacts'));
+            if (contactsData && contactsData.phone) {
+                const fPhone = document.getElementById('f_phone_link');
+                if (fPhone) {
+                    fPhone.innerText = contactsData.phone;
+                    fPhone.href = `tel:${contactsData.phone.replace(/\D/g, '')}`;
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

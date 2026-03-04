@@ -82,6 +82,15 @@ ul {
     margin: 0 auto;
 }
 
+.header-phone {
+    transition: all 0.3s var(--ease-custom);
+}
+
+.header-phone:hover {
+    color: var(--accent-color) !important;
+    transform: translateY(-1px);
+}
+
 .header-nav-bar-container {
     width: 100%;
     background: var(--card-bg);
@@ -540,6 +549,20 @@ ul {
 
 [data-theme="light"] .hero-overlay {
     background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.8) 100%);
+}
+
+[data-theme="light"] .hero-title {
+    color: var(--text-primary);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* Subtle depth */
+}
+
+[data-theme="light"] .gradient-text {
+    background: linear-gradient(90deg, #0071e3, #2997ff);
+    /* Darker blue for light theme */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .hero-content {
