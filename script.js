@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const defaultMainData = {
         heroTitle: 'Ваш успех в госзакупках.',
         heroSubtitle: 'Единая экосистема для заказчиков и поставщиков.\nОт обучения до сопровождения сложных тендеров.',
-        heroBgImage: 'Pic12.png',
+        heroBgImage: '',
         featureCards: [
             { title: 'Образовательный центр', link: 'courses.html', image: '' },
             { title: 'Консалтинг', link: 'consulting.html', image: '' },
