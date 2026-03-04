@@ -362,6 +362,84 @@
         .cropper-point {
             background-color: var(--accent-color);
         }
+
+        /* Auth Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-error {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        /* Users Table */
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .users-table th {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .users-table td {
+            color: var(--text-primary);
+        }
+
+        .btn-delete {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+            border: 1px solid rgba(255, 77, 77, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #ff4d4d;
+            color: #fff;
+        }
     </style>
 </head>
 
@@ -421,11 +499,10 @@
             </nav>
             <div class="user-role">
                 <span style="opacity: 0.8; font-size: 0.8rem;">Авторизован как:</span><br>
-                <select class="role-selector" id="roleSelector">
-                    <option value="superuser">Суперпользователь</option>
-                    <option value="editor_main">Редактор (Главная стр.)</option>
-                    <option value="editor_other">Редактор (Только пользователи)</option>
-                </select>
+                <div style="font-weight: bold; margin-top: 5px; color: inherit; padding: 4px 0;"
+                    id="currentUserRoleInfo">Загрузка...</div>
+                <button class="btn-secondary" id="btnLogout"
+                    style="padding: 6px 12px; font-size: 0.8rem; margin-top: 10px; width: 100%;">Выйти</button>
             </div>
         </aside>
 
@@ -529,9 +606,40 @@
 
             <div id="usersBlock" class="admin-block" data-required-role="editor_other">
                 <div class="admin-card">
-                    <div class="card-header">Управление пользователями</div>
-                    <p style="color: var(--text-secondary);">Здесь будет список пользователей и управление их правами
-                        доступа.</p>
+                    <div class="card-header">Добавить пользователя</div>
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" id="newUserId" class="form-control" placeholder="user@crzrt.ru">
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password" id="newUserPass" class="form-control" placeholder="********">
+                    </div>
+                    <div class="form-group">
+                        <label>Роль</label>
+                        <select id="newUserRole" class="form-control" style="appearance: auto;">
+                            <option value="superuser">Суперпользователь</option>
+                            <option value="editor_main">Редактор (Главная стр.)</option>
+                            <option value="editor_other">Редактор (Пользователи)</option>
+                        </select>
+                    </div>
+                    <button class="btn-save" id="btnAddUser">Добавить пользователя</button>
+                </div>
+
+                <div class="admin-card">
+                    <div class="card-header">Список пользователей</div>
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>E-mail</th>
+                                <th>Роль</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersListContent">
+                            <!-- Users will go here -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -544,6 +652,22 @@
             </div>
 
         </main>
+    </div>
+
+    <div class="modal-overlay" id="authModal" style="display: none;">
+        <div class="modal-content">
+            <h2 class="modal-title">Вход в панель управления</h2>
+            <div class="modal-error" id="authError">Неверный e-mail или пароль</div>
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="authEmail" class="form-control" placeholder="admin@crzrt.ru">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="authPassword" class="form-control" placeholder="********">
+            </div>
+            <button class="btn-save" style="width: 100%; margin-top: 10px;" id="btnAuthLogin">Войти</button>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -576,22 +700,82 @@
             }
         });
 
-        // Role Management Logic
-        const roleSelector = document.getElementById('roleSelector');
+        // User & Role Management Logic
+        const defaultUsers = {
+            'admin@crzrt.ru': { password: 'admin', role: 'superuser' },
+            'main@crzrt.ru': { password: 'password', role: 'editor_main' },
+            'users@crzrt.ru': { password: 'password', role: 'editor_other' }
+        };
+
+        let usersDb = JSON.parse(localStorage.getItem('crzrt_users')) || defaultUsers;
+        localStorage.setItem('crzrt_users', JSON.stringify(usersDb));
+
         const blocks = document.querySelectorAll('.admin-block');
         const permissionDenied = document.getElementById('permissionDenied');
         const navItems = document.querySelectorAll('.nav-item');
-        let currentRole = 'superuser';
+        let currentRole = null;
+        let currentUserEmail = null;
         let currentTarget = 'main-page';
 
+        const authModal = document.getElementById('authModal');
+        const authEmail = document.getElementById('authEmail');
+        const authPassword = document.getElementById('authPassword');
+        const btnAuthLogin = document.getElementById('btnAuthLogin');
+        const authError = document.getElementById('authError');
+        const currentUserRoleInfo = document.getElementById('currentUserRoleInfo');
+        const btnLogout = document.getElementById('btnLogout');
+
+        function checkAuth() {
+            const session = sessionStorage.getItem('crzrt_admin_session');
+            if (session) {
+                const parts = session.split(':');
+                currentUserEmail = parts[0];
+                currentRole = parts[1];
+                authModal.style.display = 'none';
+
+                const roleNames = {
+                    'superuser': 'Суперпользователь',
+                    'editor_main': 'Редактор (Главная стр.)',
+                    'editor_other': 'Редактор (Пользователи)'
+                };
+                currentUserRoleInfo.innerHTML = `<div>${currentUserEmail}</div><div style="font-size:0.8rem; font-weight:normal; opacity:0.8;">${roleNames[currentRole] || currentRole}</div>`;
+                updateAccess();
+            } else {
+                authModal.style.display = 'flex';
+                authModal.style.opacity = '1';
+            }
+        }
+
+        btnAuthLogin.addEventListener('click', () => {
+            const email = authEmail.value.trim();
+            const password = authPassword.value;
+
+            // Re-load users just in case
+            usersDb = JSON.parse(localStorage.getItem('crzrt_users')) || defaultUsers;
+
+            if (usersDb[email] && usersDb[email].password === password) {
+                authError.style.display = 'none';
+                sessionStorage.setItem('crzrt_admin_session', email + ':' + usersDb[email].role);
+                checkAuth();
+            } else {
+                authError.style.display = 'block';
+            }
+        });
+
+        btnLogout.addEventListener('click', () => {
+            sessionStorage.removeItem('crzrt_admin_session');
+            currentUserEmail = null;
+            currentRole = null;
+            authEmail.value = '';
+            authPassword.value = '';
+            checkAuth();
+        });
+
         function updateAccess() {
-            currentRole = roleSelector.value;
+            if (!currentRole) return;
             let hasAccess = false;
 
             blocks.forEach(block => {
-                const targetId = currentTarget.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase()).replace(' ', '') + 'Block';
-                // e.g. main-page -> MainPageBlock, users -> UsersBlock. Wait, id is mainPageBlock
-                // Let's do a clearer match
                 const blockTargetMap = {
                     'main-page': 'mainPageBlock',
                     'users': 'usersBlock',
@@ -616,9 +800,11 @@
             } else {
                 permissionDenied.style.display = 'block';
             }
-        }
 
-        roleSelector.addEventListener('change', updateAccess);
+            if (currentTarget === 'users') { // anyone with access to users panel can see it, wait we said editor_other or superuser
+                renderUsers();
+            }
+        }
 
         navItems.forEach(item => {
             item.addEventListener('click', () => {
@@ -628,6 +814,77 @@
                 document.getElementById('pageTitle').innerText = item.innerText.trim();
                 updateAccess();
             });
+        });
+
+        // Users Management
+        const newUserId = document.getElementById('newUserId');
+        const newUserPass = document.getElementById('newUserPass');
+        const newUserRole = document.getElementById('newUserRole');
+        const btnAddUser = document.getElementById('btnAddUser');
+        const usersListContent = document.getElementById('usersListContent');
+
+        function renderUsers() {
+            usersListContent.innerHTML = '';
+            usersDb = JSON.parse(localStorage.getItem('crzrt_users')) || defaultUsers;
+
+            const roleNames = {
+                'superuser': 'Суперпользователь',
+                'editor_main': 'Редактор (Главная)',
+                'editor_other': 'Редактор (Пользователи)'
+            };
+
+            for (const email in usersDb) {
+                const tr = document.createElement('tr');
+                const tdEmail = document.createElement('td');
+                tdEmail.innerText = email;
+
+                const tdRole = document.createElement('td');
+                tdRole.innerText = roleNames[usersDb[email].role] || usersDb[email].role;
+
+                const tdActions = document.createElement('td');
+                if (email !== currentUserEmail && currentRole === 'superuser') { // only superuser can delete, and not themselves
+                    const btnDel = document.createElement('button');
+                    btnDel.className = 'btn-delete';
+                    btnDel.innerText = 'Удалить';
+                    btnDel.onclick = () => {
+                        delete usersDb[email];
+                        localStorage.setItem('crzrt_users', JSON.stringify(usersDb));
+                        renderUsers();
+                    };
+                    tdActions.appendChild(btnDel);
+                }
+
+                tr.appendChild(tdEmail);
+                tr.appendChild(tdRole);
+                tr.appendChild(tdActions);
+                usersListContent.appendChild(tr);
+            }
+        }
+
+        btnAddUser.addEventListener('click', () => {
+            const email = newUserId.value.trim();
+            const pass = newUserPass.value.trim();
+            const role = newUserRole.value;
+
+            if (email && pass) {
+                usersDb[email] = { password: pass, role: role };
+                localStorage.setItem('crzrt_users', JSON.stringify(usersDb));
+                newUserId.value = '';
+                newUserPass.value = '';
+
+                const btn = document.getElementById('btnAddUser');
+                const orig = btn.innerText;
+                btn.innerText = 'Успешно!';
+                btn.style.background = '#34c759';
+                setTimeout(() => {
+                    btn.innerText = orig;
+                    btn.style.background = '';
+                }, 1500);
+
+                renderUsers();
+            } else {
+                alert('Заполните E-mail и Пароль');
+            }
         });
 
         // Cropper Logic
@@ -756,7 +1013,7 @@
         });
 
         // Initialize display
-        updateAccess();
+        checkAuth();
     </script>
 </body>
 
