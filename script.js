@@ -81,12 +81,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
-        if (currentScroll > 100) {
-            header.style.backdropFilter = "blur(20px)";
-            header.style.background = "var(--glass-bg)";
+        if (currentScroll > 50) {
+            header.style.boxShadow = "0 10px 30px rgba(0,0,0,0.1)";
         } else {
-            header.style.backdropFilter = "blur(20px)";
-            header.style.background = "var(--glass-bg)";
+            header.style.boxShadow = "0 4px 20px rgba(0,0,0,0.05)";
         }
         lastScroll = currentScroll;
     });

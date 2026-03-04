@@ -64,15 +64,13 @@ ul {
     left: 0;
     width: 100%;
     z-index: 1000;
-    background-color: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background-color: var(--bg-color);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    /* Solid shadow */
     border-bottom: 1px solid var(--card-border);
-    padding: 0;
-    transition: background-color 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
     color: var(--text-primary);
     overflow: visible;
-    /* Ensure mega menu isn't clipped */
 }
 
 .header-content {
@@ -84,36 +82,26 @@ ul {
     margin: 0 auto;
 }
 
+.header-nav-bar-container {
+    width: 100%;
+    background: var(--card-bg);
+    border-top: 1px solid var(--card-border);
+}
+
 .header-nav-bar {
     display: flex;
-    width: 100%;
-    height: 42px;
-    border-top: 1px solid var(--card-border);
-    background: rgba(255, 255, 255, 0.02);
+    justify-content: center;
+    gap: 15px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px;
     position: relative;
     z-index: 10;
 }
 
 .nav-bar-item {
     flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 10px;
-    text-transform: uppercase;
-    font-weight: 700;
-    color: var(--text-primary);
-    text-decoration: none;
-    letter-spacing: 0.8px;
-    transition: all 0.4s var(--ease-custom);
-    border-bottom: 2px solid transparent;
-    opacity: 0.7;
-}
-
-.nav-bar-item {
-    flex: 1;
-    /* Removed position: relative to allow mega-menu to anchor to .header-nav-bar */
+    position: relative;
 }
 
 .nav-item-link {
@@ -121,64 +109,127 @@ ul {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    font-size: 10px;
+    font-size: 11px;
     text-transform: uppercase;
     font-weight: 700;
     color: var(--text-primary);
     text-decoration: none;
     letter-spacing: 0.8px;
+    padding: 12px 15px;
+    border-radius: 12px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    /* slightly softer border explicitly for dark/light toggle via card-bg contrast */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s var(--ease-custom);
     width: 100%;
     height: 100%;
-    transition: all 0.4s var(--ease-custom);
-    border-bottom: 2px solid transparent;
-    opacity: 0.7;
 }
 
 .nav-bar-item:hover .nav-item-link {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     opacity: 1;
-    background: rgba(255, 255, 255, 0.05);
 }
 
-/* Specific Accent Colors for the Links */
+/* Specific Solid Accent Colors for the Links */
 .nav-edu:hover .nav-item-link {
-    color: #2997ff;
-    border-bottom-color: #2997ff;
+    background: #2997ff;
+    color: #fff;
+    border-color: #2997ff;
 }
 
 .nav-support:hover .nav-item-link {
-    color: #ac44ff;
-    border-bottom-color: #ac44ff;
+    background: #ac44ff;
+    color: #fff;
+    border-color: #ac44ff;
 }
 
 .nav-etp:hover .nav-item-link {
-    color: #00d2ff;
-    border-bottom-color: #00d2ff;
+    background: #0088ff;
+    /* Solid deep blue */
+    color: #fff;
+    border-color: #0088ff;
 }
 
 .nav-legal:hover .nav-item-link {
-    color: #ff4d4d;
-    border-bottom-color: #ff4d4d;
+    background: #ff3b3b;
+    color: #fff;
+    border-color: #ff3b3b;
 }
 
-/* Apple-style Mega Menu */
+/* Solid Mega Menu */
 .mega-menu {
     position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100vw;
-    /* Using vw to ensure it hits edges easily */
-    background: var(--glass-bg);
-    backdrop-filter: blur(50px);
-    -webkit-backdrop-filter: blur(50px);
-    border-top: 1px solid var(--card-border);
-    border-bottom: 1px solid var(--card-border);
+    top: calc(100% + 5px);
+    width: max-content;
+    max-width: 95vw;
+    /* Safe boundary */
+    background: var(--bg-color);
+    border-bottom: 4px solid var(--accent-color);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.4s var(--ease-custom);
-    padding: 60px 0;
+    transition: all 0.3s var(--ease-custom);
+    padding: 40px 45px;
+    border-radius: 0 0 16px 16px;
     z-index: 1000;
     pointer-events: none;
+}
+
+/* Base states */
+.nav-edu .mega-menu {
+    right: auto;
+    left: 0;
+    transform: translateY(10px);
+}
+
+.nav-support .mega-menu,
+.nav-etp .mega-menu {
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+}
+
+.nav-legal .mega-menu {
+    left: auto;
+    right: 0;
+    transform: translateY(10px);
+}
+
+/* Hover states for transform and opacity */
+.nav-edu:hover .mega-menu {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.nav-support:hover .mega-menu,
+.nav-etp:hover .mega-menu {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.nav-legal:hover .mega-menu {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Match Bottom Borders */
+.nav-edu:hover .mega-menu {
+    border-bottom-color: #2997ff;
+}
+
+.nav-support:hover .mega-menu {
+    border-bottom-color: #ac44ff;
+}
+
+.nav-etp:hover .mega-menu {
+    border-bottom-color: #0088ff;
 }
 
 /* Fixed header and nav bar constraints */
@@ -187,20 +238,10 @@ ul {
     overflow: visible;
 }
 
-.nav-bar-item:hover .mega-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
 .mega-grid {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 40px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 60px;
+    display: flex;
+    gap: 40px;
+    padding: 0;
 }
 
 .mega-col {

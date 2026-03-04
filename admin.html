@@ -758,6 +758,23 @@
             </div>
 
             <div id="consultingBlock" class="admin-block" data-required-role="consulting">
+
+                <div class="admin-card">
+                    <div class="card-header">Внешний вид раздела</div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Цвет кнопки "Консалтинг" в главном меню</label>
+                        <div style="display: flex; gap: 15px; align-items: center; margin-top: 5px;">
+                            <input type="color" id="c_category_color_picker"
+                                style="width: 40px; height: 40px; border: none; border-radius: 8px; cursor: pointer; background: transparent;">
+                            <input type="text" class="form-control" id="c_category_color" placeholder="#ff3b3b"
+                                style="max-width: 150px; margin-bottom: 0;">
+                        </div>
+                        <small style="color: var(--text-secondary); display: block; margin-top: 10px;">Этот цвет будет
+                            применяться к пункту меню при наведении, а также к нижней границе выпадающего
+                            списка.</small>
+                    </div>
+                </div>
+
                 <div class="admin-card">
                     <div class="card-header">Лица раздела (Авторы)</div>
                     <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">
@@ -1258,6 +1275,16 @@
         };
 
         function renderConsultingAdmin() {
+            // Render Color Setting
+            const clrInput = document.getElementById('c_category_color');
+            const clrPicker = document.getElementById('c_category_color_picker');
+
+            clrInput.value = consultingData.categoryColor || '#ff3b3b';
+            clrPicker.value = consultingData.categoryColor || '#ff3b3b';
+
+            clrInput.addEventListener('input', (e) => { clrPicker.value = e.target.value; });
+            clrPicker.addEventListener('input', (e) => { clrInput.value = e.target.value; });
+
             // Render Authors
             consultingAuthorsAdmin.innerHTML = '';
             consultingData.authors.forEach((author, index) => {
@@ -1331,6 +1358,8 @@
         renderConsultingAdmin();
 
         function saveConsultingStateToMemory() {
+            consultingData.categoryColor = document.getElementById('c_category_color').value;
+
             consultingData.authors.forEach((author, index) => {
                 author.avatarText = document.getElementById(`c_author_avatar_${index}`).value;
                 author.avatarUrl = document.getElementById(`c_author_avatarUrl_${index}`).value;
