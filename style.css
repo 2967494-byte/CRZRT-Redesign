@@ -743,6 +743,10 @@ ul {
     -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
     overflow: hidden;
     width: 100%;
+    padding: 30px 0;
+    /* Extra headroom for hover bounce */
+    margin-top: -20px;
+    margin-bottom: -20px;
 }
 
 .marquee-content {
@@ -750,6 +754,8 @@ ul {
     gap: 30px;
     width: max-content;
     animation: marquee 40s linear infinite;
+    padding: 10px 0;
+    /* Horizontal run space */
 }
 
 .marquee-content:hover {
@@ -762,12 +768,14 @@ ul {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 25px;
-    transition: transform 0.3s ease, border-color 0.3s ease;
+    transition: all 0.4s var(--ease-custom);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .testimonial-card:hover {
     border-color: var(--accent-color);
-    transform: translateY(-5px);
+    transform: translateY(-15px) scale(1.05) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .client-name {

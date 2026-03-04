@@ -780,7 +780,7 @@
                 </div>
             </div>
 
-            <div id="aboutUsBlock" class="admin-block" data-required-role="main-page">
+            <div id="aboutUsBlock" class="admin-block" data-required-role="about-us">
                 <div class="admin-card">
                     <div class="card-header">Секция Hero (О нас)</div>
                     <div class="form-group">
@@ -827,7 +827,7 @@
                 </div>
             </div>
 
-            <div id="contactsBlock" class="admin-block" data-required-role="superuser">
+            <div id="contactsBlock" class="admin-block" data-required-role="contacts">
                 <div class="admin-card">
                     <div class="card-header">Контакты и телефон</div>
                     <div class="form-group">
@@ -909,6 +909,14 @@
                                 <div class="checkbox-group">
                                     <label><input type="checkbox" class="perm-checkbox" value="users"> Управление
                                         пользователями</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" class="perm-checkbox" value="about-us"> Редактирование
+                                        блока "О нас"</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" class="perm-checkbox" value="contacts"> Редактирование
+                                        блока "Реквизиты"</label>
                                 </div>
                             </div>
                         </div>
@@ -1415,6 +1423,8 @@
                 'main-page': 'Ред. главной',
                 'consulting': 'Консалтинг',
                 'users': 'Упр. пользователями',
+                'about-us': 'О нас',
+                'contacts': 'Реквизиты',
                 'settings': 'Настройки'
             };
 
