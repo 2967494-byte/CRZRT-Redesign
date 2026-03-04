@@ -152,6 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedMainData = JSON.parse(localStorage.getItem('crzrt_main_page_data')) || {};
     const mainPageData = { ...defaultMainData, ...savedMainData };
 
+    // Sanitize heroBgImage — reject bad values from old buggy code (e.g. admin.html URL stored as src)
+    if (mainPageData.heroBgImage &&
+        mainPageData.heroBgImage !== '' &&
+        !mainPageData.heroBgImage.startsWith('data:') &&
+        (mainPageData.heroBgImage.includes('.html') || mainPageData.heroBgImage.includes('.htm'))) {
+        // Bad value stored (e.g. file:///admin.html) — fall back to default
+        mainPageData.heroBgImage = defaultMainData.heroBgImage;
+    }
+
     // Hero Section
     const heroTitle = document.querySelector('.hero-title');
     const heroSubtitle = document.querySelector('.hero-subtitle');
@@ -165,26 +174,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hero Background Image
     const heroMain = document.querySelector('.hero-main');
     if (heroMain) {
-        if (mainPageData.heroBgImage) {
-            // Override the CSS pseudo-element background via a scoped style tag
-            let heroBgStyle = document.getElementById('heroBgDynamic');
-            if (!heroBgStyle) {
-                heroBgStyle = document.createElement('style');
-                heroBgStyle.id = 'heroBgDynamic';
-                document.head.appendChild(heroBgStyle);
-            }
-            heroBgStyle.textContent = `.hero-main::before { background-image: url('${mainPageData.heroBgImage}') !important; }`;
+        // Create or find the dynamic style tag
+        let heroBgStyle = document.getElementById('heroBgDynamic');
+        if (!heroBgStyle) {
+            heroBgStyle = document.createElement('style');
+            heroBgStyle.id = 'heroBgDynamic';
+            document.head.appendChild(heroBgStyle);
+        }
+
+        if (mainPageData.heroBgImage && mainPageData.heroBgImage !== '') {
+            // Show custom image
+            heroBgStyle.textContent = `.hero-main::before { background-image: url('${mainPageData.heroBgImage}') !important; animation: heroZoom 30s linear infinite alternate; }`;
             heroMain.classList.remove('no-hero-bg');
+            heroMain.style.height = '';
+            heroMain.style.padding = '';
         } else if (mainPageData.heroBgImage === '') {
-            // Explicitly cleared — collapse hero to text size
-            let heroBgStyle = document.getElementById('heroBgDynamic');
-            if (!heroBgStyle) {
-                heroBgStyle = document.createElement('style');
-                heroBgStyle.id = 'heroBgDynamic';
-                document.head.appendChild(heroBgStyle);
-            }
-            heroBgStyle.textContent = `.hero-main::before { background-image: none !important; animation: none; }`;
+            // Image deleted — collapse to text height
+            heroBgStyle.textContent = `.hero-main::before { background-image: none !important; animation: none !important; } .hero-main.no-hero-bg { height: auto !important; padding: 140px 0 60px !important; overflow: visible !important; }`;
             heroMain.classList.add('no-hero-bg');
+            heroMain.style.height = 'auto';
+            heroMain.style.padding = '140px 0 60px';
+            heroMain.style.overflow = 'visible';
+            // Hide overlay
+            const overlay = heroMain.querySelector('.hero-overlay');
+            if (overlay) overlay.style.display = 'none';
         }
     }
 
