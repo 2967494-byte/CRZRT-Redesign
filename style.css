@@ -496,6 +496,7 @@ ul {
     text-align: center;
     position: relative;
     overflow: hidden;
+    transition: height 0.5s var(--ease-custom), padding 0.5s var(--ease-custom);
 }
 
 .hero-main::before {
@@ -505,6 +506,39 @@ ul {
     background: url('Pic12.png') center/cover no-repeat;
     animation: heroZoom 30s linear infinite alternate;
     z-index: 1;
+}
+
+/* Compact hero when no background image */
+.hero-main.no-hero-bg {
+    height: auto;
+    padding: 120px 0 60px;
+}
+
+.hero-main.no-hero-bg::before {
+    background-image: none !important;
+    animation: none;
+}
+
+.hero-main.no-hero-bg .hero-overlay {
+    display: none;
+}
+
+.hero-main.no-hero-bg .hero-title {
+    color: var(--text-primary);
+    animation: none;
+    opacity: 1;
+}
+
+.hero-main.no-hero-bg .gradient-text {
+    background: linear-gradient(90deg, var(--accent-color), #6ec1ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-main.no-hero-bg .hero-subtitle {
+    animation: none;
+    opacity: 1;
 }
 
 @keyframes heroZoom {
@@ -652,6 +686,29 @@ ul {
     letter-spacing: -0.02em;
     line-height: 1.1;
     max-width: 80%;
+}
+
+.feature-card.no-image {
+    height: auto;
+    min-height: 120px;
+    align-items: flex-start;
+    padding: 30px;
+}
+
+.feature-card.no-image .feature-card-bg,
+.feature-card.no-image::after {
+    display: none;
+}
+
+.feature-card.no-image h3 {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+}
+
+.feature-card.no-image .feature-card-link-arrow {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
 }
 
 .feature-card-link-arrow {
@@ -1266,4 +1323,76 @@ ul {
 
 .courses-sidebar {
     animation: slideInSidebar 0.8s var(--ease-custom) forwards;
+}
+
+/* Cookie Banner */
+.cookie-banner {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    width: calc(100% - 40px);
+    max-width: 600px;
+    background: var(--card-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    z-index: 9999;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    transition: all 0.6s var(--ease-custom);
+    opacity: 0;
+}
+
+.cookie-banner.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.cookie-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+.cookie-text a {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+.btn-cookie-accept {
+    padding: 10px 25px;
+    background: #111;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-cookie-accept:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    filter: brightness(1.1);
+}
+
+@media (max-width: 600px) {
+    .cookie-banner {
+        flex-direction: column;
+        text-align: center;
+        bottom: 20px;
+        padding: 20px;
+    }
+
+    .btn-cookie-accept {
+        width: 100%;
+    }
 }

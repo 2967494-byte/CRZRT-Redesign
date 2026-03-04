@@ -690,9 +690,19 @@
                     <div class="form-group">
                         <label>Загрузите большое фото для фона. Вы сможете обрезать и отмасштабировать его.</label>
 
-                        <div id="croppedResultContainer" style="display: block; margin-bottom: 20px;">
+                        <div id="croppedResultContainer"
+                            style="display: block; margin-bottom: 20px; position: relative;">
                             <img id="croppedResult" src="Pic12.png"
                                 style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <button id="btnDeleteHeroBg" class="btn-delete" onclick="window.clearHeroBgImage()"
+                                style="position: absolute; top: 12px; right: 12px; padding: 8px 16px; display: flex; align-items: center; gap: 6px; border-radius: 10px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                Удалить фото
+                            </button>
                         </div>
 
                         <div class="image-upload-wrapper" id="uploadWrapper">
@@ -1144,6 +1154,20 @@
             document.getElementById('m_hero_title').value = mainPageData.heroTitle || '';
             document.getElementById('m_hero_subtitle').value = mainPageData.heroSubtitle || '';
 
+            // Restore hero bg image preview
+            if (mainPageData.heroBgImage) {
+                if (croppedResult) croppedResult.src = mainPageData.heroBgImage;
+                croppedResultContainer.style.display = 'block';
+                uploadWrapper.style.display = 'block';
+                const delHeroBtn = document.getElementById('btnDeleteHeroBg');
+                if (delHeroBtn) delHeroBtn.style.display = 'flex';
+            } else if (mainPageData.heroBgImage === '') {
+                if (croppedResult) croppedResult.src = '';
+                croppedResultContainer.style.display = 'none';
+                const delHeroBtn = document.getElementById('btnDeleteHeroBg');
+                if (delHeroBtn) delHeroBtn.style.display = 'none';
+            }
+
             // Feature Cards
             const featureContainer = document.getElementById('mainFeatureCardsAdmin');
             featureContainer.innerHTML = '';
@@ -1160,10 +1184,15 @@
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
                             <label>Фото фона</label>
-                            <div style="height: 100px; border: 1px dashed var(--card-border); border-radius: 8px; overflow: hidden; position: relative; cursor: pointer; background: #eee; display: flex; align-items: center; justify-content: center;" onclick="window.activeFeatureCardIndex = ${i}; window.activeAuthorIndex = null; document.getElementById('imageInput').click();">
-                                <img id="m_feat_img_preview_${i}" src="${c.image || ''}" style="width: 100%; height: 100%; object-fit: cover; display: ${c.image ? 'block' : 'none'};">
-                                <span style="font-size: 0.8rem; color: var(--text-secondary); display: ${c.image ? 'none' : 'block'};">Загрузить фото</span>
-                                <input type="hidden" id="m_feat_img_val_${i}" value="${c.image || ''}">
+                            <div style="display: flex; gap: 10px; align-items: flex-start;">
+                                <div style="flex: 1; height: 100px; border: 1px dashed var(--card-border); border-radius: 8px; overflow: hidden; position: relative; cursor: pointer; background: #eee; display: flex; align-items: center; justify-content: center;" onclick="window.activeFeatureCardIndex = ${i}; window.activeAuthorIndex = null; document.getElementById('imageInput').click();">
+                                    <img id="m_feat_img_preview_${i}" src="${c.image || ''}" style="width: 100%; height: 100%; object-fit: cover; display: ${c.image ? 'block' : 'none'};">
+                                    <span style="font-size: 0.8rem; color: var(--text-secondary); display: ${c.image ? 'none' : 'block'};">Загрузить фото</span>
+                                    <input type="hidden" id="m_feat_img_val_${i}" value="${c.image || ''}">
+                                </div>
+                                <button class="btn-delete" style="padding: 10px; height: 100px; display: ${c.image ? 'flex' : 'none'}; align-items: center; justify-content: center;" id="m_feat_img_del_${i}" onclick="window.clearFeatureCardImage(${i})">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1211,6 +1240,30 @@
                 });
             }
         }
+        window.clearFeatureCardImage = function (index) {
+            const preview = document.getElementById(`m_feat_img_preview_${index}`);
+            const valInput = document.getElementById(`m_feat_img_val_${index}`);
+            const delBtn = document.getElementById(`m_feat_img_del_${index}`);
+
+            if (preview) {
+                preview.src = '';
+                preview.style.display = 'none';
+                if (preview.nextElementSibling) preview.nextElementSibling.style.display = 'block'; // Show span
+            }
+            if (valInput) valInput.value = '';
+            if (delBtn) delBtn.style.display = 'none';
+        };
+
+        window.clearHeroBgImage = function () {
+            // Hide the preview container
+            croppedResultContainer.style.display = 'none';
+            // Show empty upload zone
+            uploadWrapper.style.display = 'block';
+            // Clear stored image in memory
+            mainPageData.heroBgImage = '';
+            // If croppedResult exists, clear its src
+            if (croppedResult) croppedResult.src = '';
+        };
 
         function saveMainPageStateToMemory() {
             try {
@@ -1228,6 +1281,11 @@
                         if (l) c.link = l.value;
                         if (img) c.image = img.value;
                     });
+                }
+
+                // Save hero background image
+                if (croppedResult) {
+                    mainPageData.heroBgImage = croppedResult.src || '';
                 }
 
                 if (Array.isArray(mainPageData.orgBlocks)) {
@@ -1696,8 +1754,11 @@
                     if (el) {
                         el.src = resultBase64;
                         el.style.display = 'block';
-                        if (el.previousElementSibling) el.previousElementSibling.style.display = 'none';
+                        if (el.nextElementSibling) el.nextElementSibling.style.display = 'none'; // Hide span
                         document.getElementById(`m_feat_img_val_${idx}`).value = resultBase64;
+                        // Show delete button
+                        const delBtn = document.getElementById(`m_feat_img_del_${idx}`);
+                        if (delBtn) delBtn.style.display = 'flex';
                     }
                     window.activeFeatureCardIndex = undefined;
                 } else if (window.activeAboutImage) {
@@ -1710,12 +1771,19 @@
                     }
                     window.activeAboutImage = false;
                 } else {
-                    if (croppedResult) croppedResult.src = resultBase64;
+                    if (croppedResult) {
+                        croppedResult.src = resultBase64;
+                        mainPageData.heroBgImage = resultBase64;
+                    }
                 }
 
                 document.getElementById('cropperGlobalContainer').style.display = 'none';
                 uploadWrapper.style.display = 'block';
                 croppedResultContainer.style.display = 'block';
+                // Show delete button for hero bg
+                const delHeroBtn = document.getElementById('btnDeleteHeroBg');
+                if (delHeroBtn) delHeroBtn.style.display = 'flex';
+
                 uploadWrapper.querySelector('div').innerText = 'Загрузить другое фото';
 
                 cropper.destroy();

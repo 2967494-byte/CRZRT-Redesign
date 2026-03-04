@@ -161,6 +161,32 @@ document.addEventListener('DOMContentLoaded', () => {
         heroSubtitle.innerText = mainPageData.heroSubtitle;
     }
 
+    // Hero Background Image
+    const heroMain = document.querySelector('.hero-main');
+    if (heroMain) {
+        if (mainPageData.heroBgImage) {
+            // Override the CSS pseudo-element background via a scoped style tag
+            let heroBgStyle = document.getElementById('heroBgDynamic');
+            if (!heroBgStyle) {
+                heroBgStyle = document.createElement('style');
+                heroBgStyle.id = 'heroBgDynamic';
+                document.head.appendChild(heroBgStyle);
+            }
+            heroBgStyle.textContent = `.hero-main::before { background-image: url('${mainPageData.heroBgImage}') !important; }`;
+            heroMain.classList.remove('no-hero-bg');
+        } else if (mainPageData.heroBgImage === '') {
+            // Explicitly cleared — collapse hero to text size
+            let heroBgStyle = document.getElementById('heroBgDynamic');
+            if (!heroBgStyle) {
+                heroBgStyle = document.createElement('style');
+                heroBgStyle.id = 'heroBgDynamic';
+                document.head.appendChild(heroBgStyle);
+            }
+            heroBgStyle.textContent = `.hero-main::before { background-image: none !important; animation: none; }`;
+            heroMain.classList.add('no-hero-bg');
+        }
+    }
+
     // Feature Cards (2x2 Grid)
     if (mainPageData.featureCards) {
         mainPageData.featureCards.forEach((c, i) => {
@@ -170,8 +196,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const bg = card.querySelector('.feature-card-bg');
                 if (title) title.innerText = c.title;
                 if (c.link) card.href = c.link;
-                if (bg && c.image) {
-                    bg.style.backgroundImage = `url(${c.image})`;
+                if (bg) {
+                    if (c.image) {
+                        bg.style.backgroundImage = `url(${c.image})`;
+                        card.classList.remove('no-image');
+                    } else {
+                        bg.style.backgroundImage = '';
+                        card.classList.add('no-image');
+                    }
                 }
             }
         });
@@ -263,4 +295,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listen for header loaded event from header.js
     document.addEventListener('headerLoaded', renderConsultingMegaMenu);
+
+    // Cookie Banner Logic
+    const initCookieBanner = () => {
+        if (localStorage.getItem('crzrt_cookies_accepted')) return;
+
+        const bannerHtml = `
+            <div class="cookie-banner" id="cookieBanner">
+                <div class="cookie-text">
+                    Мы используем файлы cookie для улучшения работы сайта и анализа трафика. 
+                    Продолжая использовать сайт, вы соглашаетесь с нашей <a href="#">Политикой конфиденциальности</a>.
+                </div>
+                <button class="btn-cookie-accept" id="btnAcceptCookies">Принять</button>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', bannerHtml);
+        const banner = document.getElementById('cookieBanner');
+        const btn = document.getElementById('btnAcceptCookies');
+
+        setTimeout(() => {
+            banner.classList.add('show');
+        }, 2000);
+
+        btn.addEventListener('click', () => {
+            localStorage.setItem('crzrt_cookies_accepted', 'true');
+            banner.classList.remove('show');
+            setTimeout(() => {
+                banner.remove();
+            }, 600);
+        });
+    };
+
+    initCookieBanner();
 });
