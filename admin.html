@@ -187,22 +187,23 @@
         }
 
         .btn-save {
-            background: var(--accent-color);
-            color: #fff;
+            background-color: var(--text-primary);
+            color: var(--bg-color);
             border: none;
-            padding: 14px 28px;
-            border-radius: 12px;
+            padding: 10px 24px;
+            border-radius: 24px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1rem;
-            box-shadow: 0 4px 12px rgba(41, 151, 255, 0.3);
+            transition: opacity var(--transition-fast), transform var(--transition-fast);
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-save:hover {
-            background: #1a7cdc;
+            opacity: 0.9;
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(41, 151, 255, 0.4);
         }
 
         .image-upload-wrapper {
@@ -249,39 +250,43 @@
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
+            background-color: transparent;
             color: var(--text-primary);
-            border: 1px solid var(--card-border);
-            padding: 12px 20px;
-            border-radius: 12px;
+            border: 1px solid var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 24px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 500;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         [data-theme="light"] .btn-secondary {
-            background: #fff;
-            border: 1px solid #ccc;
+            border: 1px solid var(--text-primary);
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--text-secondary);
+            background-color: var(--text-primary);
+            color: var(--bg-color);
         }
 
         [data-theme="light"] .btn-secondary:hover {
-            background: #f0f0f0;
+            background-color: var(--text-primary);
+            color: var(--bg-color);
         }
 
         .btn-primary-action {
-            background: #34c759;
-            color: #fff;
-            border: none;
+            background-color: var(--text-primary);
+            color: var(--bg-color);
+            border: 1px solid var(--text-primary);
         }
 
         .btn-primary-action:hover {
-            background: #2ebd4f;
-            border-color: transparent;
+            opacity: 0.9;
+            background-color: var(--text-primary);
         }
 
         .permission-denied {
@@ -448,18 +453,58 @@
         }
 
         .btn-delete {
-            background: rgba(255, 77, 77, 0.1);
+            background-color: transparent;
             color: #ff4d4d;
-            border: 1px solid rgba(255, 77, 77, 0.2);
-            padding: 8px 12px;
-            border-radius: 8px;
+            border: 1px solid #ff4d4d;
+            padding: 6px 14px;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
 
         .btn-delete:hover {
-            background: #ff4d4d;
+            background-color: #ff4d4d;
             color: #fff;
+        }
+
+        /* Checkbox Styles */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent-color);
+        }
+
+        .permissions-grid {
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        [data-theme="light"] .permissions-grid {
+            background: rgba(0, 0, 0, 0.02);
         }
     </style>
 </head>
@@ -625,24 +670,55 @@
                 </div>
             </div>
 
-            <div id="usersBlock" class="admin-block" data-required-role="editor_other">
+            <div id="usersBlock" class="admin-block" data-required-role="users">
                 <div class="admin-card">
                     <div class="card-header">Добавить пользователя</div>
-                    <div class="form-group">
-                        <label>E-mail</label>
-                        <input type="email" id="newUserId" class="form-control" placeholder="user@crzrt.ru">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Имя</label>
+                            <input type="text" id="newUserName" class="form-control" placeholder="Иван Иванов">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" id="newUserId" class="form-control" placeholder="user@crzrt.ru">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Пароль</label>
                         <input type="password" id="newUserPass" class="form-control" placeholder="********">
                     </div>
                     <div class="form-group">
-                        <label>Роль</label>
-                        <select id="newUserRole" class="form-control" style="appearance: auto;">
-                            <option value="superuser">Суперпользователь</option>
-                            <option value="editor_main">Редактор (Главная стр.)</option>
-                            <option value="editor_other">Редактор (Пользователи)</option>
-                        </select>
+                        <label>Права доступа</label>
+                        <div class="permissions-grid">
+                            <div class="checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="permSuperuser" value="superuser">
+                                    <span style="font-weight: 600; color: var(--accent-color);">Полный доступ (Системный
+                                        администратор)</span>
+                                </label>
+                            </div>
+                            <div id="regularPermissions"
+                                style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--card-border);">
+                                <div class="checkbox-group">
+                                    <label>
+                                        <input type="checkbox" class="perm-checkbox" value="main-page">
+                                        Редактирование главной страницы
+                                    </label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <label>
+                                        <input type="checkbox" class="perm-checkbox" value="users">
+                                        Управление пользователями
+                                    </label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <label>
+                                        <input type="checkbox" class="perm-checkbox" value="settings" disabled>
+                                        <span style="opacity: 0.5;">Настройки сайта (в разработке)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <button class="btn-save" id="btnAddUser">Добавить пользователя</button>
                 </div>
@@ -652,8 +728,9 @@
                     <table class="users-table">
                         <thead>
                             <tr>
+                                <th>Имя</th>
                                 <th>E-mail</th>
-                                <th>Роль</th>
+                                <th>Роль / Права</th>
                                 <th>Действия</th>
                             </tr>
                         </thead>
@@ -731,9 +808,9 @@
 
         // User & Role Management Logic
         const defaultUsers = {
-            'admin@crzrt.ru': { password: 'admin', role: 'superuser' },
-            'main@crzrt.ru': { password: 'password', role: 'editor_main' },
-            'users@crzrt.ru': { password: 'password', role: 'editor_other' }
+            'admin@crzrt.ru': { password: 'admin', name: 'Администратор', permissions: ['superuser'] },
+            'main@crzrt.ru': { password: 'password', name: 'Редактор Сайта', permissions: ['main-page'] },
+            'users@crzrt.ru': { password: 'password', name: 'Менеджер Кадров', permissions: ['users'] }
         };
 
         let usersDb = JSON.parse(localStorage.getItem('crzrt_users')) || defaultUsers;
@@ -742,7 +819,7 @@
         const blocks = document.querySelectorAll('.admin-block');
         const permissionDenied = document.getElementById('permissionDenied');
         const navItems = document.querySelectorAll('.nav-item');
-        let currentRole = null;
+        let currentPermissions = [];
         let currentUserEmail = null;
         let currentTarget = 'main-page';
 
@@ -757,18 +834,28 @@
         function checkAuth() {
             const session = sessionStorage.getItem('crzrt_admin_session');
             if (session) {
-                const parts = session.split(':');
-                currentUserEmail = parts[0];
-                currentRole = parts[1];
-                authModal.style.display = 'none';
+                currentUserEmail = session;
+                const user = usersDb[currentUserEmail];
 
-                const roleNames = {
-                    'superuser': 'Суперпользователь',
-                    'editor_main': 'Редактор (Главная стр.)',
-                    'editor_other': 'Редактор (Пользователи)'
-                };
-                currentUserRoleInfo.innerHTML = `<div>${currentUserEmail}</div><div style="font-size:0.8rem; font-weight:normal; opacity:0.8;">${roleNames[currentRole] || currentRole}</div>`;
-                updateAccess();
+                if (user) {
+                    currentPermissions = user.permissions || [];
+                    authModal.style.display = 'none';
+
+                    let roleDisplay = "Пользователь";
+                    if (currentPermissions.includes('superuser')) {
+                        roleDisplay = "Суперпользователь";
+                    } else if (currentPermissions.length > 0) {
+                        roleDisplay = "Редактор (Частичный доступ)";
+                    }
+
+                    currentUserRoleInfo.innerHTML = `<div>${user.name} (${currentUserEmail})</div><div style="font-size:0.8rem; font-weight:normal; opacity:0.8; margin-top:2px;">${roleDisplay}</div>`;
+                    updateAccess();
+                } else {
+                    // Invalid session
+                    sessionStorage.removeItem('crzrt_admin_session');
+                    authModal.style.display = 'flex';
+                    authModal.style.opacity = '1';
+                }
             } else {
                 authModal.style.display = 'flex';
                 authModal.style.opacity = '1';
@@ -784,7 +871,7 @@
 
             if (usersDb[email] && usersDb[email].password === password) {
                 authError.style.display = 'none';
-                sessionStorage.setItem('crzrt_admin_session', email + ':' + usersDb[email].role);
+                sessionStorage.setItem('crzrt_admin_session', email);
                 checkAuth();
             } else {
                 authError.style.display = 'block';
@@ -794,15 +881,17 @@
         btnLogout.addEventListener('click', () => {
             sessionStorage.removeItem('crzrt_admin_session');
             currentUserEmail = null;
-            currentRole = null;
+            currentPermissions = [];
             authEmail.value = '';
             authPassword.value = '';
             checkAuth();
         });
 
         function updateAccess() {
-            if (!currentRole) return;
+            if (currentPermissions.length === 0 && currentUserEmail === null) return;
             let hasAccess = false;
+
+            const isSuperuser = currentPermissions.includes('superuser');
 
             blocks.forEach(block => {
                 const blockTargetMap = {
@@ -812,8 +901,9 @@
                 };
 
                 if (block.id === blockTargetMap[currentTarget]) {
-                    const requiredRole = block.getAttribute('data-required-role');
-                    if (currentRole === 'superuser' || currentRole === requiredRole) {
+                    const requiredTarget = block.getAttribute('data-required-role') || currentTarget;
+
+                    if (isSuperuser || currentPermissions.includes(requiredTarget)) {
                         block.classList.add('active');
                         hasAccess = true;
                     } else {
@@ -847,31 +937,57 @@
 
         // Users Management
         const newUserId = document.getElementById('newUserId');
+        const newUserName = document.getElementById('newUserName');
         const newUserPass = document.getElementById('newUserPass');
-        const newUserRole = document.getElementById('newUserRole');
         const btnAddUser = document.getElementById('btnAddUser');
         const usersListContent = document.getElementById('usersListContent');
+        const permSuperuser = document.getElementById('permSuperuser');
+        const regularPermissions = document.getElementById('regularPermissions');
+        const permCheckboxes = document.querySelectorAll('.perm-checkbox');
+
+        // Logic to disable other checkboxes if superuser is checked
+        permSuperuser.addEventListener('change', () => {
+            if (permSuperuser.checked) {
+                regularPermissions.style.opacity = '0.5';
+                permCheckboxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
+            } else {
+                regularPermissions.style.opacity = '1';
+                permCheckboxes.forEach(cb => cb.disabled = false);
+            }
+        });
 
         function renderUsers() {
             usersListContent.innerHTML = '';
             usersDb = JSON.parse(localStorage.getItem('crzrt_users')) || defaultUsers;
 
-            const roleNames = {
-                'superuser': 'Суперпользователь',
-                'editor_main': 'Редактор (Главная)',
-                'editor_other': 'Редактор (Пользователи)'
+            const permNames = {
+                'superuser': '<span style="color:var(--accent-color);font-weight:bold;">Полный доступ</span>',
+                'main-page': 'Ред. главной',
+                'users': 'Упр. пользователями',
+                'settings': 'Настройки'
             };
 
             for (const email in usersDb) {
+                const user = usersDb[email];
                 const tr = document.createElement('tr');
+
+                const tdName = document.createElement('td');
+                tdName.innerText = user.name || '-';
+
                 const tdEmail = document.createElement('td');
                 tdEmail.innerText = email;
 
                 const tdRole = document.createElement('td');
-                tdRole.innerText = roleNames[usersDb[email].role] || usersDb[email].role;
+                if (user.permissions && user.permissions.includes('superuser')) {
+                    tdRole.innerHTML = permNames['superuser'];
+                } else if (user.permissions && user.permissions.length > 0) {
+                    tdRole.innerHTML = user.permissions.map(p => permNames[p]).filter(Boolean).join(', ');
+                } else {
+                    tdRole.innerText = 'Нет прав';
+                }
 
                 const tdActions = document.createElement('td');
-                if (email !== currentUserEmail && currentRole === 'superuser') { // only superuser can delete, and not themselves
+                if (email !== currentUserEmail && currentPermissions.includes('superuser')) {
                     const btnDel = document.createElement('button');
                     btnDel.className = 'btn-delete';
                     btnDel.innerText = 'Удалить';
@@ -883,6 +999,7 @@
                     tdActions.appendChild(btnDel);
                 }
 
+                tr.appendChild(tdName);
                 tr.appendChild(tdEmail);
                 tr.appendChild(tdRole);
                 tr.appendChild(tdActions);
@@ -892,22 +1009,38 @@
 
         btnAddUser.addEventListener('click', () => {
             const email = newUserId.value.trim();
+            const name = newUserName.value.trim() || 'Без имени';
             const pass = newUserPass.value.trim();
-            const role = newUserRole.value;
+
+            let permissions = [];
+            if (permSuperuser.checked) {
+                permissions.push('superuser');
+            } else {
+                permCheckboxes.forEach(cb => {
+                    if (cb.checked) permissions.push(cb.value);
+                });
+            }
 
             if (email && pass) {
-                usersDb[email] = { password: pass, role: role };
+                usersDb[email] = { password: pass, name: name, permissions: permissions };
                 localStorage.setItem('crzrt_users', JSON.stringify(usersDb));
+
                 newUserId.value = '';
+                newUserName.value = '';
                 newUserPass.value = '';
+                permSuperuser.checked = false;
+                regularPermissions.style.opacity = '1';
+                permCheckboxes.forEach(cb => { cb.checked = false; cb.disabled = false; });
 
                 const btn = document.getElementById('btnAddUser');
                 const orig = btn.innerText;
                 btn.innerText = 'Успешно!';
-                btn.style.background = '#34c759';
+                btn.style.backgroundColor = '#34c759';
+                btn.style.color = '#fff';
                 setTimeout(() => {
                     btn.innerText = orig;
-                    btn.style.background = '';
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
                 }, 1500);
 
                 renderUsers();
@@ -1031,12 +1164,14 @@
 
             setTimeout(() => {
                 btn.innerText = 'Сохранено!';
-                btn.style.background = '#34c759';
+                btn.style.backgroundColor = '#34c759';
+                btn.style.color = '#fff';
                 btn.style.opacity = '1';
 
                 setTimeout(() => {
                     btn.innerText = originalText;
-                    btn.style.background = '';
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
                 }, 2000);
             }, 800);
         });
