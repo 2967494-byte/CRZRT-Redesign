@@ -641,41 +641,8 @@
                             <div style="font-size: 1.1rem; font-weight: 500;">Нажмите, чтобы выбрать новое фото</div>
                             <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px;">или
                                 перетащите файл сюда</div>
-                            <input type="file" id="imageInput" accept="image/*" style="display: none;">
                         </div>
 
-                        <div class="cropper-container-wrapper" id="cropperWrapper">
-                            <img id="imageToCrop" src="">
-                        </div>
-                        <div class="cropper-actions" id="cropperActions">
-                            <button class="btn-secondary" id="btnZoomIn">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" style="vertical-align: middle; margin-right: 5px;">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                    <line x1="11" y1="8" x2="11" y2="14"></line>
-                                    <line x1="8" y1="11" x2="14" y2="11"></line>
-                                </svg>
-                                Увеличить
-                            </button>
-                            <button class="btn-secondary" id="btnZoomOut">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" style="vertical-align: middle; margin-right: 5px;">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                    <line x1="8" y1="11" x2="14" y2="11"></line>
-                                </svg>
-                                Уменьшить
-                            </button>
-                            <button class="btn-secondary btn-primary-action" id="btnCrop">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" style="vertical-align: middle; margin-right: 5px;">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Применить обрезку
-                            </button>
-                            <button class="btn-secondary" id="btnCancelCrop">Отмена</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -804,6 +771,37 @@
                 </div>
             </div>
 
+            <!-- Global Image Cropper (Outside tab blocks) -->
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <div id="cropperGlobalContainer"
+                style="display: none; margin-top: 20px; border-top: 2px solid var(--accent-color); padding-top: 20px;">
+                <div class="cropper-container-wrapper" id="cropperWrapper" style="display: block;">
+                    <img id="imageToCrop" src="">
+                </div>
+                <div class="cropper-actions" id="cropperActions" style="display: flex; margin-top: 15px;">
+                    <button class="btn-secondary" id="btnZoomIn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="11" y1="8" x2="11" y2="14"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                        Увеличить
+                    </button>
+                    <button class="btn-secondary" id="btnZoomOut">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                        Уменьшить
+                    </button>
+                    <button class="btn-secondary btn-primary-action" id="btnCrop">Применить</button>
+                    <button class="btn-secondary" id="btnCancelCrop">Отмена</button>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -833,6 +831,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
+        // Global Variables for Admin Panel
+        let cropper;
+        let imageInput, uploadWrapper, imageToCrop, cropperWrapper, cropperActions;
+        let btnZoomIn, btnZoomOut, btnCrop, btnCancelCrop, croppedResultContainer, croppedResult;
+
         // Theme Toggle for Admin
         const themeBtn = document.getElementById('theme-toggle-admin');
         const root = document.documentElement;
@@ -1132,19 +1135,18 @@
             }
         });
 
-        // Cropper Logic
-        const imageInput = document.getElementById('imageInput');
-        const uploadWrapper = document.getElementById('uploadWrapper');
-        const imageToCrop = document.getElementById('imageToCrop');
-        const cropperWrapper = document.getElementById('cropperWrapper');
-        const cropperActions = document.getElementById('cropperActions');
-        const btnZoomIn = document.getElementById('btnZoomIn');
-        const btnZoomOut = document.getElementById('btnZoomOut');
-        const btnCrop = document.getElementById('btnCrop');
-        const btnCancelCrop = document.getElementById('btnCancelCrop');
-        const croppedResultContainer = document.getElementById('croppedResultContainer');
-        const croppedResult = document.getElementById('croppedResult');
-        let cropper;
+        // Initialize Cropper DOM elements
+        imageInput = document.getElementById('imageInput');
+        uploadWrapper = document.getElementById('uploadWrapper');
+        imageToCrop = document.getElementById('imageToCrop');
+        cropperWrapper = document.getElementById('cropperWrapper');
+        cropperActions = document.getElementById('cropperActions');
+        btnZoomIn = document.getElementById('btnZoomIn');
+        btnZoomOut = document.getElementById('btnZoomOut');
+        btnCrop = document.getElementById('btnCrop');
+        btnCancelCrop = document.getElementById('btnCancelCrop');
+        croppedResultContainer = document.getElementById('croppedResultContainer');
+        croppedResult = document.getElementById('croppedResult');
 
         uploadWrapper.addEventListener('click', () => imageInput.click());
 
@@ -1186,18 +1188,28 @@
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     imageToCrop.src = e.target.result;
-                    uploadWrapper.style.display = 'none';
-                    cropperWrapper.style.display = 'block';
-                    cropperActions.style.display = 'flex';
-                    croppedResultContainer.style.display = 'none';
+
+                    // Show global cropper container
+                    document.getElementById('cropperGlobalContainer').style.display = 'block';
+
+                    if (window.activeAuthorIndex === null) {
+                        // If hero, hide hero results
+                        uploadWrapper.style.display = 'none';
+                        croppedResultContainer.style.display = 'none';
+                    }
 
                     if (cropper) {
                         cropper.destroy();
                     }
 
+                    // Aspect ratio logic: 1:1 for authors, 16:9 for hero
+                    const currentAspect = window.activeAuthorIndex !== null ? 1 : 16 / 9;
+
                     cropper = new Cropper(imageToCrop, {
-                        aspectRatio: 16 / 9, // Example format for hero section
-                        viewMode: 1,
+                        aspectRatio: currentAspect,
+                        viewMode: 2,
+                        dragMode: 'move',
+                        autoCropArea: 1,
                         background: false,
                         zoomable: true
                     });
@@ -1211,15 +1223,28 @@
 
         btnCrop.addEventListener('click', () => {
             if (cropper) {
+                // Resolution logic: 400x400 for avatars, higher for hero
+                const res = window.activeAuthorIndex !== null ? 400 : 1920;
                 const canvas = cropper.getCroppedCanvas({
-                    width: 1920,
-                    height: 1080
+                    width: res,
+                    height: window.activeAuthorIndex !== null ? res : 1080
                 });
-                croppedResult.src = canvas.toDataURL('image/jpeg');
-                croppedResultContainer.style.display = 'block';
-                cropperWrapper.style.display = 'none';
-                cropperActions.style.display = 'none';
+                const resultBase64 = canvas.toDataURL('image/png');
+
+                if (window.activeAuthorIndex !== null) {
+                    const idx = window.activeAuthorIndex;
+                    document.getElementById(`c_author_photo_preview_${idx}`).src = resultBase64;
+                    document.getElementById(`c_author_photo_preview_${idx}`).style.display = 'block';
+                    document.getElementById(`c_author_photo_text_${idx}`).style.display = 'none';
+                    document.getElementById(`c_author_avatarUrl_${idx}`).value = resultBase64;
+                    window.activeAuthorIndex = null;
+                } else {
+                    croppedResult.src = resultBase64;
+                }
+
+                document.getElementById('cropperGlobalContainer').style.display = 'none';
                 uploadWrapper.style.display = 'block';
+                croppedResultContainer.style.display = 'block';
                 uploadWrapper.querySelector('div').innerText = 'Загрузить другое фото';
 
                 cropper.destroy();
@@ -1232,10 +1257,10 @@
                 cropper.destroy();
                 cropper = null;
             }
-            cropperWrapper.style.display = 'none';
-            cropperActions.style.display = 'none';
+            document.getElementById('cropperGlobalContainer').style.display = 'none';
             uploadWrapper.style.display = 'block';
-            croppedResultContainer.style.display = 'block'; // Show previous result
+            croppedResultContainer.style.display = 'block';
+            window.activeAuthorIndex = null;
         });
 
         // =======================
@@ -1289,32 +1314,38 @@
             consultingAuthorsAdmin.innerHTML = '';
             consultingData.authors.forEach((author, index) => {
                 const authorHTML = `
-                    <div style="border-left: 3px solid var(--accent-color); padding-left: 15px; margin-bottom: 20px;">
-                        <h4 style="margin-bottom: 15px; font-weight: 600;">Автор ${index + 1}</h4>
-                        <div style="display: grid; grid-template-columns: 80px 1fr 1fr 1fr; gap: 15px; align-items: start;">
-                            <div class="form-group">
+                    <div style="border-left: 3px solid var(--accent-color); padding-left: 20px; margin-bottom: 30px; background: rgba(0,0,0,0.02); padding: 25px; border-radius: 0 16px 16px 0;">
+                        <h4 style="margin-bottom: 20px; font-weight: 600; font-size: 1.1rem; color: var(--accent-color);">Автор ${index + 1}</h4>
+                        
+                        <!-- Row 1: Photo & Avatar Text -->
+                        <div style="display: flex; gap: 30px; align-items: flex-end; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--card-border);">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label>Фото (Аватар)</label>
-                                <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--card-border); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;" onclick="document.getElementById('c_author_photo_input_${index}').click()">
+                                <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--card-border); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; border: 2px solid var(--accent-color);" onclick="window.activeAuthorIndex = ${index}; document.getElementById('imageInput').click()">
                                     <img id="c_author_photo_preview_${index}" src="${author.avatarUrl || ''}" style="width: 100%; height: 100%; object-fit: cover; display: ${author.avatarUrl ? 'block' : 'none'};">
-                                    <span id="c_author_photo_text_${index}" style="font-size: 1.5rem; font-weight: 700; color: var(--text-secondary); display: ${author.avatarUrl ? 'none' : 'block'};">${author.avatarText || 'ИИ'}</span>
-                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); font-size: 0.6rem; text-align: center; color: white; padding: 2px 0;">Изм.</div>
+                                    <span id="c_author_photo_text_${index}" style="font-size: 2.5rem; font-weight: 700; color: var(--text-secondary); display: ${author.avatarUrl ? 'none' : 'block'};">${author.avatarText || 'ИИ'}</span>
+                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); font-size: 0.7rem; text-align: center; color: white; padding: 4px 0;">ИЗМЕНИТЬ</div>
                                 </div>
-                                <input type="file" id="c_author_photo_input_${index}" accept="image/*" style="display: none;" onchange="handleAuthorPhoto(this, ${index})">
                                 <input type="hidden" id="c_author_avatarUrl_${index}" value="${author.avatarUrl || ''}">
-                                <div style="margin-top: 5px;">
-                                    <label style="font-size:0.75rem;">Инициалы (если нет фото):</label>
-                                    <input type="text" class="form-control" style="padding: 8px;" id="c_author_avatar_${index}" value="${author.avatarText || ''}" placeholder="ИИ" maxlength="4">
-                                </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0; flex: 1; max-width: 200px;">
+                                <label>Инициалы (текстом)</label>
+                                <input type="text" class="form-control" id="c_author_avatar_${index}" value="${author.avatarText || ''}" placeholder="ИИ" maxlength="4">
+                                <small style="display:block; margin-top:5px; font-size:0.7rem;">Если не загружено фото</small>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Basic Info -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label>ФИО</label>
                                 <input type="text" class="form-control" id="c_author_name_${index}" value="${author.name || ''}" placeholder="Иванов И.И.">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label>Телефон</label>
                                 <input type="text" class="form-control" id="c_author_phone_${index}" value="${author.phone || ''}" placeholder="+7 ...">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0;">
                                 <label>E-mail</label>
                                 <input type="email" class="form-control" id="c_author_email_${index}" value="${author.email || ''}" placeholder="mail@domain.ru">
                             </div>
@@ -1405,6 +1436,83 @@
                 }, 100);
             });
         }
+
+        // Unified access to Cropper elements (already handled globally)
+        window.activeAuthorIndex = null; // null if hero, index if author
+
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    imageToCrop.src = event.target.result;
+                    uploadWrapper.style.display = 'none';
+                    document.getElementById('croppedResultContainer').style.display = 'none';
+                    cropperWrapper.style.display = 'block';
+                    cropperActions.style.display = 'flex';
+
+                    if (cropper) cropper.destroy();
+
+                    // Fixed 1:1 aspect ratio for avatars if activeAuthorIndex is set
+                    const aspectRatio = window.activeAuthorIndex !== null ? 1 : 16 / 9;
+
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: aspectRatio,
+                        viewMode: 2,
+                        dragMode: 'move',
+                        autoCropArea: 1,
+                        background: false
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('btnCrop').addEventListener('click', () => {
+            const canvas = cropper.getCroppedCanvas({
+                width: window.activeAuthorIndex !== null ? 400 : 1920,
+                height: window.activeAuthorIndex !== null ? 400 : 1080
+            });
+            const resultBase64 = canvas.toDataURL('image/png');
+
+            if (window.activeAuthorIndex !== null) {
+                // Apply to consulting author
+                const idx = window.activeAuthorIndex;
+                document.getElementById(`c_author_photo_preview_${idx}`).src = resultBase64;
+                document.getElementById(`c_author_photo_preview_${idx}`).style.display = 'block';
+                document.getElementById(`c_author_photo_text_${idx}`).style.display = 'none';
+                document.getElementById(`c_author_avatarUrl_${idx}`).value = resultBase64;
+
+                // Success animation
+                const previewImg = document.getElementById(`c_author_photo_preview_${idx}`);
+                previewImg.style.transform = 'scale(1.2)';
+                setTimeout(() => previewImg.style.transform = '', 300);
+            } else {
+                // Apply to hero
+                document.getElementById('croppedResult').src = resultBase64;
+            }
+
+            // Cleanup
+            cropper.destroy();
+            cropper = null;
+            cropperWrapper.style.display = 'none';
+            cropperActions.style.display = 'none';
+            uploadWrapper.style.display = 'block';
+            document.getElementById('croppedResultContainer').style.display = 'block';
+            window.activeAuthorIndex = null;
+        });
+
+        document.getElementById('btnZoomIn').addEventListener('click', () => cropper.zoom(0.1));
+        document.getElementById('btnZoomOut').addEventListener('click', () => cropper.zoom(-0.1));
+        document.getElementById('btnCancelCrop').addEventListener('click', () => {
+            if (cropper) cropper.destroy();
+            cropper = null;
+            cropperWrapper.style.display = 'none';
+            cropperActions.style.display = 'none';
+            uploadWrapper.style.display = 'block';
+            document.getElementById('croppedResultContainer').style.display = 'block';
+            window.activeAuthorIndex = null;
+        });
 
         document.getElementById('globalSaveBtn').addEventListener('click', () => {
             if (currentTarget === 'consulting') {

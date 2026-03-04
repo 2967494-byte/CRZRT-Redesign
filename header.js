@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </nav>
             <div class="header-actions">
                 <button id="theme-toggle" class="btn-icon" aria-label="Toggle Theme">
-                    <span class="icon-sun">
+                    <span class="icon-sun" style="display: flex;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="5"></circle>
                             <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -174,11 +174,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const updateThemeIcon = (theme) => {
             if (sun && moon) {
                 if (theme === 'dark') {
-                    sun.style.display = 'none';
-                    moon.style.display = 'inline-block';
-                } else {
-                    sun.style.display = 'inline-block';
+                    sun.style.display = 'inline-flex';
                     moon.style.display = 'none';
+                } else {
+                    sun.style.display = 'none';
+                    moon.style.display = 'inline-flex';
                 }
             }
         };
@@ -209,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             styleEl.innerHTML = `
                 .nav-legal:hover .nav-item-link {
-                    background: ${categoryColor} !important;
-                    color: #fff !important;
+                    background: transparent !important;
+                    color: ${categoryColor} !important;
                     border-color: ${categoryColor} !important;
                 }
                 .nav-legal:hover .mega-menu {

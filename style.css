@@ -94,7 +94,7 @@ ul {
     gap: 15px;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 10px 20px;
+    padding: 0 20px;
     position: relative;
     z-index: 10;
 }
@@ -115,7 +115,7 @@ ul {
     color: var(--text-primary);
     text-decoration: none;
     letter-spacing: 0.8px;
-    padding: 12px 15px;
+    padding: 15px 15px;
     border-radius: 12px;
     background: var(--card-bg);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -134,34 +134,35 @@ ul {
 
 /* Specific Solid Accent Colors for the Links */
 .nav-edu:hover .nav-item-link {
-    background: #2997ff;
-    color: #fff;
+    background: transparent;
+    color: #2997ff;
     border-color: #2997ff;
 }
 
 .nav-support:hover .nav-item-link {
-    background: #ac44ff;
-    color: #fff;
+    background: transparent;
+    color: #ac44ff;
     border-color: #ac44ff;
 }
 
 .nav-etp:hover .nav-item-link {
-    background: #0088ff;
+    background: transparent;
+    color: #0088ff;
     /* Solid deep blue */
-    color: #fff;
     border-color: #0088ff;
 }
 
 .nav-legal:hover .nav-item-link {
-    background: #ff3b3b;
-    color: #fff;
+    background: transparent;
+    color: #ff3b3b;
     border-color: #ff3b3b;
 }
 
 /* Solid Mega Menu */
 .mega-menu {
     position: absolute;
-    top: calc(100% + 5px);
+    top: 100%;
+    /* Eliminated gap to fix closing bug */
     width: max-content;
     max-width: 95vw;
     /* Safe boundary */
@@ -395,6 +396,32 @@ ul {
 
 .btn-primary:hover {
     opacity: 0.9;
+}
+
+.btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 50%;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.btn-icon:hover {
+    background: var(--card-border);
+    transform: scale(1.05);
+}
+
+.btn-icon svg {
+    display: block;
+    width: 20px;
+    height: 20px;
 }
 
 /* Common Typography & Components */

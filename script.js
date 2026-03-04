@@ -90,8 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // Theme Toggle Logic
-    const themeToggle = document.getElementById('theme-toggle');
+    // Theme Toggle Logic is handled in header.js
 
     // Check for saved theme
     const savedTheme = localStorage.getItem('theme');
@@ -124,13 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    themeToggle.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-    });
 
     // === DYNAMIC MEGA MENU FOR CONSULTING ===
     const consultingMegaGrid = document.querySelector('.nav-legal .mega-grid');
