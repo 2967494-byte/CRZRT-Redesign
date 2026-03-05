@@ -632,6 +632,11 @@ ul {
     grid-template-columns: 320px 1fr;
     gap: 40px;
     align-items: start;
+    min-width: 0;
+}
+
+.main-layout-grid>* {
+    min-width: 0;
 }
 
 @media (max-width: 900px) {
@@ -742,7 +747,43 @@ ul {
     overflow: hidden;
 }
 
-/* Feature Grid Styling Adjustment */
+/* Testimonials Sidebar List */
+.testimonials-sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-testimonial-card {
+    background: var(--bg-color);
+    border: 1px solid var(--card-border);
+    padding: 16px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.sidebar-testimonial-card:hover {
+    border-color: var(--accent-color);
+    background: var(--card-bg);
+}
+
+.sidebar-testimonial-card .client-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.sidebar-testimonial-card p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    font-style: italic;
+    margin: 0;
+}
+
 .main-content-right .feature-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 20px;
@@ -820,9 +861,6 @@ ul {
 .feature-card-content {
     position: relative;
     z-index: 2;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     width: 100%;
 }
 
@@ -833,7 +871,6 @@ ul {
     margin: 0;
     letter-spacing: -0.02em;
     line-height: 1.1;
-    max-width: 80%;
 }
 
 .feature-card.no-image {
@@ -860,8 +897,11 @@ ul {
 }
 
 .feature-card-link-arrow {
-    width: 56px;
-    height: 56px;
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: 0;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(12px);
@@ -872,6 +912,7 @@ ul {
     color: #fff;
     transition: all 0.4s var(--ease-custom);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 5;
 }
 
 .feature-card:hover .feature-card-link-arrow {
@@ -908,25 +949,44 @@ ul {
     margin: 0 auto;
 }
 
+/* Advantages Raised Block */
+.advantages-raised-block {
+    margin-top: 40px;
+}
+
 .why-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    margin-top: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
 }
 
 .why-card {
-    padding: 40px;
+    padding: 24px;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 0;
     transition: all 0.4s var(--ease-custom);
+    text-align: center;
+}
+
+.why-card h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+}
+
+.why-card p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    margin: 0;
 }
 
 .why-card:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
     border-color: var(--accent-color);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 /* Removed directions-section styles */
@@ -967,27 +1027,17 @@ ul {
     animation-play-state: paused;
 }
 
+/* Base Testimonial card (used for JS selection) */
 .testimonial-card {
-    width: 400px;
-    padding: 40px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 0;
-    transition: all 0.4s var(--ease-custom);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-}
-
-.testimonial-card:hover {
-    border-color: var(--accent-color);
-    transform: translateY(-15px) scale(1.05) !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    /* Styles handled by specific implementations (like .sidebar-testimonial-card) */
+    display: block;
 }
 
 .client-name {
     font-weight: 700;
     font-size: 1.1rem;
     margin-bottom: 15px;
-    color: var(--accent-color);
+    color: var(--text-primary);
 }
 
 .testimonial-card p {
@@ -998,15 +1048,6 @@ ul {
     opacity: 0.9;
 }
 
-@keyframes marquee {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(calc(-50% - 15px));
-    }
-}
 
 /* Removed tile gradients and hover effects */
 

@@ -238,14 +238,14 @@ document.addEventListener('DOMContentLoaded', () => {
         featureGrid.innerHTML = mainPageData.featureCards.map((c, i) => `
             <a href="${c.link || '#'}" class="feature-card ${c.image ? '' : 'no-image'}" id="feature-card-${i + 1}">
                 <div class="feature-card-bg" style="${c.image ? `background-image: url(${c.image})` : ''}"></div>
+                <div class="feature-card-link-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="7" y1="17" x2="17" y2="7"></line>
+                        <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                </div>
                 <div class="feature-card-content">
                     <h3>${c.title}</h3>
-                    <div class="feature-card-link-arrow">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="7" y1="17" x2="17" y2="7"></line>
-                            <polyline points="7 7 17 7 17 17"></polyline>
-                        </svg>
-                    </div>
                 </div>
             </a>
         `).join('');
@@ -262,18 +262,15 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    // Testimonials Marquee
-    const marquee = document.getElementById('mainTestimonialsMarquee');
-    if (marquee && mainPageData.testimonials) {
-        const renderCard = (t) => `
-                <div class="testimonial-card">
-                    <div class="client-name">${t.client}</div>
-                    <p>${t.text}</p>
-                </div>
-            `;
-        const content = mainPageData.testimonials.map(renderCard).join('');
-        // Double the content for seamless loop
-        marquee.innerHTML = content + content;
+    // Testimonials Sidebar
+    const testimonialsList = document.getElementById('sidebarTestimonialsList');
+    if (testimonialsList && mainPageData.testimonials) {
+        testimonialsList.innerHTML = mainPageData.testimonials.slice(0, 3).map(t => `
+            <div class="sidebar-testimonial-card testimonial-card">
+                <div class="client-name">${t.client}</div>
+                <p>${t.text}</p>
+            </div>
+        `).join('');
     }
 
     // Re-catch newly added cards for tilt and reveal effects
