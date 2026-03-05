@@ -33,63 +33,38 @@
             </div>
         </section>
 
-        <!-- NEW: FEATURE CATEGORY CARDS (2x2 Grid) -->
-        <section class="feature-cards-section">
-            <div class="container">
-                <div class="feature-grid" id="mainFeatureGrid">
-                    <!-- Cards will be populated dynamically -->
-                    <a href="courses.html" class="feature-card" id="feature-card-1">
-                        <div class="feature-card-bg"></div>
-                        <div class="feature-card-content">
-                            <h3>Образовательный центр</h3>
-                            <div class="feature-card-link-arrow">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <line x1="7" y1="17" x2="17" y2="7"></line>
-                                    <polyline points="7 7 17 7 17 17"></polyline>
-                                </svg>
-                            </div>
+        <!-- Main Content Layout (Sidebar + Grid) -->
+        <section class="main-layout-section">
+            <div class="container main-layout-grid">
+                <!-- Sidebar (Left) -->
+                <aside class="sidebar-left">
+                    <!-- Events Block -->
+                    <div class="sidebar-block events-block">
+                        <div class="sidebar-title">
+                            <h3>Предстоящие события</h3>
+                            <a href="seminars.html" class="all-link">Все</a>
                         </div>
-                    </a>
-                    <a href="consulting.html" class="feature-card" id="feature-card-2">
-                        <div class="feature-card-bg"></div>
-                        <div class="feature-card-content">
-                            <h3>Консалтинг</h3>
-                            <div class="feature-card-link-arrow">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <line x1="7" y1="17" x2="17" y2="7"></line>
-                                    <polyline points="7 7 17 7 17 17"></polyline>
-                                </svg>
-                            </div>
+                        <div id="sidebarEventsList" class="events-list">
+                            <!-- Populated by script.js -->
                         </div>
-                    </a>
-                    <a href="https://etp.zakupki.tatar" class="feature-card" id="feature-card-3">
-                        <div class="feature-card-bg"></div>
-                        <div class="feature-card-content">
-                            <h3>ЭТП</h3>
-                            <div class="feature-card-link-arrow">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <line x1="7" y1="17" x2="17" y2="7"></line>
-                                    <polyline points="7 7 17 7 17 17"></polyline>
-                                </svg>
-                            </div>
+                    </div>
+
+                    <!-- News Headlines Block -->
+                    <div class="sidebar-block news-headlines-block">
+                        <div class="sidebar-title">
+                            <h3>Новости</h3>
                         </div>
-                    </a>
-                    <a href="#" class="feature-card" id="feature-card-4">
-                        <div class="feature-card-bg"></div>
-                        <div class="feature-card-content">
-                            <h3>Сопровождение</h3>
-                            <div class="feature-card-link-arrow">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <line x1="7" y1="17" x2="17" y2="7"></line>
-                                    <polyline points="7 7 17 7 17 17"></polyline>
-                                </svg>
-                            </div>
+                        <div id="sidebarNewsList" class="news-headlines-list">
+                            <!-- Populated by script.js -->
                         </div>
-                    </a>
+                    </div>
+                </aside>
+
+                <!-- Main Content (Right) -->
+                <div class="main-content-right">
+                    <div class="feature-grid" id="mainFeatureGrid">
+                        <!-- Cards will be populated dynamically via script.js -->
+                    </div>
                 </div>
             </div>
         </section>

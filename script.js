@@ -129,10 +129,19 @@ document.addEventListener('DOMContentLoaded', () => {
         heroTitle: 'Ваш успех в госзакупках.',
         heroSubtitle: 'Единая экосистема для заказчиков и поставщиков.\nОт обучения до сопровождения сложных тендеров.',
         heroBgImage: '',
+        events: [
+            { date: '15 МАРТА', title: 'Курс: Закупки по 44-ФЗ для начинающих', link: 'courses.html' },
+            { date: '22 МАРТА', title: 'Семинар: Изменения в 223-ФЗ в 2024 году', link: 'seminars.html' }
+        ],
+        sideNews: [
+            { date: '05.03.2024', title: 'Новые требования к участникам закупок с 1 апреля', link: '#' },
+            { date: '01.03.2024', title: 'Запущен обновленный личный кабинет на ЭТП', link: '#' },
+            { date: '28.02.2024', title: 'Центр развития закупок получил награду "Эксперт года"', link: '#' }
+        ],
         featureCards: [
-            { title: 'Образовательный центр', link: 'courses.html', image: '' },
+            { title: 'Обучение', link: 'courses.html', image: '' },
             { title: 'Консалтинг', link: 'consulting.html', image: '' },
-            { title: 'ЭТП', link: 'https://etp.zakupki.tatar', image: '' },
+            { title: 'Закупки (ЭТП)', link: 'https://etp.zakupki.tatar', image: '' },
             { title: 'Сопровождение', link: '#', image: '' }
         ],
         orgBlocks: [
@@ -151,6 +160,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const savedMainData = JSON.parse(localStorage.getItem('crzrt_main_page_data')) || {};
     const mainPageData = { ...defaultMainData, ...savedMainData };
+
+    // Sidebar Events Rendering
+    const eventsList = document.getElementById('sidebarEventsList');
+    if (eventsList && mainPageData.events) {
+        eventsList.innerHTML = mainPageData.events.map(e => `
+            <a href="${e.link || '#'}" class="event-tile">
+                <div class="event-date">${e.date}</div>
+                <div class="event-title">${e.title}</div>
+            </a>
+        `).join('');
+    }
+
+    // Sidebar News Rendering
+    const sideNewsList = document.getElementById('sidebarNewsList');
+    if (sideNewsList && mainPageData.sideNews) {
+        sideNewsList.innerHTML = mainPageData.sideNews.map(n => `
+            <a href="${n.link || '#'}" class="news-item">
+                <div class="news-item-date">${n.date}</div>
+                <div class="news-item-title">${n.title}</div>
+            </a>
+        `).join('');
+    }
 
     // Sanitize heroBgImage — reject bad values from old buggy code (e.g. admin.html URL stored as src)
     if (mainPageData.heroBgImage &&
@@ -201,26 +232,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Feature Cards (2x2 Grid)
-    if (mainPageData.featureCards) {
-        mainPageData.featureCards.forEach((c, i) => {
-            const card = document.getElementById(`feature-card-${i + 1}`);
-            if (card) {
-                const title = card.querySelector('h3');
-                const bg = card.querySelector('.feature-card-bg');
-                if (title) title.innerText = c.title;
-                if (c.link) card.href = c.link;
-                if (bg) {
-                    if (c.image) {
-                        bg.style.backgroundImage = `url(${c.image})`;
-                        card.classList.remove('no-image');
-                    } else {
-                        bg.style.backgroundImage = '';
-                        card.classList.add('no-image');
-                    }
-                }
-            }
-        });
+    // Feature Cards (Dynamic Grid)
+    const featureGrid = document.getElementById('mainFeatureGrid');
+    if (featureGrid && mainPageData.featureCards) {
+        featureGrid.innerHTML = mainPageData.featureCards.map((c, i) => `
+            <a href="${c.link || '#'}" class="feature-card ${c.image ? '' : 'no-image'}" id="feature-card-${i + 1}">
+                <div class="feature-card-bg" style="${c.image ? `background-image: url(${c.image})` : ''}"></div>
+                <div class="feature-card-content">
+                    <h3>${c.title}</h3>
+                    <div class="feature-card-link-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="7" y1="17" x2="17" y2="7"></line>
+                            <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+        `).join('');
     }
 
     // Why Us Grid
@@ -249,66 +277,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Re-catch newly added cards for tilt and reveal effects
-    const newRevealElements = document.querySelectorAll('.why-card, .testimonial-card');
+    const newRevealElements = document.querySelectorAll('.why-card, .testimonial-card, .news-strip');
     newRevealElements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
         el.style.transition = 'opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)';
         revealObserver.observe(el);
 
-        el.addEventListener('mousemove', (e) => {
-            const rect = el.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = ((y - centerY) / centerY) * -5;
-            const rotateY = ((x - centerX) / centerX) * 5;
-            el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-        });
-        el.addEventListener('mouseleave', () => {
-            el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-        });
+        if (el.classList.contains('why-card') || el.classList.contains('testimonial-card')) {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -5;
+                const rotateY = ((x - centerX) / centerX) * 5;
+                el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        }
     });
 
-    // === DYNAMIC MEGA MENU FOR CONSULTING ===
-    function renderConsultingMegaMenu() {
-        const consultingMegaGrid = document.querySelector('.nav-legal .mega-grid');
-        if (!consultingMegaGrid) return;
+    // === DYNAMIC MEGA MENU ДЛЯ УСЛУГ (Консалтинг) ===
+    function renderServicesMegaMenu() {
+        const servicesMegaGrid = document.getElementById('servicesMegaGrid');
+        if (!servicesMegaGrid) return;
 
-        const defaultConsultingMenu = [
-            { id: 'business', title: 'Решения для бизнеса' },
-            { id: 'deals', title: 'Сопровождение сделок' },
-            { id: 'disputes', title: 'Судебные споры' },
-            { id: 'corporate', title: 'Корпоративное право' },
-            { id: 'public', title: 'Поддержка госзаказчиков' },
-            { id: 'competitor', title: 'Конкурентный консалтинг' }
-        ];
-
+        // Если в grid уже есть контент (из header.js), и в localStorage пусто - ничего не трогаем
         const localData = JSON.parse(localStorage.getItem('crzrt_consulting_data'));
-        const services = (localData && localData.services && localData.services.length > 0) ? localData.services : defaultConsultingMenu;
+        if (localData && localData.services && localData.services.length > 0) {
+            // Авто-категоризация для старых данных или данных по умолчанию
+            const processedServices = localData.services.map((s, idx) => {
+                const sid = s.id || `service_${idx}`;
+                let cat = s.category;
+                if (!cat) {
+                    const customersIds = ['public', 'deals', 'business', 'corporate'];
+                    const suppliersIds = ['competitor', 'disputes'];
+                    cat = (customersIds.includes(sid) ? 'customers' :
+                        (suppliersIds.includes(sid) ? 'suppliers' : 'customers'));
+                }
+                return { ...s, id: sid, category: cat };
+            });
 
-        consultingMegaGrid.innerHTML = '';
-
-        // Split into two columns for layout balance
-        const half = Math.ceil(services.length / 2);
-        const col1 = services.slice(0, half);
-        const col2 = services.slice(half);
-
-        const renderCol = (title, items) => {
-            if (items.length === 0) return '';
-            let links = items.map(s => `<a href="consulting.html#${s.id}">${s.title}</a>`).join('');
-            return `<div class="mega-col" style="min-width: 250px; opacity: 1; transform: translateY(0);"><h4>${title}</h4>${links}</div>`;
-        };
-
-        consultingMegaGrid.innerHTML = renderCol('Бизнес и сделки', col1) + renderCol('Споры и закупки', col2);
+            // Если есть данные в админке, можем перерисовать
+            servicesMegaGrid.innerHTML = `
+                <div class="mega-col">
+                    <h4>Заказчикам</h4>
+                    ${processedServices.filter(s => s.category === 'customers').map(s => `<a href="consulting.html#${s.id}">${s.title || 'Без названия'}</a>`).join('')}
+                </div>
+                <div class="mega-col">
+                    <h4>Поставщикам</h4>
+                    ${processedServices.filter(s => s.category === 'suppliers').map(s => `<a href="consulting.html#${s.id}">${s.title || 'Без названия'}</a>`).join('')}
+                </div>
+            `;
+        }
     }
 
-    // Initial call in case header is already in HTML (rare)
-    renderConsultingMegaMenu();
-
-    // Listen for header loaded event from header.js
-    document.addEventListener('headerLoaded', renderConsultingMegaMenu);
+    // Initial call
+    renderServicesMegaMenu();
+    document.addEventListener('headerLoaded', renderServicesMegaMenu);
 
     // Cookie Banner Logic
     const initCookieBanner = () => {

@@ -649,6 +649,26 @@
 
             <div id="mainPageBlock" class="admin-block active" data-required-role="main-page">
                 <div class="admin-card">
+                    <div class="card-header">Верхний анонс (Анонс событий)</div>
+                    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 15px;">
+                        <input type="checkbox" id="m_news_active" style="width: 20px; height: 20px;">
+                        <span>Показывать полоску анонса на главной</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Текст тега (например, "Событие")</label>
+                        <input type="text" class="form-control" id="m_news_tag">
+                    </div>
+                    <div class="form-group">
+                        <label>Заголовок анонса</label>
+                        <input type="text" class="form-control" id="m_news_title">
+                    </div>
+                    <div class="form-group">
+                        <label>Ссылка (например, "seminars.html")</label>
+                        <input type="text" class="form-control" id="m_news_link">
+                    </div>
+                </div>
+
+                <div class="admin-card">
                     <div class="card-header">Тексты на главном экране (Hero Section)</div>
                     <div class="form-group">
                         <label>Главный заголовок (шрифт 1)</label>
@@ -662,7 +682,12 @@
                 </div>
 
                 <div class="admin-card">
-                    <div class="card-header">Основные блоки (2x2 на главной)</div>
+                    <div class="card-header"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Основные блоки (Плитки на главной)</span>
+                        <button class="btn-save" id="btnAddFeatureCard" style="padding: 8px 16px; font-size: 0.85rem;">+
+                            Добавить плитку</button>
+                    </div>
                     <div id="mainFeatureCardsAdmin" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <!-- Rendered by JS -->
                     </div>
@@ -1151,6 +1176,13 @@
         const btnLogout = document.getElementById('btnLogout');
 
         function renderMainPageAdmin() {
+            // News
+            document.getElementById('m_news_active').checked = mainPageData.news ? mainPageData.news.active : false;
+            document.getElementById('m_news_tag').value = (mainPageData.news && mainPageData.news.tag) ? mainPageData.news.tag : 'Событие';
+            document.getElementById('m_news_title').value = (mainPageData.news && mainPageData.news.title) ? mainPageData.news.title : '';
+            document.getElementById('m_news_link').value = (mainPageData.news && mainPageData.news.link) ? mainPageData.news.link : '';
+
+            // Hero
             document.getElementById('m_hero_title').value = mainPageData.heroTitle || '';
             document.getElementById('m_hero_subtitle').value = mainPageData.heroSubtitle || '';
 
@@ -1173,8 +1205,9 @@
             featureContainer.innerHTML = '';
             mainPageData.featureCards.forEach((c, i) => {
                 featureContainer.insertAdjacentHTML('beforeend', `
-                    <div style="padding: 15px; border: 1px solid var(--card-border); border-radius: 12px; background: rgba(0,0,0,0.02);">
-                        <div class="form-group" style="margin-bottom: 10px;">
+                    <div style="padding: 15px; border: 1px solid var(--card-border); border-radius: 12px; background: rgba(0,0,0,0.02); position: relative;">
+                        <button class="btn-delete" style="position: absolute; top: 10px; right: 10px; padding: 5px 10px;" onclick="window.removeFeatureCard(${i})">×</button>
+                        <div class="form-group" style="margin-bottom: 10px; padding-right: 30px;">
                             <label>Заголовок ${i + 1}</label>
                             <input type="text" class="form-control" id="m_feat_title_${i}" value="${c.title}">
                         </div>
@@ -1267,6 +1300,12 @@
 
         function saveMainPageStateToMemory() {
             try {
+                if (!mainPageData.news) mainPageData.news = {};
+                mainPageData.news.active = document.getElementById('m_news_active').checked;
+                mainPageData.news.title = document.getElementById('m_news_title').value;
+                mainPageData.news.tag = document.getElementById('m_news_tag').value;
+                mainPageData.news.link = document.getElementById('m_news_link').value;
+
                 const hTitle = document.getElementById('m_hero_title');
                 const hSub = document.getElementById('m_hero_subtitle');
                 if (hTitle) mainPageData.heroTitle = hTitle.value;
@@ -1331,6 +1370,23 @@
                 renderMainPageAdmin();
             });
         }
+
+        const btnAddFeatureCard = document.getElementById('btnAddFeatureCard');
+        if (btnAddFeatureCard) {
+            btnAddFeatureCard.addEventListener('click', () => {
+                saveMainPageStateToMemory();
+                mainPageData.featureCards.push({ title: 'Новая плитка', link: '#', image: '' });
+                renderMainPageAdmin();
+            });
+        }
+
+        window.removeFeatureCard = function (index) {
+            if (confirm('Удалить эту плитку?')) {
+                saveMainPageStateToMemory();
+                mainPageData.featureCards.splice(index, 1);
+                renderMainPageAdmin();
+            }
+        };
 
         function checkAuth() {
             const session = sessionStorage.getItem('crzrt_admin_session');
@@ -1730,13 +1786,17 @@
 
         btnCrop.addEventListener('click', () => {
             if (cropper) {
-                // Resolution logic: 400x400 for avatars, higher for hero
-                const res = window.activeAuthorIndex !== null ? 400 : 1920;
+                // Resolution logic: 400x400 for avatars, 1200x675 for hero/features (16:9)
+                const isAuthor = window.activeAuthorIndex !== null;
+                const resWidth = isAuthor ? 400 : 1200;
+                const resHeight = isAuthor ? 400 : 675;
+
                 const canvas = cropper.getCroppedCanvas({
-                    width: res,
-                    height: window.activeAuthorIndex !== null ? res : 1080
+                    width: resWidth,
+                    height: resHeight
                 });
-                const resultBase64 = canvas.toDataURL('image/png');
+                // Use image/jpeg with 0.7 quality to save space in localStorage
+                const resultBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
                 if (window.activeAuthorIndex !== null) {
                     const idx = window.activeAuthorIndex;
@@ -1814,12 +1874,12 @@
                 { id: '2', avatarText: 'ИИ', name: 'Иванов И.И.', phone: '+7 900 000-00-01', email: 'ivanov@crzrt.ru' }
             ],
             services: [
-                { id: 'business', title: 'Решения для бизнеса', highlight: 'Юридические решения – это не расходы, а защита ваших денег и времени.', benefits: 'анализ бизнес-модели на предмет потенциальных рисков: исков, штрафов, претензий\nшаблоны рабочих документов: договоры, приказы, положение о закупках (223-ФЗ)\nпрактические советы и стратегии минимизации негативных последствий', disclaimer: '' },
-                { id: 'deals', title: 'Сопровождение сделок', highlight: 'Сопровождение сделки абсолютно необходимо для минимизации рисков и безопасности всех сторон.', benefits: 'Правовую экспертизу объектов перед сделкой\nподготовка полного и юридически выверенного пакета документов\nорганизацию безопасных расчетов между контрагентами\nсопровождение сделки и проверку «чистоты» подписания', disclaimer: '' },
-                { id: 'disputes', title: 'Сложные судебные споры', highlight: 'Суд - крайняя стадия конфликтной ситуации, и к ней нужно быть готовым заранее.', benefits: 'правовой аудит ситуации и досудебную подготовку (медиация)\nформирование железной доказательной базы и процессуальных документов\nпредставительство ваших интересов в судах всех инстанций\nсопровождение на этапе исполнительного производства', disclaimer: '' },
-                { id: 'corporate', title: 'Корпоративное право', highlight: 'В процессе деятельности любое юридическое лицо руководствуется прежде всего нормами корпоративного права, и их исполнение лучше доверить профессионалам.', benefits: 'Система «под ключ»: регистрация, ликвидация или реорганизация юридических лиц, в том числе унитарных предприятий\nподготовка решений и протоколов собраний\nдетальная правовая экспертиза и структурирование сделок\nразработка и внедрение корпоративных договоров и опционных программ для сотрудников', disclaimer: '' },
-                { id: 'public', title: 'Поддержка госзаказчиков', highlight: 'Поможем понять структуры работы с 44-ФЗ и госзакупками в целом, снять излишние риски с должностных лиц.', benefits: 'правовая экспертиза закупочной документации еще на стадии планирования\nкомплексное сопровождение заключения и исполнения контракта\nпретензионно-исковая работа и взыскание неустоек\nзащита при проверках контролирующих органов и обжалование решений, предписаний, постановлений КоАП\nметодологическое обеспечение закупочной деятельности (положения, регламенты)', disclaimer: '' },
-                { id: 'competitor', title: 'Конкурентный консалтинг', highlight: 'Работа с поставщиками – одно из наших приоритетных направлений. Постоянные изменения в законодательстве требуют всегда быть в курсе новых судебных практик.', benefits: 'анализ закупочной документации и проверка «подводных камней».\nпрактические рекомендации и оценка возможностей участия в торгах\nПодготовка и тщательная проверка заявки на участие (решения об одобрении сделки, отсутствие оснований для отклонения)\nсопровождение «антимонопольного этапа» и подача запросов на разъяснение (жалобы, представление интересов)\nЮридическая поддержка при исполнении контракта\nзащита интересов при спорах о включении в РНП*', disclaimer: '* Реестр недобросовестных поставщиков (ст. 104 Закона о контрактной системе 44-ФЗ)' }
+                { id: 'business', category: 'customers', title: 'Решения для бизнеса', highlight: 'Юридические решения – это не расходы, а защита ваших денег и времени.', benefits: 'анализ бизнес-модели на предмет потенциальных рисков: исков, штрафов, претензий\nшаблоны рабочих документов: договоры, приказы, положение о закупках (223-ФЗ)\nпрактические советы и стратегии минимизации негативных последствий', disclaimer: '' },
+                { id: 'deals', category: 'customers', title: 'Сопровождение сделок', highlight: 'Сопровождение сделки абсолютно необходимо для минимизации рисков и безопасности всех сторон.', benefits: 'Правовую экспертизу объектов перед сделкой\nподготовка полного и юридически выверенного пакета документов\nорганизацию безопасных расчетов между контрагентами\nсопровождение сделки и проверку «чистоты» подписания', disclaimer: '' },
+                { id: 'disputes', category: 'suppliers', title: 'Сложные судебные споры', highlight: 'Суд - крайняя стадия конфликтной ситуации, и к ней нужно быть готовым заранее.', benefits: 'правовой аудит ситуации и досудебную подготовку (медиация)\nформирование железной доказательной базы и процессуальных документов\nпредставительство ваших интересов в судах всех инстанций\nсопровождение на этапе исполнительного производства', disclaimer: '' },
+                { id: 'corporate', category: 'customers', title: 'Корпоративное право', highlight: 'В процессе деятельности любое юридическое лицо руководствуется прежде всего нормами корпоративного права, и их исполнение лучше доверить профессионалам.', benefits: 'Система «под ключ»: регистрация, ликвидация или реорганизация юридических лиц, в том числе унитарных предприятий\nподготовка решений и протоколов собраний\nдетальная правовая экспертиза и структурирование сделок\nразработка и внедрение корпоративных договоров и опционных программ для сотрудников', disclaimer: '' },
+                { id: 'public', category: 'customers', title: 'Поддержка госзаказчиков', highlight: 'Поможем понять структуры работы с 44-ФЗ и госзакупками в целом, снять излишние риски с должностных лиц.', benefits: 'правовая экспертиза закупочной документации еще на стадии планирования\nкомплексное сопровождение заключения и исполнения контракта\nпретензионно-исковая работа и взыскание неустоек\nзащита при проверках контролирующих органов и обжалование решений, предписаний, постановлений КоАП\nметодологическое обеспечение закупочной деятельности (положения, регламенты)', disclaimer: '' },
+                { id: 'competitor', category: 'suppliers', title: 'Конкурентный консалтинг', highlight: 'Работа с поставщиками – одно из наших приоритетных направлений. Постоянные изменения в законодательстве требуют всегда быть в курсе новых судебных практик.', benefits: 'анализ закупочной документации и проверка «подводных камней».\nпрактические рекомендации и оценка возможностей участия в торгах\nПодготовка и тщательная проверка заявки на участие (решения об одобрении сделки, отсутствие оснований для отклонения)\nсопровождение «антимонопольного этапа» и подача запросов на разъяснение (жалобы, представление интересов)\nЮридическая поддержка при исполнении контракта\nзащита интересов при спорах о включении в РНП*', disclaimer: '* Реестр недобросовестных поставщиков (ст. 104 Закона о контрактной системе 44-ФЗ)' }
             ]
         };
 
@@ -1909,6 +1969,13 @@
                             <input type="text" class="form-control" id="c_service_title_${index}" value="${service.title || ''}">
                         </div>
                         <div class="form-group">
+                            <label>Категория (для меню)</label>
+                            <select class="form-control" id="c_service_category_${index}">
+                                <option value="customers" ${service.category === 'customers' ? 'selected' : ''}>Заказчикам</option>
+                                <option value="suppliers" ${service.category === 'suppliers' ? 'selected' : ''}>Поставщикам</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Выделенная цитата (Главная мысль)</label>
                             <textarea class="form-control" id="c_service_highlight_${index}" style="min-height: 80px;">${service.highlight || ''}</textarea>
                         </div>
@@ -1986,6 +2053,7 @@
 
             consultingData.services.forEach((service, index) => {
                 service.title = document.getElementById(`c_service_title_${index}`).value;
+                service.category = document.getElementById(`c_service_category_${index}`).value;
                 service.highlight = document.getElementById(`c_service_highlight_${index}`).value;
                 service.benefits = document.getElementById(`c_service_benefits_${index}`).value;
                 service.disclaimer = document.getElementById(`c_service_disclaimer_${index}`).value;
@@ -2025,20 +2093,26 @@
         // Global Cropper logic is handled in the unified block (lines 1138-1265)
 
         document.getElementById('globalSaveBtn').addEventListener('click', () => {
-            if (currentTarget === 'consulting') {
-                saveConsultingStateToMemory();
-                localStorage.setItem('crzrt_consulting_data', JSON.stringify(consultingData));
-            } else if (currentTarget === 'main-page') {
-                saveMainPageStateToMemory();
-                localStorage.setItem('crzrt_main_page_data', JSON.stringify(mainPageData));
-            } else if (currentTarget === 'about-us') {
-                saveAboutUsStateToMemory();
-                localStorage.setItem('crzrt_about_data', JSON.stringify(aboutData));
-            } else if (currentTarget === 'contacts') {
-                saveContactsStateToMemory();
-                localStorage.setItem('crzrt_contacts', JSON.stringify(contactsData));
-            } else if (currentTarget === 'users') {
-                localStorage.setItem('crzrt_users', JSON.stringify(usersDb));
+            try {
+                if (currentTarget === 'consulting') {
+                    saveConsultingStateToMemory();
+                    localStorage.setItem('crzrt_consulting_data', JSON.stringify(consultingData));
+                } else if (currentTarget === 'main-page') {
+                    saveMainPageStateToMemory();
+                    localStorage.setItem('crzrt_main_page_data', JSON.stringify(mainPageData));
+                } else if (currentTarget === 'about-us') {
+                    saveAboutUsStateToMemory();
+                    localStorage.setItem('crzrt_about_data', JSON.stringify(aboutData));
+                } else if (currentTarget === 'contacts') {
+                    saveContactsStateToMemory();
+                    localStorage.setItem('crzrt_contacts', JSON.stringify(contactsData));
+                } else if (currentTarget === 'users') {
+                    localStorage.setItem('crzrt_users', JSON.stringify(usersDb));
+                }
+            } catch (e) {
+                console.error("Storage error:", e);
+                alert("Ошибка сохранения! Возможно, вы загрузили слишком много тяжелых изображений. Попробуйте уменьшить их количество или размер. (Лимит хранилища превышен)");
+                return;
             }
 
             // Button animation class
