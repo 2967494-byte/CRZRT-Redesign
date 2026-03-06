@@ -56,17 +56,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="mega-grid">
                             <div class="mega-col">
                                 <h4>Форматы</h4>
-                                <a href="courses.html">🏫 Очное обучение</a>
-                                <a href="distance.html">💻 Дистанционно</a>
-                                <a href="individual.html">👤 Индивидуально</a>
-                                <a href="testing.html">✅ Пробный тест</a>
+                                <a href="courses.html">Очное обучение</a>
+                                <a href="distance.html">Дистанционно</a>
+                                <a href="individual.html">Индивидуально</a>
+                                <a href="testing.html">Пробный тест</a>
                             </div>
                             <div class="mega-col">
                                 <h4>Расписание и люди</h4>
-                                <a href="calendar.html">📅 Календарь</a>
-                                <a href="seminars.html">🎙️ Семинары</a>
-                                <a href="webinars.html">📡 Вебинары</a>
-                                <a href="team.html">👨‍🏫 Преподаватели</a>
+                                <a href="calendar.html">Календарь</a>
+                                <a href="seminars.html">Семинары</a>
+                                <a href="webinars.html">Вебинары</a>
+                                <a href="team.html">Преподаватели</a>
                             </div>
                         </div>
                     </div>

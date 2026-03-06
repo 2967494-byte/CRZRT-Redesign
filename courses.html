@@ -6,26 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Очное обучение по 44-ФЗ и 223-ФЗ | Центр развития закупок РТ</title>
     <meta name="description"
-        content="Очные курсы повышения квалификации в Казани по 44-ФЗ и 223-ФЗ. Три дня с экспертами-практиками, работа в ЕИС, удостоверение установленного образца." />
+        content="Очные курсы повышения квалификации в Казани по 44-ФЗ и 223-ФЗ. Преподаватели-практики, работа в ЕИС, удостоверение установленного образца." />
     <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* ── Sub-nav tabs ── */
+        /* ── Sub-nav ── */
         .subnav {
             background: var(--card-bg);
             border-bottom: 1px solid var(--card-border);
             position: sticky;
             top: 72px;
             z-index: 100;
-            padding: 0;
         }
 
         .subnav-inner {
             display: flex;
-            gap: 4px;
             overflow-x: auto;
             scrollbar-width: none;
-            padding: 10px 0;
         }
 
         .subnav-inner::-webkit-scrollbar {
@@ -36,29 +33,40 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            padding: 14px 22px;
+            font-size: 0.78rem;
+            font-weight: 700;
             color: var(--text-secondary);
             text-decoration: none;
-            transition: all 0.25s;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
             white-space: nowrap;
+            border-right: 1px solid var(--card-border);
+            transition: all 0.2s;
+            border-radius: 0;
+        }
+
+        .subnav-link svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
         }
 
         .subnav-link:hover {
-            background: rgba(128, 128, 128, 0.1);
             color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .subnav-link.active {
-            background: var(--accent-color);
-            color: #fff;
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
         }
 
         /* ── Page header ── */
         .courses-page-header {
-            padding: 80px 0 60px;
+            padding: 72px 0 56px;
             border-bottom: 1px solid var(--card-border);
         }
 
@@ -66,8 +74,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
             margin-bottom: 24px;
         }
 
@@ -76,84 +86,98 @@
             text-decoration: none;
         }
 
-        .breadcrumb a:hover {
-            text-decoration: underline;
+        .breadcrumb span {
+            opacity: 0.5;
         }
 
-        /* ── Course cards (new full-width style) ── */
+        /* ── Course cards (full-width flat) ── */
         .course-list {
             display: flex;
             flex-direction: column;
-            gap: 24px;
-            padding: 60px 0;
+            border: 1px solid var(--card-border);
+            border-top: none;
+            margin-bottom: 0;
         }
 
         .course-full-card {
             display: grid;
-            grid-template-columns: 1fr 340px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 28px;
-            overflow: hidden;
-            transition: all 0.4s var(--ease-custom);
+            grid-template-columns: 1fr 320px;
+            border-top: 1px solid var(--card-border);
+            transition: background 0.3s var(--ease-custom);
+            position: relative;
+        }
+
+        .course-full-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 0;
+            background: var(--accent-color);
+            transition: height 0.4s var(--ease-custom);
+        }
+
+        .course-full-card.special-card::before {
+            background: #e03030;
+        }
+
+        .course-full-card:hover::before {
+            height: 100%;
         }
 
         .course-full-card:hover {
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.1);
-            border-color: var(--accent-color);
-        }
-
-        .course-full-card.featured-card {
-            border-color: var(--accent-color);
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(41, 151, 255, 0.03) 100%);
-        }
-
-        .course-full-card.featured-card.special {
-            border-color: #ff5e62;
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 94, 98, 0.03) 100%);
+            background: var(--card-bg);
         }
 
         .course-body {
-            padding: 44px;
+            padding: 44px 44px 44px 52px;
         }
 
         .course-tags {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
             margin-bottom: 20px;
         }
 
         .course-tag {
-            padding: 5px 14px;
-            border-radius: 8px;
-            font-size: 0.78rem;
+            padding: 3px 10px;
+            font-size: 0.72rem;
             font-weight: 700;
-            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-radius: 0;
+            border: 1px solid;
         }
 
         .tag-blue {
-            background: rgba(41, 151, 255, 0.12);
+            border-color: var(--accent-color);
             color: var(--accent-color);
         }
 
         .tag-red {
-            background: rgba(255, 94, 98, 0.12);
-            color: #ff5e62;
-        }
-
-        .tag-gold {
-            background: rgba(255, 193, 7, 0.15);
-            color: #d4a017;
+            border-color: #e03030;
+            color: #e03030;
         }
 
         .tag-green {
-            background: rgba(33, 197, 93, 0.12);
+            border-color: #21c55d;
             color: #21c55d;
         }
 
+        .tag-gray {
+            border-color: var(--card-border);
+            color: var(--text-secondary);
+        }
+
+        .tag-gold {
+            border-color: #c8a217;
+            color: #c8a217;
+        }
+
         .course-body h2 {
-            font-size: 1.6rem;
+            font-size: 1.45rem;
             font-weight: 800;
             letter-spacing: -0.02em;
             margin-bottom: 14px;
@@ -162,7 +186,7 @@
         .course-body>p {
             color: var(--text-secondary);
             line-height: 1.7;
-            font-size: 1rem;
+            font-size: 0.95rem;
             margin-bottom: 28px;
         }
 
@@ -170,33 +194,34 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 32px;
         }
 
         .course-bullet {
             display: flex;
             align-items: flex-start;
             gap: 10px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             color: var(--text-secondary);
         }
 
-        .course-bullet::before {
-            content: '✓';
-            color: var(--accent-color);
-            font-weight: 700;
+        .course-bullet svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--accent-color);
+            fill: none;
+            stroke-width: 2.5;
             flex-shrink: 0;
-            margin-top: 1px;
+            margin-top: 2px;
         }
 
+        /* Sidebar panel */
         .course-sidebar-panel {
-            background: rgba(128, 128, 128, 0.04);
             border-left: 1px solid var(--card-border);
             padding: 44px 36px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            gap: 30px;
+            gap: 24px;
         }
 
         .course-details-list {
@@ -212,15 +237,15 @@
         }
 
         .detail-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 0.06em;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
             color: var(--text-secondary);
         }
 
         .detail-value {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text-primary);
         }
@@ -231,105 +256,147 @@
         }
 
         .course-price-label {
-            font-size: 0.8rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
             color: var(--text-secondary);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .course-price-big {
-            font-size: 2rem;
+            font-size: 1.9rem;
             font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 18px;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
         }
 
         .btn-course-book {
             display: block;
             text-align: center;
-            padding: 14px 20px;
+            padding: 13px 20px;
             background: var(--accent-color);
             color: #fff;
-            border-radius: 14px;
+            border-radius: 0;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.82rem;
             text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
             transition: all 0.3s;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            border: 1px solid var(--accent-color);
         }
 
         .btn-course-book:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(41, 151, 255, 0.4);
-            filter: brightness(1.1);
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        .btn-course-book.special-btn {
+            background: #e03030;
+            border-color: #e03030;
+        }
+
+        .btn-course-book.special-btn:hover {
+            background: transparent;
+            color: #e03030;
         }
 
         .btn-course-more {
             display: block;
             text-align: center;
-            padding: 14px 20px;
+            padding: 13px 20px;
             background: transparent;
-            color: var(--text-primary);
+            color: var(--text-secondary);
             border: 1px solid var(--card-border);
-            border-radius: 14px;
+            border-radius: 0;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.82rem;
             text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
             transition: all 0.3s;
         }
 
         .btn-course-more:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
+            border-color: var(--text-primary);
+            color: var(--text-primary);
         }
 
-        .special .btn-course-book {
-            background: linear-gradient(135deg, #ff5e62, #ff9a9e);
-        }
-
-        .special .btn-course-book:hover {
-            box-shadow: 0 8px 20px rgba(255, 94, 98, 0.4);
-        }
-
-        /* ── Benefits ── */
+        /* ── Benefits row ── */
         .benefits-strip {
             border-top: 1px solid var(--card-border);
-            padding: 60px 0;
+            border-bottom: 1px solid var(--card-border);
         }
 
         .benefits-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 30px;
+            border-left: 1px solid var(--card-border);
         }
 
         .benefit-item {
-            text-align: center;
+            padding: 40px 32px;
+            border-right: 1px solid var(--card-border);
         }
 
-        .benefit-icon-wrap {
-            width: 64px;
-            height: 64px;
-            border-radius: 20px;
-            background: rgba(41, 151, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            margin: 0 auto 16px;
+        .benefit-item svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--accent-color);
+            fill: none;
+            stroke-width: 1.5;
+            margin-bottom: 20px;
+            display: block;
         }
 
         .benefit-item h4 {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .benefit-item p {
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
+        /* ── CTA ── */
+        .bottom-cta {
+            border: 1px solid var(--card-border);
+            padding: 56px;
+            text-align: center;
+            margin: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bottom-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(41, 151, 255, 0.04) 0%, transparent 60%);
+        }
+
+        .bottom-cta h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .bottom-cta p {
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto 36px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* ── Responsive ── */
         @media (max-width: 900px) {
             .course-full-card {
                 grid-template-columns: 1fr;
@@ -347,6 +414,10 @@
             .benefits-row {
                 grid-template-columns: 1fr 1fr;
             }
+
+            .bottom-cta {
+                padding: 40px 28px;
+            }
         }
 
         @media (max-width: 600px) {
@@ -361,6 +432,10 @@
             .benefits-row {
                 grid-template-columns: 1fr;
             }
+
+            .subnav-link {
+                padding: 12px 16px;
+            }
         }
     </style>
 </head>
@@ -374,17 +449,76 @@
 
     <!-- Sub-navigation -->
     <nav class="subnav">
-        <div class="container">
+        <div class="container" style="padding: 0; max-width: 100%;">
             <div class="subnav-inner">
-                <a href="obuchenie.html" class="subnav-link">🏠 Все форматы</a>
-                <a href="courses.html" class="subnav-link active">🏫 Очное</a>
-                <a href="distance.html" class="subnav-link">💻 Дистанционное</a>
-                <a href="seminars.html" class="subnav-link">🎙️ Семинары</a>
-                <a href="webinars.html" class="subnav-link">📡 Вебинары</a>
-                <a href="individual.html" class="subnav-link">👤 Индивидуальное</a>
-                <a href="testing.html" class="subnav-link">✅ Тестирование</a>
-                <a href="team.html" class="subnav-link">👨‍🏫 Преподаватели</a>
-                <a href="calendar.html" class="subnav-link">📅 Календарь</a>
+                <a href="obuchenie.html" class="subnav-link">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                    Все форматы
+                </a>
+                <a href="courses.html" class="subnav-link active">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="14" />
+                        <path d="M8 21h8M12 17v4" />
+                    </svg>
+                    Очное
+                </a>
+                <a href="distance.html" class="subnav-link">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="15" />
+                        <polyline points="8 21 12 17 16 21" />
+                    </svg>
+                    Дистанционное
+                </a>
+                <a href="seminars.html" class="subnav-link">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    Семинары
+                </a>
+                <a href="webinars.html" class="subnav-link">
+                    <svg viewBox="0 0 24 24">
+                        <polygon points="23 7 16 12 23 17 23 7" />
+                        <rect x="1" y="5" width="15" height="14" />
+                    </svg>
+                    Вебинары
+                </a>
+                <a href="individual.html" class="subnav-link">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    Индивидуальное
+                </a>
+                <a href="testing.html" class="subnav-link">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 11l3 3L22 4" />
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                    </svg>
+                    Тест
+                </a>
+                <a href="team.html" class="subnav-link">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    Преподаватели
+                </a>
+                <a href="calendar.html" class="subnav-link">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    Календарь
+                </a>
             </div>
         </div>
     </nav>
@@ -394,14 +528,16 @@
         <section class="courses-page-header">
             <div class="container">
                 <div class="breadcrumb">
-                    <a href="index.html">Главная</a> /
-                    <a href="obuchenie.html">Обучение</a> /
-                    <span>Очные курсы</span>
+                    <a href="index.html">Главная</a>
+                    <span>/</span>
+                    <a href="obuchenie.html">Обучение</a>
+                    <span>/</span>
+                    Очные курсы
                 </div>
-                <h1 class="hero-title" style="font-size: clamp(2rem, 4vw, 3.2rem); margin-bottom: 16px;">🏫 Очное
-                    обучение</h1>
-                <p class="hero-subtitle"
-                    style="font-size: 1.15rem; opacity: 1; animation: none; color: var(--text-secondary);">
+                <h1
+                    style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px;">
+                    Очное обучение</h1>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 620px; line-height: 1.7;">
                     Занятия с преподавателями-практиками в Казани. Деловые игры, кейсы, работа в ЕИС — вы уходите с
                     готовыми навыками, а не только с теорией.
                 </p>
@@ -413,7 +549,7 @@
             <div class="course-list">
 
                 <!-- Course 1: 44-FZ 108h -->
-                <div class="course-full-card featured-card">
+                <div class="course-full-card">
                     <div class="course-body">
                         <div class="course-tags">
                             <span class="course-tag tag-blue">44-ФЗ</span>
@@ -422,25 +558,55 @@
                         </div>
                         <h2>Повышение квалификации по 44-ФЗ (108 ак.ч.)</h2>
                         <p>Комплексная программа для профессионалов контрактной системы. Охватывает весь жизненный цикл
-                            закупки — от планирования до завершения контракта и отчётности.</p>
+                            закупки — от планирования до завершения контракта и отчётности в ЕИС.</p>
                         <div class="course-bullets">
-                            <div class="course-bullet">Последние изменения в 44-ФЗ</div>
-                            <div class="course-bullet">Планирование и обоснование закупок</div>
-                            <div class="course-bullet">Конкурентные процедуры (аукцион, конкурс)</div>
-                            <div class="course-bullet">Закупки у единственного поставщика</div>
-                            <div class="course-bullet">Исполнение и расторжение контракта</div>
-                            <div class="course-bullet">Антимонопольная практика и ФАС</div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Последние изменения в 44-ФЗ
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Планирование и обоснование закупок
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Конкурентные процедуры (аукцион, конкурс)
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Закупки у единственного поставщика
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Исполнение и расторжение контракта
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Антимонопольная практика, ФАС
+                            </div>
                         </div>
                     </div>
                     <div class="course-sidebar-panel">
                         <div class="course-details-list">
                             <div class="course-detail-row">
                                 <span class="detail-label">Формат</span>
-                                <span class="detail-value">📍 Очно, Казань</span>
+                                <span class="detail-value">Очно, Казань</span>
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Продолжительность</span>
-                                <span class="detail-value">108 ак.ч. · 5 дней</span>
+                                <span class="detail-value">108 ак.ч. / 5 дней</span>
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Ближайшая дата</span>
@@ -448,47 +614,77 @@
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Документ</span>
-                                <span class="detail-value">📜 Удостоверение гос. образца</span>
+                                <span class="detail-value">Удостоверение гос. образца</span>
                             </div>
                         </div>
                         <div class="course-price-block">
                             <div class="course-price-label">Стоимость</div>
                             <div class="course-price-big">23 700 ₽</div>
                             <a href="contacts.html" class="btn-course-book">Записаться</a>
-                            <a href="course-44fz.html" class="btn-course-more">Подробная программа →</a>
+                            <a href="course-44fz.html" class="btn-course-more">Подробная программа</a>
                         </div>
                     </div>
                 </div>
 
                 <!-- Course 2: Vesennyaya Kazan -->
-                <div class="course-full-card featured-card special">
+                <div class="course-full-card special-card">
                     <div class="course-body">
                         <div class="course-tags">
                             <span class="course-tag tag-red">Спецпредложение</span>
                             <span class="course-tag tag-gold">44-ФЗ</span>
                             <span class="course-tag tag-green">Ближайший старт: 23 марта</span>
                         </div>
-                        <h2>44-ФЗ + Весенняя Казань</h2>
+                        <h2>44-ФЗ + Весенняя Казань — обучение и культурная программа</h2>
                         <p>Уникальная программа: полноценный курс повышения квалификации по 44-ФЗ плюс насыщенная
                             культурная программа по достопримечательностям Казани. Учиться и отдыхать — почему нет?</p>
                         <div class="course-bullets">
-                            <div class="course-bullet">Полная программа очного курса 44-ФЗ (108 ч.)</div>
-                            <div class="course-bullet">Экскурсии по историческим местам Казани</div>
-                            <div class="course-bullet">Посещение Казанского Кремля</div>
-                            <div class="course-bullet">Ужин с panoramic view на Казань</div>
-                            <div class="course-bullet">Мастер-класс по татарской кухне</div>
-                            <div class="course-bullet">Трансфер и размещение — в комплексе</div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Полная программа очного курса 44-ФЗ
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Экскурсии по историческим местам Казани
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Посещение Казанского Кремля
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Мастер-класс по татарской кухне
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Ужин с видом на Казань
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Трансфер и размещение включены
+                            </div>
                         </div>
                     </div>
                     <div class="course-sidebar-panel">
                         <div class="course-details-list">
                             <div class="course-detail-row">
                                 <span class="detail-label">Формат</span>
-                                <span class="detail-value">📍 Очно + культпрограмма</span>
+                                <span class="detail-value">Очно + культурная программа</span>
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Продолжительность</span>
-                                <span class="detail-value">108 ак.ч. · 5 дней</span>
+                                <span class="detail-value">108 ак.ч. / 5 дней</span>
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Дата</span>
@@ -502,8 +698,8 @@
                         <div class="course-price-block">
                             <div class="course-price-label">Стоимость</div>
                             <div class="course-price-big">40 470 ₽</div>
-                            <a href="contacts.html" class="btn-course-book special">Записаться</a>
-                            <a href="course-vesennyaya-kazan.html" class="btn-course-more">Подробная программа →</a>
+                            <a href="contacts.html" class="btn-course-book special-btn">Записаться</a>
+                            <a href="course-vesennyaya-kazan.html" class="btn-course-more">Подробная программа</a>
                         </div>
                     </div>
                 </div>
@@ -520,23 +716,53 @@
                         <p>Курс для специалистов организаций, закупающих товары по 223-ФЗ. Разбираем специфику
                             корпоративных закупок, положения о закупках и актуальную практику.</p>
                         <div class="course-bullets">
-                            <div class="course-bullet">Сфера применения 223-ФЗ</div>
-                            <div class="course-bullet">Разработка Положения о закупках</div>
-                            <div class="course-bullet">Особенности закупок у МСП</div>
-                            <div class="course-bullet">Работа в ГИС «Закупки РТ»</div>
-                            <div class="course-bullet">Контроль и отчётность</div>
-                            <div class="course-bullet">Антимонопольные требования</div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Сфера применения 223-ФЗ
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Разработка Положения о закупках
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Особенности закупок у МСП
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Работа в ГИС «Закупки РТ»
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Контроль и отчётность
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Антимонопольные требования
+                            </div>
                         </div>
                     </div>
                     <div class="course-sidebar-panel">
                         <div class="course-details-list">
                             <div class="course-detail-row">
                                 <span class="detail-label">Формат</span>
-                                <span class="detail-value">📍 Очно, Казань</span>
+                                <span class="detail-value">Очно, Казань</span>
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Продолжительность</span>
-                                <span class="detail-value">72 ак.ч. · 3 дня</span>
+                                <span class="detail-value">72 ак.ч. / 3 дня</span>
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Ближайшая дата</span>
@@ -544,14 +770,14 @@
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Документ</span>
-                                <span class="detail-value">📜 Удостоверение гос. образца</span>
+                                <span class="detail-value">Удостоверение гос. образца</span>
                             </div>
                         </div>
                         <div class="course-price-block">
                             <div class="course-price-label">Стоимость</div>
                             <div class="course-price-big">16 200 ₽</div>
                             <a href="contacts.html" class="btn-course-book">Записаться</a>
-                            <a href="course-223fz.html" class="btn-course-more">Подробная программа →</a>
+                            <a href="course-223fz.html" class="btn-course-more">Подробная программа</a>
                         </div>
                     </div>
                 </div>
@@ -562,30 +788,59 @@
                         <div class="course-tags">
                             <span class="course-tag tag-red">Поставщикам</span>
                             <span class="course-tag tag-blue">44-ФЗ / 223-ФЗ</span>
-                            <span class="course-tag"
-                                style="background: rgba(107,114,128,0.1); color: var(--text-secondary);">Май 2026</span>
+                            <span class="course-tag tag-gray">Май 2026</span>
                         </div>
                         <h2>Очный курс для поставщиков (40 ак.ч.)</h2>
                         <p>Практический интенсив для тех, кто хочет эффективно участвовать в государственных и
                             корпоративных тендерах. Поиск закупок, подготовка заявок, работа на ЭТП.</p>
                         <div class="course-bullets">
-                            <div class="course-bullet">Как найти перспективные тендеры</div>
-                            <div class="course-bullet">Анализ документации на соответствие</div>
-                            <div class="course-bullet">Подготовка заявки без ошибок</div>
-                            <div class="course-bullet">Работа на ЭТП «Закупки Татарстана»</div>
-                            <div class="course-bullet">Защита при отклонении заявки</div>
-                            <div class="course-bullet">Исполнение контракта и приёмка</div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Как найти перспективные тендеры
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Анализ документации на соответствие
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Подготовка заявки без ошибок
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Работа на ЭТП «Закупки Татарстана»
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Защита при отклонении заявки
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Исполнение контракта и приёмка
+                            </div>
                         </div>
                     </div>
                     <div class="course-sidebar-panel">
                         <div class="course-details-list">
                             <div class="course-detail-row">
                                 <span class="detail-label">Формат</span>
-                                <span class="detail-value">📍 Очно, Казань</span>
+                                <span class="detail-value">Очно, Казань</span>
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Продолжительность</span>
-                                <span class="detail-value">40 ак.ч. · 3 дня</span>
+                                <span class="detail-value">40 ак.ч. / 3 дня</span>
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Ближайшая дата</span>
@@ -593,59 +848,72 @@
                             </div>
                             <div class="course-detail-row">
                                 <span class="detail-label">Документ</span>
-                                <span class="detail-value">🎓 Сертификат</span>
+                                <span class="detail-value">Сертификат</span>
                             </div>
                         </div>
                         <div class="course-price-block">
                             <div class="course-price-label">Стоимость</div>
                             <div class="course-price-big">20 000 ₽</div>
                             <a href="contacts.html" class="btn-course-book">Записаться</a>
-                            <a href="course-suppliers.html" class="btn-course-more">Подробная программа →</a>
+                            <a href="course-suppliers.html" class="btn-course-more">Подробная программа</a>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
-        <!-- Benefits strip -->
+        <!-- Benefits -->
         <section class="benefits-strip">
-            <div class="container">
-                <div class="benefits-row">
+            <div class="container" style="padding: 0;">
+                <div class="benefits-row" style="max-width: 100%;">
                     <div class="benefit-item">
-                        <div class="benefit-icon-wrap">🏛️</div>
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" />
+                            <path d="M3 9h18M9 21V9" />
+                        </svg>
                         <h4>Подведомственная организация</h4>
-                        <p>Мы входим в структуру Госкомитета РТ по закупкам и знаем систему изнутри</p>
+                        <p>Входим в структуру Госкомитета РТ по закупкам и знаем систему изнутри</p>
                     </div>
                     <div class="benefit-item">
-                        <div class="benefit-icon-wrap">👨‍🏫</div>
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
                         <h4>Эксперты-практики</h4>
-                        <p>Преподаватели — действующие специалисты с реальным опытом работы в закупках</p>
+                        <p>Преподаватели — действующие специалисты с реальным опытом в закупках</p>
                     </div>
                     <div class="benefit-item">
-                        <div class="benefit-icon-wrap">💻</div>
+                        <svg viewBox="0 0 24 24">
+                            <rect x="2" y="3" width="20" height="15" />
+                            <polyline points="8 21 12 17 16 21" />
+                        </svg>
                         <h4>Работа в ЕИС и ЭТП</h4>
-                        <p>Практические занятия прямо на компьютерах. Выходите с готовыми навыками</p>
+                        <p>Практические занятия на компьютерах. Выходите с готовыми навыками</p>
                     </div>
                     <div class="benefit-item">
-                        <div class="benefit-icon-wrap">📜</div>
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                        </svg>
                         <h4>Удостоверение гос. образца</h4>
-                        <p>Принимается работодателями, надзорными и контролирующими органами</p>
+                        <p>Принимается работодателями и надзорными органами</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- CTA -->
-        <div class="container" style="padding-bottom: 80px;">
-            <div
-                style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; padding: 50px; text-align: center;">
-                <h3 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 14px;">Нужен корпоративный формат?</h3>
-                <p style="color: var(--text-secondary); max-width: 520px; margin: 0 auto 32px; line-height: 1.6;">
-                    Организуем выездное обучение для вашего коллектива на базе вашей организации или в нашем центре под
+        <div class="container">
+            <div class="bottom-cta">
+                <h3>Нужен корпоративный формат?</h3>
+                <p>Организуем выездное обучение для вашего коллектива на базе вашей организации или в нашем центре под
                     вашу программу.</p>
-                <a href="tel:88001017892" class="btn-primary" style="display: inline-block;">📞 Обсудить корпоративный
-                    запрос</a>
+                <a href="tel:88001017892" class="btn-primary"
+                    style="display: inline-block; padding: 14px 36px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.07em;">Обсудить
+                    корпоративный запрос</a>
             </div>
         </div>
     </main>
