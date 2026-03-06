@@ -4,9 +4,358 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Индивидуальное обучение | CRZRT</title>
+    <title>Индивидуальное обучение | Центр развития закупок РТ</title>
+    <meta name="description"
+        content="Персональная программа обучения по 44-ФЗ и 223-ФЗ под ваши задачи. Работа один на один с ведущим экспертом." />
     <link rel="stylesheet" href="style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .subnav {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 72px;
+            z-index: 100;
+        }
+
+        .subnav-inner {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .subnav-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .subnav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 22px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            white-space: nowrap;
+            border-right: 1px solid var(--card-border);
+            transition: all 0.2s;
+        }
+
+        .subnav-link svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .subnav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .subnav-link.active {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .courses-page-header {
+            padding: 72px 0 56px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 24px;
+        }
+
+        .breadcrumb a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb span {
+            opacity: 0.5;
+        }
+
+        /* VIP card */
+        .vip-card-wrapper {
+            border: 1px solid var(--card-border);
+            margin-top: 0;
+        }
+
+        .vip-card {
+            padding: 64px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 60px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .vip-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border: 1px solid #c8a217;
+            color: #c8a217;
+            margin-bottom: 20px;
+        }
+
+        .vip-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+
+        .vip-desc {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 36px;
+        }
+
+        .two-col-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .col-list h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 14px;
+        }
+
+        .col-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .col-list li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .col-list li::before {
+            content: '→';
+            color: var(--accent-color);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .vip-meta {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            padding-top: 28px;
+            border-top: 1px solid var(--card-border);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .vip-meta span {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .vip-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .vip-price-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .vip-price {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .vip-price-sub {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        .btn-vip {
+            display: block;
+            text-align: center;
+            padding: 15px 24px;
+            background: var(--accent-color);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 1px solid var(--accent-color);
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-vip:hover {
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        /* Steps */
+        .steps-block {
+            padding: 60px 64px;
+        }
+
+        .steps-block h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 36px;
+        }
+
+        .steps-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .step-num {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        .step-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .bottom-cta {
+            border: 1px solid var(--card-border);
+            padding: 56px;
+            text-align: center;
+            margin: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bottom-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(41, 151, 255, 0.04) 0%, transparent 60%);
+        }
+
+        .bottom-cta h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .bottom-cta p {
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto 36px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .btn-cta-primary {
+            display: inline-block;
+            padding: 14px 36px;
+            background: var(--accent-color);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 1px solid var(--accent-color);
+            transition: all 0.3s;
+        }
+
+        .btn-cta-primary:hover {
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 900px) {
+            .vip-card {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 36px;
+            }
+
+            .steps-row {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+
+            .steps-block {
+                padding: 40px 36px;
+            }
+
+            .two-col-list {
+                grid-template-columns: 1fr;
+            }
+
+            .bottom-cta {
+                padding: 40px 28px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .vip-card {
+                padding: 24px;
+            }
+
+            .steps-block {
+                padding: 24px;
+            }
+
+            .subnav-link {
+                padding: 12px 16px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -16,148 +365,151 @@
     <div id="global-header"></div>
     <script src="header.js"></script>
 
+    <nav class="subnav">
+        <div class="container" style="padding: 0; max-width: 100%;">
+            <div class="subnav-inner">
+                <a href="obuchenie.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>Все форматы</a>
+                <a href="courses.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="14" />
+                        <path d="M8 21h8M12 17v4" />
+                    </svg>Очное</a>
+                <a href="distance.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="15" />
+                        <polyline points="8 21 12 17 16 21" />
+                    </svg>Дистанционное</a>
+                <a href="seminars.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>Семинары</a>
+                <a href="webinars.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <polygon points="23 7 16 12 23 17 23 7" />
+                        <rect x="1" y="5" width="15" height="14" />
+                    </svg>Вебинары</a>
+                <a href="individual.html" class="subnav-link active"><svg viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>Индивидуальное</a>
+                <a href="testing.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M9 11l3 3L22 4" />
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                    </svg>Тест</a>
+                <a href="team.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>Преподаватели</a>
+                <a href="calendar.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>Календарь</a>
+            </div>
+        </div>
+    </nav>
+
     <main>
-        <section class="page-header">
+        <section class="courses-page-header">
             <div class="container">
-                <h1 class="hero-title" style="font-size: 3rem;">Индивидуальное обучение</h1>
-                <p class="hero-subtitle">Персональная программа под ваши задачи и цели.</p>
+                <div class="breadcrumb">
+                    <a href="index.html">Главная</a><span>/</span>
+                    <a href="obuchenie.html">Обучение</a><span>/</span>
+                    Индивидуальное обучение
+                </div>
+                <h1
+                    style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px;">
+                    Индивидуальное обучение</h1>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 620px; line-height: 1.7;">
+                    Персональная программа, разработанная под ваши конкретные задачи и цели. Работа один на один с
+                    ведущим экспертом в удобное для вас время.
+                </p>
             </div>
         </section>
 
-        <section class="courses-layout">
-            <div class="container courses-container">
-                <aside class="courses-sidebar">
-                    <nav class="category-nav">
-                        <a href="courses.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Очное обучение</span>
-                                <span class="category-label">Повышение квалификации</span>
+        <div class="container">
+            <div class="vip-card-wrapper">
+                <div class="vip-card">
+                    <div>
+                        <div class="vip-tag">VIP / Индивидуально</div>
+                        <h2 class="vip-title">Индивидуальный практикум «Под ключ»</h2>
+                        <p class="vip-desc">Персональная программа обучения, разработанная специально под задачи вашей
+                            организации или ваши личные профессиональные цели. Работа один на один с ведущим экспертом
+                            без лишней теории — только то, что нужно вам.</p>
+                        <div class="two-col-list">
+                            <div class="col-list">
+                                <h4>Для поставщиков</h4>
+                                <ul>
+                                    <li>Поиск и анализ конкретных закупок</li>
+                                    <li>Оценка перспектив участия</li>
+                                    <li>Подготовка реальных заявок</li>
+                                    <li>Минимизация рисков отклонения</li>
+                                </ul>
                             </div>
-                        </a>
-                        <a href="distance.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Дистанционное обучение</span>
-                                <span class="category-label">Учитесь где угодно</span>
-                            </div>
-                        </a>
-                        <a href="calendar.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Календарь</span>
-                                <span class="category-label">График мероприятий</span>
-                            </div>
-                        </a>
-                        <a href="seminars.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Семинары</span>
-                                <span class="category-label">Обмен опытом</span>
-                            </div>
-                        </a>
-                        <a href="webinars.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Вебинары</span>
-                                <span class="category-label">Прямые эфиры</span>
-                            </div>
-                        </a>
-                        <a href="individual.html" class="category-item active">
-                            <div class="category-info">
-                                <span class="category-name">Индивидуальное обучение</span>
-                                <span class="category-label">Персональный подход</span>
-                            </div>
-                        </a>
-                        <a href="testing.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Пробное тестирование</span>
-                                <span class="category-label">Проверьте свои знания</span>
-                            </div>
-                        </a>
-                        <a href="team.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Преподаватели</span>
-                                <span class="category-label">Наши эксперты</span>
-                            </div>
-                        </a>
-                    </nav>
-                </aside>
-                <div class="courses-main">
-                    <div class="courses-grid" style="grid-template-columns: 1fr;">
-                        <div class="course-card featured" data-tilt style="max-width: 100%;">
-                            <div class="course-content">
-                                <span class="tag">VIP / Индивидуально</span>
-                                <h3 class="course-title">Индивидуальный практикум «Под ключ»</h3>
-                                <p class="course-desc" style="font-size: 1.1rem; margin-bottom: 30px;">
-                                    Персональная программа обучения, разработанная специально под задачи вашей
-                                    организации
-                                    или ваши личные профессиональные цели. Работа один на один с ведущим экспертом.
-                                </p>
-
-                                <div class="features-list"
-                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px;">
-                                    <div class="feature-item">
-                                        <strong>Для поставщиков:</strong>
-                                        <ul style="margin-top: 10px; font-size: 0.95rem; color: var(--text-secondary);">
-                                            <li>• Поиск и анализ конкретных закупок</li>
-                                            <li>• Оценка перспектив участия</li>
-                                            <li>• Подготовка реальных заявок</li>
-                                            <li>• Минимизация рисков отклонения</li>
-                                        </ul>
-                                    </div>
-                                    <div class="feature-item">
-                                        <strong>Для заказчиков:</strong>
-                                        <ul style="margin-top: 10px; font-size: 0.95rem; color: var(--text-secondary);">
-                                            <li>• Экспертиза вашей документации</li>
-                                            <li>• Разбор сложных кейсов и жалоб</li>
-                                            <li>• Подготовка к проверкам ФАС</li>
-                                            <li>• Настройка работы в ЕИС</li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div class="course-meta"
-                                    style="border-top: 1px solid var(--card-border); padding-top: 20px;">
-                                    <span>Гибкий график</span>
-                                    <span>Любой объем часов</span>
-                                </div>
-                                <div class="course-price">От 12 000 ₽</div>
-                                <a href="contacts.html" class="btn-primary"
-                                    style="display: inline-block; margin-top: 20px; padding: 15px 40px;">Обсудить
-                                    программу</a>
+                            <div class="col-list">
+                                <h4>Для заказчиков</h4>
+                                <ul>
+                                    <li>Экспертиза вашей документации</li>
+                                    <li>Разбор сложных кейсов и жалоб</li>
+                                    <li>Подготовка к проверкам ФАС</li>
+                                    <li>Настройка работы в ЕИС</li>
+                                </ul>
                             </div>
                         </div>
+                        <div class="vip-meta">
+                            <div>Формат: <span>Онлайн или очно</span></div>
+                            <div>График: <span>Гибкий, под вас</span></div>
+                            <div>Объём: <span>Любое кол-во часов</span></div>
+                        </div>
                     </div>
+                    <div class="vip-panel">
+                        <div>
+                            <div class="vip-price-label">Стоимость</div>
+                            <div class="vip-price">от 12 000 ₽</div>
+                            <div class="vip-price-sub">за сессию / по договорённости</div>
+                        </div>
+                        <div>
+                            <a href="contacts.html" class="btn-vip">Обсудить программу</a>
+                        </div>
+                    </div>
+                </div>
 
-                    <div
-                        style="margin-top: 60px; padding: 40px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px;">
-                        <h4 style="font-size: 1.5rem; margin-bottom: 20px;">Как проходит обучение?</h4>
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px;">
-                            <div class="step">
-                                <div
-                                    style="font-size: 2rem; color: var(--accent-color); font-weight: 700; margin-bottom: 10px;">
-                                    01</div>
-                                <h5>Аудит задач</h5>
-                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Определяем ваши болевые
-                                    точки и конкретные вопросы, которые нужно решить.</p>
-                            </div>
-                            <div class="step">
-                                <div
-                                    style="font-size: 2rem; color: var(--accent-color); font-weight: 700; margin-bottom: 10px;">
-                                    02</div>
-                                <h5>План-программа</h5>
-                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Составляем индивидуальный
-                                    план занятий, ориентированный на результат.</p>
-                            </div>
-                            <div class="step">
-                                <div
-                                    style="font-size: 2rem; color: var(--accent-color); font-weight: 700; margin-bottom: 10px;">
-                                    03</div>
-                                <h5>Практика</h5>
-                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Работаем над живыми
-                                    примерами и вашими реальными документами.</p>
-                            </div>
+                <div class="steps-block">
+                    <h3>Как проходит обучение?</h3>
+                    <div class="steps-row">
+                        <div>
+                            <div class="step-num">01</div>
+                            <div class="step-title">Аудит задач</div>
+                            <p class="step-desc">Определяем ваши болевые точки и конкретные вопросы, которые нужно
+                                решить. Вы описываете ситуацию — мы предлагаем план.</p>
+                        </div>
+                        <div>
+                            <div class="step-num">02</div>
+                            <div class="step-title">План-программа</div>
+                            <p class="step-desc">Составляем индивидуальный план занятий, ориентированный на результат.
+                                Никаких лишних тем — только то, что нужно именно вам.</p>
+                        </div>
+                        <div>
+                            <div class="step-num">03</div>
+                            <div class="step-title">Практика</div>
+                            <p class="step-desc">Работаем над живыми примерами и вашими реальными документами. После
+                                занятий вы сразу применяете знания на практике.</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <div class="bottom-cta">
+                <h3>Готовы начать?</h3>
+                <p>Оставьте заявку и мы свяжемся с вами в течение одного рабочего дня для обсуждения программы и
+                    формата.</p>
+                <a href="contacts.html" class="btn-cta-primary">Оставить заявку</a>
+            </div>
+        </div>
     </main>
 
     <footer class="footer">
@@ -167,24 +519,16 @@
                 <p>© 2026 АО «Центр развития закупок РТ»</p>
             </div>
             <div class="footer-col">
-                <h4>Обучение</h4>
-                <a href="courses.html">Заказчикам</a>
-                <a href="courses.html">Поставщикам</a>
-                <a href="calendar.html">Календарь</a>
+                <h4>Обучение</h4><a href="courses.html">Заказчикам</a><a href="courses.html">Поставщикам</a><a
+                    href="calendar.html">Календарь</a>
             </div>
             <div class="footer-col">
-                <h4>Компания</h4>
-                <a href="about.html">О нас</a>
-                <a href="contacts.html">Контакты</a>
-                <a href="knowledge.html">База знаний</a>
+                <h4>Компания</h4><a href="about.html">О нас</a><a href="contacts.html">Контакты</a><a
+                    href="knowledge.html">База знаний</a>
             </div>
             <div class="footer-col">
-                <h4>Связаться</h4>
-                <a href="tel:88001017892">8 (800) 101-78-92</a>
-                <div class="socials">
-                    <a href="https://t.me/crzrt">TG</a>
-                    <a href="https://vk.com/aocrz">VK</a>
-                </div>
+                <h4>Связаться</h4><a href="tel:88001017892">8 (800) 101-78-92</a>
+                <div class="socials"><a href="https://t.me/crzrt">TG</a><a href="https://vk.com/aocrz">VK</a></div>
             </div>
         </div>
     </footer>

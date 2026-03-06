@@ -578,6 +578,13 @@
                     </svg>
                     Консалтинг
                 </div>
+                <div class="nav-item" data-target="education">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                        <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                    </svg>
+                    Обучение
+                </div>
                 <div class="nav-item" data-target="users">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -884,6 +891,59 @@
                 </div>
             </div>
 
+            <!-- ═════════════ EDUCATION BLOCK ═════════════ -->
+            <div id="educationBlock" class="admin-block" data-required-role="education">
+
+                <!-- Sub-tabs -->
+                <div style="display:flex; gap:0; margin-bottom:30px; border:1px solid var(--card-border);">
+                    <button class="edu-tab active" data-tab="edu-courses"
+                        style="flex:1; padding:14px; background:var(--card-bg); border:none; border-right:1px solid var(--card-border); font-weight:700; font-size:0.85rem; cursor:pointer; color:var(--accent-color); text-transform:uppercase; letter-spacing:0.06em;">Курсы</button>
+                    <button class="edu-tab" data-tab="edu-events"
+                        style="flex:1; padding:14px; background:transparent; border:none; border-right:1px solid var(--card-border); font-weight:700; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em;">Мероприятия</button>
+                    <button class="edu-tab" data-tab="edu-teachers"
+                        style="flex:1; padding:14px; background:transparent; border:none; font-weight:700; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em;">Преподаватели</button>
+                </div>
+
+                <!-- ── Courses ── -->
+                <div id="edu-courses" class="edu-tab-content">
+                    <div class="admin-card">
+                        <div class="card-header"
+                            style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Список курсов</span>
+                            <button class="btn-save" id="btnAddCourse" style="padding:8px 16px; font-size:0.85rem;">+
+                                Добавить курс</button>
+                        </div>
+                        <div id="eduCoursesAdmin" style="display:flex; flex-direction:column; gap:20px;"></div>
+                    </div>
+                </div>
+
+                <!-- ── Events ── -->
+                <div id="edu-events" class="edu-tab-content" style="display:none;">
+                    <div class="admin-card">
+                        <div class="card-header"
+                            style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Ближайшие мероприятия</span>
+                            <button class="btn-save" id="btnAddEvent" style="padding:8px 16px; font-size:0.85rem;">+
+                                Добавить</button>
+                        </div>
+                        <div id="eduEventsAdmin" style="display:flex; flex-direction:column; gap:20px;"></div>
+                    </div>
+                </div>
+
+                <!-- ── Teachers ── -->
+                <div id="edu-teachers" class="edu-tab-content" style="display:none;">
+                    <div class="admin-card">
+                        <div class="card-header"
+                            style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Преподаватели</span>
+                            <button class="btn-save" id="btnAddTeacher" style="padding:8px 16px; font-size:0.85rem;">+
+                                Добавить</button>
+                        </div>
+                        <div id="eduTeachersAdmin" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;"></div>
+                    </div>
+                </div>
+            </div>
+
             <div id="settingsBlock" class="admin-block" data-required-role="superuser">
                 <div class="admin-card">
                     <div class="card-header">Настройки сайта</div>
@@ -952,6 +1012,10 @@
                                 <div class="checkbox-group">
                                     <label><input type="checkbox" class="perm-checkbox" value="contacts"> Редактирование
                                         блока "Реквизиты"</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" class="perm-checkbox" value="education">
+                                        Редактирование раздела "Обучение"</label>
                                 </div>
                             </div>
                         </div>
@@ -1388,6 +1452,449 @@
             }
         };
 
+        // ═══════════════════════════════════════════════
+        //  EDUCATION ADMIN MODULE
+        // ═══════════════════════════════════════════════
+
+        const defaultEducationData = {
+            courses: [
+                {
+                    id: 1, type: 'Очное', law: '44-ФЗ', audience: 'Заказчикам',
+                    title: 'Повышение квалификации по 44-ФЗ (108 ак.ч.)',
+                    description: 'Комплексная программа по 44-ФЗ для специалистов контрактной системы.',
+                    duration: '108 ак.ч. / 5 дней', location: 'Казань, Петербургская 86',
+                    document: 'Удостоверение гос. образца', price: '23 700 ₽',
+                    link: 'course-44fz.html', active: true,
+                    bullets: ['Последние изменения в 44-ФЗ', 'Планирование закупок', 'Электронные процедуры', 'Исполнение контракта']
+                },
+                {
+                    id: 2, type: 'Очное', law: '44-ФЗ', audience: 'Заказчикам',
+                    title: '44-ФЗ + Весенняя Казань',
+                    description: 'Курс по 44-ФЗ + культурная программа по достопримечательностям Казани.',
+                    duration: '108 ак.ч. / 5 дней', location: 'Казань',
+                    document: 'Удостоверение гос. образца', price: '40 470 ₽',
+                    link: 'course-vesennyaya-kazan.html', active: true,
+                    bullets: ['Полная программа 44-ФЗ', 'Экскурсии по Казани', 'Мастер-класс по татарской кухне']
+                },
+                {
+                    id: 3, type: 'Дистанционное', law: '44-ФЗ', audience: 'Заказчикам',
+                    title: 'Профессиональная переподготовка по 44-ФЗ (256 ак.ч.)',
+                    description: 'Онлайн-программа с выдачей диплома государственного образца.',
+                    duration: '256 ак.ч.', location: 'Онлайн',
+                    document: 'Диплом о профессиональной переподготовке', price: '17 500 ₽',
+                    link: 'course-distance-repro.html', active: true,
+                    bullets: ['Правовые основы', 'Электронные процедуры', 'ЕИС и отчётность']
+                }
+            ],
+            events: [
+                { id: 1, title: 'Очный курс: 44-ФЗ (108 ак.ч.)', date: '2026-03-23', month: 'Март', day: '23', format: 'Очно, Казань', price: '23 700 ₽', badge: 'Заказчикам', link: 'course-44fz.html', active: true },
+                { id: 2, title: '44-ФЗ + Весенняя Казань', date: '2026-03-23', month: 'Март', day: '23', format: 'Очно + культурная программа', price: '40 470 ₽', badge: 'Спецпредложение', link: 'course-vesennyaya-kazan.html', active: true },
+                { id: 3, title: 'Очный курс: 223-ФЗ (72 ак.ч.)', date: '2026-03-25', month: 'Март', day: '25', format: 'Очно, Казань', price: '16 200 ₽', badge: 'Заказчикам', link: 'course-223fz.html', active: true },
+                { id: 4, title: 'Очный курс для поставщиков (40 ак.ч.)', date: '2026-05-11', month: 'Май', day: '11', format: 'Очно, Казань', price: '20 000 ₽', badge: 'Поставщикам', link: 'course-suppliers.html', active: true }
+            ],
+            teachers: [
+                { id: 1, name: 'Иванов Иван Иванович', title: 'Руководитель образовательных программ', bio: 'Эксперт в сфере 44-ФЗ и 223-ФЗ с 15-летним опытом. Разработал более 20 учебных программ.', photo: '' },
+                { id: 2, name: 'Петрова Анна Сергеевна', title: 'Ведущий преподаватель по 44-ФЗ', bio: 'Бывший специалист ФАС, практикующий юрист. Провела более 200 семинаров для заказчиков.', photo: '' }
+            ]
+        };
+
+        let savedEduData = JSON.parse(localStorage.getItem('crzrt_education_data')) || {};
+        let educationData = {
+            courses: savedEduData.courses || defaultEducationData.courses,
+            events: savedEduData.events || defaultEducationData.events,
+            teachers: savedEduData.teachers || defaultEducationData.teachers
+        };
+
+        function saveEducationData() {
+            localStorage.setItem('crzrt_education_data', JSON.stringify(educationData));
+        }
+
+        // ── Sub-tab switching ──
+        document.querySelectorAll('.edu-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.edu-tab').forEach(b => {
+                    b.style.background = 'transparent';
+                    b.style.color = 'var(--text-secondary)';
+                    b.classList.remove('active');
+                });
+                btn.style.background = 'var(--card-bg)';
+                btn.style.color = 'var(--accent-color)';
+                btn.classList.add('active');
+                const target = btn.getAttribute('data-tab');
+                document.querySelectorAll('.edu-tab-content').forEach(c => c.style.display = 'none');
+                document.getElementById(target).style.display = 'block';
+            });
+        });
+
+        // ══════════════════════════════════════
+        //  COURSES RENDER
+        // ══════════════════════════════════════
+        function renderEducationAdmin() {
+            renderEduCourses();
+            renderEduEvents();
+            renderEduTeachers();
+        }
+
+        function renderEduCourses() {
+            const container = document.getElementById('eduCoursesAdmin');
+            if (!container) return;
+            container.innerHTML = '';
+            educationData.courses.forEach((course, i) => {
+                container.insertAdjacentHTML('beforeend', `
+                <div style="border:1px solid var(--card-border); border-radius:12px; overflow:hidden; background:var(--card-bg);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 18px; background:rgba(0,0,0,0.1); border-bottom:1px solid var(--card-border);">
+                        <span style="font-weight:700; font-size:0.9rem;">${course.title}</span>
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn-edit" onclick="window.toggleEduCourse(${i})">Ред.</button>
+                            <button class="btn-delete" onclick="window.deleteEduCourse(${i})">Уд.</button>
+                        </div>
+                    </div>
+                    <div id="eduCourseForm_${i}" style="display:none; padding:20px; display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                            <div class="form-group" style="margin:0;">
+                                <label>Тип</label>
+                                <select class="form-control" id="ec_type_${i}">
+                                    <option ${course.type === 'Очное' ? 'selected' : ''}>Очное</option>
+                                    <option ${course.type === 'Дистанционное' ? 'selected' : ''}>Дистанционное</option>
+                                    <option ${course.type === 'Семинар' ? 'selected' : ''}>Семинар</option>
+                                    <option ${course.type === 'Вебинар' ? 'selected' : ''}>Вебинар</option>
+                                    <option ${course.type === 'Индивидуальное' ? 'selected' : ''}>Индивидуальное</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>ФЗ</label>
+                                <select class="form-control" id="ec_law_${i}">
+                                    <option ${course.law === '44-ФЗ' ? 'selected' : ''}>44-ФЗ</option>
+                                    <option ${course.law === '223-ФЗ' ? 'selected' : ''}>223-ФЗ</option>
+                                    <option ${course.law === '44-ФЗ / 223-ФЗ' ? 'selected' : ''}>44-ФЗ / 223-ФЗ</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Аудитория</label>
+                                <select class="form-control" id="ec_audience_${i}">
+                                    <option ${course.audience === 'Заказчикам' ? 'selected' : ''}>Заказчикам</option>
+                                    <option ${course.audience === 'Поставщикам' ? 'selected' : ''}>Поставщикам</option>
+                                    <option ${course.audience === 'Всем' ? 'selected' : ''}>Всем</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Название курса</label>
+                            <input type="text" class="form-control" id="ec_title_${i}" value="${course.title}">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Краткое описание</label>
+                            <textarea class="form-control" id="ec_desc_${i}" style="min-height:80px;">${course.description}</textarea>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div class="form-group" style="margin:0;">
+                                <label>Продолжительность</label>
+                                <input type="text" class="form-control" id="ec_dur_${i}" value="${course.duration}">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Место проведения</label>
+                                <input type="text" class="form-control" id="ec_loc_${i}" value="${course.location}">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Документ по окончании</label>
+                                <input type="text" class="form-control" id="ec_doc_${i}" value="${course.document}">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Стоимость</label>
+                                <input type="text" class="form-control" id="ec_price_${i}" value="${course.price}">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Ссылка на страницу курса</label>
+                            <input type="text" class="form-control" id="ec_link_${i}" value="${course.link}">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Что изучим (каждый пункт с новой строки)</label>
+                            <textarea class="form-control" id="ec_bullets_${i}" style="min-height:100px;">${(course.bullets || []).join('\n')}</textarea>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" id="ec_active_${i}" ${course.active ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--accent-color);">
+                            <label for="ec_active_${i}" style="margin:0;font-size:0.9rem;">Показывать на сайте</label>
+                        </div>
+                        <button class="btn-save" style="align-self:flex-start; padding:10px 24px;" onclick="window.saveEduCourse(${i})">Сохранить курс</button>
+                    </div>
+                </div>`);
+                // Expand form by default for first render visibility — keep closed
+                document.getElementById(`eduCourseForm_${i}`).style.display = 'none';
+            });
+        }
+
+        window.toggleEduCourse = function (i) {
+            const form = document.getElementById(`eduCourseForm_${i}`);
+            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+        };
+
+        window.saveEduCourse = function (i) {
+            const c = educationData.courses[i];
+            c.type = document.getElementById(`ec_type_${i}`).value;
+            c.law = document.getElementById(`ec_law_${i}`).value;
+            c.audience = document.getElementById(`ec_audience_${i}`).value;
+            c.title = document.getElementById(`ec_title_${i}`).value;
+            c.description = document.getElementById(`ec_desc_${i}`).value;
+            c.duration = document.getElementById(`ec_dur_${i}`).value;
+            c.location = document.getElementById(`ec_loc_${i}`).value;
+            c.document = document.getElementById(`ec_doc_${i}`).value;
+            c.price = document.getElementById(`ec_price_${i}`).value;
+            c.link = document.getElementById(`ec_link_${i}`).value;
+            c.active = document.getElementById(`ec_active_${i}`).checked;
+            const bulletsRaw = document.getElementById(`ec_bullets_${i}`).value;
+            c.bullets = bulletsRaw.split('\n').map(s => s.trim()).filter(Boolean);
+            saveEducationData();
+            showToast('Курс сохранён');
+        };
+
+        window.deleteEduCourse = function (i) {
+            if (!confirm('Удалить этот курс?')) return;
+            educationData.courses.splice(i, 1);
+            saveEducationData();
+            renderEduCourses();
+        };
+
+        document.getElementById('btnAddCourse').addEventListener('click', () => {
+            educationData.courses.push({
+                id: Date.now(), type: 'Очное', law: '44-ФЗ', audience: 'Заказчикам',
+                title: 'Новый курс', description: '', duration: '', location: 'Казань',
+                document: 'Удостоверение гос. образца', price: '0 ₽',
+                link: '#', active: false, bullets: []
+            });
+            saveEducationData();
+            renderEduCourses();
+            // Auto-expand last
+            const last = educationData.courses.length - 1;
+            setTimeout(() => {
+                const f = document.getElementById(`eduCourseForm_${last}`);
+                if (f) f.style.display = 'flex';
+            }, 50);
+        });
+
+        // ══════════════════════════════════════
+        //  EVENTS RENDER
+        // ══════════════════════════════════════
+        function renderEduEvents() {
+            const container = document.getElementById('eduEventsAdmin');
+            if (!container) return;
+            container.innerHTML = '';
+            educationData.events.forEach((ev, i) => {
+                container.insertAdjacentHTML('beforeend', `
+                <div style="border:1px solid var(--card-border); border-radius:12px; overflow:hidden; background:var(--card-bg);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 18px; background:rgba(0,0,0,0.1); border-bottom:1px solid var(--card-border);">
+                        <span style="font-weight:700; font-size:0.9rem;">${ev.month} ${ev.day} — ${ev.title}</span>
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn-edit" onclick="window.toggleEduEvent(${i})">Ред.</button>
+                            <button class="btn-delete" onclick="window.deleteEduEvent(${i})">Уд.</button>
+                        </div>
+                    </div>
+                    <div id="eduEventForm_${i}" style="display:none; padding:20px; flex-direction:column; gap:12px;">
+                        <div class="form-group" style="margin:0;">
+                            <label>Название мероприятия</label>
+                            <input type="text" class="form-control" id="ev_title_${i}" value="${ev.title}">
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                            <div class="form-group" style="margin:0;">
+                                <label>Дата (ГГГГ-ММ-ДД)</label>
+                                <input type="date" class="form-control" id="ev_date_${i}" value="${ev.date}">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Месяц (текстом)</label>
+                                <input type="text" class="form-control" id="ev_month_${i}" value="${ev.month}" placeholder="Март">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>День (число)</label>
+                                <input type="text" class="form-control" id="ev_day_${i}" value="${ev.day}" placeholder="23">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div class="form-group" style="margin:0;">
+                                <label>Формат / Место</label>
+                                <input type="text" class="form-control" id="ev_format_${i}" value="${ev.format}">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Стоимость</label>
+                                <input type="text" class="form-control" id="ev_price_${i}" value="${ev.price}">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div class="form-group" style="margin:0;">
+                                <label>Бейдж (напр. «Заказчикам»)</label>
+                                <input type="text" class="form-control" id="ev_badge_${i}" value="${ev.badge}">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>Ссылка</label>
+                                <input type="text" class="form-control" id="ev_link_${i}" value="${ev.link}">
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" id="ev_active_${i}" ${ev.active ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--accent-color);">
+                            <label for="ev_active_${i}" style="margin:0;font-size:0.9rem;">Показывать на сайте</label>
+                        </div>
+                        <button class="btn-save" style="align-self:flex-start; padding:10px 24px;" onclick="window.saveEduEvent(${i})">Сохранить</button>
+                    </div>
+                </div>`);
+                document.getElementById(`eduEventForm_${i}`).style.display = 'none';
+            });
+        }
+
+        window.toggleEduEvent = function (i) {
+            const form = document.getElementById(`eduEventForm_${i}`);
+            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+        };
+
+        window.saveEduEvent = function (i) {
+            const ev = educationData.events[i];
+            ev.title = document.getElementById(`ev_title_${i}`).value;
+            ev.date = document.getElementById(`ev_date_${i}`).value;
+            ev.month = document.getElementById(`ev_month_${i}`).value;
+            ev.day = document.getElementById(`ev_day_${i}`).value;
+            ev.format = document.getElementById(`ev_format_${i}`).value;
+            ev.price = document.getElementById(`ev_price_${i}`).value;
+            ev.badge = document.getElementById(`ev_badge_${i}`).value;
+            ev.link = document.getElementById(`ev_link_${i}`).value;
+            ev.active = document.getElementById(`ev_active_${i}`).checked;
+            saveEducationData();
+            showToast('Мероприятие сохранено');
+        };
+
+        window.deleteEduEvent = function (i) {
+            if (!confirm('Удалить это мероприятие?')) return;
+            educationData.events.splice(i, 1);
+            saveEducationData();
+            renderEduEvents();
+        };
+
+        document.getElementById('btnAddEvent').addEventListener('click', () => {
+            const now = new Date();
+            educationData.events.push({
+                id: Date.now(), title: 'Новое мероприятие',
+                date: now.toISOString().split('T')[0],
+                month: now.toLocaleString('ru', { month: 'long' }),
+                day: String(now.getDate()),
+                format: 'Очно, Казань', price: '0 ₽', badge: 'Заказчикам',
+                link: '#', active: false
+            });
+            saveEducationData();
+            renderEduEvents();
+            const last = educationData.events.length - 1;
+            setTimeout(() => {
+                const f = document.getElementById(`eduEventForm_${last}`);
+                if (f) f.style.display = 'flex';
+            }, 50);
+        });
+
+        // ══════════════════════════════════════
+        //  TEACHERS RENDER
+        // ══════════════════════════════════════
+        function renderEduTeachers() {
+            const container = document.getElementById('eduTeachersAdmin');
+            if (!container) return;
+            container.innerHTML = '';
+            educationData.teachers.forEach((t, i) => {
+                container.insertAdjacentHTML('beforeend', `
+                <div style="border:1px solid var(--card-border); border-radius:12px; padding:20px; background:var(--card-bg); display:flex; flex-direction:column; gap:16px;">
+                    <!-- Photo -->
+                    <div style="position:relative; width:100%; height:180px; border:1px dashed var(--card-border); border-radius:8px; overflow:hidden; cursor:pointer; background:rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center;"
+                         onclick="window.uploadTeacherPhoto(${i})">
+                        <img id="teacher_photo_preview_${i}" src="${t.photo || ''}" alt="" style="width:100%; height:100%; object-fit:cover; object-position:top; display:${t.photo ? 'block' : 'none'};">
+                        <span id="teacher_photo_placeholder_${i}" style="font-size:0.85rem; color:var(--text-secondary); display:${t.photo ? 'none' : 'block'};">
+                            Нажмите, чтобы загрузить фото
+                        </span>
+                        ${t.photo ? `<button class="btn-delete" onclick="event.stopPropagation(); window.clearTeacherPhoto(${i})" style="position:absolute;top:8px;right:8px;padding:4px 10px;font-size:0.75rem;">✕ Удалить</button>` : ''}
+                        <input type="hidden" id="teacher_photo_val_${i}" value="${t.photo || ''}">
+                        <input type="file" id="teacher_photo_input_${i}" accept="image/*" style="display:none;" onchange="window.handleTeacherPhotoChange(event, ${i})">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>ФИО</label>
+                        <input type="text" class="form-control" id="t_name_${i}" value="${t.name}">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>Должность / специализация</label>
+                        <input type="text" class="form-control" id="t_title_${i}" value="${t.title}">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>Краткая биография</label>
+                        <textarea class="form-control" id="t_bio_${i}" style="min-height:80px;">${t.bio}</textarea>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-save" style="flex:1; padding:10px;" onclick="window.saveTeacher(${i})">Сохранить</button>
+                        <button class="btn-delete" style="padding:10px 16px;" onclick="window.deleteTeacher(${i})">Удалить</button>
+                    </div>
+                </div>`);
+            });
+        }
+
+        window.uploadTeacherPhoto = function (i) {
+            document.getElementById(`teacher_photo_input_${i}`).click();
+        };
+
+        window.handleTeacherPhotoChange = function (event, i) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const dataUrl = e.target.result;
+                const preview = document.getElementById(`teacher_photo_preview_${i}`);
+                const placeholder = document.getElementById(`teacher_photo_placeholder_${i}`);
+                const val = document.getElementById(`teacher_photo_val_${i}`);
+                if (preview) { preview.src = dataUrl; preview.style.display = 'block'; }
+                if (placeholder) placeholder.style.display = 'none';
+                if (val) val.value = dataUrl;
+                educationData.teachers[i].photo = dataUrl;
+                saveEducationData();
+                showToast('Фото загружено');
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.clearTeacherPhoto = function (i) {
+            educationData.teachers[i].photo = '';
+            saveEducationData();
+            renderEduTeachers();
+        };
+
+        window.saveTeacher = function (i) {
+            const t = educationData.teachers[i];
+            t.name = document.getElementById(`t_name_${i}`).value;
+            t.title = document.getElementById(`t_title_${i}`).value;
+            t.bio = document.getElementById(`t_bio_${i}`).value;
+            t.photo = document.getElementById(`teacher_photo_val_${i}`).value;
+            saveEducationData();
+            showToast('Преподаватель сохранён');
+        };
+
+        window.deleteTeacher = function (i) {
+            if (!confirm('Удалить преподавателя?')) return;
+            educationData.teachers.splice(i, 1);
+            saveEducationData();
+            renderEduTeachers();
+        };
+
+        document.getElementById('btnAddTeacher').addEventListener('click', () => {
+            educationData.teachers.push({ id: Date.now(), name: 'Новый преподаватель', title: '', bio: '', photo: '' });
+            saveEducationData();
+            renderEduTeachers();
+        });
+
+        // ── Toast helper ──
+        function showToast(msg) {
+            let toast = document.getElementById('adminToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'adminToast';
+                toast.style.cssText = 'position:fixed;bottom:30px;right:30px;background:var(--accent-color);color:#fff;padding:12px 24px;font-weight:600;font-size:0.9rem;z-index:99999;border-radius:0;opacity:0;transition:opacity 0.3s;';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.style.opacity = '0', 2500);
+        }
+
+        // ═══════════════════════════════════════════════
+
         function checkAuth() {
             const session = sessionStorage.getItem('crzrt_admin_session');
             if (session) {
@@ -1454,6 +1961,7 @@
                 const blockTargetMap = {
                     'main-page': 'mainPageBlock',
                     'consulting': 'consultingBlock',
+                    'education': 'educationBlock',
                     'users': 'usersBlock',
                     'about-us': 'aboutUsBlock',
                     'contacts': 'contactsBlock',
@@ -1480,6 +1988,7 @@
                 // Trigger specific renders based on active tab
                 if (currentTarget === 'main-page') renderMainPageAdmin();
                 if (currentTarget === 'consulting') renderConsultingAdmin();
+                if (currentTarget === 'education') renderEducationAdmin();
                 if (currentTarget === 'users') renderUsers();
                 if (currentTarget === 'about-us') renderAboutUsAdmin();
                 if (currentTarget === 'contacts') renderContactsAdmin();
@@ -1487,7 +1996,7 @@
                 // Hide global save button on users tab (it has its own modal)
                 const gBtn = document.getElementById('globalSaveBtn');
                 if (gBtn) {
-                    gBtn.style.display = (currentTarget === 'users' || currentTarget === 'settings') ? 'none' : 'flex';
+                    gBtn.style.display = (currentTarget === 'users' || currentTarget === 'settings' || currentTarget === 'education') ? 'none' : 'flex';
                 }
             } else {
                 permissionDenied.style.display = 'block';

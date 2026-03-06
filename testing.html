@@ -4,9 +4,408 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Пробное тестирование | CRZRT</title>
+    <title>Пробное тестирование | Центр развития закупок РТ</title>
+    <meta name="description"
+        content="Бесплатные тесты по 44-ФЗ и 223-ФЗ. Проверьте уровень знаний законодательства о госзакупках онлайн." />
     <link rel="stylesheet" href="style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .subnav {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 72px;
+            z-index: 100;
+        }
+
+        .subnav-inner {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .subnav-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .subnav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 22px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            white-space: nowrap;
+            border-right: 1px solid var(--card-border);
+            transition: all 0.2s;
+        }
+
+        .subnav-link svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .subnav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .subnav-link.active {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .courses-page-header {
+            padding: 72px 0 56px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 24px;
+        }
+
+        .breadcrumb a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb span {
+            opacity: 0.5;
+        }
+
+        .course-list {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--card-border);
+            border-top: none;
+        }
+
+        .course-full-card {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            border-top: 1px solid var(--card-border);
+            transition: background 0.3s;
+            position: relative;
+        }
+
+        .course-full-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 0;
+            background: var(--accent-color);
+            transition: height 0.4s;
+        }
+
+        .course-full-card:hover::before {
+            height: 100%;
+        }
+
+        .course-full-card:hover {
+            background: var(--card-bg);
+        }
+
+        .course-body {
+            padding: 44px 44px 44px 52px;
+        }
+
+        .course-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .course-tag {
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-radius: 0;
+            border: 1px solid;
+        }
+
+        .tag-blue {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .tag-green {
+            border-color: #21c55d;
+            color: #21c55d;
+        }
+
+        .tag-gray {
+            border-color: var(--card-border);
+            color: var(--text-secondary);
+        }
+
+        .course-body h2 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 14px;
+        }
+
+        .course-body>p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+        }
+
+        .course-bullets {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .course-bullet {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        .course-bullet svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--accent-color);
+            fill: none;
+            stroke-width: 2.5;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .course-sidebar-panel {
+            border-left: 1px solid var(--card-border);
+            padding: 44px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .course-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .course-detail-row {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .detail-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .course-price-block {
+            border-top: 1px solid var(--card-border);
+            padding-top: 24px;
+        }
+
+        .course-price-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .course-price-big {
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            color: #21c55d;
+        }
+
+        .btn-course-book {
+            display: block;
+            text-align: center;
+            padding: 13px 20px;
+            background: var(--accent-color);
+            color: #fff;
+            border-radius: 0;
+            font-weight: 700;
+            font-size: 0.82rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            transition: all 0.3s;
+            border: 1px solid var(--accent-color);
+        }
+
+        .btn-course-book:hover {
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        /* Why block */
+        .why-block {
+            border: 1px solid var(--card-border);
+            border-top: none;
+            padding: 52px;
+        }
+
+        .why-block h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 28px;
+        }
+
+        .why-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+        }
+
+        .why-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 24px;
+            border: 1px solid var(--card-border);
+        }
+
+        .why-icon {
+            font-size: 1.5rem;
+        }
+
+        .why-item h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .why-item p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .bottom-cta {
+            border: 1px solid var(--card-border);
+            padding: 56px;
+            text-align: center;
+            margin: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bottom-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(41, 151, 255, 0.04) 0%, transparent 60%);
+        }
+
+        .bottom-cta h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .bottom-cta p {
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto 36px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .btn-cta-primary {
+            display: inline-block;
+            padding: 14px 36px;
+            background: var(--accent-color);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 1px solid var(--accent-color);
+            transition: all 0.3s;
+        }
+
+        .btn-cta-primary:hover {
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 900px) {
+            .course-full-card {
+                grid-template-columns: 1fr;
+            }
+
+            .course-sidebar-panel {
+                border-left: none;
+                border-top: 1px solid var(--card-border);
+            }
+
+            .course-bullets {
+                grid-template-columns: 1fr;
+            }
+
+            .why-list {
+                grid-template-columns: 1fr;
+            }
+
+            .why-block {
+                padding: 36px;
+            }
+
+            .bottom-cta {
+                padding: 40px 28px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .course-body {
+                padding: 28px;
+            }
+
+            .course-sidebar-panel {
+                padding: 28px;
+            }
+
+            .subnav-link {
+                padding: 12px 16px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -16,140 +415,213 @@
     <div id="global-header"></div>
     <script src="header.js"></script>
 
+    <nav class="subnav">
+        <div class="container" style="padding: 0; max-width: 100%;">
+            <div class="subnav-inner">
+                <a href="obuchenie.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>Все форматы</a>
+                <a href="courses.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="14" />
+                        <path d="M8 21h8M12 17v4" />
+                    </svg>Очное</a>
+                <a href="distance.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="15" />
+                        <polyline points="8 21 12 17 16 21" />
+                    </svg>Дистанционное</a>
+                <a href="seminars.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>Семинары</a>
+                <a href="webinars.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <polygon points="23 7 16 12 23 17 23 7" />
+                        <rect x="1" y="5" width="15" height="14" />
+                    </svg>Вебинары</a>
+                <a href="individual.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>Индивидуальное</a>
+                <a href="testing.html" class="subnav-link active"><svg viewBox="0 0 24 24">
+                        <path d="M9 11l3 3L22 4" />
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                    </svg>Тест</a>
+                <a href="team.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>Преподаватели</a>
+                <a href="calendar.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>Календарь</a>
+            </div>
+        </div>
+    </nav>
+
     <main>
-        <section class="page-header">
+        <section class="courses-page-header">
             <div class="container">
-                <h1 class="hero-title" style="font-size: 3rem;">Пробное тестирование</h1>
-                <p class="hero-subtitle">Проверьте свои знания законодательства о закупках.</p>
+                <div class="breadcrumb">
+                    <a href="index.html">Главная</a><span>/</span>
+                    <a href="obuchenie.html">Обучение</a><span>/</span>
+                    Пробное тестирование
+                </div>
+                <h1
+                    style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px;">
+                    Пробное тестирование</h1>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 620px; line-height: 1.7;">
+                    Бесплатные тесты по 44-ФЗ и 223-ФЗ для оценки текущего уровня знаний. Выявите пробелы и определите,
+                    с чего начать обучение.
+                </p>
             </div>
         </section>
 
-        <section class="courses-layout">
-            <div class="container courses-container">
-                <aside class="courses-sidebar">
-                    <nav class="category-nav">
-                        <a href="courses.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Очное обучение</span>
-                                <span class="category-label">Повышение квалификации</span>
-                            </div>
-                        </a>
-                        <a href="distance.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Дистанционное обучение</span>
-                                <span class="category-label">Учитесь где угодно</span>
-                            </div>
-                        </a>
-                        <a href="calendar.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Календарь</span>
-                                <span class="category-label">График мероприятий</span>
-                            </div>
-                        </a>
-                        <a href="seminars.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Семинары</span>
-                                <span class="category-label">Обмен опытом</span>
-                            </div>
-                        </a>
-                        <a href="webinars.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Вебинары</span>
-                                <span class="category-label">Прямые эфиры</span>
-                            </div>
-                        </a>
-                        <a href="individual.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Индивидуальное обучение</span>
-                                <span class="category-label">Персональный подход</span>
-                            </div>
-                        </a>
-                        <a href="testing.html" class="category-item active">
-                            <div class="category-info">
-                                <span class="category-name">Пробное тестирование</span>
-                                <span class="category-label">Проверьте свои знания</span>
-                            </div>
-                        </a>
-                        <a href="team.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Преподаватели</span>
-                                <span class="category-label">Наши эксперты</span>
-                            </div>
-                        </a>
-                    </nav>
-                </aside>
-                <div class="courses-main">
-                    <div class="courses-grid">
-                        <div class="course-card" data-tilt>
-                            <div class="course-content">
-                                <span class="tag">Тест / 44-ФЗ</span>
-                                <h3 class="course-title">Проверка знаний 44-ФЗ</h3>
-                                <p class="course-desc">30 вопросов по основным положениям контрактной системы. Тест
-                                    включает вопросы по планированию, процедурам и исполнению контрактов.</p>
-                                <div class="course-meta">
-                                    <span>Бесплатно</span>
-                                    <span>45 минут</span>
-                                </div>
-                                <a href="#" class="btn-link" style="margin-top: 20px;">Начать тест <span
-                                        class="arrow">→</span></a>
-                            </div>
-                        </div>
+        <div class="container">
+            <div class="course-list">
 
-                        <div class="course-card" data-tilt>
-                            <div class="course-content">
-                                <span class="tag">Тест / 223-ФЗ</span>
-                                <h3 class="course-title">Основы 223-ФЗ</h3>
-                                <p class="course-desc">Проверьте свое понимание специфики закупок отдельными видами
-                                    юридических лиц.</p>
-                                <div class="course-meta">
-                                    <span>Бесплатно</span>
-                                    <span>30 минут</span>
-                                </div>
-                                <a href="#" class="btn-link" style="margin-top: 20px;">Начать тест <span
-                                        class="arrow">→</span></a>
-                            </div>
+                <div class="course-full-card">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-blue">44-ФЗ</span>
+                            <span class="course-tag tag-green">Бесплатно</span>
+                        </div>
+                        <h2>Проверка знаний 44-ФЗ</h2>
+                        <p>30 вопросов по основным положениям контрактной системы. Тест охватывает всё: от планирования
+                            закупок до исполнения контракта, отчётности в ЕИС и антимонопольной практики.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet"><svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>Планирование и НМЦК</div>
+                            <div class="course-bullet"><svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>Конкурентные процедуры</div>
+                            <div class="course-bullet"><svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>Исполнение контракта</div>
+                            <div class="course-bullet"><svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>Закупки у единственного поставщика</div>
                         </div>
                     </div>
+                    <div class="course-sidebar-panel">
+                        <div class="course-details-list">
+                            <div class="course-detail-row"><span class="detail-label">Формат</span><span
+                                    class="detail-value">Онлайн-тест</span></div>
+                            <div class="course-detail-row"><span class="detail-label">Количество вопросов</span><span
+                                    class="detail-value">30 вопросов</span></div>
+                            <div class="course-detail-row"><span class="detail-label">Время</span><span
+                                    class="detail-value">≈ 45 минут</span></div>
+                            <div class="course-detail-row"><span class="detail-label">Результат</span><span
+                                    class="detail-value">Мгновенная оценка знаний</span></div>
+                        </div>
+                        <div class="course-price-block">
+                            <div class="course-price-label">Стоимость</div>
+                            <div class="course-price-big">Бесплатно</div>
+                            <a href="#" class="btn-course-book">Начать тест</a>
+                        </div>
+                    </div>
+                </div>
 
-                    <div
-                        style="margin-top: 60px; padding: 30px; background: var(--card-bg); border: 1px solid var(--card-border);">
-                        <h4>Зачем проходить тестирование?</h4>
-                        <ul style="margin-top: 20px; display: grid; gap: 10px;">
-                            <li>• Оценка текущего уровня знаний перед курсом повышения квалификации</li>
-                            <li>• Подготовка к аттестации</li>
-                            <li>• Выявление "пробелов" в знании актуального законодательства</li>
-                        </ul>
+                <div class="course-full-card">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-blue">223-ФЗ</span>
+                            <span class="course-tag tag-green">Бесплатно</span>
+                        </div>
+                        <h2>Основы 223-ФЗ</h2>
+                        <p>Проверьте своё понимание специфики закупок отдельными видами юридических лиц. Тест включает
+                            вопросы по положению о закупках, малым закупкам, работе в ГИС и требованиям к МСП.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet"><svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>Сфера применения 223-ФЗ</div>
+                            <div class="course-bullet"><svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>Положение о закупках</div>
+                            <div class="course-bullet"><svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>Закупки у МСП</div>
+                            <div class="course-bullet"><svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>Работа в ГИС «Закупки РТ»</div>
+                        </div>
+                    </div>
+                    <div class="course-sidebar-panel">
+                        <div class="course-details-list">
+                            <div class="course-detail-row"><span class="detail-label">Формат</span><span
+                                    class="detail-value">Онлайн-тест</span></div>
+                            <div class="course-detail-row"><span class="detail-label">Количество вопросов</span><span
+                                    class="detail-value">25 вопросов</span></div>
+                            <div class="course-detail-row"><span class="detail-label">Время</span><span
+                                    class="detail-value">≈ 30 минут</span></div>
+                            <div class="course-detail-row"><span class="detail-label">Результат</span><span
+                                    class="detail-value">Мгновенная оценка знаний</span></div>
+                        </div>
+                        <div class="course-price-block">
+                            <div class="course-price-label">Стоимость</div>
+                            <div class="course-price-big">Бесплатно</div>
+                            <a href="#" class="btn-course-book">Начать тест</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="why-block">
+                <h3>Зачем проходить тестирование?</h3>
+                <div class="why-list">
+                    <div class="why-item">
+                        <div class="why-icon">🎯</div>
+                        <h4>Оценка перед курсом</h4>
+                        <p>Определите стартовый уровень знаний перед записью на курс повышения квалификации. Выберите
+                            подходящую программу.</p>
+                    </div>
+                    <div class="why-item">
+                        <div class="why-icon">📋</div>
+                        <h4>Подготовка к аттестации</h4>
+                        <p>Прорепетируйте аттестационный экзамен в спокойной обстановке. Тест охватывает те же темы, что
+                            и официальная аттестация.</p>
+                    </div>
+                    <div class="why-item">
+                        <div class="why-icon">🔍</div>
+                        <h4>Выявление пробелов</h4>
+                        <p>Обнаружьте слабые места в знании актуального законодательства, чтобы сосредоточить усилия на
+                            нужных темах.</p>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <div class="bottom-cta">
+                <h3>Нужна помощь в подготовке к аттестации?</h3>
+                <p>После прохождения теста мы поможем подобрать оптимальную программу обучения с учётом ваших
+                    результатов.</p>
+                <a href="contacts.html" class="btn-cta-primary">Получить рекомендации</a>
+            </div>
+        </div>
     </main>
 
-            <footer class="footer">
+    <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
                 <h4>Центр развития закупок</h4>
                 <p>© 2026 АО «Центр развития закупок РТ»</p>
             </div>
             <div class="footer-col">
-                <h4>Обучение</h4>
-                <a href="courses.html">Заказчикам</a>
-                <a href="courses.html">Поставщикам</a>
-                <a href="calendar.html">Календарь</a>
+                <h4>Обучение</h4><a href="courses.html">Заказчикам</a><a href="courses.html">Поставщикам</a><a
+                    href="calendar.html">Календарь</a>
             </div>
             <div class="footer-col">
-                <h4>Компания</h4>
-                <a href="about.html">О нас</a>
-                <a href="contacts.html">Контакты</a>
-                <a href="knowledge.html">База знаний</a>
+                <h4>Компания</h4><a href="about.html">О нас</a><a href="contacts.html">Контакты</a><a
+                    href="knowledge.html">База знаний</a>
             </div>
             <div class="footer-col">
-                <h4>Связаться</h4>
-                <a href="tel:88001017892">8 (800) 101-78-92</a>
-                <div class="socials">
-                    <a href="https://t.me/crzrt">TG</a>
-                    <a href="https://vk.com/aocrz">VK</a>
-                </div>
+                <h4>Связаться</h4><a href="tel:88001017892">8 (800) 101-78-92</a>
+                <div class="socials"><a href="https://t.me/crzrt">TG</a><a href="https://vk.com/aocrz">VK</a></div>
             </div>
         </div>
     </footer>

@@ -55,14 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="mega-menu">
                         <div class="mega-grid">
                             <div class="mega-col">
-                                <h4>Форматы</h4>
                                 <a href="courses.html">Очное обучение</a>
                                 <a href="distance.html">Дистанционно</a>
                                 <a href="individual.html">Индивидуально</a>
                                 <a href="testing.html">Пробный тест</a>
                             </div>
                             <div class="mega-col">
-                                <h4>Расписание и люди</h4>
                                 <a href="calendar.html">Календарь</a>
                                 <a href="seminars.html">Семинары</a>
                                 <a href="webinars.html">Вебинары</a>
@@ -86,13 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="mega-menu">
                         <div class="mega-grid" id="servicesMegaGrid">
                             <div class="mega-col">
-                                <h4>Заказчикам</h4>
                                 <a href="consulting.html#public">Поддержка (44/223-ФЗ)</a>
                                 <a href="consulting.html#deals">Сопровождение сделок</a>
                                 <a href="consulting.html#corporate">Корпоративное право</a>
                             </div>
                             <div class="mega-col">
-                                <h4>Поставщикам</h4>
                                 <a href="consulting.html#competitor">Тендерный отдел</a>
                                 <a href="consulting.html#disputes">Судебные споры</a>
                                 <a href="consulting.html#business">Решения для бизнеса</a>
@@ -163,6 +159,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             <circle cx="12" cy="10" r="3"></circle>
                         </svg>
                         <span>контакты</span>
+                    </a>
+                </div>
+
+                <div class="nav-bar-item nav-etp" style="margin-left: auto; padding-left: 20px;">
+                    <a href="https://etpzakupki.tatar" target="_blank" class="btn-primary" style="text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.02em;">
+                        Перейти на ЭТП
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 8px;">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
                     </a>
                 </div>
             </div>

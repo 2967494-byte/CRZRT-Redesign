@@ -4,10 +4,265 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Преподаватели | CRZRT</title>
+    <title>Преподаватели | Центр развития закупок РТ</title>
+    <meta name="description"
+        content="Преподаватели Центра развития закупок РТ — практикующие эксперты и должностные лица с многолетним опытом в сфере госзакупок." />
     <link rel="stylesheet" href="style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .subnav {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 72px;
+            z-index: 100;
+        }
 
+        .subnav-inner {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .subnav-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .subnav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 22px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            white-space: nowrap;
+            border-right: 1px solid var(--card-border);
+            transition: all 0.2s;
+        }
+
+        .subnav-link svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .subnav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .subnav-link.active {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .courses-page-header {
+            padding: 72px 0 56px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 24px;
+        }
+
+        .breadcrumb a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb span {
+            opacity: 0.5;
+        }
+
+        /* Team Grid */
+        .team-section {
+            padding: 60px 0;
+        }
+
+        .team-title {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .expert-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid var(--card-border);
+            border-bottom: none;
+            border-right: none;
+        }
+
+        .expert-card {
+            border-right: 1px solid var(--card-border);
+            border-bottom: 1px solid var(--card-border);
+            padding: 40px 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: background 0.3s;
+            position: relative;
+        }
+
+        .expert-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 0;
+            background: var(--accent-color);
+            transition: height 0.4s;
+        }
+
+        .expert-card:hover::before {
+            height: 100%;
+        }
+
+        .expert-card:hover {
+            background: var(--card-bg);
+        }
+
+        .expert-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 0;
+            background: linear-gradient(135deg, rgba(41, 151, 255, 0.12) 0%, rgba(41, 151, 255, 0.06) 100%);
+            border: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .expert-name {
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            margin: 0;
+        }
+
+        .expert-role {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--accent-color);
+            margin: 0;
+        }
+
+        .expert-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .expert-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .expert-tag {
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+        }
+
+        .bottom-cta {
+            border: 1px solid var(--card-border);
+            padding: 56px;
+            text-align: center;
+            margin: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bottom-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(41, 151, 255, 0.04) 0%, transparent 60%);
+        }
+
+        .bottom-cta h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .bottom-cta p {
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto 36px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .btn-cta-primary {
+            display: inline-block;
+            padding: 14px 36px;
+            background: var(--accent-color);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 1px solid var(--accent-color);
+            transition: all 0.3s;
+        }
+
+        .btn-cta-primary:hover {
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 1000px) {
+            .expert-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .expert-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .expert-card {
+                padding: 28px;
+            }
+
+            .bottom-cta {
+                padding: 40px 28px;
+            }
+
+            .subnav-link {
+                padding: 12px 16px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -17,137 +272,177 @@
     <div id="global-header"></div>
     <script src="header.js"></script>
 
+    <nav class="subnav">
+        <div class="container" style="padding: 0; max-width: 100%;">
+            <div class="subnav-inner">
+                <a href="obuchenie.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>Все форматы</a>
+                <a href="courses.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="14" />
+                        <path d="M8 21h8M12 17v4" />
+                    </svg>Очное</a>
+                <a href="distance.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="15" />
+                        <polyline points="8 21 12 17 16 21" />
+                    </svg>Дистанционное</a>
+                <a href="seminars.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>Семинары</a>
+                <a href="webinars.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <polygon points="23 7 16 12 23 17 23 7" />
+                        <rect x="1" y="5" width="15" height="14" />
+                    </svg>Вебинары</a>
+                <a href="individual.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>Индивидуальное</a>
+                <a href="testing.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <path d="M9 11l3 3L22 4" />
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                    </svg>Тест</a>
+                <a href="team.html" class="subnav-link active"><svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>Преподаватели</a>
+                <a href="calendar.html" class="subnav-link"><svg viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>Календарь</a>
+            </div>
+        </div>
+    </nav>
+
     <main>
-        <section class="page-header">
+        <section class="courses-page-header">
             <div class="container">
-                <h1 class="hero-title" style="font-size: 3rem;">Наши эксперты</h1>
-                <p class="hero-subtitle">Профессионалы-практики с многолетним опытом в сфере госзакупок.</p>
+                <div class="breadcrumb">
+                    <a href="index.html">Главная</a><span>/</span>
+                    <a href="obuchenie.html">Обучение</a><span>/</span>
+                    Преподаватели
+                </div>
+                <h1
+                    style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px;">
+                    Наши эксперты</h1>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 620px; line-height: 1.7;">
+                    Профессионалы-практики с многолетним опытом в сфере госзакупок. Действующие специалисты, ежедневно
+                    работающие с законодательством, — не просто теоретики.
+                </p>
             </div>
         </section>
 
-        <section class="courses-layout">
-            <div class="container courses-container">
-                <aside class="courses-sidebar">
-                    <nav class="category-nav">
-                        <a href="courses.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Очное обучение</span>
-                                <span class="category-label">Повышение квалификации</span>
-                            </div>
-                        </a>
-                        <a href="distance.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Дистанционное обучение</span>
-                                <span class="category-label">Учитесь где угодно</span>
-                            </div>
-                        </a>
-                        <a href="calendar.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Календарь</span>
-                                <span class="category-label">График мероприятий</span>
-                            </div>
-                        </a>
-                        <a href="seminars.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Семинары</span>
-                                <span class="category-label">Обмен опытом</span>
-                            </div>
-                        </a>
-                        <a href="webinars.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Вебинары</span>
-                                <span class="category-label">Прямые эфиры</span>
-                            </div>
-                        </a>
-                        <a href="individual.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Индивидуальное обучение</span>
-                                <span class="category-label">Персональный подход</span>
-                            </div>
-                        </a>
-                        <a href="testing.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Пробное тестирование</span>
-                                <span class="category-label">Проверьте свои знания</span>
-                            </div>
-                        </a>
-                        <a href="team.html" class="category-item active">
-                            <div class="category-info">
-                                <span class="category-name">Преподаватели</span>
-                                <span class="category-label">Наши эксперты</span>
-                            </div>
-                        </a>
-                    </nav>
-                </aside>
-                <div class="courses-main">
-                    <div class="team-grid">
-                        <div class="team-card">
-                            <div class="team-photo">👨‍💼</div>
-                            <h3>Багаутдинов И. Г.</h3>
-                            <p>Заместитель председателя Госкомитета РТ по закупкам. Ведущий эксперт по методологии
-                                контрактной системы.</p>
-                        </div>
-                        <div class="team-card">
-                            <div class="team-photo">👩‍💼</div>
-                            <h3>Габидуллина Н. И.</h3>
-                            <p>Заместитель генерального директора АО «Центр развития закупок РТ». Эксперт в сфере 44-ФЗ
-                                и 223-ФЗ.</p>
-                        </div>
-                        <div class="team-card">
-                            <div class="team-photo">👨‍💼</div>
-                            <h3>Магданов И. И.</h3>
-                            <p>Заместитель руководителя отдела сопровождения закупочной деятельности. Практикующий
-                                эксперт по торгам.</p>
-                        </div>
-                        <div class="team-card">
-                            <div class="team-photo">👩‍💼</div>
-                            <h3>Трошагина Д. В.</h3>
-                            <p>Руководитель юридического отдела по судебной работе. Эксперт по защите интересов в ФАС и
-                                судах.</p>
-                        </div>
-                        <div class="team-card">
-                            <div class="team-photo">👨‍💼</div>
-                            <h3>Чернов Д. А.</h3>
-                            <p>Ведущий юрисконсульт АО «Центр развития закупок РТ». Специалист по правовому
-                                регулированию закупок.</p>
-                        </div>
-                        <div class="team-card">
-                            <div class="team-photo">👩‍💼</div>
-                            <h3>Суркова А. А.</h3>
-                            <p>Начальник отдела централизованных закупок Госкомитета РТ по закупкам. Эксперт по
-                                организации тендеров.</p>
+        <section class="team-section">
+            <div class="container">
+                <div class="team-title">Команда преподавателей</div>
+                <div class="expert-grid">
+
+                    <div class="expert-card">
+                        <div class="expert-avatar">👨‍💼</div>
+                        <h3 class="expert-name">Багаутдинов И. Г.</h3>
+                        <p class="expert-role">Ведущий эксперт по методологии</p>
+                        <p class="expert-desc">Заместитель председателя Госкомитета РТ по закупкам. Разработчик
+                            региональной нормативной базы в сфере контрактной системы.</p>
+                        <div class="expert-tags">
+                            <span class="expert-tag">44-ФЗ</span>
+                            <span class="expert-tag">Госрегулирование</span>
                         </div>
                     </div>
+
+                    <div class="expert-card">
+                        <div class="expert-avatar">👩‍💼</div>
+                        <h3 class="expert-name">Габидуллина Н. И.</h3>
+                        <p class="expert-role">Эксперт в сфере 44-ФЗ и 223-ФЗ</p>
+                        <p class="expert-desc">Заместитель генерального директора АО «ЦРЗРТ». Более 15 лет практики в
+                            сфере закупок для государственных и корпоративных заказчиков.</p>
+                        <div class="expert-tags">
+                            <span class="expert-tag">44-ФЗ</span>
+                            <span class="expert-tag">223-ФЗ</span>
+                        </div>
+                    </div>
+
+                    <div class="expert-card">
+                        <div class="expert-avatar">👨‍💼</div>
+                        <h3 class="expert-name">Магданов И. И.</h3>
+                        <p class="expert-role">Эксперт по торгам</p>
+                        <p class="expert-desc">Заместитель руководителя отдела сопровождения закупочной деятельности.
+                            Практикующий специалист по электронным торговым процедурам.</p>
+                        <div class="expert-tags">
+                            <span class="expert-tag">ЕИС</span>
+                            <span class="expert-tag">ЭТП</span>
+                        </div>
+                    </div>
+
+                    <div class="expert-card">
+                        <div class="expert-avatar">👩‍💼</div>
+                        <h3 class="expert-name">Трошагина Д. В.</h3>
+                        <p class="expert-role">Эксперт по защите в ФАС и судах</p>
+                        <p class="expert-desc">Руководитель юридического отдела по судебной работе. Специализируется на
+                            защите интересов заказчиков и поставщиков при рассмотрении жалоб.</p>
+                        <div class="expert-tags">
+                            <span class="expert-tag">ФАС</span>
+                            <span class="expert-tag">Судебная практика</span>
+                        </div>
+                    </div>
+
+                    <div class="expert-card">
+                        <div class="expert-avatar">👨‍💼</div>
+                        <h3 class="expert-name">Чернов Д. А.</h3>
+                        <p class="expert-role">Специалист по правовому регулированию</p>
+                        <p class="expert-desc">Ведущий юрисконсульт АО «ЦРЗРТ». Занимается правовой экспертизой
+                            закупочной документации и сопровождением сложных закупочных процедур.</p>
+                        <div class="expert-tags">
+                            <span class="expert-tag">Правовая экспертиза</span>
+                            <span class="expert-tag">Документация</span>
+                        </div>
+                    </div>
+
+                    <div class="expert-card">
+                        <div class="expert-avatar">👩‍💼</div>
+                        <h3 class="expert-name">Суркова А. А.</h3>
+                        <p class="expert-role">Эксперт по организации тендеров</p>
+                        <p class="expert-desc">Начальник отдела централизованных закупок Госкомитета РТ по закупкам.
+                            Организовала сотни торгов в интересах государственных заказчиков.</p>
+                        <div class="expert-tags">
+                            <span class="expert-tag">Централизованные закупки</span>
+                            <span class="expert-tag">44-ФЗ</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="bottom-cta">
+                    <h3>Хотите обучиться у конкретного эксперта?</h3>
+                    <p>Выберите индивидуальный формат и работайте напрямую с ведущим специалистом по вашей теме.</p>
+                    <a href="individual.html" class="btn-cta-primary">Индивидуальное обучение</a>
                 </div>
             </div>
         </section>
     </main>
 
-            <footer class="footer">
+    <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
                 <h4>Центр развития закупок</h4>
                 <p>© 2026 АО «Центр развития закупок РТ»</p>
             </div>
             <div class="footer-col">
-                <h4>Обучение</h4>
-                <a href="courses.html">Заказчикам</a>
-                <a href="courses.html">Поставщикам</a>
-                <a href="calendar.html">Календарь</a>
+                <h4>Обучение</h4><a href="courses.html">Заказчикам</a><a href="courses.html">Поставщикам</a><a
+                    href="calendar.html">Календарь</a>
             </div>
             <div class="footer-col">
-                <h4>Компания</h4>
-                <a href="about.html">О нас</a>
-                <a href="contacts.html">Контакты</a>
-                <a href="knowledge.html">База знаний</a>
+                <h4>Компания</h4><a href="about.html">О нас</a><a href="contacts.html">Контакты</a><a
+                    href="knowledge.html">База знаний</a>
             </div>
             <div class="footer-col">
-                <h4>Связаться</h4>
-                <a href="tel:88001017892">8 (800) 101-78-92</a>
-                <div class="socials">
-                    <a href="https://t.me/crzrt">TG</a>
-                    <a href="https://vk.com/aocrz">VK</a>
-                </div>
+                <h4>Связаться</h4><a href="tel:88001017892">8 (800) 101-78-92</a>
+                <div class="socials"><a href="https://t.me/crzrt">TG</a><a href="https://vk.com/aocrz">VK</a></div>
             </div>
         </div>
     </footer>

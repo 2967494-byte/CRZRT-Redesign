@@ -323,11 +323,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Если есть данные в админке, можем перерисовать
             servicesMegaGrid.innerHTML = `
                 <div class="mega-col">
-                    <h4>Заказчикам</h4>
                     ${processedServices.filter(s => s.category === 'customers').map(s => `<a href="consulting.html#${s.id}">${s.title || 'Без названия'}</a>`).join('')}
                 </div>
                 <div class="mega-col">
-                    <h4>Поставщикам</h4>
                     ${processedServices.filter(s => s.category === 'suppliers').map(s => `<a href="consulting.html#${s.id}">${s.title || 'Без названия'}</a>`).join('')}
                 </div>
             `;
