@@ -79,20 +79,79 @@
                     </nav>
                 </aside>
                 <div class="courses-main">
-                    <div class="courses-grid">
-                        <div class="course-card featured" data-tilt>
+                    <div class="courses-grid" style="grid-template-columns: 1fr;">
+                        <div class="course-card featured" data-tilt style="max-width: 100%;">
                             <div class="course-content">
-                                <span class="tag">VIP</span>
-                                <h3 class="course-title">Индивидуальный практикум</h3>
-                                <p class="course-desc">Разбор вашего конкретного тендера или сложной ситуации с
-                                    юристом-практиком.</p>
-                                <div class="course-meta">
-                                    <span>По записи</span>
-                                    <span>От 2 часов</span>
+                                <span class="tag">VIP / Индивидуально</span>
+                                <h3 class="course-title">Индивидуальный практикум «Под ключ»</h3>
+                                <p class="course-desc" style="font-size: 1.1rem; margin-bottom: 30px;">
+                                    Персональная программа обучения, разработанная специально под задачи вашей
+                                    организации
+                                    или ваши личные профессиональные цели. Работа один на один с ведущим экспертом.
+                                </p>
+
+                                <div class="features-list"
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px;">
+                                    <div class="feature-item">
+                                        <strong>Для поставщиков:</strong>
+                                        <ul style="margin-top: 10px; font-size: 0.95rem; color: var(--text-secondary);">
+                                            <li>• Поиск и анализ конкретных закупок</li>
+                                            <li>• Оценка перспектив участия</li>
+                                            <li>• Подготовка реальных заявок</li>
+                                            <li>• Минимизация рисков отклонения</li>
+                                        </ul>
+                                    </div>
+                                    <div class="feature-item">
+                                        <strong>Для заказчиков:</strong>
+                                        <ul style="margin-top: 10px; font-size: 0.95rem; color: var(--text-secondary);">
+                                            <li>• Экспертиза вашей документации</li>
+                                            <li>• Разбор сложных кейсов и жалоб</li>
+                                            <li>• Подготовка к проверкам ФАС</li>
+                                            <li>• Настройка работы в ЕИС</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="course-meta"
+                                    style="border-top: 1px solid var(--card-border); padding-top: 20px;">
+                                    <span>Гибкий график</span>
+                                    <span>Любой объем часов</span>
                                 </div>
                                 <div class="course-price">От 12 000 ₽</div>
-                                <a href="#" class="btn-link" style="margin-top: 20px;">Оставить заявку <span
-                                        class="arrow">→</span></a>
+                                <a href="contacts.html" class="btn-primary"
+                                    style="display: inline-block; margin-top: 20px; padding: 15px 40px;">Обсудить
+                                    программу</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="margin-top: 60px; padding: 40px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px;">
+                        <h4 style="font-size: 1.5rem; margin-bottom: 20px;">Как проходит обучение?</h4>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px;">
+                            <div class="step">
+                                <div
+                                    style="font-size: 2rem; color: var(--accent-color); font-weight: 700; margin-bottom: 10px;">
+                                    01</div>
+                                <h5>Аудит задач</h5>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Определяем ваши болевые
+                                    точки и конкретные вопросы, которые нужно решить.</p>
+                            </div>
+                            <div class="step">
+                                <div
+                                    style="font-size: 2rem; color: var(--accent-color); font-weight: 700; margin-bottom: 10px;">
+                                    02</div>
+                                <h5>План-программа</h5>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Составляем индивидуальный
+                                    план занятий, ориентированный на результат.</p>
+                            </div>
+                            <div class="step">
+                                <div
+                                    style="font-size: 2rem; color: var(--accent-color); font-weight: 700; margin-bottom: 10px;">
+                                    03</div>
+                                <h5>Практика</h5>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Работаем над живыми
+                                    примерами и вашими реальными документами.</p>
                             </div>
                         </div>
                     </div>
@@ -101,7 +160,7 @@
         </section>
     </main>
 
-            <footer class="footer">
+    <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
                 <h4>Центр развития закупок</h4>

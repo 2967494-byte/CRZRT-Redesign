@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="header-nav-bar-container">
             <div class="header-nav-bar">
                 <div class="nav-bar-item nav-edu">
-                    <a href="courses.html" class="nav-item-link">
+                    <a href="obuchenie.html" class="nav-item-link">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                         </svg>
@@ -56,16 +56,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="mega-grid">
                             <div class="mega-col">
                                 <h4>Форматы</h4>
-                                <a href="courses.html">Очное обучение</a>
-                                <a href="distance.html">Дистанционно</a>
-                                <a href="individual.html">Индивидуально</a>
+                                <a href="courses.html">🏫 Очное обучение</a>
+                                <a href="distance.html">💻 Дистанционно</a>
+                                <a href="individual.html">👤 Индивидуально</a>
+                                <a href="testing.html">✅ Пробный тест</a>
                             </div>
                             <div class="mega-col">
-                                <h4>События</h4>
-                                <a href="calendar.html">Календарь</a>
-                                <a href="seminars.html">Семинары</a>
-                                <a href="webinars.html">Вебинары</a>
-                                <a href="team.html">Преподаватели</a>
+                                <h4>Расписание и люди</h4>
+                                <a href="calendar.html">📅 Календарь</a>
+                                <a href="seminars.html">🎙️ Семинары</a>
+                                <a href="webinars.html">📡 Вебинары</a>
+                                <a href="team.html">👨‍🏫 Преподаватели</a>
                             </div>
                         </div>
                     </div>
@@ -88,20 +89,20 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <h4>Заказчикам</h4>
                                 <a href="consulting.html#public">Поддержка (44/223-ФЗ)</a>
                                 <a href="consulting.html#deals">Сопровождение сделок</a>
-                                <a href="#">Аутсорсинг закупок</a>
+                                <a href="consulting.html#corporate">Корпоративное право</a>
                             </div>
                             <div class="mega-col">
                                 <h4>Поставщикам</h4>
                                 <a href="consulting.html#competitor">Тендерный отдел</a>
                                 <a href="consulting.html#disputes">Судебные споры</a>
-                                <a href="#">Поиск закупок</a>
+                                <a href="consulting.html#business">Решения для бизнеса</a>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="nav-bar-item nav-tenders">
-                    <a href="#" class="nav-item-link">
+                    <a href="https://etpzakupki.tatar" class="nav-item-link" target="_blank">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -112,14 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="mega-grid">
                             <div class="mega-col">
                                 <h4>Реестры</h4>
-                                <a href="#">Закупки (44-ФЗ)</a>
-                                <a href="#">Закупки (223-ФЗ)</a>
-                                <a href="#">Реестр контрактов</a>
+                                <a href="https://etpzakupki.tatar/purchases/44" target="_blank">Закупки (44-ФЗ)</a>
+                                <a href="https://etpzakupki.tatar/purchases/223" target="_blank">Закупки (223-ФЗ)</a>
+                                <a href="https://zakupki.gov.ru/epz/main/public/home.html" target="_blank">ЕИС (zakupki.gov.ru)</a>
                             </div>
                             <div class="mega-col">
-                                <h4>Аналитика</h4>
-                                <a href="#">Планы закупок</a>
-                                <a href="#">Протоколы</a>
+                                <h4>Сервисы</h4>
+                                <a href="https://etpzakupki.tatar/analytical" target="_blank">Аналитика</a>
+                                <a href="testing.html">Пробные тесты</a>
                             </div>
                         </div>
                     </div>

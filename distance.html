@@ -4,10 +4,407 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Дистанционное обучение | CRZRT</title>
+    <title>Дистанционное обучение по 44-ФЗ и 223-ФЗ | Центр развития закупок РТ</title>
+    <meta name="description"
+        content="Дистанционные курсы по 44-ФЗ и 223-ФЗ с удостоверением и дипломом гос. образца. Учитесь в любое время из любой точки." />
     <link rel="stylesheet" href="style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Same styles as courses.html (subnav + course cards) — reused */
+        .subnav {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 72px;
+            z-index: 100;
+        }
 
+        .subnav-inner {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 10px 0;
+        }
+
+        .subnav-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .subnav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.25s;
+            white-space: nowrap;
+        }
+
+        .subnav-link:hover {
+            background: rgba(128, 128, 128, 0.1);
+            color: var(--text-primary);
+        }
+
+        .subnav-link.active {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .courses-page-header {
+            padding: 80px 0 60px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .breadcrumb a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .course-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 60px 0;
+        }
+
+        .course-full-card {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            overflow: hidden;
+            transition: all 0.4s var(--ease-custom);
+        }
+
+        .course-full-card:hover {
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-color);
+        }
+
+        .course-full-card.featured-card {
+            border-color: var(--accent-color);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(41, 151, 255, 0.03) 100%);
+        }
+
+        .course-body {
+            padding: 44px;
+        }
+
+        .course-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .course-tag {
+            padding: 5px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .tag-blue {
+            background: rgba(41, 151, 255, 0.12);
+            color: var(--accent-color);
+        }
+
+        .tag-red {
+            background: rgba(255, 94, 98, 0.12);
+            color: #ff5e62;
+        }
+
+        .tag-gold {
+            background: rgba(255, 193, 7, 0.15);
+            color: #d4a017;
+        }
+
+        .tag-green {
+            background: rgba(33, 197, 93, 0.12);
+            color: #21c55d;
+        }
+
+        .tag-gray {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .tag-orange {
+            background: rgba(255, 154, 60, 0.12);
+            color: #ff9a3c;
+        }
+
+        .course-body h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 14px;
+        }
+
+        .course-body>p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 1rem;
+            margin-bottom: 28px;
+        }
+
+        .course-bullets {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+
+        .course-bullet {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .course-bullet::before {
+            content: '✓';
+            color: var(--accent-color);
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .course-sidebar-panel {
+            background: rgba(128, 128, 128, 0.04);
+            border-left: 1px solid var(--card-border);
+            padding: 44px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .course-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .course-detail-row {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .course-price-block {
+            border-top: 1px solid var(--card-border);
+            padding-top: 24px;
+        }
+
+        .course-price-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .course-price-big {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 18px;
+        }
+
+        .btn-course-book {
+            display: block;
+            text-align: center;
+            padding: 14px 20px;
+            background: var(--accent-color);
+            color: #fff;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-course-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(41, 151, 255, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-course-more {
+            display: block;
+            text-align: center;
+            padding: 14px 20px;
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-course-more:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* Online-specific: how it works strip */
+        .how-it-works {
+            padding: 60px 0;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .how-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .how-step {
+            position: relative;
+        }
+
+        .how-step-num {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--accent-color);
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .how-step h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .how-step p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .benefits-strip {
+            border-top: 1px solid var(--card-border);
+            padding: 60px 0;
+        }
+
+        .benefits-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .benefit-item {
+            text-align: center;
+        }
+
+        .benefit-icon-wrap {
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            background: rgba(41, 151, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin: 0 auto 16px;
+        }
+
+        .benefit-item h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .benefit-item p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 900px) {
+            .course-full-card {
+                grid-template-columns: 1fr;
+            }
+
+            .course-sidebar-panel {
+                border-left: none;
+                border-top: 1px solid var(--card-border);
+            }
+
+            .course-bullets {
+                grid-template-columns: 1fr;
+            }
+
+            .how-steps {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .benefits-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .course-body {
+                padding: 28px;
+            }
+
+            .course-sidebar-panel {
+                padding: 28px;
+            }
+
+            .how-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .benefits-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -17,131 +414,263 @@
     <div id="global-header"></div>
     <script src="header.js"></script>
 
+    <!-- Sub-navigation -->
+    <nav class="subnav">
+        <div class="container">
+            <div class="subnav-inner">
+                <a href="obuchenie.html" class="subnav-link">🏠 Все форматы</a>
+                <a href="courses.html" class="subnav-link">🏫 Очное</a>
+                <a href="distance.html" class="subnav-link active">💻 Дистанционное</a>
+                <a href="seminars.html" class="subnav-link">🎙️ Семинары</a>
+                <a href="webinars.html" class="subnav-link">📡 Вебинары</a>
+                <a href="individual.html" class="subnav-link">👤 Индивидуальное</a>
+                <a href="testing.html" class="subnav-link">✅ Тестирование</a>
+                <a href="team.html" class="subnav-link">👨‍🏫 Преподаватели</a>
+                <a href="calendar.html" class="subnav-link">📅 Календарь</a>
+            </div>
+        </div>
+    </nav>
+
     <main>
-        <section class="page-header">
+        <!-- Page header -->
+        <section class="courses-page-header">
             <div class="container">
-                <h1 class="hero-title" style="font-size: 3rem;">Дистанционное обучение</h1>
-                <p class="hero-subtitle">Учитесь в удобном темпе из любой точки мира.</p>
+                <div class="breadcrumb">
+                    <a href="index.html">Главная</a> /
+                    <a href="obuchenie.html">Обучение</a> /
+                    <span>Дистанционное обучение</span>
+                </div>
+                <h1 class="hero-title" style="font-size: clamp(2rem, 4vw, 3.2rem); margin-bottom: 16px;">💻
+                    Дистанционное обучение</h1>
+                <p class="hero-subtitle"
+                    style="font-size: 1.15rem; opacity: 1; animation: none; color: var(--text-secondary);">
+                    Полноценные программы повышения квалификации и профессиональной переподготовки — из любой точки
+                    мира, в удобном темпе. Реальный документ государственного образца по окончании.
+                </p>
             </div>
         </section>
 
-        <section class="courses-layout">
-            <div class="container courses-container">
-                <!-- Sidebar Navigation -->
-                <aside class="courses-sidebar">
-                    <nav class="category-nav">
-                        <a href="courses.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Очное обучение</span>
-                                <span class="category-label">Повышение квалификации</span>
-                            </div>
-                        </a>
-                        <a href="distance.html" class="category-item active">
-                            <div class="category-info">
-                                <span class="category-name">Дистанционное обучение</span>
-                                <span class="category-label">Учитесь где угодно</span>
-                            </div>
-                        </a>
-                        <a href="calendar.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Календарь</span>
-                                <span class="category-label">График мероприятий</span>
-                            </div>
-                        </a>
-                        <a href="seminars.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Семинары</span>
-                                <span class="category-label">Обмен опытом</span>
-                            </div>
-                        </a>
-                        <a href="webinars.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Вебинары</span>
-                                <span class="category-label">Прямые эфиры</span>
-                            </div>
-                        </a>
-                        <a href="individual.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Индивидуальное обучение</span>
-                                <span class="category-label">Персональный подход</span>
-                            </div>
-                        </a>
-                        <a href="testing.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Пробное тестирование</span>
-                                <span class="category-label">Проверьте свои знания</span>
-                            </div>
-                        </a>
-                        <a href="team.html" class="category-item">
-                            <div class="category-info">
-                                <span class="category-name">Преподаватели</span>
-                                <span class="category-label">Наши эксперты</span>
-                            </div>
-                        </a>
-                    </nav>
-                </aside>
+        <!-- Course list -->
+        <div class="container">
+            <div class="course-list">
 
-                <!-- Main Content -->
-                <div class="courses-main">
-                    <div class="filter-bar">
-                        <button class="filter-btn active">Все</button>
-                        <button class="filter-btn">Для Поставщиков</button>
-                        <button class="filter-btn">Для Заказчиков</button>
+                <!-- Course 1: 256h Repro -->
+                <div class="course-full-card featured-card">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-blue">44-ФЗ</span>
+                            <span class="course-tag tag-orange">Переподготовка</span>
+                            <span class="course-tag tag-green">Старт в любое время</span>
+                        </div>
+                        <h2>Специалист в сфере закупок по 44-ФЗ (256 ак.ч.) — Профессиональная переподготовка</h2>
+                        <p>Программа профессиональной переподготовки с выдачей диплома государственного образца.
+                            Идеально для тех, кто хочет сменить специализацию или подтвердить квалификацию. Обучение
+                            полностью онлайн на нашей платформе.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet">Правовые основы контрактной системы</div>
+                            <div class="course-bullet">Планирование и нормирование закупок</div>
+                            <div class="course-bullet">Все виды конкурентных процедур</div>
+                            <div class="course-bullet">Электронный документооборот и ЕИС</div>
+                            <div class="course-bullet">Исполнение и расторжение контракта</div>
+                            <div class="course-bullet">Ответственность в сфере закупок</div>
+                        </div>
                     </div>
-
-                    <div class="courses-grid">
-                        <div class="course-card" data-tilt>
-                            <div class="course-content">
-                                <span class="tag">Онлайн / Популярное</span>
-                                <h3 class="course-title">Специалист в сфере закупок (44-ФЗ)</h3>
-                                <p class="course-desc">Программа профессиональной переподготовки (256 ак.ч.). Диплом
-                                    государственного образца.</p>
-                                <div class="course-meta">
-                                    <span>В любое время</span>
-                                    <span>256 ак.ч.</span>
-                                </div>
-                                <div class="course-price">17 500 ₽</div>
-                                <a href="course-distance-repro.html" class="btn-link"
-                                    style="margin-top: 20px;">Подробнее
-                                    <span class="arrow">→</span></a>
+                    <div class="course-sidebar-panel">
+                        <div class="course-details-list">
+                            <div class="course-detail-row">
+                                <span class="detail-label">Формат</span>
+                                <span class="detail-value">🌍 Онлайн (ЛК)</span>
+                            </div>
+                            <div class="course-detail-row">
+                                <span class="detail-label">Объём</span>
+                                <span class="detail-value">256 ак.ч.</span>
+                            </div>
+                            <div class="course-detail-row">
+                                <span class="detail-label">Старт</span>
+                                <span class="detail-value">В любое время</span>
+                            </div>
+                            <div class="course-detail-row">
+                                <span class="detail-label">Документ</span>
+                                <span class="detail-value">📋 Диплом о профессиональной переподготовке</span>
                             </div>
                         </div>
+                        <div class="course-price-block">
+                            <div class="course-price-label">Стоимость</div>
+                            <div class="course-price-big">17 500 ₽</div>
+                            <a href="contacts.html" class="btn-course-book">Записаться</a>
+                            <a href="course-distance-repro.html" class="btn-course-more">Подробная программа →</a>
+                        </div>
+                    </div>
+                </div>
 
-                        <div class="course-card" data-tilt>
-                            <div class="course-content">
-                                <span class="tag">Онлайн / 44-ФЗ</span>
-                                <h3 class="course-title">Повышение квалификации по 44-ФЗ (120 ак. ч.)</h3>
-                                <p class="course-desc">Актуальные изменения контрактной системы. Мощная база для
-                                    специалистов заказчика.</p>
-                                <div class="course-meta">
-                                    <span>2-27 марта</span>
-                                    <span>120 ак.ч.</span>
-                                </div>
-                                <div class="course-price">13 500 ₽</div>
-                                <a href="course-distance-44fz.html" class="btn-link" style="margin-top: 20px;">Подробнее
-                                    <span class="arrow">→</span></a>
+                <!-- Course 2: 120h 44-FZ -->
+                <div class="course-full-card">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-blue">44-ФЗ</span>
+                            <span class="course-tag tag-blue">Повышение квалификации</span>
+                            <span class="course-tag tag-green">Старт: 2 марта</span>
+                        </div>
+                        <h2>Повышение квалификации по 44-ФЗ (120 ак.ч.)</h2>
+                        <p>Актуальная программа повышения квалификации для действующих специалистов заказчика.
+                            Охватывает все последние изменения в законодательстве о контрактной системе.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet">Последние изменения в 44-ФЗ (2025–2026)</div>
+                            <div class="course-bullet">Планирование и обоснование закупок</div>
+                            <div class="course-bullet">Проведение электронных процедур</div>
+                            <div class="course-bullet">Национальный режим, ограничения</div>
+                            <div class="course-bullet">Контракт: заключение и исполнение</div>
+                            <div class="course-bullet">Отчётность в ЕИС</div>
+                        </div>
+                    </div>
+                    <div class="course-sidebar-panel">
+                        <div class="course-details-list">
+                            <div class="course-detail-row">
+                                <span class="detail-label">Формат</span>
+                                <span class="detail-value">🌍 Онлайн (ЛК)</span>
+                            </div>
+                            <div class="course-detail-row">
+                                <span class="detail-label">Объём</span>
+                                <span class="detail-value">120 ак.ч.</span>
+                            </div>
+                            <div class="course-detail-row">
+                                <span class="detail-label">Ближайший старт</span>
+                                <span class="detail-value">2–27 марта 2026</span>
+                            </div>
+                            <div class="course-detail-row">
+                                <span class="detail-label">Документ</span>
+                                <span class="detail-value">📜 Удостоверение гос. образца</span>
                             </div>
                         </div>
+                        <div class="course-price-block">
+                            <div class="course-price-label">Стоимость</div>
+                            <div class="course-price-big">13 500 ₽</div>
+                            <a href="contacts.html" class="btn-course-book">Записаться</a>
+                            <a href="course-distance-44fz.html" class="btn-course-more">Подробная программа →</a>
+                        </div>
+                    </div>
+                </div>
 
-                        <div class="course-card" data-tilt>
-                            <div class="course-content">
-                                <span class="tag">Онлайн / 223-ФЗ</span>
-                                <h3 class="course-title">Повышение квалификации по 223-ФЗ (72 ак. ч.)</h3>
-                                <p class="course-desc">Дистанционная программа повышения квалификации для специалистов и
-                                    членов комиссий заказчика.</p>
-                                <div class="course-meta">
-                                    <span>В любое время</span>
-                                    <span>72 ак.ч.</span>
-                                </div>
-                                <div class="course-price">13 500 ₽</div>
-                                <a href="course-distance-223fz.html" class="btn-link"
-                                    style="margin-top: 20px;">Подробнее <span class="arrow">→</span></a>
+                <!-- Course 3: 72h 223-FZ -->
+                <div class="course-full-card">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-blue">223-ФЗ</span>
+                            <span class="course-tag tag-blue">Повышение квалификации</span>
+                            <span class="course-tag tag-gray">Старт в любое время</span>
+                        </div>
+                        <h2>Повышение квалификации по 223-ФЗ (72 ак.ч.)</h2>
+                        <p>Дистанционная программа для специалистов и членов закупочных комиссий заказчиков, работающих
+                            по 223-ФЗ. Корпоративные закупки, положения, работа с МСП.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet">Сфера применения 223-ФЗ</div>
+                            <div class="course-bullet">Положение о закупках: требования</div>
+                            <div class="course-bullet">Закупки у субъектов МСП</div>
+                            <div class="course-bullet">Планирование и отчётность</div>
+                            <div class="course-bullet">Работа в ЕИС (223-ФЗ)</div>
+                            <div class="course-bullet">Контроль и ответственность</div>
+                        </div>
+                    </div>
+                    <div class="course-sidebar-panel">
+                        <div class="course-details-list">
+                            <div class="course-detail-row">
+                                <span class="detail-label">Формат</span>
+                                <span class="detail-value">🌍 Онлайн (ЛК)</span>
+                            </div>
+                            <div class="course-detail-row">
+                                <span class="detail-label">Объём</span>
+                                <span class="detail-value">72 ак.ч.</span>
+                            </div>
+                            <div class="course-detail-row">
+                                <span class="detail-label">Старт</span>
+                                <span class="detail-value">В любое время</span>
+                            </div>
+                            <div class="course-detail-row">
+                                <span class="detail-label">Документ</span>
+                                <span class="detail-value">📜 Удостоверение гос. образца</span>
                             </div>
                         </div>
+                        <div class="course-price-block">
+                            <div class="course-price-label">Стоимость</div>
+                            <div class="course-price-big">13 500 ₽</div>
+                            <a href="contacts.html" class="btn-course-book">Записаться</a>
+                            <a href="course-distance-223fz.html" class="btn-course-more">Подробная программа →</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- How it works -->
+        <section class="how-it-works">
+            <div class="container">
+                <h2 class="section-heading"
+                    style="margin-bottom: 48px; font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em;">
+                    Как проходит онлайн-обучение?</h2>
+                <div class="how-steps">
+                    <div class="how-step">
+                        <div class="how-step-num">1</div>
+                        <h4>Запись и оплата</h4>
+                        <p>Оставьте заявку. Мы вышлем договор и доступ в личный кабинет в течение 1 рабочего дня.</p>
+                    </div>
+                    <div class="how-step">
+                        <div class="how-step-num">2</div>
+                        <h4>Изучение материалов</h4>
+                        <p>Видеолекции, учебные модули и методические материалы — в удобное для вас время.</p>
+                    </div>
+                    <div class="how-step">
+                        <div class="how-step-num">3</div>
+                        <h4>Промежуточные тесты</h4>
+                        <p>Проверяйте знания после каждого модуля. Неограниченное количество попыток.</p>
+                    </div>
+                    <div class="how-step">
+                        <div class="how-step-num">4</div>
+                        <h4>Итоговый экзамен и документ</h4>
+                        <p>После успешного прохождения — получите удостоверение или диплом государственного образца.</p>
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- Benefits -->
+        <section class="benefits-strip">
+            <div class="container">
+                <div class="benefits-row">
+                    <div class="benefit-item">
+                        <div class="benefit-icon-wrap">🕐</div>
+                        <h4>Учитесь в своём темпе</h4>
+                        <p>Нет ограничений по времени. Занимайтесь утром, вечером или на выходных.</p>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon-wrap">🌍</div>
+                        <h4>Из любой точки</h4>
+                        <p>Доступ с компьютера, планшета или телефона. Работает по всей России.</p>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon-wrap">📋</div>
+                        <h4>Документ гос. образца</h4>
+                        <p>Удостоверение или диплом принимается во всех организациях и ведомствах.</p>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon-wrap">💰</div>
+                        <h4>Доступная цена</h4>
+                        <p>Дистанционный формат дешевле очного без потери качества и официальной силы документа.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <div class="container" style="padding-bottom: 80px;">
+            <div
+                style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; padding: 50px; text-align: center;">
+                <h3 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 14px;">Есть вопросы по программе?</h3>
+                <p style="color: var(--text-secondary); max-width: 520px; margin: 0 auto 32px; line-height: 1.6;">Наши
+                    специалисты расскажут всё о программе, сроках и документах. Звонок бесплатный.</p>
+                <a href="tel:88001017892" class="btn-primary" style="display: inline-block;">📞 8 (800) 101-78-92</a>
+            </div>
+        </div>
     </main>
 
     <footer class="footer">
@@ -152,8 +681,9 @@
             </div>
             <div class="footer-col">
                 <h4>Обучение</h4>
-                <a href="courses.html">Заказчикам</a>
-                <a href="courses.html">Поставщикам</a>
+                <a href="obuchenie.html">Все форматы</a>
+                <a href="courses.html">Очное</a>
+                <a href="distance.html">Дистанционное</a>
                 <a href="calendar.html">Календарь</a>
             </div>
             <div class="footer-col">

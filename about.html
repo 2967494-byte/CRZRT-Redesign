@@ -18,51 +18,107 @@
     <script src="header.js"></script>
 
     <main>
-        <section class="about-hero">
-            <div class="container">
-                <h1 class="hero-title reveal-text" id="a_hero_title_val">Профессионализм и Опыт</h1>
-                <p class="hero-subtitle" id="a_hero_subtitle_val">Центр развития закупок — ваш надежный партнер в мире
-                    тендеров.</p>
+        <section class="about-hero"
+            style="padding: 160px 0 80px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); position: relative; overflow: hidden;">
+            <div class="container" style="position: relative; z-index: 2;">
+                <span class="tag"
+                    style="background: rgba(41, 151, 255, 0.1); color: var(--accent-color); padding: 5px 15px; border-radius: 20px; font-weight: 600; margin-bottom: 20px; display: inline-block;">О
+                    компании</span>
+                <h1 class="hero-title reveal-text" id="a_hero_title_val" style="font-size: 4rem; margin-bottom: 20px;">
+                    10 лет лидерства <br>в сфере <span class="gradient-text">госзакупок</span></h1>
+                <p class="hero-subtitle" id="a_hero_subtitle_val"
+                    style="max-width: 700px; margin: 0 auto; font-size: 1.25rem;">Мы помогаем государству и бизнесу
+                    находить общий язык, делая процесс закупок прозрачным и эффективным.</p>
+            </div>
+            <div
+                style="position: absolute; bottom: -50px; right: -50px; width: 400px; height: 400px; background: var(--accent-color); opacity: 0.05; border-radius: 50%; filter: blur(100px);">
             </div>
         </section>
 
-        <section class="about-content">
+        <section class="about-content" style="padding: 100px 0;">
             <div class="container">
-                <div class="about-grid">
-                    <div class="about-image-wrapper">
-                        <div class="about-image" data-tilt>
-                            <img id="a_image_val" src="IMG_8077-e1536932079653.jpg" alt="Офис Центр развития закупок" />
+                <div class="about-grid"
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;">
+                    <div class="about-image-wrapper" style="position: relative;">
+                        <div class="about-image" data-tilt
+                            style="border-radius: 30px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.15);">
+                            <img id="a_image_val" src="IMG_8077-e1536932079653.jpg" alt="Офис Центр развития закупок"
+                                style="width: 100%; display: block;" />
                         </div>
-                        <div class="map-container">
-                            <script type="text/javascript" charset="utf-8" async
-                                src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A7dd3f4724618bc5ea0e7837aa507aef288c7e94323aca6f6abfa60186cd81cb3&amp;width=100%25&amp;height=400&amp;lang=ru_RU&amp;scroll=true"></script>
+                        <div
+                            style="position: absolute; -right: 20px; -bottom: 20px; background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--card-border); box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                            <div style="font-size: 2.5rem; font-weight: 700; color: var(--accent-color);">15+</div>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary);">Образовательных курсов</div>
                         </div>
                     </div>
                     <div class="about-text">
-                        <h2 id="a_main_title_val">О нас</h2>
-                        <div id="a_p_container">
-                            <p>Акционерное общество «Центр развития закупок Республики Татарстан» является
-                                подведомственной организацией Государственного комитета Республики Татарстан по
-                                закупкам.</p>
-                            <p>Наш офис расположен в самом сердце Казани, на улице Петербургская 86. Мы объединяем
-                                экспертов с многолетним опытом работы в сфере государственного заказа.</p>
+                        <h2 id="a_main_title_val" style="font-size: 2.5rem; margin-bottom: 30px;">Миссия и ценности</h2>
+                        <div id="a_p_container"
+                            style="font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary);">
+                            <p style="margin-bottom: 20px;">Акционерное общество «Центр развития закупок Республики
+                                Татарстан» является подведомственной организацией Государственного комитета Республики
+                                Татарстан по закупкам.</p>
+                            <p>Наша главная цель — профессиональное содействие заказчикам и поставщикам. Мы стремимся к
+                                тому, чтобы каждый участник рынка обладал необходимыми знаниями и инструментами для
+                                успешной работы в рамках 44-ФЗ и 223-ФЗ.</p>
                         </div>
 
-                        <div class="services-list" id="a_services_list_val">
-                            <div class="service-item">Сопровождение 44-ФЗ и 223-ФЗ</div>
-                            <div class="service-item">Обучение и консалтинг</div>
-                            <div class="service-item">Электронная подпись</div>
-                            <div class="service-item">Площадка Etpzakupki.tatar</div>
-                            <div class="service-item">Юридические услуги</div>
-                            <div class="service-item">Независимые гарантии</div>
+                        <div class="services-list" id="a_services_list_val"
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 40px;">
+                            <div class="service-item"
+                                style="padding: 12px 20px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; font-size: 0.95rem;">
+                                Сопровождение 44/223-ФЗ</div>
+                            <div class="service-item"
+                                style="padding: 12px 20px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; font-size: 0.95rem;">
+                                Обучение и консалтинг</div>
+                            <div class="service-item"
+                                style="padding: 12px 20px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; font-size: 0.95rem;">
+                                Электронная подпись</div>
+                            <div class="service-item"
+                                style="padding: 12px 20px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; font-size: 0.95rem;">
+                                Площадка Etpzakupki.tatar</div>
+                            <div class="service-item"
+                                style="padding: 12px 20px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; font-size: 0.95rem;">
+                                Юридические услуги</div>
+                            <div class="service-item"
+                                style="padding: 12px 20px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; font-size: 0.95rem;">
+                                Независимые гарантии</div>
                         </div>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 100px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; text-align: center;">
+                    <div class="stat-item">
+                        <div
+                            style="font-size: 3rem; font-weight: 700; color: var(--accent-color); margin-bottom: 10px;">
+                            10</div>
+                        <div style="color: var(--text-secondary); font-size: 1rem;">Лет опыта</div>
+                    </div>
+                    <div class="stat-item">
+                        <div
+                            style="font-size: 3rem; font-weight: 700; color: var(--accent-color); margin-bottom: 10px;">
+                            20к+</div>
+                        <div style="color: var(--text-secondary); font-size: 1rem;">Слушателей</div>
+                    </div>
+                    <div class="stat-item">
+                        <div
+                            style="font-size: 3rem; font-weight: 700; color: var(--accent-color); margin-bottom: 10px;">
+                            98%</div>
+                        <div style="color: var(--text-secondary); font-size: 1rem;">Довольных клиентов</div>
+                    </div>
+                    <div class="stat-item">
+                        <div
+                            style="font-size: 3rem; font-weight: 700; color: var(--accent-color); margin-bottom: 10px;">
+                            50+</div>
+                        <div style="color: var(--text-secondary); font-size: 1rem;">Экспертов</div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-            <footer class="footer">
+    <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
                 <h4>Центр развития закупок</h4>
