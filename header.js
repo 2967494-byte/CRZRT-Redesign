@@ -45,42 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="header-nav-bar-container">
             <div class="header-nav-bar">
-                <div class="nav-bar-item nav-etp">
-                    <a href="https://etp.zakupki.tatar" target="_blank" class="nav-item-link">
-                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-                            <line x1="8" y1="21" x2="16" y2="21" />
-                            <line x1="12" y1="17" x2="12" y2="21" />
-                        </svg>
-                        <span>ЭТП</span>
-                    </a>
-                </div>
-
-                <div class="nav-bar-item nav-tenders">
-                    <a href="#" class="nav-item-link">
-                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                        </svg>
-                        <span>Закупки</span>
-                    </a>
-                    <div class="mega-menu">
-                        <div class="mega-grid">
-                            <div class="mega-col">
-                                <h4>Реестры</h4>
-                                <a href="#">Закупки (44-ФЗ)</a>
-                                <a href="#">Закупки (223-ФЗ)</a>
-                                <a href="#">Реестр контрактов</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Аналитика</h4>
-                                <a href="#">Планы закупок</a>
-                                <a href="#">Протоколы</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="nav-bar-item nav-edu">
                     <a href="courses.html" class="nav-item-link">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -98,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div class="mega-col">
                                 <h4>События</h4>
+                                <a href="calendar.html">Календарь</a>
                                 <a href="seminars.html">Семинары</a>
                                 <a href="webinars.html">Вебинары</a>
                                 <a href="team.html">Преподаватели</a>
@@ -135,13 +100,38 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
 
-                <div class="nav-bar-item nav-knowledge">
+                <div class="nav-bar-item nav-tenders">
                     <a href="#" class="nav-item-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                        <span>Закупки</span>
+                    </a>
+                    <div class="mega-menu">
+                        <div class="mega-grid">
+                            <div class="mega-col">
+                                <h4>Реестры</h4>
+                                <a href="#">Закупки (44-ФЗ)</a>
+                                <a href="#">Закупки (223-ФЗ)</a>
+                                <a href="#">Реестр контрактов</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Аналитика</h4>
+                                <a href="#">Планы закупок</a>
+                                <a href="#">Протоколы</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-bar-item nav-knowledge">
+                    <a href="knowledge.html" class="nav-item-link">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                         </svg>
-                        <span>База знаний</span>
+                        <span>база знаний</span>
                     </a>
                     <div class="mega-menu">
                         <div class="mega-grid">
@@ -166,12 +156,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div class="nav-bar-item nav-contacts">
-                    <a href="about.html#contacts" class="nav-item-link">
+                    <a href="contacts.html" class="nav-item-link">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                             <circle cx="12" cy="10" r="3"></circle>
                         </svg>
-                        <span>Контакты</span>
+                        <span>контакты</span>
                     </a>
                 </div>
             </div>

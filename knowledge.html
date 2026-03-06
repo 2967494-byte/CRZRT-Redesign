@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>База знаний | CRZRT</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .knowledge-section {
+            padding: 80px 0;
+        }
+
+        .knowledge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .knowledge-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .knowledge-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-5px);
+        }
+
+        .knowledge-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .knowledge-card h3 svg {
+            color: var(--accent-color);
+        }
+
+        .doc-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .doc-item {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doc-item a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .doc-item a:hover {
+            color: var(--accent-color);
+        }
+
+        .doc-size {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 20px;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .faq-answer.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="global-header"></div>
+    <script src="header.js"></script>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1 class="hero-title" style="font-size: 3rem;">База знаний</h1>
+                <p class="hero-subtitle">Библиотека документов, видеоуроки и ответы на частые вопросы.</p>
+            </div>
+        </section>
+
+        <section class="knowledge-section">
+            <div class="container">
+                <div class="knowledge-grid">
+                    <!-- Documents -->
+                    <div class="knowledge-card">
+                        <h3>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            Документы
+                        </h3>
+                        <ul class="doc-list">
+                            <li class="doc-item">
+                                <a href="#">Устав АО "ЦРЗ РТ"</a>
+                                <span class="doc-size">PDF • 1.2 MB</span>
+                            </li>
+                            <li class="doc-item">
+                                <a href="#">Лицензия на обучение</a>
+                                <span class="doc-size">PDF • 0.8 MB</span>
+                            </li>
+                            <li class="doc-item">
+                                <a href="#">Прейскурант цен 2026</a>
+                                <span class="doc-size">PDF • 0.5 MB</span>
+                            </li>
+                            <li class="doc-item">
+                                <a href="#">Политика конфиденциальности</a>
+                                <span class="doc-size">PDF • 0.4 MB</span>
+                            </li>
+                        </ul>
+                        <a href="#" class="btn-link" style="margin-top: 20px; display: inline-block;">Все документы
+                            →</a>
+                    </div>
+
+                    <!-- FAQ -->
+                    <div class="knowledge-card">
+                        <h3>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            Частые вопросы
+                        </h3>
+                        <div class="faq-list">
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFaq(this)">
+                                    Как получить удостоверение?
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M6 9l6 6 6-6" />
+                                    </svg>
+                                </div>
+                                <div class="faq-answer">
+                                    После успешного прохождения итогового тестирования, удостоверение установленного
+                                    образца будет направлено вам почтой или выдано лично в офисе.
+                                </div>
+                            </div>
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFaq(this)">
+                                    Есть ли скидки для групп?
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M6 9l6 6 6-6" />
+                                    </svg>
+                                </div>
+                                <div class="faq-answer">
+                                    Да, при направлении на обучение более 3-х сотрудников от одной организации
+                                    предусмотрены индивидуальные скидки.
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-link" style="margin-top: 20px; display: inline-block;">Смотреть все
+                            вопросы →</a>
+                    </div>
+
+                    <!-- Video Guides -->
+                    <div class="knowledge-card">
+                        <h3>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M10 8l6 4-6 4V8z"></path>
+                            </svg>
+                            Видеоинструкции
+                        </h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                            Краткие видеоуроки по работе на ЭТП "Закупки Татарстана" и в системе ЕИС.
+                        </p>
+                        <ul class="doc-list">
+                            <li class="doc-item"><a href="#">Регистрация на площадке</a></li>
+                            <li class="doc-item"><a href="#">Подача заявки (44-ФЗ)</a></li>
+                            <li class="doc-item"><a href="#">Электронное актирование</a></li>
+                        </ul>
+                        <a href="https://youtube.com" class="btn-link"
+                            style="margin-top: 20px; display: inline-block;">Перейти на YouTube канал →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+            <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4>Центр развития закупок</h4>
+                <p>© 2026 АО «Центр развития закупок РТ»</p>
+            </div>
+            <div class="footer-col">
+                <h4>Обучение</h4>
+                <a href="courses.html">Заказчикам</a>
+                <a href="courses.html">Поставщикам</a>
+                <a href="calendar.html">Календарь</a>
+            </div>
+            <div class="footer-col">
+                <h4>Компания</h4>
+                <a href="about.html">О нас</a>
+                <a href="contacts.html">Контакты</a>
+                <a href="knowledge.html">База знаний</a>
+            </div>
+            <div class="footer-col">
+                <h4>Связаться</h4>
+                <a href="tel:88001017892">8 (800) 101-78-92</a>
+                <div class="socials">
+                    <a href="https://t.me/crzrt">TG</a>
+                    <a href="https://vk.com/aocrz">VK</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        function toggleFaq(el) {
+            const answer = el.nextElementSibling;
+            const icon = el.querySelector('svg');
+            answer.classList.toggle('show');
+            if (answer.classList.contains('show')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    </script>
+</body>
+
+</html>

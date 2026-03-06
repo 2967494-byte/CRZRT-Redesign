@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Дистанционный курс по 44-ФЗ | CRZRT</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .course-hero {
+            padding: 160px 0 80px;
+            background: var(--hero-gradient);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(circle at 70% 30%, #34c759, transparent 70%);
+            opacity: 0.1;
+            filter: blur(80px);
+        }
+
+        .course-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(52, 199, 89, 0.1);
+            color: #34c759;
+            border: 1px solid rgba(52, 199, 89, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .course-detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 60px;
+            margin-top: 60px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 40px;
+            position: sticky;
+            top: 120px;
+        }
+
+        .info-item {
+            margin-bottom: 24px;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #34c759;
+            margin: 20px 0;
+        }
+
+        .course-section {
+            padding: 80px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .section-h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+        }
+
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .benefit-card {
+            padding: 30px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            transition: transform 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            border-color: #34c759;
+        }
+
+        .benefit-icon {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        @media (max-width: 900px) {
+            .course-detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-card {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="global-header"></div>
+    <script src="header.js"></script>
+
+    <main>
+        <section class="course-hero">
+            <div class="container">
+                <div class="course-badge">Дистанционно • Профессиональная переподготовка</div>
+                <h1 class="hero-title reveal-text">Специалист в сфере закупок <br><span style="color: #34c759">по 44-ФЗ
+                        (256 ак. ч)</span></h1>
+
+                <div class="course-detail-grid">
+                    <div class="course-description">
+                        <h2 class="section-h2">О программе</h2>
+                        <p
+                            style="font-size: 1.2rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 30px;">
+                            Полноценный курс переподготовки для тех, кто хочет сменить профессию или подтвердить
+                            квалификацию.
+                            Обучение проходит полностью онлайн на портале Центра развития закупок.
+                        </p>
+
+                        <h3 style="margin-bottom: 20px;">Преимущества дистанционного формата:</h3>
+                        <ul style="margin-bottom: 40px; display: grid; gap: 15px;">
+                            <li style="display: flex; align-items: center; gap: 10px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" style="color: #34c759">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Обучение в любое удобное время 24/7
+                            </li>
+                            <li style="display: flex; align-items: center; gap: 10px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" style="color: #34c759">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Доступ к видеолекциям и материалам навсегда
+                            </li>
+                            <li style="display: flex; align-items: center; gap: 10px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" style="color: #34c759">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Онлайн-тестирование и электронный сертификат
+                            </li>
+                        </ul>
+                    </div>
+
+                    <aside class="info-card">
+                        <div class="info-item">
+                            <div class="info-label">Старт обучения</div>
+                            <div class="info-value">В любое время</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Формат</div>
+                            <div class="info-value">Онлайн (Видеолекции + Тесты)</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Объем</div>
+                            <div class="info-value">256 академических часов</div>
+                        </div>
+                        <div class="info-label">Стоимость</div>
+                        <div class="price-tag">12 500 ₽</div>
+                        <a href="#register" class="btn-primary"
+                            style="display: block; text-align: center; padding: 18px; background-color: #34c759; color: white;">Начать
+                            обучение</a>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <section class="course-section">
+            <div class="container">
+                <h2 class="section-h2">Что вы получите</h2>
+                <div class="benefit-grid">
+                    <div class="benefit-card">
+                        <span class="benefit-icon">📜</span>
+                        <h4>Диплом</h4>
+                        <p>Диплом о профессиональной переподготовке с занесением в ФИС ФРДО.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <span class="benefit-icon">💻</span>
+                        <h4>Практика</h4>
+                        <p>Доступ к демо-версии электронной площадки для тренировки навыков.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <span class="benefit-icon">📱</span>
+                        <h4>Мобильность</h4>
+                        <p>Учитесь с любого устройства: компьютера, планшета или смартфона.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+            <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4>Центр развития закупок</h4>
+                <p>© 2026 АО «Центр развития закупок РТ»</p>
+            </div>
+            <div class="footer-col">
+                <h4>Обучение</h4>
+                <a href="courses.html">Заказчикам</a>
+                <a href="courses.html">Поставщикам</a>
+                <a href="calendar.html">Календарь</a>
+            </div>
+            <div class="footer-col">
+                <h4>Компания</h4>
+                <a href="about.html">О нас</a>
+                <a href="contacts.html">Контакты</a>
+                <a href="knowledge.html">База знаний</a>
+            </div>
+            <div class="footer-col">
+                <h4>Связаться</h4>
+                <a href="tel:88001017892">8 (800) 101-78-92</a>
+                <div class="socials">
+                    <a href="https://t.me/crzrt">TG</a>
+                    <a href="https://vk.com/aocrz">VK</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

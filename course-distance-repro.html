@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Дистант: Профессиональная переподготовка 44-ФЗ | CRZRT</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .course-hero {
+            padding: 160px 0 80px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            position: relative;
+        }
+
+        [data-theme="dark"] .course-hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+        .course-detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 60px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 40px;
+            position: sticky;
+            top: 120px;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin: 20px 0;
+        }
+
+        .course-section {
+            padding: 80px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .module-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .module-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="global-header"></div>
+    <script src="header.js"></script>
+
+    <main>
+        <section class="course-hero">
+            <div class="container">
+                <span class="tag">Дистанционное обучение</span>
+                <h1 class="hero-title">Профессиональная переподготовка <br><span class="gradient-text">по 44-ФЗ (256
+                        ч)</span></h1>
+
+                <div class="course-detail-grid" style="margin-top: 60px;">
+                    <div class="course-main-info">
+                        <h2>О программе</h2>
+                        <p
+                            style="font-size: 1.15rem; color: var(--text-secondary); line-height: 1.7; margin-top: 20px;">
+                            Курс предназначен для лиц, желающих получить новую квалификацию и право на ведение
+                            профессиональной деятельности в сфере закупок. По окончании выдается <strong>диплом о
+                                профессиональной переподготовке</strong>.
+                        </p>
+
+                        <div style="margin-top: 40px;">
+                            <h3>Преимущества дистанционного формата:</h3>
+                            <ul style="margin-top: 20px; display: grid; gap: 15px;">
+                                <li>• Обучение без отрыва от основной деятельности</li>
+                                <li>• Доступ к учебным материалам 24/7</li>
+                                <li>• Персональный куратор-эксперт</li>
+                                <li>• Итоговое тестирование онлайн</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <aside class="info-card">
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase;">
+                                Ближайший поток</div>
+                            <div style="font-size: 1.2rem; font-weight: 600;">2 марта – 10 апреля 2026</div>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase;">
+                                Документ</div>
+                            <div style="font-size: 1.2rem; font-weight: 600;">Диплом о переподготовке</div>
+                        </div>
+                        <div class="price-tag">17 500 ₽</div>
+                        <a href="#" class="btn-primary"
+                            style="display: block; text-align: center; padding: 18px;">Записаться на курс</a>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <section class="course-section">
+            <div class="container">
+                <h2>Учебный план</h2>
+                <div style="margin-top: 40px; border: 1px solid var(--card-border);">
+                    <div class="module-item">
+                        <div class="module-number">1</div>
+                        <div>Основы контрактной системы. Законодательная база.</div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-number">2</div>
+                        <div>Планирование и обоснование закупок.</div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-number">3</div>
+                        <div>Конкурентные способы определения поставщиков.</div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-number">4</div>
+                        <div>Закупки у единственного поставщика.</div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-number">5</div>
+                        <div>Контракты: заключение, исполнение, расторжение.</div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-number">6</div>
+                        <div>Ответственность, контроль и аудит.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4>Центр развития закупок</h4>
+                <p>© 2026 АО «Центр развития закупок РТ»</p>
+            </div>
+            <div class="footer-col">
+                <h4>Обучение</h4>
+                <a href="courses.html">Заказчикам</a>
+                <a href="courses.html">Поставщикам</a>
+                <a href="calendar.html">Календарь</a>
+            </div>
+            <div class="footer-col">
+                <h4>Компания</h4>
+                <a href="about.html">О нас</a>
+                <a href="contacts.html">Контакты</a>
+                <a href="knowledge.html">База знаний</a>
+            </div>
+            <div class="footer-col">
+                <h4>Связаться</h4>
+                <a href="tel:88001017892">8 (800) 101-78-92</a>
+                <div class="socials">
+                    <a href="https://t.me/crzrt">TG</a>
+                    <a href="https://vk.com/aocrz">VK</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>

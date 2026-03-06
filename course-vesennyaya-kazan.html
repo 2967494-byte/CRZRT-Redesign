@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>44-ФЗ + Весенняя Казань | CRZRT</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .course-hero {
+            padding: 160px 0 80px;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .course-hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+        .course-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(circle at 70% 30%, #ff5e62, transparent 70%);
+            opacity: 0.1;
+            filter: blur(80px);
+        }
+
+        .course-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(255, 94, 98, 0.1);
+            color: #ff5e62;
+            border: 1px solid rgba(255, 94, 98, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .course-detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 60px;
+            margin-top: 60px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 40px;
+            position: sticky;
+            top: 120px;
+        }
+
+        .info-item {
+            margin-bottom: 24px;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ff5e62;
+            margin: 20px 0;
+        }
+
+        .course-section {
+            padding: 80px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .section-h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+        }
+
+        .program-module {
+            margin-bottom: 15px;
+            border: 1px solid var(--card-border);
+        }
+
+        .module-header {
+            padding: 20px 30px;
+            background: var(--card-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .module-content {
+            padding: 20px 30px;
+            display: none;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .module-content.active {
+            display: block;
+        }
+
+        .cultural-block {
+            background: rgba(255, 94, 98, 0.05);
+            padding: 40px;
+            border-left: 4px solid #ff5e62;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .course-detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-card {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="global-header"></div>
+    <script src="header.js"></script>
+
+    <main>
+        <section class="course-hero">
+            <div class="container">
+                <div class="course-badge">Спецпредложение • Очное обучение</div>
+                <h1 class="hero-title reveal-text">Программа <br><span style="color: #ff5e62">«Весенняя Казань»</span>
+                </h1>
+
+                <div class="course-detail-grid">
+                    <div class="course-description">
+                        <h2 class="section-h2">Обучение + Культура</h2>
+                        <p
+                            style="font-size: 1.2rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 30px;">
+                            Уникальный формат, совмещающий интенсивный курс повышения квалификации по 44-ФЗ и
+                            насыщенную экскурсионную программу по весенней столице Татарстана.
+                        </p>
+
+                        <div class="cultural-block">
+                            <h3>Что включено в программу:</h3>
+                            <ul style="margin-top: 20px; display: grid; gap: 15px;">
+                                <li>• Индивидуальное сопровождение и трансфер</li>
+                                <li>• Обзорная экскурсия по Казани и Кремлю</li>
+                                <li>• Поездка в остров-град Свияжск / Раифский монастырь</li>
+                                <li>• Праздничные ужины с национальной кухней</li>
+                            </ul>
+                        </div>
+
+                        <h3 style="margin: 40px 0 20px;">Образовательная часть (108 ак. ч.):</h3>
+                        <p>Курс охватывает все актуальные изменения законодательства, практику ФАС и судебную практику.
+                        </p>
+                    </div>
+
+                    <aside class="info-card">
+                        <div class="info-item">
+                            <div class="info-label">Даты</div>
+                            <div class="info-value">23 - 27 марта 2026 г.</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Место</div>
+                            <div class="info-value">г. Казань (отели 4-5*)</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Объем</div>
+                            <div class="info-value">108 академических часов</div>
+                        </div>
+                        <div class="info-label">Стоимость (ALL INCLUSIVE)</div>
+                        <div class="price-tag">40 470 ₽</div>
+                        <a href="#register" class="btn-primary"
+                            style="display: block; text-align: center; padding: 18px; background-color: #ff5e62; color: white;">Забронировать
+                            место</a>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reuse program modules from course-44fz -->
+        <section class="course-section">
+            <div class="container">
+                <h2 class="section-h2">Темы обучения</h2>
+                <div class="program-list">
+                    <div class="program-module">
+                        <div class="module-header" onclick="toggleModule(this)">
+                            <h4>Блок 1. Новации контрактной системы</h4>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </div>
+                        <div class="module-content">
+                            <p>Обзор последних изменений в 44-ФЗ, вступивших в силу в 2025-2026 годах.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4>Центр развития закупок</h4>
+                <p>© 2026 АО «Центр развития закупок РТ»</p>
+            </div>
+            <div class="footer-col">
+                <h4>Обучение</h4>
+                <a href="courses.html">Заказчикам</a>
+                <a href="courses.html">Поставщикам</a>
+                <a href="calendar.html">Календарь</a>
+            </div>
+            <div class="footer-col">
+                <h4>Компания</h4>
+                <a href="about.html">О нас</a>
+                <a href="contacts.html">Контакты</a>
+                <a href="knowledge.html">База знаний</a>
+            </div>
+            <div class="footer-col">
+                <h4>Связаться</h4>
+                <a href="tel:88001017892">8 (800) 101-78-92</a>
+                <div class="socials">
+                    <a href="https://t.me/crzrt">TG</a>
+                    <a href="https://vk.com/aocrz">VK</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        function toggleModule(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('svg');
+            content.classList.toggle('active');
+            if (content.classList.contains('active')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    </script>
+</body>
+
+</html>

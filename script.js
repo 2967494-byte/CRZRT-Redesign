@@ -130,19 +130,20 @@ document.addEventListener('DOMContentLoaded', () => {
         heroSubtitle: 'Единая экосистема для заказчиков и поставщиков.\nОт обучения до сопровождения сложных тендеров.',
         heroBgImage: '',
         events: [
-            { date: '15 МАРТА', title: 'Курс: Закупки по 44-ФЗ для начинающих', link: 'courses.html' },
-            { date: '22 МАРТА', title: 'Семинар: Изменения в 223-ФЗ в 2024 году', link: 'seminars.html' }
+            { date: '23-27 МАРТА', title: 'Очный курс: Закупки по 44-ФЗ (108 ч)', link: 'course-44fz.html' },
+            { date: '25-27 МАРТА', title: 'Очный курс: Закупки по 223-ФЗ (72 ч)', link: 'course-223fz.html' },
+            { date: '20 АПРЕЛЯ', title: 'Семинар: Новые правила ГИС в 2026 году', link: 'seminars.html' }
         ],
         sideNews: [
-            { date: '05.03.2024', title: 'Новые требования к участникам закупок с 1 апреля', link: '#' },
-            { date: '01.03.2024', title: 'Запущен обновленный личный кабинет на ЭТП', link: '#' },
-            { date: '28.02.2024', title: 'Центр развития закупок получил награду "Эксперт года"', link: '#' }
+            { date: '06.03.2026', title: 'Запущен новый раздел "База знаний"', link: 'knowledge.html' },
+            { date: '01.03.2026', title: 'Обновлено расписание курсов на весну 2026', link: 'calendar.html' },
+            { date: '25.02.2026', title: 'Новые правила электронного актирования в ЕИС', link: '#' }
         ],
         featureCards: [
             { title: 'Обучение', link: 'courses.html', image: '' },
             { title: 'Консалтинг', link: 'consulting.html', image: '' },
-            { title: 'Закупки (ЭТП)', link: 'https://etp.zakupki.tatar', image: '' },
-            { title: 'Сопровождение', link: '#', image: '' }
+            { title: 'Закупки (ЭТП)', link: 'https://etpzakupki.tatar', image: '' },
+            { title: 'Сопровождение', link: 'consulting.html#deals', image: '' }
         ],
         orgBlocks: [
             { title: 'Специализированная организация', text: 'Мы — официальный партнер в сфере 44-ФЗ и 223-ФЗ с безупречной репутацией.' },

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Календарь мероприятий 2026 | CRZRT</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .calendar-section {
+            padding: 60px 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .calendar-item {
+            display: grid;
+            grid-template-columns: 150px 1fr 200px;
+            align-items: center;
+            padding: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+        }
+
+        .calendar-item:hover {
+            border-color: var(--accent-color);
+            transform: translateX(10px);
+        }
+
+        .item-date {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .item-content h3 {
+            font-size: 1.25rem;
+            margin-bottom: 5px;
+        }
+
+        .item-content p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .item-actions {
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-item {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .item-actions {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="global-header"></div>
+    <script src="header.js"></script>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1 class="hero-title" style="font-size: 3rem;">Календарь мероприятий</h1>
+                <p class="hero-subtitle">График обучения, семинаров и вебинаров на 2026 год.</p>
+            </div>
+        </section>
+
+        <section class="calendar-section">
+            <div class="container">
+                <div class="calendar-grid">
+                    <!-- March -->
+                    <div style="margin-bottom: 40px;">
+                        <h2
+                            style="margin-bottom: 20px; border-bottom: 2px solid var(--card-border); padding-bottom: 10px;">
+                            Март 2026</h2>
+                        <div class="calendar-grid">
+                            <div class="calendar-item">
+                                <div class="item-date">2 - 27 марта</div>
+                                <div class="item-content">
+                                    <h3>Повышение квалификации по 223-ФЗ</h3>
+                                    <p>Дистанционный курс для заказчиков (72 ак.ч.)</p>
+                                </div>
+                                <div class="item-actions">
+                                    <a href="distance.html" class="btn-link">Подробнее →</a>
+                                </div>
+                            </div>
+                            <div class="calendar-item">
+                                <div class="item-date">2 - 10 апреля</div>
+                                <div class="item-content">
+                                    <h3>Проф. переподготовка по 44-ФЗ</h3>
+                                    <p>Дистанционный курс (256 ак.ч.) - Старт набора</p>
+                                </div>
+                                <div class="item-actions">
+                                    <a href="course-distance-44fz.html" class="btn-link">Подробнее →</a>
+                                </div>
+                            </div>
+                            <div class="calendar-item">
+                                <div class="item-date">23 - 27 марта</div>
+                                <div class="item-content">
+                                    <h3>Очный курс по 44-ФЗ (108 ак.ч)</h3>
+                                    <p>Казань, ул. Петербургская, 86</p>
+                                </div>
+                                <div class="item-actions">
+                                    <a href="course-44fz.html" class="btn-link">Подробнее →</a>
+                                </div>
+                            </div>
+                            <div class="calendar-item">
+                                <div class="item-date">25 - 27 марта</div>
+                                <div class="item-content">
+                                    <h3>Очный курс по 223-ФЗ (72 ак.ч)</h3>
+                                    <p>Казань, ул. Петербургская, 86</p>
+                                </div>
+                                <div class="item-actions">
+                                    <a href="course-223fz.html" class="btn-link">Подробнее →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- May -->
+                    <div style="margin-bottom: 40px;">
+                        <h2
+                            style="margin-bottom: 20px; border-bottom: 2px solid var(--card-border); padding-bottom: 10px;">
+                            Май 2026</h2>
+                        <div class="calendar-grid">
+                            <div class="calendar-item">
+                                <div class="item-date">11 - 13 мая</div>
+                                <div class="item-content">
+                                    <h3>Очный курс для поставщиков</h3>
+                                    <p>Базовый курс по 44-ФЗ и 223-ФЗ (40 ак.ч.)</p>
+                                </div>
+                                <div class="item-actions">
+                                    <a href="courses.html" class="btn-link">Подробнее →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+            <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4>Центр развития закупок</h4>
+                <p>© 2026 АО «Центр развития закупок РТ»</p>
+            </div>
+            <div class="footer-col">
+                <h4>Обучение</h4>
+                <a href="courses.html">Заказчикам</a>
+                <a href="courses.html">Поставщикам</a>
+                <a href="calendar.html">Календарь</a>
+            </div>
+            <div class="footer-col">
+                <h4>Компания</h4>
+                <a href="about.html">О нас</a>
+                <a href="contacts.html">Контакты</a>
+                <a href="knowledge.html">База знаний</a>
+            </div>
+            <div class="footer-col">
+                <h4>Связаться</h4>
+                <a href="tel:88001017892">8 (800) 101-78-92</a>
+                <div class="socials">
+                    <a href="https://t.me/crzrt">TG</a>
+                    <a href="https://vk.com/aocrz">VK</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
