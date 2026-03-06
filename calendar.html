@@ -12,58 +12,30 @@
             padding: 60px 0;
         }
 
-        /* ── Sub-nav ── */
-        .subnav {
-            background: var(--card-bg);
+        /* ── Page header ── */
+        .courses-page-header {
+            padding: 72px 0 56px;
             border-bottom: 1px solid var(--card-border);
-            position: sticky;
-            top: 72px;
-            z-index: 100;
         }
 
-        .subnav-inner {
-            display: flex;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .subnav-inner::-webkit-scrollbar {
-            display: none;
-        }
-
-        .subnav-link {
+        .breadcrumb {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 14px 22px;
             font-size: 0.78rem;
-            font-weight: 700;
             color: var(--text-secondary);
-            text-decoration: none;
             text-transform: uppercase;
-            letter-spacing: 0.07em;
-            white-space: nowrap;
-            border-right: 1px solid var(--card-border);
-            transition: all 0.2s;
-            border-radius: 0;
+            letter-spacing: 0.06em;
+            margin-bottom: 24px;
         }
 
-        .subnav-link svg {
-            width: 14px;
-            height: 14px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2;
-        }
-
-        .subnav-link:hover {
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .subnav-link.active {
+        .breadcrumb a {
             color: var(--accent-color);
-            border-bottom: 2px solid var(--accent-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb span {
+            opacity: 0.5;
         }
 
         .calendar-grid {

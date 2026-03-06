@@ -29,60 +29,6 @@
             stroke-width: 1.6;
         }
 
-        /* ── Sub-nav ── */
-        .subnav {
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--card-border);
-            position: sticky;
-            top: 72px;
-            z-index: 100;
-        }
-
-        .subnav-inner {
-            display: flex;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .subnav-inner::-webkit-scrollbar {
-            display: none;
-        }
-
-        .subnav-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 14px 22px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            white-space: nowrap;
-            border-right: 1px solid var(--card-border);
-            transition: all 0.2s;
-            border-radius: 0;
-        }
-
-        .subnav-link svg {
-            width: 14px;
-            height: 14px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2;
-        }
-
-        .subnav-link:hover {
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .subnav-link.active {
-            color: var(--accent-color);
-            border-bottom: 2px solid var(--accent-color);
-        }
-
         /* ── Hero ── */
         .edu-hero {
             position: relative;

@@ -4,63 +4,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Преподаватели | Центр развития закупок РТ</title>
+    <title>Наши преподаватели | Центр развития закупок РТ</title>
     <meta name="description"
-        content="Преподаватели Центра развития закупок РТ — практикующие эксперты и должностные лица с многолетним опытом в сфере госзакупок." />
+        content="Преподаватели-практики с многолетним опытом в сфере госзакупок, представители ФАС, эксперты ЕИС и площадок." />
     <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .subnav {
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--card-border);
-            position: sticky;
-            top: 72px;
-            z-index: 100;
-        }
-
-        .subnav-inner {
-            display: flex;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .subnav-inner::-webkit-scrollbar {
-            display: none;
-        }
-
-        .subnav-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 14px 22px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            white-space: nowrap;
-            border-right: 1px solid var(--card-border);
-            transition: all 0.2s;
-        }
-
-        .subnav-link svg {
-            width: 14px;
-            height: 14px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2;
-        }
-
-        .subnav-link:hover {
-            color: var(--text-primary);
-        }
-
-        .subnav-link.active {
-            color: var(--accent-color);
-            border-bottom: 2px solid var(--accent-color);
-        }
-
         .courses-page-header {
             padding: 72px 0 56px;
             border-bottom: 1px solid var(--card-border);
@@ -86,107 +35,105 @@
             opacity: 0.5;
         }
 
-        /* Team Grid */
-        .team-section {
-            padding: 60px 0;
+        .experts-section {
+            border: 1px solid var(--card-border);
+            border-top: none;
+            background: var(--card-bg);
         }
 
-        .team-title {
-            font-size: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-secondary);
-            margin-bottom: 40px;
-        }
-
-        .expert-grid {
+        .experts-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            border: 1px solid var(--card-border);
-            border-bottom: none;
-            border-right: none;
+            gap: 1px;
+            background: var(--card-border);
         }
 
         .expert-card {
-            border-right: 1px solid var(--card-border);
-            border-bottom: 1px solid var(--card-border);
-            padding: 40px 36px;
+            background: var(--bg-color);
+            padding: 48px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
             transition: background 0.3s;
             position: relative;
+            overflow: hidden;
         }
 
-        .expert-card::before {
+        .expert-card::after {
             content: '';
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
-            width: 3px;
-            height: 0;
+            width: 0;
+            height: 3px;
             background: var(--accent-color);
-            transition: height 0.4s;
+            transition: width 0.4s;
         }
 
-        .expert-card:hover::before {
-            height: 100%;
+        .expert-card:hover::after {
+            width: 100%;
         }
 
         .expert-card:hover {
             background: var(--card-bg);
         }
 
-        .expert-avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 0;
-            background: linear-gradient(135deg, rgba(41, 151, 255, 0.12) 0%, rgba(41, 151, 255, 0.06) 100%);
-            border: 1px solid var(--card-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
+        .expert-photo-wrap {
+            position: relative;
+            margin-bottom: 32px;
+            width: 120px;
+            height: 120px;
         }
 
-        .expert-name {
-            font-size: 1.05rem;
+        .expert-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 1px solid var(--card-border);
+            border-radius: 0;
+        }
+
+        .expert-info-top {
+            margin-bottom: 28px;
+        }
+
+        .expert-info-top h3 {
+            font-size: 1.35rem;
             font-weight: 800;
-            letter-spacing: -0.01em;
-            margin: 0;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
         }
 
         .expert-role {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
             color: var(--accent-color);
-            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
         .expert-desc {
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            line-height: 1.6;
-            margin: 0;
+            line-height: 1.7;
+            margin-bottom: 28px;
+            flex: 1;
         }
 
-        .expert-tags {
+        .expert-exp {
             display: flex;
+            flex-direction: column;
             gap: 6px;
-            flex-wrap: wrap;
+            padding-top: 24px;
+            border-top: 1px solid var(--card-border);
         }
 
-        .expert-tag {
-            padding: 2px 8px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border: 1px solid var(--card-border);
+        .exp-row {
+            font-size: 0.82rem;
             color: var(--text-secondary);
+        }
+
+        .exp-row b {
+            color: var(--text-primary);
         }
 
         .bottom-cta {
@@ -239,27 +186,23 @@
             color: var(--accent-color);
         }
 
-        @media (max-width: 1000px) {
-            .expert-grid {
-                grid-template-columns: 1fr 1fr;
+        @media (max-width: 1100px) {
+            .experts-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        @media (max-width: 640px) {
-            .expert-grid {
+        @media (max-width: 800px) {
+            .experts-grid {
                 grid-template-columns: 1fr;
             }
 
             .expert-card {
-                padding: 28px;
+                padding: 36px;
             }
 
             .bottom-cta {
                 padding: 40px 28px;
-            }
-
-            .subnav-link {
-                padding: 12px 16px;
             }
         }
     </style>
@@ -272,7 +215,7 @@
     <div id="global-header"></div>
     <script src="header.js"></script>
 
-    <nav class="subnav">
+    <nav class="subnav" style="margin-top: 125px;">
         <div class="container" style="padding: 0; max-width: 100%;">
             <div class="subnav-inner">
                 <a href="obuchenie.html" class="subnav-link"><svg viewBox="0 0 24 24">
@@ -326,104 +269,83 @@
                 <div class="breadcrumb">
                     <a href="index.html">Главная</a><span>/</span>
                     <a href="obuchenie.html">Обучение</a><span>/</span>
-                    Преподаватели
+                    Наши эксперты
                 </div>
                 <h1
                     style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px;">
-                    Наши эксперты</h1>
+                    Преподаватели-практики</h1>
                 <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 620px; line-height: 1.7;">
-                    Профессионалы-практики с многолетним опытом в сфере госзакупок. Действующие специалисты, ежедневно
-                    работающие с законодательством, — не просто теоретики.
+                    Команда ведущих экспертов в сфере закупок. Представители контрольных органов, разработчики
+                    законодательства и признанные методологи.
                 </p>
             </div>
         </section>
 
-        <section class="team-section">
-            <div class="container">
-                <div class="team-title">Команда преподавателей</div>
-                <div class="expert-grid">
+        <div class="container">
+            <div class="experts-section">
+                <div class="experts-grid">
 
                     <div class="expert-card">
-                        <div class="expert-avatar">👨‍💼</div>
-                        <h3 class="expert-name">Багаутдинов И. Г.</h3>
-                        <p class="expert-role">Ведущий эксперт по методологии</p>
-                        <p class="expert-desc">Заместитель председателя Госкомитета РТ по закупкам. Разработчик
-                            региональной нормативной базы в сфере контрактной системы.</p>
-                        <div class="expert-tags">
-                            <span class="expert-tag">44-ФЗ</span>
-                            <span class="expert-tag">Госрегулирование</span>
+                        <div class="expert-photo-wrap">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&h=200&auto=format&fit=crop"
+                                alt="Expert" class="expert-photo">
+                        </div>
+                        <div class="expert-info-top">
+                            <h3>Мария Иванова</h3>
+                            <div class="expert-role">Ведущий методолог 44-ФЗ</div>
+                        </div>
+                        <p class="expert-desc">Участвовала в разработке ключевых поправок в контрактную систему. Эксперт
+                            с 15-летним стажем в проведении государственных закупок любого уровня сложности.</p>
+                        <div class="expert-exp">
+                            <div class="exp-row">Опыт в закупках: <b>15+ лет</b></div>
+                            <div class="exp-row">Проведено курсов: <b>200+</b></div>
                         </div>
                     </div>
 
                     <div class="expert-card">
-                        <div class="expert-avatar">👩‍💼</div>
-                        <h3 class="expert-name">Габидуллина Н. И.</h3>
-                        <p class="expert-role">Эксперт в сфере 44-ФЗ и 223-ФЗ</p>
-                        <p class="expert-desc">Заместитель генерального директора АО «ЦРЗРТ». Более 15 лет практики в
-                            сфере закупок для государственных и корпоративных заказчиков.</p>
-                        <div class="expert-tags">
-                            <span class="expert-tag">44-ФЗ</span>
-                            <span class="expert-tag">223-ФЗ</span>
+                        <div class="expert-photo-wrap">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&h=200&auto=format&fit=crop"
+                                alt="Expert" class="expert-photo">
+                        </div>
+                        <div class="expert-info-top">
+                            <h3>Александр Петров</h3>
+                            <div class="expert-role">Эксперт по 223-ФЗ и ГИС</div>
+                        </div>
+                        <p class="expert-desc">Специалист по автоматизации закупочных процессов. Один из разработчиков
+                            методологии работы в ГИС «Закупки Республики Татарстан» и электронных магазинах.</p>
+                        <div class="expert-exp">
+                            <div class="exp-row">Опыт в закупках: <b>10+ лет</b></div>
+                            <div class="exp-row">Реализовано проектов: <b>50+</b></div>
                         </div>
                     </div>
 
                     <div class="expert-card">
-                        <div class="expert-avatar">👨‍💼</div>
-                        <h3 class="expert-name">Магданов И. И.</h3>
-                        <p class="expert-role">Эксперт по торгам</p>
-                        <p class="expert-desc">Заместитель руководителя отдела сопровождения закупочной деятельности.
-                            Практикующий специалист по электронным торговым процедурам.</p>
-                        <div class="expert-tags">
-                            <span class="expert-tag">ЕИС</span>
-                            <span class="expert-tag">ЭТП</span>
+                        <div class="expert-photo-wrap">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&h=200&auto=format&fit=crop"
+                                alt="Expert" class="expert-photo">
+                        </div>
+                        <div class="expert-info-top">
+                            <h3>Дмитрий Сухов</h3>
+                            <div class="expert-role">Специалист по защите в ФАС</div>
+                        </div>
+                        <p class="expert-desc">Практикующий юрист в сфере антимонопольного регулирования. Свыше 500
+                            успешных дел по защите интересов участников закупок в территориальных органах ФАС.</p>
+                        <div class="expert-exp">
+                            <div class="exp-row">Судебная практика: <b>12 лет</b></div>
+                            <div class="exp-row">Выигранных дел: <b>500+</b></div>
                         </div>
                     </div>
 
-                    <div class="expert-card">
-                        <div class="expert-avatar">👩‍💼</div>
-                        <h3 class="expert-name">Трошагина Д. В.</h3>
-                        <p class="expert-role">Эксперт по защите в ФАС и судах</p>
-                        <p class="expert-desc">Руководитель юридического отдела по судебной работе. Специализируется на
-                            защите интересов заказчиков и поставщиков при рассмотрении жалоб.</p>
-                        <div class="expert-tags">
-                            <span class="expert-tag">ФАС</span>
-                            <span class="expert-tag">Судебная практика</span>
-                        </div>
-                    </div>
-
-                    <div class="expert-card">
-                        <div class="expert-avatar">👨‍💼</div>
-                        <h3 class="expert-name">Чернов Д. А.</h3>
-                        <p class="expert-role">Специалист по правовому регулированию</p>
-                        <p class="expert-desc">Ведущий юрисконсульт АО «ЦРЗРТ». Занимается правовой экспертизой
-                            закупочной документации и сопровождением сложных закупочных процедур.</p>
-                        <div class="expert-tags">
-                            <span class="expert-tag">Правовая экспертиза</span>
-                            <span class="expert-tag">Документация</span>
-                        </div>
-                    </div>
-
-                    <div class="expert-card">
-                        <div class="expert-avatar">👩‍💼</div>
-                        <h3 class="expert-name">Суркова А. А.</h3>
-                        <p class="expert-role">Эксперт по организации тендеров</p>
-                        <p class="expert-desc">Начальник отдела централизованных закупок Госкомитета РТ по закупкам.
-                            Организовала сотни торгов в интересах государственных заказчиков.</p>
-                        <div class="expert-tags">
-                            <span class="expert-tag">Централизованные закупки</span>
-                            <span class="expert-tag">44-ФЗ</span>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="bottom-cta">
-                    <h3>Хотите обучиться у конкретного эксперта?</h3>
-                    <p>Выберите индивидуальный формат и работайте напрямую с ведущим специалистом по вашей теме.</p>
-                    <a href="individual.html" class="btn-cta-primary">Индивидуальное обучение</a>
                 </div>
             </div>
-        </section>
+
+            <div class="bottom-cta">
+                <h3>Хотите пригласить эксперта?</h3>
+                <p>Наши преподаватели проводят индивидуальные консультации и корпоративное обучение под задачи вашей
+                    компании.</p>
+                <a href="contacts.html" class="btn-cta-primary">Связаться с нами</a>
+            </div>
+        </div>
     </main>
 
     <footer class="footer">

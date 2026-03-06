@@ -1648,3 +1648,73 @@ ul {
     color: var(--text-secondary);
     line-height: 1.6;
 }
+
+/* ── Sub-navigation (Unified Education Pages) ── */
+.subnav {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+    position: sticky;
+    top: 125px;
+    margin-top: 125px;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+}
+
+.subnav-inner {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.subnav-inner::-webkit-scrollbar {
+    display: none;
+}
+
+.subnav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    border-right: 1px solid var(--card-border);
+    transition: all 0.2s var(--ease-custom);
+    border-radius: 0;
+}
+
+.subnav-link svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+}
+
+.subnav-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.subnav-link.active {
+    color: var(--accent-color);
+    background: rgba(41, 151, 255, 0.05);
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.subnav-link:first-child {
+    border-left: 1px solid var(--card-border);
+}
+
+@media (max-width: 600px) {
+    .subnav-link {
+        padding: 14px 18px;
+        font-size: 0.68rem;
+    }
+}
