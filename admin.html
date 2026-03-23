@@ -1197,20 +1197,49 @@
             email: 'info@crzrt.ru',
             requisites: 'АО «ЦРЗ РТ»\nИНН 1655291703\nКПП 165501001\nОГРН 1141690029800'
         };
+        let mainPageData = { ...defaultMainData };
+        let aboutData = { ...defaultAboutData };
+        let contactsData = { ...defaultContactsData };
+        let educationData = { ...defaultEducationData };
+        let consultingData = { ...defaultConsultingData };
 
-        let savedMainData = JSON.parse(localStorage.getItem('crzrt_main_page_data')) || {};
-        let mainPageData = { ...defaultMainData, ...savedMainData };
+        async function syncAllDataFromServer() {
+            const keys = [
+                'crzrt_main_page_data', 
+                'crzrt_about_data', 
+                'crzrt_contacts', 
+                'crzrt_education_data', 
+                'crzrt_consulting_data'
+            ];
 
-        let savedAboutData = JSON.parse(localStorage.getItem('crzrt_about_data')) || {};
-        let aboutData = { ...defaultAboutData, ...savedAboutData };
-
-        let savedContactsData = JSON.parse(localStorage.getItem('crzrt_contacts')) || {};
-        let contactsData = { ...defaultContactsData, ...savedContactsData };
-
-        // Ensure arrays are not empty/overwritten by partial saves
-        if (!mainPageData.testimonials || mainPageData.testimonials.length === 0) mainPageData.testimonials = defaultMainData.testimonials;
-        if (!mainPageData.orgBlocks || mainPageData.orgBlocks.length === 0) mainPageData.orgBlocks = defaultMainData.orgBlocks;
-        if (!mainPageData.featureCards || mainPageData.featureCards.length === 0) mainPageData.featureCards = defaultMainData.featureCards;
+            try {
+                for (const key of keys) {
+                    const resp = await fetch(`api/settings.php?key=${key}`);
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data && Object.keys(data).length > 0) {
+                            if (key === 'crzrt_main_page_data') mainPageData = { ...defaultMainData, ...data };
+                            else if (key === 'crzrt_about_data') aboutData = { ...defaultAboutData, ...data };
+                            else if (key === 'crzrt_contacts') contactsData = { ...defaultContactsData, ...data };
+                            else if (key === 'crzrt_education_data') educationData = { ...educationData, ...data };
+                            else if (key === 'crzrt_consulting_data') consultingData = { ...consultingData, ...data };
+                            
+                            // Save to local for fallback
+                            localStorage.setItem(key, JSON.stringify(data));
+                        }
+                    }
+                }
+                // Refresh appropriate views
+                if (currentTarget === 'main-page') renderMainPageAdmin();
+                else if (currentTarget === 'about-us') renderAboutUsAdmin();
+                else if (currentTarget === 'contacts') renderContactsAdmin();
+                else if (currentTarget === 'education') renderEducationAdmin();
+                else if (currentTarget === 'consulting') renderConsultingAdmin();
+                
+            } catch (e) {
+                console.warn("Failed to sync some data from server, using local/defaults", e);
+            }
+        }
 
         // Миграция со старой версии или инициализация по умолчанию
         if (usersDb) {
@@ -1514,7 +1543,7 @@
         };
 
         let savedEduData = JSON.parse(localStorage.getItem('crzrt_education_data')) || {};
-        let educationData = {
+        educationData = {
             courses: savedEduData.courses || defaultEducationData.courses,
             events: savedEduData.events || defaultEducationData.events,
             teachers: savedEduData.teachers || defaultEducationData.teachers
@@ -1933,6 +1962,10 @@
                     }
 
                     currentUserRoleInfo.innerHTML = `<div>${user.name}</div><div style="font-size:0.8rem; font-weight:normal; opacity:0.8; margin-top:2px;">${roleDisplay}</div>`;
+                    
+                    // СИНХРОНИЗАЦИЯ С СЕРВЕРОМ
+                    syncAllDataFromServer();
+                    
                     updateAccess();
                 } else {
                     authModal.style.display = 'flex';
@@ -2432,7 +2465,7 @@
             ]
         };
 
-        let consultingData = JSON.parse(localStorage.getItem('crzrt_consulting_data')) || defaultConsultingData;
+        consultingData = JSON.parse(localStorage.getItem('crzrt_consulting_data')) || defaultConsultingData;
         const consultingAuthorsAdmin = document.getElementById('consultingAuthorsAdmin');
         const consultingServicesAdmin = document.getElementById('consultingServicesAdmin');
 

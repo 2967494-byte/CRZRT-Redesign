@@ -564,6 +564,32 @@ ul {
     display: block;
 }
 
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+    transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+.is-revealed {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+}
+
+/* Staggered animations for grids */
+.edu-card.is-revealed:nth-child(2),
+.consult-card.is-revealed:nth-child(2),
+.event-tile.is-revealed:nth-child(2) {
+    transition-delay: 0.1s;
+}
+
+.edu-card.is-revealed:nth-child(3),
+.consult-card.is-revealed:nth-child(3),
+.event-tile.is-revealed:nth-child(3) {
+    transition-delay: 0.2s;
+}
+
 .reveal-text {
     display: block;
     opacity: 0;
@@ -687,14 +713,22 @@ ul {
 .hero-overlay {
     position: absolute;
     inset: 0;
-    /* Gradient blend: solid brand color on left to transparent on right for readability */
-    background: linear-gradient(90deg, var(--bg-color) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 100%);
+    /* Premium Gradient: Solid background on left to allow text readability, then smooth transition to image */
+    background: linear-gradient(90deg, 
+        var(--bg-color) 0%, 
+        var(--bg-color) 15%, 
+        rgba(0, 0, 0, 0.3) 45%, 
+        transparent 100%);
     backdrop-filter: blur(1px);
     z-index: 2;
 }
 
 [data-theme="light"] .hero-overlay {
-    background: linear-gradient(90deg, var(--bg-color) 0%, rgba(255, 255, 255, 0.4) 40%, transparent 100%);
+    background: linear-gradient(90deg, 
+        var(--bg-color) 0%, 
+        var(--bg-color) 15%, 
+        rgba(255, 255, 255, 0.3) 45%, 
+        transparent 100%);
 }
 
 [data-theme="light"] .hero-title {
@@ -1743,5 +1777,161 @@ ul {
     font-size: 0.95rem;
     color: var(--text-secondary);
     line-height: 1.6;
+}
+
+/* Consolidated Section & Grid Styles (from index.html) */
+.services-section, .education-section, .consulting-section, .stats-section, .contacts-section {
+    padding: 60px 0;
+    scroll-margin-top: 80px;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 60px;
+}
+
+.service-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(41, 151, 255, 0.1);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.service-icon svg {
+    width: 30px;
+    height: 30px;
+    color: var(--accent-color);
+}
+
+.education-grid, .consulting-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.edu-card, .consult-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 15px;
+    padding: 30px;
+    transition: all 0.3s ease;
+}
+
+.edu-card:hover, .consult-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+}
+
+.edu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.edu-badge {
+    background: rgba(41, 151, 255, 0.1);
+    color: var(--accent-color);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.stats-section {
+    background: linear-gradient(135deg, rgba(41, 151, 255, 0.05) 0%, transparent 100%);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.contacts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+}
+
+.contact-info {
+    display: grid;
+    gap: 30px;
+}
+
+.contact-item {
+    display: flex;
+    gap: 20px;
+}
+
+.contact-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(41, 151, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--accent-color);
+    flex-shrink: 0;
+}
+
+.contact-text h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.contact-form {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 40px;
+}
+
+.contact-form input, .contact-form textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    font-family: inherit;
+}
+
+@media (max-width: 768px) {
+    .services-grid, .education-grid, .consulting-grid, .stats-grid, .contacts-grid {
+        grid-template-columns: 1fr !important;
+        gap: 30px;
+    }
 }
 

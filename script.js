@@ -3,28 +3,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const revealElements = document.querySelectorAll(`
         .hero-title, .hero-subtitle, .why-card, .direction-tile, .section-title, .tag, 
         .testimonial-card, .contact-form, .section-desc, .event-tile, .news-item,
-        .interactive-calendar, .filters-bar, .ad-banner-placeholder
+        .interactive-calendar, .filters-bar, .ad-banner-placeholder,
+        .edu-card, .consult-card
     `);
 
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            } else {
-                entry.target.style.opacity = '0';
-                entry.target.style.transform = 'translateY(30px)';
+                entry.target.classList.add('is-revealed');
+            } else if (entry.boundingClientRect.top > 0) {
+                entry.target.classList.remove('is-revealed');
             }
         });
     }, {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px"
+        threshold: 0.05,
+        rootMargin: "0px 0px -20px 0px"
     });
 
     revealElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)';
+        el.classList.add('reveal-on-scroll');
         revealObserver.observe(el);
     });
 
