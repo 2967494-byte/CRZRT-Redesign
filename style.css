@@ -722,17 +722,18 @@ ul {
 }
 
 [data-theme="light"] .hero-main::before {
-    background: url('Pic12.png') center/cover no-repeat;
+    background: var(--hero-bg, url('Pic12.png')) center/cover no-repeat;
+    background-position: right center;
 }
 
 .hero-overlay {
     position: absolute;
     inset: 0;
-    /* Premium Gradient: Solid background on left to allow text readability, then smooth transition to image */
+    /* Premium Gradient: Matches theme background for seamless blend */
     background: linear-gradient(90deg, 
         var(--bg-color) 0%, 
-        var(--bg-color) 15%, 
-        rgba(0, 0, 0, 0.3) 45%, 
+        var(--bg-color) 20%, 
+        rgba(128, 128, 128, 0.1) 50%, 
         transparent 100%);
     backdrop-filter: blur(1px);
     z-index: 2;
