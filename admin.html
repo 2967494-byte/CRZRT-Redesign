@@ -724,8 +724,8 @@
 
                         <div id="croppedResultContainer"
                             style="display: block; margin-bottom: 20px; position: relative;">
-                            <img id="croppedResult" src="Pic12.png"
-                                style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; border: 1px solid var(--card-border);">
+                            <img id="croppedResult" src=""
+                                style="display: none; width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; border: 1px solid var(--card-border);">
                             <button id="btnDeleteHeroBg" class="btn-delete" onclick="window.clearHeroBgImage()"
                                 style="position: absolute; top: 12px; right: 12px; padding: 8px 16px; display: flex; align-items: center; gap: 6px; border-radius: 10px;">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1227,7 +1227,8 @@
         let mainPageData = { ...defaultMainData };
         let aboutData = { ...defaultAboutData };
         let contactsData = { ...defaultContactsData };
-        // educationData and consultingData are initialized AFTER their const defaults are declared below
+        let educationData; // assigned after defaultEducationData is declared (~line 1570)
+        let consultingData; // assigned after defaultConsultingData is declared (~line 2490)
 
         async function syncAllDataFromServer() {
             const keys = [
@@ -1568,12 +1569,8 @@
             ]
         };
 
-        let savedEduData = JSON.parse(localStorage.getItem('crzrt_education_data')) || {};
-        educationData = {
-            courses: savedEduData.courses || defaultEducationData.courses,
-            events: savedEduData.events || defaultEducationData.events,
-            teachers: savedEduData.teachers || defaultEducationData.teachers
-        };
+        // Initialize educationData now that defaultEducationData is available
+        educationData = JSON.parse(localStorage.getItem('crzrt_education_data')) || { ...defaultEducationData };
 
         function saveEducationData() {
             localStorage.setItem('crzrt_education_data', JSON.stringify(educationData));
@@ -2439,7 +2436,14 @@
                 } else {
                     if (croppedResult) {
                         croppedResult.src = resultBase64;
+                        croppedResult.style.display = 'block';
                         mainPageData.heroBgImage = resultBase64;
+                        // Give a visual hint to Save the changes
+                        const saveBtn = document.getElementById('globalSaveBtn');
+                        if (saveBtn) {
+                            saveBtn.style.boxShadow = '0 0 15px rgba(52, 199, 89, 0.5)';
+                            saveBtn.innerText = 'Сохраните изменения! 💾';
+                        }
                     }
                 }
 
@@ -2489,9 +2493,8 @@
             ]
         };
 
-        // Initialize here — AFTER all const defaults are declared (fixes TDZ error)
-        let educationData = JSON.parse(localStorage.getItem('crzrt_education_data')) || { ...defaultEducationData };
-        let consultingData = JSON.parse(localStorage.getItem('crzrt_consulting_data')) || { ...defaultConsultingData };
+        // Initialize consultingData now that defaultConsultingData is available
+        consultingData = JSON.parse(localStorage.getItem('crzrt_consulting_data')) || { ...defaultConsultingData };
         const consultingAuthorsAdmin = document.getElementById('consultingAuthorsAdmin');
         const consultingServicesAdmin = document.getElementById('consultingServicesAdmin');
 
@@ -2749,7 +2752,7 @@
                 }
 
                 // Визуальный отклик об успехе
-                btn.innerText = 'Сохранено!';
+                btn.innerText = `Сохранено! (${(result.size / 1024).toFixed(1)} KB)`;
                 btn.style.backgroundColor = '#34c759';
                 btn.style.color = '#fff';
                 btn.style.opacity = '1';

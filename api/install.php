@@ -22,17 +22,20 @@ try {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )");
 
-    // Создаем первого админа (если база пустая)
-    $stmt = $pdo->query("SELECT COUNT(*) FROM users");
-    if ($stmt->fetchColumn() == 0) {
-        // Пароль по умолчанию: crzrt_2026 
-        // (Обязательно поменяем его потом из админки!)
-        $hash = password_hash('crzrt_2026', PASSWORD_DEFAULT);
+    // Создаем или сбрасываем пароль первого админа
+    $hash = password_hash('crzrt_2026', PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->execute(['admin@crzrt.ru']);
+    $user = $stmt->fetch();
+
+    if (!$user) {
         $stmt = $pdo->prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)");
         $stmt->execute(['Главный Админ', 'admin@crzrt.ru', $hash, 'superadmin']);
-        echo "✅ База данных успешно инициализирована! Создан пользователь admin@crzrt.ru с паролем crzrt_2026.";
+        echo "✅ Пользователь admin@crzrt.ru создан с паролем crzrt_2026.";
     } else {
-        echo "✅ Таблицы уже существуют. Админ уже создан.";
+        $stmt = $pdo->prepare("UPDATE users SET password_hash = ?, role = 'superadmin' WHERE email = ?");
+        $stmt->execute([$hash, 'admin@crzrt.ru']);
+        echo "✅ Пароль для admin@crzrt.ru сброшен на crzrt_2026.";
     }
 
 } catch (\PDOException $e) {

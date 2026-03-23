@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
         $stmt->execute([$key, $value, $value]);
         
-        echo json_encode(['success' => true]);
+        echo json_encode(['success' => true, 'key' => $key, 'size' => strlen($value)]);
     } catch (\PDOException $e) {
         echo json_encode(['success' => false, 'error' => 'Ошибка базы данных: ' . $e->getMessage()]);
     }
