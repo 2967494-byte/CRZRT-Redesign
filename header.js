@@ -1,3 +1,18 @@
+// Загрузка настроек с бэкенда (Синхронно, чтобы избежать гонки данных)
+try {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'api/settings.php', false);
+    xhr.send(null);
+    if (xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        if (!data.error) {
+            for (const [key, value] of Object.entries(data)) {
+                localStorage.setItem(key, typeof value === 'object' ? JSON.stringify(value) : value);
+            }
+        }
+    }
+} catch(e) { console.error('DB Sync Error:', e); }
+
 document.addEventListener('DOMContentLoaded', () => {
     const globalHeaderHTML = `
     <header class="header">
@@ -46,128 +61,53 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="header-nav-bar-container">
             <div class="header-nav-bar">
                 <div class="nav-bar-item nav-edu">
-                    <a href="obuchenie.html" class="nav-item-link">
+                    <a href="#education" class="nav-item-link">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                         </svg>
                         <span>Обучение</span>
                     </a>
-                    <div class="mega-menu">
-                        <div class="mega-grid">
-                            <div class="mega-col">
-                                <a href="courses.html">Очное обучение</a>
-                                <a href="distance.html">Дистанционно</a>
-                                <a href="individual.html">Индивидуально</a>
-                                <a href="testing.html">Пробный тест</a>
-                            </div>
-                            <div class="mega-col">
-                                <a href="calendar.html">Календарь</a>
-                                <a href="seminars.html">Семинары</a>
-                                <a href="webinars.html">Вебинары</a>
-                                <a href="team.html">Преподаватели</a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="nav-bar-item nav-legal">
-                    <a href="consulting.html" class="nav-item-link">
+                    <a href="#consulting" class="nav-item-link">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                             <polyline points="14 2 14 8 20 8" />
                             <line x1="16" y1="13" x2="8" y2="13" />
                             <line x1="16" y1="17" x2="8" y2="17" />
-                            <path d="M10 9H8" />
                         </svg>
-                        <span>Консалтинг</span>
+                        <span>Юридический консалтинг</span>
                     </a>
-                    <div class="mega-menu">
-                        <div class="mega-grid" id="servicesMegaGrid">
-                            <div class="mega-col">
-                                <a href="consulting.html#public">Поддержка (44/223-ФЗ)</a>
-                                <a href="consulting.html#deals">Сопровождение сделок</a>
-                                <a href="consulting.html#corporate">Корпоративное право</a>
-                            </div>
-                            <div class="mega-col">
-                                <a href="consulting.html#competitor">Тендерный отдел</a>
-                                <a href="consulting.html#disputes">Судебные споры</a>
-                                <a href="consulting.html#business">Решения для бизнеса</a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="nav-bar-item nav-tenders">
-                    <a href="https://etpzakupki.tatar" class="nav-item-link" target="_blank">
+                    <a href="#etp" class="nav-item-link">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg>
-                        <span>Закупки</span>
+                        <span>ЭТП</span>
                     </a>
-                    <div class="mega-menu">
-                        <div class="mega-grid">
-                            <div class="mega-col">
-                                <h4>Реестры</h4>
-                                <a href="https://etpzakupki.tatar/purchases/44" target="_blank">Закупки (44-ФЗ)</a>
-                                <a href="https://etpzakupki.tatar/purchases/223" target="_blank">Закупки (223-ФЗ)</a>
-                                <a href="https://zakupki.gov.ru/epz/main/public/home.html" target="_blank">ЕИС (zakupki.gov.ru)</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Сервисы</h4>
-                                <a href="https://etpzakupki.tatar/analytical" target="_blank">Аналитика</a>
-                                <a href="testing.html">Пробные тесты</a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="nav-bar-item nav-knowledge">
-                    <a href="knowledge.html" class="nav-item-link">
+                    <a href="#support" class="nav-item-link">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                         </svg>
-                        <span>база знаний</span>
+                        <span>Сопровождение</span>
                     </a>
-                    <div class="mega-menu">
-                        <div class="mega-grid">
-                            <div class="mega-col">
-                                <h4>Руководство</h4>
-                                <a href="#">Общее</a>
-                                <a href="#">Заказчикам</a>
-                                <a href="#">Поставщикам</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Инф. материалы</h4>
-                                <a href="#">Видеоинструкции</a>
-                                <a href="#">FAQ (Чаво)</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Право</h4>
-                                <a href="#">Регламенты</a>
-                                <a href="#">Законодательство</a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="nav-bar-item nav-contacts">
-                    <a href="contacts.html" class="nav-item-link">
+                    <a href="#contacts" class="nav-item-link">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                             <circle cx="12" cy="10" r="3"></circle>
                         </svg>
-                        <span>контакты</span>
-                    </a>
-                </div>
-
-                <div class="nav-bar-item nav-etp" style="margin-left: auto; padding-left: 20px;">
-                    <a href="https://etpzakupki.tatar" target="_blank" class="btn-primary" style="text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.02em;">
-                        Перейти на ЭТП
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 8px;">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
+                        <span>Контакты</span>
                     </a>
                 </div>
             </div>

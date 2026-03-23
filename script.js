@@ -1,13 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Reveal functionality
-    const revealElements = document.querySelectorAll('.hero-title, .hero-subtitle, .why-card, .direction-tile, .section-title, .tag, .testimonial-card');
+    // Reveal functionality (Single Elements)
+    const revealElements = document.querySelectorAll(`
+        .hero-title, .hero-subtitle, .why-card, .direction-tile, .section-title, .tag, 
+        .testimonial-card, .contact-form, .section-desc, .event-tile, .news-item,
+        .interactive-calendar, .filters-bar, .ad-banner-placeholder
+    `);
 
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.style.opacity = '1';
                 entry.target.style.transform = 'translateY(0)';
-                revealObserver.unobserve(entry.target);
+            } else {
+                entry.target.style.opacity = '0';
+                entry.target.style.transform = 'translateY(30px)';
             }
         });
     }, {
@@ -22,17 +28,71 @@ document.addEventListener('DOMContentLoaded', () => {
         revealObserver.observe(el);
     });
 
+    // 4-sides reveal for main services
+    const sidesElements = document.querySelectorAll('.slide-from-left, .slide-from-right, .slide-from-top, .slide-from-bottom');
+    const sidesObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+            } else {
+                entry.target.classList.remove('is-visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px"
+    });
+    
+    sidesElements.forEach(el => {
+        sidesObserver.observe(el);
+    });
+
+    // Staggered Grid Reveal (Highly attractive animation for cards)
+    const grids = document.querySelectorAll('.education-grid, .consulting-grid, .stats-grid, .contacts-grid, .feature-grid, .course-list');
+    const gridObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const children = Array.from(entry.target.children);
+                children.forEach((child, index) => {
+                    // Stagger delay based on index
+                    child.style.transitionDelay = `${index * 0.15}s`;
+                    // Brief timeout to ensure CSS registers the delay before adding active class
+                    setTimeout(() => {
+                        child.classList.add('reveal-active');
+                    }, 50);
+                });
+            } else {
+                const children = Array.from(entry.target.children);
+                children.forEach((child) => {
+                    // Remove stagger delay for an immediate reverse animation
+                    child.style.transitionDelay = `0s`;
+                    child.classList.remove('reveal-active');
+                });
+            }
+        });
+    }, {
+        threshold: 0.15,
+        rootMargin: "0px 0px -50px 0px"
+    });
+
+    grids.forEach(grid => {
+        Array.from(grid.children).forEach(child => {
+            child.classList.add('reveal-item');
+        });
+        gridObserver.observe(grid);
+    });
+
     // Stats Counter
-    const stats = document.querySelectorAll('.stat-value');
+    const stats = document.querySelectorAll('.stat-number');
 
     const countUp = (el) => {
-        const target = +el.getAttribute('data-count');
+        const target = +el.getAttribute('data-target');
         const count = +el.innerText.replace('+', ''); // Remove + for safety
         const speed = target / 100; // Increment step
 
         if (count < target) {
             el.innerText = Math.ceil(count + speed) + (el.getAttribute('data-plus') ? '+' : '');
-            setTimeout(() => countUp(el), 20);
+            el.dataset.tid = setTimeout(() => countUp(el), 20);
         } else {
             el.innerText = target + (el.getAttribute('data-plus') ? '+' : '');
         }
@@ -42,12 +102,18 @@ document.addEventListener('DOMContentLoaded', () => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 countUp(entry.target);
-                statsObserver.unobserve(entry.target);
+            } else {
+                if (entry.target.dataset.tid) {
+                    clearTimeout(entry.target.dataset.tid);
+                }
+                entry.target.innerText = '0';
             }
         });
     }, { threshold: 0.5 });
-
-    stats.forEach(stat => statsObserver.observe(stat));
+    
+    stats.forEach(stat => {
+        statsObserver.observe(stat);
+    });
 
 
     // Tilt Effect for Cards
@@ -126,8 +192,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === DYNAMIC CONTENT FOR MAIN PAGE ===
     const defaultMainData = {
-        heroTitle: 'Ваш успех в госзакупках.',
-        heroSubtitle: 'Единая экосистема для заказчиков и поставщиков.\nОт обучения до сопровождения сложных тендеров.',
+        heroTitle: 'Ваш надежный<br>партнёр в мире закупок',
+        heroSubtitle: 'ЭТП — Обучение — Сопровождение — Юридический консалтинг',
         heroBgImage: '',
         events: [
             { date: '23-27 МАРТА', title: 'Очный курс: Закупки по 44-ФЗ (108 ч)', link: 'course-44fz.html' },
@@ -160,6 +226,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const savedMainData = JSON.parse(localStorage.getItem('crzrt_main_page_data')) || {};
+    // Override old defaults if present in localstorage
+    if (savedMainData.heroTitle === 'Ваш успех в госзакупках.') {
+        savedMainData.heroTitle = defaultMainData.heroTitle;
+        savedMainData.heroSubtitle = defaultMainData.heroSubtitle;
+    }
     const mainPageData = { ...defaultMainData, ...savedMainData };
 
     // Sidebar Events Rendering
@@ -197,7 +268,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroTitle = document.querySelector('.hero-title');
     const heroSubtitle = document.querySelector('.hero-subtitle');
     if (heroTitle && mainPageData.heroTitle) {
-        heroTitle.innerHTML = mainPageData.heroTitle.replace('госзакупках.', '<span class="gradient-text">госзакупках.</span>');
+        // Just insert the HTML directly, new text has <br> in it.
+        heroTitle.innerHTML = mainPageData.heroTitle;
     }
     if (heroSubtitle && mainPageData.heroSubtitle) {
         heroSubtitle.innerText = mainPageData.heroSubtitle;
@@ -275,7 +347,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Re-catch newly added cards for tilt and reveal effects
-    const newRevealElements = document.querySelectorAll('.why-card, .testimonial-card, .news-strip');
+    const newRevealElements = document.querySelectorAll(`
+        .why-card, .testimonial-card, .news-strip, .feature-card, 
+        .news-item, .event-tile
+    `);
     newRevealElements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';

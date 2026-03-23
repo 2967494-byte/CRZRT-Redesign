@@ -804,368 +804,475 @@
             </div>
         </section>
 
-        <!-- ═══════════ ФОРМАТЫ ═══════════ -->
-        <section class="formats-section">
+        
+        <!-- ═══════════ КАЛЕНДАРЬ КУРСОВ ═══════════ -->
+        <section class="calendar-section" style="padding: 60px 0; border-top: 1px solid var(--card-border);">
             <div class="container">
-                <p class="section-eyebrow">Все форматы</p>
-                <h2 class="section-heading">Выберите удобный<br>формат обучения</h2>
-                <p class="section-sub">От интенсивных очных курсов в Казани до гибких онлайн-программ — у нас есть
-                    вариант для каждой ситуации</p>
+                <p class="section-eyebrow">Интерактивный инструмент</p>
+                <h2 class="section-heading" style="margin-bottom: 24px;">Календарь курсов</h2>
+                <p style="color: var(--text-secondary); max-width: 600px; margin-bottom: 40px; line-height: 1.6;">
+                    Наведите на месяц, чтобы увидеть расписание. Кликните по курсу для перехода к подробному описанию.
+                </p>
+                
+                <div class="interactive-calendar" style="display: flex; gap: 20px; position: relative;">
+                    <!-- Месяца (слева) -->
+                    <div class="calendar-months" style="display: flex; flex-direction: column; gap: 8px; width: 220px; flex-shrink: 0;">
+                        <button class="cal-month-btn active" data-month="march">Март 2026</button>
+                        <button class="cal-month-btn" data-month="april">Апрель 2026</button>
+                        <button class="cal-month-btn" data-month="may">Май 2026</button>
+                        <button class="cal-month-btn" data-month="june">Июнь 2026</button>
+                    </div>
 
-                <div class="formats-grid">
-                    <!-- Очное -->
-                    <a href="courses.html" class="format-card">
-                        <div class="format-card-icon">
-                            <svg class="ico-lg" fill="none" stroke="currentColor" stroke-width="1.5"
-                                viewBox="0 0 24 24">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                        </div>
-                        <h3>Очное обучение</h3>
-                        <p>Занятия в учебном классе в Казани с преподавателями-практиками. Разборы кейсов, деловые игры
-                            и работа в ЕИС.</p>
-                        <div class="format-meta">
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                                </svg>
-                                Казань, Петербургская 86
+                    <!-- Панель с курсами (справа) -->
+                    <div class="calendar-panel" style="flex: 1; border: 1px solid var(--card-border); background: var(--card-bg); padding: 30px; position: relative; min-height: 350px;">
+                        
+                        <!-- Март -->
+                        <div class="cal-content active" id="cal-march">
+                            <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Очное обучение</h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
+                                <a href="courses.html" class="cal-course-item">
+                                    <div class="cal-date">23 марта</div>
+                                    <div class="cal-info">Повышение квалификации по 44-ФЗ (108 ак.ч.)</div>
+                                </a>
+                                <a href="courses.html" class="cal-course-item">
+                                    <div class="cal-date">25 марта</div>
+                                    <div class="cal-info">Повышение квалификации по 223-ФЗ (72 ак.ч.)</div>
+                                </a>
+                                <a href="courses.html" class="cal-course-item">
+                                    <div class="cal-date">23 марта</div>
+                                    <div class="cal-info">Спецпрограмма: 44-ФЗ + Весенняя Казань</div>
+                                </a>
                             </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                </svg>
-                                3–5 дней
-                            </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                    <polyline points="14 2 14 8 20 8" />
-                                </svg>
-                                Удостоверение гос. образца
-                            </div>
-                        </div>
-                        <div class="format-link">
-                            Смотреть курсы
-                            <svg viewBox="0 0 24 24">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </a>
 
-                    <!-- Дистанционное -->
-                    <a href="distance.html" class="format-card">
-                        <div class="format-card-icon">
-                            <svg class="ico-lg" fill="none" stroke="currentColor" stroke-width="1.5"
-                                viewBox="0 0 24 24">
-                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                <line x1="8" y1="21" x2="16" y2="21"></line>
-                                <line x1="12" y1="17" x2="12" y2="21"></line>
-                            </svg>
-                        </div>
-                        <h3>Дистанционное</h3>
-                        <p>Изучайте материалы в своём темпе из любой точки. Круглосуточный доступ к лекциям, тестам и
-                            методичкам.</p>
-                        <div class="format-meta">
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="2" y1="12" x2="22" y2="12" />
-                                    <path
-                                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                                </svg>
-                                Онлайн
-                            </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                </svg>
-                                72–256 ак.ч.
-                            </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                    <polyline points="14 2 14 8 20 8" />
-                                </svg>
-                                Диплом / Удостоверение
+                            <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Дистанционное обучение</h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <a href="distance.html" class="cal-course-item">
+                                    <div class="cal-date">2 марта</div>
+                                    <div class="cal-info">Повышение квалификации по 44-ФЗ (120 ак.ч.)</div>
+                                </a>
+                                <a href="distance.html" class="cal-course-item">
+                                    <div class="cal-date">В любое время</div>
+                                    <div class="cal-info">Специалист в сфере закупок по 44-ФЗ (256 ак.ч.)</div>
+                                </a>
                             </div>
                         </div>
-                        <div class="format-link">
-                            Смотреть курсы
-                            <svg viewBox="0 0 24 24">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </a>
 
-                    <!-- Семинары -->
-                    <a href="seminars.html" class="format-card">
-                        <div class="format-card-icon">
-                            <svg class="ico-lg" fill="none" stroke="currentColor" stroke-width="1.5"
-                                viewBox="0 0 24 24">
-                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                            </svg>
-                        </div>
-                        <h3>Семинары</h3>
-                        <p>Однодневные практикумы по конкретным темам: техническое задание, работа в ЕИС,
-                            антимонопольная практика.</p>
-                        <div class="format-meta">
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-                                </svg>
-                                Казань
+                        <!-- Апрель -->
+                        <div class="cal-content" id="cal-april" style="display: none;">
+                            <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Очное обучение</h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
+                                <a href="courses.html" class="cal-course-item">
+                                    <div class="cal-date">10 апреля</div>
+                                    <div class="cal-info">Прагматичный подход для поставщика (40 ак.ч.)</div>
+                                </a>
                             </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                </svg>
-                                1 день (8 ч.)
-                            </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                                Сертификат участника
-                            </div>
-                        </div>
-                        <div class="format-link">
-                            Расписание
-                            <svg viewBox="0 0 24 24">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </a>
 
-                    <!-- Вебинары -->
-                    <a href="webinars.html" class="format-card">
-                        <div class="format-card-icon">
-                            <svg class="ico-lg" fill="none" stroke="currentColor" stroke-width="1.5"
-                                viewBox="0 0 24 24">
-                                <polygon points="23 7 16 12 23 17 23 7"></polygon>
-                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                            </svg>
-                        </div>
-                        <h3>Вебинары</h3>
-                        <p>Онлайн-трансляции с ведущими экспертами. Актуальные новости законодательства и разборы
-                            сложных ситуаций.</p>
-                        <div class="format-meta">
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="2" y1="12" x2="22" y2="12" />
-                                    <path
-                                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                                </svg>
-                                Онлайн
-                            </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                </svg>
-                                1.5–2 ч.
-                            </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <line x1="12" y1="1" x2="12" y2="23" />
-                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                                </svg>
-                                Бесплатно
+                            <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Дистанционное обучение</h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <a href="distance.html" class="cal-course-item">
+                                    <div class="cal-date">6 апреля</div>
+                                    <div class="cal-info">Повышение квалификации по 223-ФЗ (72 ак.ч.)</div>
+                                </a>
+                                <a href="distance.html" class="cal-course-item">
+                                    <div class="cal-date">В любое время</div>
+                                    <div class="cal-info">Специалист в сфере закупок по 44-ФЗ (256 ак.ч.)</div>
+                                </a>
                             </div>
                         </div>
-                        <div class="format-link">
-                            Записаться
-                            <svg viewBox="0 0 24 24">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </a>
 
-                    <!-- Индивидуальное -->
-                    <a href="individual.html" class="format-card">
-                        <div class="format-card-icon">
-                            <svg class="ico-lg" fill="none" stroke="currentColor" stroke-width="1.5"
-                                viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <circle cx="12" cy="12" r="6"></circle>
-                                <circle cx="12" cy="12" r="2"></circle>
-                            </svg>
-                        </div>
-                        <h3>Индивидуальное</h3>
-                        <p>Персональная работа с экспертом. Разбор вашей конкретной документации, тендера или спорной
-                            ситуации.</p>
-                        <div class="format-meta">
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-                                </svg>
-                                Очно / Онлайн
-                            </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                </svg>
-                                От 2 ч.
-                            </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                                Гибкий формат
+                        <!-- Май -->
+                        <div class="cal-content" id="cal-may" style="display: none;">
+                            <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Очное обучение</h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
+                                <a href="courses.html" class="cal-course-item">
+                                    <div class="cal-date">11 мая</div>
+                                    <div class="cal-info">Курс для поставщиков по 44-ФЗ / 223-ФЗ (40 ак.ч.)</div>
+                                </a>
+                                <a href="courses.html" class="cal-course-item">
+                                    <div class="cal-date">18 мая</div>
+                                    <div class="cal-info">Повышение квалификации по 44-ФЗ (108 ак.ч.)</div>
+                                </a>
                             </div>
                         </div>
-                        <div class="format-link">
-                            Обсудить программу
-                            <svg viewBox="0 0 24 24">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </a>
 
-                    <!-- Тестирование -->
-                    <a href="testing.html" class="format-card" style="border-right: 1px solid var(--card-border);">
-                        <div class="format-card-icon"
-                            style="color: var(--text-secondary); border-color: var(--card-border);">
-                            <svg class="ico-lg" fill="none" stroke="currentColor" stroke-width="1.5"
-                                viewBox="0 0 24 24">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <path d="M9 15l2 2 4-4"></path>
-                            </svg>
-                        </div>
-                        <h3>Пробное тестирование</h3>
-                        <p>Не знаете, с чего начать? Пройдите бесплатный тест и узнайте текущий уровень знаний по 44-ФЗ
-                            или 223-ФЗ.</p>
-                        <div class="format-meta">
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <line x1="12" y1="1" x2="12" y2="23" />
-                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                                </svg>
-                                Бесплатно
-                            </div>
-                            <div class="format-chip">
-                                <svg viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                </svg>
-                                30–45 мин.
+                        <!-- Июнь -->
+                        <div class="cal-content" id="cal-june" style="display: none;">
+                            <div style="text-align: center; color: var(--text-secondary); padding-top: 50px;">
+                                <p>Расписание на июнь формируется.</p>
+                                <p>Оставьте заявку, и мы уведомим вас о новых группах.</p>
+                                <a href="#contacts" class="btn-secondary" style="margin-top: 20px; display: inline-block;">Уведомить меня</a>
                             </div>
                         </div>
-                        <div class="format-link" style="color: var(--text-secondary);">
-                            Пройти тест
-                            <svg style="stroke:var(--text-secondary);" viewBox="0 0 24 24">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </a>
+
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- ═══════════ БЛИЖАЙШИЕ КУРСЫ ═══════════ -->
-        <section class="upcoming-section">
+        <!-- ═══════════ ВСЕ КУРСЫ ═══════════ -->
+        <section class="all-courses-section" style="padding: 60px 0; border-top: 1px solid var(--card-border);">
             <div class="container">
-                <p class="section-eyebrow">Расписание</p>
-                <h2 class="section-heading" style="margin-bottom: 40px;">Ближайшие мероприятия</h2>
-
-                <div class="upcoming-list">
-                    <a href="course-44fz.html" class="upcoming-item">
-                        <div class="upcoming-date">
-                            <div class="month">Март</div>
-                            <div class="day">23</div>
-                        </div>
-                        <div class="upcoming-info">
-                            <h4>Очный курс: Повышение квалификации по 44-ФЗ (108 ак.ч.)</h4>
-                            <p>Казань, ул. Петербургская, 86 · 5 дней · Удостоверение</p>
-                        </div>
-                        <div class="upcoming-meta">
-                            <span class="upcoming-badge">Заказчикам</span>
-                            <div class="upcoming-price">23 700 ₽</div>
-                        </div>
-                    </a>
-
-                    <a href="course-vesennyaya-kazan.html" class="upcoming-item">
-                        <div class="upcoming-date">
-                            <div class="month">Март</div>
-                            <div class="day">23</div>
-                        </div>
-                        <div class="upcoming-info">
-                            <h4>44-ФЗ + Весенняя Казань — спецпрограмма с культурным блоком</h4>
-                            <p>Казань · 5 дней очно + культурная программа · Удостоверение</p>
-                        </div>
-                        <div class="upcoming-meta">
-                            <span class="upcoming-badge red">Спецпредложение</span>
-                            <div class="upcoming-price">40 470 ₽</div>
-                        </div>
-                    </a>
-
-                    <a href="course-223fz.html" class="upcoming-item">
-                        <div class="upcoming-date">
-                            <div class="month">Март</div>
-                            <div class="day">25</div>
-                        </div>
-                        <div class="upcoming-info">
-                            <h4>Очный курс: Повышение квалификации по 223-ФЗ (72 ак.ч.)</h4>
-                            <p>Казань, ул. Петербургская, 86 · 3 дня · Удостоверение</p>
-                        </div>
-                        <div class="upcoming-meta">
-                            <span class="upcoming-badge">Заказчикам</span>
-                            <div class="upcoming-price">16 200 ₽</div>
-                        </div>
-                    </a>
-
-                    <a href="course-distance-44fz.html" class="upcoming-item">
-                        <div class="upcoming-date">
-                            <div class="month">Март</div>
-                            <div class="day">2</div>
-                        </div>
-                        <div class="upcoming-info">
-                            <h4>Дистанционный курс: Повышение квалификации по 44-ФЗ (120 ч.)</h4>
-                            <p>Онлайн · Гибкий график · Удостоверение</p>
-                        </div>
-                        <div class="upcoming-meta">
-                            <span class="upcoming-badge green">Онлайн</span>
-                            <div class="upcoming-price">13 500 ₽</div>
-                        </div>
-                    </a>
-
-                    <a href="course-suppliers.html" class="upcoming-item">
-                        <div class="upcoming-date">
-                            <div class="month">Май</div>
-                            <div class="day">11</div>
-                        </div>
-                        <div class="upcoming-info">
-                            <h4>Очный курс для поставщиков по 44-ФЗ / 223-ФЗ (40 ак.ч.)</h4>
-                            <p>Казань · 3 дня очно · Сертификат</p>
-                        </div>
-                        <div class="upcoming-meta">
-                            <span class="upcoming-badge red">Поставщикам</span>
-                            <div class="upcoming-price">20 000 ₽</div>
-                        </div>
-                    </a>
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; gap: 20px;">
+                    <div>
+                        <p class="section-eyebrow">Каталог</p>
+                        <h2 class="section-heading" style="margin-bottom: 0;">Все учебные программы</h2>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; color: var(--text-secondary); font-size: 0.9rem;">
+                         <span>Сортировать:</span>
+                         <select style="background: transparent; border: 1px solid var(--card-border); color: var(--text-primary); padding: 6px 12px; font-family: inherit;">
+                             <option>по популярности</option>
+                             <option>по алфавиту</option>
+                         </select>
+                    </div>
                 </div>
 
-                <div style="margin-top: 0; border: 1px solid var(--card-border); border-top: none; padding: 20px 32px;">
-                    <a href="calendar.html" class="btn-link"
-                        style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;">
-                        Полный календарь мероприятий <span class="arrow">→</span>
-                    </a>
+                <!-- Filters -->
+                <div class="filters-bar" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px;">
+                    <button class="filter-btn active" data-filter="all">Все курсы</button>
+                    <button class="filter-btn" data-filter="44fz">44-ФЗ</button>
+                    <button class="filter-btn" data-filter="223fz">223-ФЗ</button>
+                    <button class="filter-btn" data-filter="supplier">Поставщикам</button>
+                    <button class="filter-btn" data-filter="offline">Очные</button>
+                    <button class="filter-btn" data-filter="online">Дистанционные</button>
                 </div>
-            </div>
-        </section>
 
-        <!-- ═══════════ CTA BANNER ═══════════ -->
+                <!-- Рекламный баннер (Advertisement Placeholder) -->
+                <div class="ad-banner-placeholder" style="margin-bottom: 40px; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, var(--accent-color) 0%, #1e5a99 100%); color: white; display: flex; align-items: center; justify-content: space-between; padding: 40px;">
+                    <div style="flex: 1;">
+                        <span style="display: inline-block; padding: 4px 10px; background: rgba(255,255,255,0.2); border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">Спецпредложение</span>
+                        <h3 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 16px; line-height: 1.3;">Эксклюзивный семинар: Изменения в 44-ФЗ</h3>
+                        <p style="font-size: 1rem; opacity: 0.9; margin-bottom: 24px; max-width: 500px; line-height: 1.5;">Узнайте обо всех последних поправках в контрактную систему от ведущих экспертов ФАС. Количество мест ограничено.</p>
+                        <a href="#contacts" class="btn-primary" style="background: white; color: var(--accent-color); padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 0.9rem; text-decoration: none; display: inline-block;">Узнать подробности</a>
+                    </div>
+                    <div class="ad-banner-image" style="flex-shrink: 0; margin-left: 40px; opacity: 0.8;">
+                        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="course-list">
+<div class="course-full-card unified-course-card" data-category="offline 44fz">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-blue">44-ФЗ</span>
+                            <span class="course-tag tag-blue">Заказчикам</span>
+                            <span class="course-tag tag-green">Ближайший старт: 23 марта</span>
+                        </div>
+                        <h2>Повышение квалификации по 44-ФЗ (108 ак.ч.)</h2>
+                        <p>Комплексная программа для профессионалов контрактной системы. Охватывает весь жизненный цикл
+                            закупки — от планирования до завершения контракта и отчётности в ЕИС.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Последние изменения в 44-ФЗ
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Планирование и обоснование закупок
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Конкурентные процедуры (аукцион, конкурс)
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Закупки у единственного поставщика
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Исполнение и расторжение контракта
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Антимонопольная практика, ФАС
+                            </div>\n\n<div class="course-full-card unified-course-card" data-category="offline 223fz">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-blue">223-ФЗ</span>
+                            <span class="course-tag tag-blue">Заказчикам</span>
+                            <span class="course-tag tag-green">Ближайший старт: 25 марта</span>
+                        </div>
+                        <h2>Повышение квалификации по 223-ФЗ (72 ак.ч.)</h2>
+                        <p>Курс для специалистов организаций, закупающих товары по 223-ФЗ. Разбираем специфику
+                            корпоративных закупок, положения о закупках и актуальную практику.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Сфера применения 223-ФЗ
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Разработка Положения о закупках
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Особенности закупок у МСП
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Работа в ГИС «Закупки РТ»
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Контроль и отчётность
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Антимонопольные требования
+                            </div>\n\n<div class="course-full-card unified-course-card" data-category="offline 44fz 223fz supplier">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-red">Поставщикам</span>
+                            <span class="course-tag tag-blue">44-ФЗ / 223-ФЗ</span>
+                            <span class="course-tag tag-gray">Май 2026</span>
+                        </div>
+                        <h2>Очный курс для поставщиков (40 ак.ч.)</h2>
+                        <p>Практический интенсив для тех, кто хочет эффективно участвовать в государственных и
+                            корпоративных тендерах. Поиск закупок, подготовка заявок, работа на ЭТП.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Как найти перспективные тендеры
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Анализ документации на соответствие
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Подготовка заявки без ошибок
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Работа на ЭТП «Закупки Татарстана»
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Защита при отклонении заявки
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Исполнение контракта и приёмка
+                            </div>\n\n<div class="course-full-card unified-course-card" data-category="online 44fz">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-blue">44-ФЗ</span>
+                            <span class="course-tag tag-orange">Переподготовка</span>
+                            <span class="course-tag tag-green">Старт в любое время</span>
+                        </div>
+                        <h2>Специалист в сфере закупок по 44-ФЗ (256 ак.ч.) — профессиональная переподготовка</h2>
+                        <p>Программа профессиональной переподготовки с выдачей диплома государственного образца.
+                            Идеально для тех, кто хочет сменить специализацию или подтвердить квалификацию.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Правовые основы контрактной системы
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Планирование и нормирование закупок
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Все виды конкурентных процедур
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Электронный документооборот и ЕИС
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Исполнение и расторжение контракта
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Ответственность в сфере закупок
+                            </div>\n\n<div class="course-full-card unified-course-card" data-category="online 44fz">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-blue">44-ФЗ</span>
+                            <span class="course-tag tag-blue">Повышение квалификации</span>
+                            <span class="course-tag tag-green">Старт: 2 марта</span>
+                        </div>
+                        <h2>Повышение квалификации по 44-ФЗ (120 ак.ч.)</h2>
+                        <p>Актуальная программа повышения квалификации для действующих специалистов заказчика.
+                            Охватывает все последние изменения в законодательстве о контрактной системе.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Последние изменения в 44-ФЗ (2025–2026)
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Планирование и обоснование закупок
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Проведение электронных процедур
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Национальный режим, ограничения
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Контракт: заключение и исполнение
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Отчётность в ЕИС
+                            </div>\n\n<div class="course-full-card unified-course-card" data-category="online 223fz">
+                    <div class="course-body">
+                        <div class="course-tags">
+                            <span class="course-tag tag-blue">223-ФЗ</span>
+                            <span class="course-tag tag-blue">Повышение квалификации</span>
+                            <span class="course-tag tag-gray">Старт в любое время</span>
+                        </div>
+                        <h2>Повышение квалификации по 223-ФЗ (72 ак.ч.)</h2>
+                        <p>Дистанционная программа для специалистов и членов закупочных комиссий заказчиков, работающих
+                            по 223-ФЗ. Корпоративные закупки, положения, работа с МСП.</p>
+                        <div class="course-bullets">
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Сфера применения 223-ФЗ
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Положение о закупках: требования
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Закупки у субъектов МСП
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Планирование и отчётность
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Работа в ЕИС (223-ФЗ)
+                            </div>
+                            <div class="course-bullet">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Контроль и ответственность
+                            </div>\n                </div>\n            </div>\n        </section>
+
+        <script>
+            // Calendar Hover Logic
+            const monthBtns = document.querySelectorAll('.cal-month-btn');
+            const calContents = document.querySelectorAll('.cal-content');
+            
+            monthBtns.forEach(btn => {
+                btn.addEventListener('mouseenter', () => {
+                    monthBtns.forEach(b => b.classList.remove('active'));
+                    calContents.forEach(c => c.style.display = 'none');
+                    
+                    btn.classList.add('active');
+                    document.getElementById('cal-' + btn.dataset.month).style.display = 'block';
+                });
+            });
+
+            // Filter Logic
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const courseCards = document.querySelectorAll('.unified-course-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const filter = btn.dataset.filter;
+                    
+                    courseCards.forEach(card => {
+                        if (filter === 'all') {
+                            card.style.display = '';
+                        } else {
+                            if (card.dataset.category && card.dataset.category.includes(filter)) {
+                                card.style.display = '';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+\n\n<!-- ═══════════ CTA BANNER ═══════════ -->
         <section class="container">
             <div class="cta-banner">
                 <h2>Не знаете, какой курс выбрать?</h2>

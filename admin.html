@@ -1103,6 +1103,21 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
+        // Загрузка настроек с бэкенда (Синхронно)
+        try {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'api/settings.php', false);
+            xhr.send(null);
+            if (xhr.status === 200) {
+                const data = JSON.parse(xhr.responseText);
+                if (!data.error) {
+                    for (const [key, value] of Object.entries(data)) {
+                        localStorage.setItem(key, typeof value === 'object' ? JSON.stringify(value) : value);
+                    }
+                }
+            }
+        } catch(e) { console.error('DB Sync Error:', e); }
+
         // Global Variables for Admin Panel
         let cropper;
         let imageInput, uploadWrapper, imageToCrop, cropperWrapper, cropperActions;
@@ -1895,60 +1910,85 @@
 
         // ═══════════════════════════════════════════════
 
-        function checkAuth() {
-            const session = sessionStorage.getItem('crzrt_admin_session');
-            if (session) {
-                currentUserEmail = session;
-                const user = usersDb[currentUserEmail];
+        async function checkAuth() {
+            try {
+                const response = await fetch('api/auth.php?action=check');
+                const data = await response.json();
+                
+                if (data.authenticated) {
+                    const user = data.user;
+                    currentUserEmail = user.email || user.name;
+                    
+                    if (user.role === 'superadmin' || user.role === 'admin') {
+                        currentPermissions = ['superuser'];
+                    } else {
+                        currentPermissions = [];
+                    }
 
-                if (user) {
-                    currentPermissions = user.permissions || [];
                     authModal.style.display = 'none';
 
                     let roleDisplay = "Пользователь";
                     if (currentPermissions.includes('superuser')) {
                         roleDisplay = "Суперпользователь";
-                    } else if (currentPermissions.length > 0) {
-                        roleDisplay = "Редактор (Частичный доступ)";
                     }
 
-                    currentUserRoleInfo.innerHTML = `<div>${user.name} (${currentUserEmail})</div><div style="font-size:0.8rem; font-weight:normal; opacity:0.8; margin-top:2px;">${roleDisplay}</div>`;
+                    currentUserRoleInfo.innerHTML = `<div>${user.name}</div><div style="font-size:0.8rem; font-weight:normal; opacity:0.8; margin-top:2px;">${roleDisplay}</div>`;
                     updateAccess();
                 } else {
-                    // Invalid session
-                    sessionStorage.removeItem('crzrt_admin_session');
                     authModal.style.display = 'flex';
                     authModal.style.opacity = '1';
                 }
-            } else {
+            } catch (error) {
+                console.error('Auth error:', error);
                 authModal.style.display = 'flex';
                 authModal.style.opacity = '1';
             }
         }
 
-        btnAuthLogin.addEventListener('click', () => {
+        btnAuthLogin.addEventListener('click', async () => {
             const email = authEmail.value.trim();
             const password = authPassword.value;
+            
+            // Визуальная индикация загрузки
+            const originalText = btnAuthLogin.innerText;
+            btnAuthLogin.innerText = 'Вход...';
+            btnAuthLogin.disabled = true;
 
-            // Re-load users just in case
-            usersDb = JSON.parse(localStorage.getItem('crzrt_users')) || defaultUsers;
-
-            if (usersDb[email] && usersDb[email].password === password) {
-                authError.style.display = 'none';
-                sessionStorage.setItem('crzrt_admin_session', email);
-                checkAuth();
-            } else {
+            try {
+                const response = await fetch('api/auth.php?action=login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    authError.style.display = 'none';
+                    checkAuth();
+                } else {
+                    authError.style.display = 'block';
+                    authError.innerText = data.error || 'Ошибка записи';
+                }
+            } catch (error) {
                 authError.style.display = 'block';
+                authError.innerText = 'Ошибка соединения с сервером';
+            } finally {
+                btnAuthLogin.innerText = originalText;
+                btnAuthLogin.disabled = false;
             }
         });
 
-        btnLogout.addEventListener('click', () => {
-            sessionStorage.removeItem('crzrt_admin_session');
-            currentUserEmail = null;
-            currentPermissions = [];
-            authEmail.value = '';
-            authPassword.value = '';
-            checkAuth();
+        btnLogout.addEventListener('click', async () => {
+            try {
+                await fetch('api/auth.php?action=logout');
+                currentUserEmail = null;
+                currentPermissions = [];
+                authEmail.value = '';
+                authPassword.value = '';
+                checkAuth();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
         });
 
         function updateAccess() {
@@ -2601,36 +2641,55 @@
 
         // Global Cropper logic is handled in the unified block (lines 1138-1265)
 
-        document.getElementById('globalSaveBtn').addEventListener('click', () => {
-            try {
-                if (currentTarget === 'consulting') {
-                    saveConsultingStateToMemory();
-                    localStorage.setItem('crzrt_consulting_data', JSON.stringify(consultingData));
-                } else if (currentTarget === 'main-page') {
-                    saveMainPageStateToMemory();
-                    localStorage.setItem('crzrt_main_page_data', JSON.stringify(mainPageData));
-                } else if (currentTarget === 'about-us') {
-                    saveAboutUsStateToMemory();
-                    localStorage.setItem('crzrt_about_data', JSON.stringify(aboutData));
-                } else if (currentTarget === 'contacts') {
-                    saveContactsStateToMemory();
-                    localStorage.setItem('crzrt_contacts', JSON.stringify(contactsData));
-                } else if (currentTarget === 'users') {
-                    localStorage.setItem('crzrt_users', JSON.stringify(usersDb));
-                }
-            } catch (e) {
-                console.error("Storage error:", e);
-                alert("Ошибка сохранения! Возможно, вы загрузили слишком много тяжелых изображений. Попробуйте уменьшить их количество или размер. (Лимит хранилища превышен)");
-                return;
-            }
-
-            // Button animation class
+        document.getElementById('globalSaveBtn').addEventListener('click', async () => {
             const btn = document.getElementById('globalSaveBtn');
             const originalText = btn.innerText;
-            btn.innerText = 'Сохраняется...';
-            btn.style.opacity = '0.8';
 
-            setTimeout(() => {
+            try {
+                let keyToSave = '';
+                let dataToSave = null;
+
+                if (currentTarget === 'consulting') {
+                    saveConsultingStateToMemory();
+                    keyToSave = 'crzrt_consulting_data';
+                    dataToSave = consultingData;
+                } else if (currentTarget === 'main-page') {
+                    saveMainPageStateToMemory();
+                    keyToSave = 'crzrt_main_page_data';
+                    dataToSave = mainPageData;
+                } else if (currentTarget === 'about-us') {
+                    saveAboutUsStateToMemory();
+                    keyToSave = 'crzrt_about_data';
+                    dataToSave = aboutData;
+                } else if (currentTarget === 'contacts') {
+                    saveContactsStateToMemory();
+                    keyToSave = 'crzrt_contacts';
+                    dataToSave = contactsData;
+                } else if (currentTarget === 'users') {
+                    alert('Для управления пользователями используйте специальный раздел API (в разработке)');
+                    return;
+                }
+
+                if (!keyToSave) return;
+
+                btn.innerText = 'Сохраняется...';
+                btn.style.opacity = '0.8';
+                btn.disabled = true;
+
+                // Отправляем данные на Бэкенд
+                const response = await fetch('api/settings.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: keyToSave, value: dataToSave })
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Ошибка сервера');
+                }
+
+                // Визуальный отклик об успехе
                 btn.innerText = 'Сохранено!';
                 btn.style.backgroundColor = '#34c759';
                 btn.style.color = '#fff';
@@ -2640,13 +2699,20 @@
                     btn.innerText = originalText;
                     btn.style.backgroundColor = '';
                     btn.style.color = '';
+                    btn.disabled = false;
                 }, 2000);
-            }, 800);
+
+            } catch (e) {
+                console.error("Storage error:", e);
+                alert("Ошибка сохранения: " + e.message + "\nВозможно, фото слишком большое. Уменьшите его размер перед загрузкой.");
+                btn.innerText = originalText;
+                btn.style.opacity = '1';
+                btn.disabled = false;
+            }
         });
 
         // Initialize display
         checkAuth();
     </script>
 </body>
-
 </html>

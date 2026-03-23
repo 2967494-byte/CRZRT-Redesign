@@ -9,105 +9,755 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Animation classes for service cards */
+        .service-card.slide-from-left {
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .service-card.slide-from-top {
+            opacity: 0;
+            transform: translateY(-100px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .service-card.slide-from-bottom {
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .service-card.slide-from-right {
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .service-card.is-visible {
+            opacity: 1 !important;
+            transform: translate(0, 0) !important;
+        }
+        .service-card.is-visible:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1) !important;
+            border-color: rgba(0,0,0,0.08) !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
+        }
+
+        /* Additional styles for single-page layout */
+        .services-section, .education-section, .consulting-section, .stats-section, .contacts-section {
+            padding: 60px 0;
+            scroll-margin-top: 80px;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .service-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(41, 151, 255, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        
+        .service-icon svg {
+            width: 30px;
+            height: 30px;
+            color: var(--accent-color);
+        }
+        
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+        
+        .service-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .service-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 25px;
+        }
+        
+        .service-features li {
+            padding: 8px 0;
+            color: var(--text-secondary);
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .service-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .service-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: gap 0.3s ease;
+        }
+        
+        .service-link:hover {
+            gap: 10px;
+        }
+        
+        .education-grid, .consulting-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        
+        .edu-card, .consult-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .edu-card:hover, .consult-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+        }
+        
+        .edu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .edu-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .edu-badge {
+            background: rgba(41, 151, 255, 0.1);
+            color: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .edu-card ul, .consult-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        .edu-card li, .consult-card li {
+            padding: 8px 0;
+            color: var(--text-secondary);
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .edu-card li:before, .consult-card li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+        }
+        
+        .consult-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        
+        .consult-card p {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        
+        .stats-section {
+            background: linear-gradient(135deg, rgba(41, 151, 255, 0.05) 0%, transparent 100%);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+        
+        .contact-info {
+            display: grid;
+            gap: 30px;
+        }
+        
+        .contact-item {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(41, 151, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--accent-color);
+            flex-shrink: 0;
+        }
+        
+        .contact-text h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .contact-text p, .contact-text a {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        
+        .contact-form {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+        }
+        
+        .contact-form h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+        }
+        
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+        
+        .contact-form input::placeholder, .contact-form textarea::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .hero-cta {
+            margin-top: 30px;
+        }
+        
+        .btn-lg {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .education-grid, .consulting-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .contacts-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-
 
     <div id="global-header"></div>
     <script src="header.js"></script>
 
     <main>
-        <section class="hero-main">
+        <section class="hero-main" id="home">
             <div class="hero-overlay"></div>
             <div class="container hero-content">
                 <h1 class="hero-title reveal-text">
-                    <span class="reveal-text">Ваш успех в</span>
-                    <span class="reveal-text gradient-text">госзакупках.</span>
+                    <span class="reveal-text">Ваш надежный партнёр</span>
+                    <span class="reveal-text gradient-text">в мире закупок</span>
                 </h1>
                 <p class="hero-subtitle">
-                    Единая экосистема для заказчиков и поставщиков. <br />
-                    От обучения до сопровождения сложных тендеров.
+                    ЭТП — Обучение — Сопровождение — Юридический консалтинг
                 </p>
-
+                <div class="hero-cta">
+                    <a href="#services" class="btn-success btn-lg">Узнать больше</a>
+                </div>
             </div>
         </section>
 
-        <!-- Main Content Layout (Sidebar + Grid) -->
-        <section class="main-layout-section">
-            <div class="container main-layout-grid">
-                <!-- Sidebar (Left) -->
-                <aside class="sidebar-left">
-                    <!-- Events Block -->
-                    <div class="sidebar-block events-block">
-                        <div class="sidebar-title">
-                            <h3>Предстоящие события</h3>
-                            <a href="seminars.html" class="all-link">Все</a>
+        <!-- Services Section -->
+        <section class="services-section" id="services">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Наши услуги</h2>
+                    <p class="section-subtitle">Комплексные решения для вашего бизнеса</p>
+                </div>
+                
+                <div class="services-grid new-services-grid">
+                    <!-- 1. Электронная Торговая Площадка -->
+                    <a href="https://etpzakupki.tatar" target="_blank" class="service-card slide-from-left">
+                        <div class="service-icon-img">
+                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Monitor Base -->
+                                <path d="M45 75h10v10H45z" fill="#0b418e"/>
+                                <path d="M30 85h40v6H30v-6z" fill="#0b418e"/>
+                                <!-- Screen -->
+                                <rect x="10" y="20" width="80" height="55" rx="4" fill="#0b418e"/>
+                                <rect x="14" y="24" width="72" height="47" rx="2" fill="#f0f4f8"/>
+                                <!-- UI elements -->
+                                <rect x="20" y="30" width="40" height="15" rx="2" fill="#c4d4e8"/>
+                                <rect x="64" y="30" width="16" height="15" rx="2" fill="#c4d4e8"/>
+                                <rect x="20" y="50" width="25" height="15" rx="2" fill="#5892d4"/>
+                                <path d="M49 52h31M49 57h31M49 62h20" stroke="#0b418e" stroke-width="2" stroke-linecap="round"/>
+                                
+                                <!-- Green Shield overlay -->
+                                <g transform="translate(62, 55)">
+                                    <path d="M15 0C8 0 0 3 0 3v12c0 10 15 17 15 17s15-7 15-17V3c0 0-8-3-15-3z" fill="url(#gradShield)"/>
+                                    <path d="M15 0v32c0 0 15-7 15-17V3c0 0-8-3-15-3z" fill="#2eb05b" opacity="0.6"/>
+                                </g>
+                                <defs>
+                                    <linearGradient id="gradShield" x1="0" y1="0" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#3dd874"/>
+                                        <stop offset="1" stop-color="#239249"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
                         </div>
-                        <div id="sidebarEventsList" class="events-list">
-                            <!-- Populated by script.js -->
+                        <div class="service-card-text">
+                            <h3>Электронная Торговая<br>Площадка</h3>
+                            <p>Проводите торги онлайн.</p>
                         </div>
+                    </a>
+
+                    <!-- 2. Обучение Госзакупкам -->
+                    <a href="#education" class="service-card slide-from-top">
+                        <div class="service-icon-img">
+                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Books -->
+                                <path d="M10 70l40 15 40-15-40-15-40 15z" fill="#d8e3ed"/>
+                                <path d="M10 70v5l40 15v-5L10 70z" fill="#b0c0d1"/>
+                                <path d="M50 85l40-15v5L50 90v-5z" fill="#c5d5e5"/>
+                                
+                                <path d="M25 60l25 10 35-13-25-10-35 13z" fill="#1b5ebf"/>
+                                <path d="M25 60v6l25 10v-6L25 60z" fill="#10428d"/>
+                                <path d="M50 70l35-13v6L50 76v-6z" fill="#1551a6"/>
+                                
+                                <!-- Graduation Cap -->
+                                <path d="M50 20L10 40l40 20 40-20-40-20z" fill="#0b418e"/>
+                                <path d="M30 50v15c0 8 40 8 40 0V50c-20 8-20 8-40 0z" fill="#1551a6"/>
+                                <!-- Tassel -->
+                                <path d="M50 30v15H20v15" stroke="#f2bc18" stroke-width="3" fill="none"/>
+                                <circle cx="20" cy="65" r="5" fill="#f2bc18"/>
+                            </svg>
+                        </div>
+                        <div class="service-card-text">
+                            <h3>Обучение Госзакупкам</h3>
+                            <p>Курсы и вебинары.</p>
+                        </div>
+                    </a>
+
+                    <!-- 3. Сопровождение Закупок -->
+                    <a href="#consulting" class="service-card slide-from-bottom">
+                        <div class="service-icon-img">
+                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Clipboard Back -->
+                                <rect x="20" y="15" width="60" height="75" rx="4" fill="#e8851a"/>
+                                <rect x="25" y="20" width="50" height="65" fill="#fff"/>
+                                <!-- Clip -->
+                                <rect x="40" y="8" width="20" height="12" rx="2" fill="#cbd5e1"/>
+                                <!-- Checks and lines -->
+                                <path d="M35 35l5 5 10-10" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                <line x1="55" y1="35" x2="68" y2="35" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
+                                
+                                <path d="M35 55l5 5 10-10" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                <line x1="55" y1="55" x2="68" y2="55" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
+                                
+                                <line x1="35" y1="70" x2="60" y2="70" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
+
+                                <!-- Green Check Mark Circle overlay -->
+                                <g transform="translate(50, 50)">
+                                    <circle cx="20" cy="20" r="18" fill="url(#gradCheck)"/>
+                                    <circle cx="20" cy="20" r="18" fill="#2eb05b" opacity="0.4"/>
+                                    <path d="M12 20l5 5 10-10" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </g>
+                                <defs>
+                                    <linearGradient id="gradCheck" x1="2" y1="2" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#4ae786"/>
+                                        <stop offset="1" stop-color="#239249"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div class="service-card-text">
+                            <h3>Сопровождение Закупок</h3>
+                            <p>Полное сопровождение закупок.</p>
+                        </div>
+                    </a>
+
+                    <!-- 4. Юридический Консалтинг -->
+                    <a href="#consulting" class="service-card slide-from-right">
+                        <div class="service-icon-img">
+                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Sound Block -->
+                                <ellipse cx="50" cy="80" rx="30" ry="10" fill="#29395f"/>
+                                <path d="M20 80v6c0 5 15 10 30 10s30-5 30-10v-6c0 5-15 10-30 10S20 85 20 80z" fill="#1b2642"/>
+                                <ellipse cx="50" cy="76" rx="26" ry="8" fill="#31426e"/>
+
+                                <!-- Gavel Mallet Handle -->
+                                <path d="M30 65 L10 45" stroke="#1d2740" stroke-width="8" stroke-linecap="round"/>
+                                
+                                <!-- Gavel Head -->
+                                <g transform="matrix(0.866 -0.5 0.5 0.866 -4 20)">
+                                    <path d="M40 30h20v25H40z" fill="#f2bc18"/>
+                                    <path d="M40 30h5v25h-5z" fill="#d9a40e"/>
+                                    <path d="M55 30h5v25h-5z" fill="#fde05f"/>
+                                    
+                                    <rect x="35" y="35" width="30" height="15" fill="#e4a806"/>
+                                    
+                                    <path d="M33 32h4v21h-4z" fill="#1d2740"/>
+                                    <path d="M63 32h4v21h-4z" fill="#1d2740"/>
+                                    <path d="M28 35h5v15h-5z" fill="#29395f"/>
+                                    <path d="M67 35h5v15h-5z" fill="#29395f"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="service-card-text">
+                            <h3>Юридический Консалтинг</h3>
+                            <p>Правовая помощь и аудит.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section class="education-section" id="education">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Обучение</h2>
+                    <p class="section-subtitle">Профессиональная подготовка по госзакупкам</p>
+                </div>
+
+                <div class="education-grid">
+                    <div class="edu-card">
+                        <div class="edu-header">
+                            <h3>Очное обучение</h3>
+                            <div class="edu-badge">Популярное</div>
+                        </div>
+                        <p>Интенсивные курсы в Казани с практическими занятиями</p>
+                        <ul>
+                            <li>44-ФЗ для заказчиков</li>
+                            <li>223-ФЗ для поставщиков</li>
+                            <li>Контрактная система</li>
+                        </ul>
+                        <a href="#contacts" class="btn-secondary">Записаться</a>
                     </div>
 
-                    <!-- News Headlines Block -->
-                    <div class="sidebar-block news-headlines-block">
-                        <div class="sidebar-title">
-                            <h3>Новости</h3>
+                    <div class="edu-card">
+                        <div class="edu-header">
+                            <h3>Дистанционное обучение</h3>
+                            <div class="edu-badge">Онлайн</div>
                         </div>
-                        <div id="sidebarNewsList" class="news-headlines-list">
-                            <!-- Populated by script.js -->
-                        </div>
+                        <p>Удобное обучение из любой точки России</p>
+                        <ul>
+                            <li>Видеолекции и вебинары</li>
+                            <li>Тестирование и сертификаты</li>
+                            <li>Поддержка преподавателей</li>
+                        </ul>
+                        <a href="#contacts" class="btn-secondary">Начать обучение</a>
                     </div>
 
-                    <!-- Testimonials Block (In Sidebar) -->
-                    <div class="sidebar-block testimonials-sidebar-block">
-                        <div class="sidebar-title">
-                            <h3>Отзывы</h3>
-                            <a href="#" class="all-link">Все</a>
+                    <div class="edu-card">
+                        <div class="edu-header">
+                            <h3>Корпоративное обучение</h3>
+                            <div class="edu-badge">Для компаний</div>
                         </div>
-                        <div id="sidebarTestimonialsList" class="testimonials-sidebar-list">
-                            <!-- Populated by script.js -->
-                        </div>
-                    </div>
-                </aside>
-
-                <!-- Main Content (Right) -->
-                <div class="main-content-right">
-                    <div class="feature-grid" id="mainFeatureGrid">
-                        <!-- Cards will be populated dynamically via script.js -->
-                    </div>
-
-                    <!-- Advantages / Statistics Block (Raised under directions) -->
-                    <div class="advantages-raised-block">
-                        <div class="why-grid" id="mainOrgGrid">
-                            <!-- Content loaded by script.js -->
-                        </div>
+                        <p>Специальные программы для ваших сотрудников</p>
+                        <ul>
+                            <li>Индивидуальный план</li>
+                            <li>Выездные занятия</li>
+                            <li>Сертификация персонала</li>
+                        </ul>
+                        <a href="#contacts" class="btn-secondary">Получить предложение</a>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- Consulting Section -->
+        <section class="consulting-section" id="consulting">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Консалтинг и сопровождение</h2>
+                    <p class="section-subtitle">Экспертная поддержка на всех этапах закупок</p>
+                </div>
 
+                <div class="consulting-grid">
+                    <div class="consult-card">
+                        <h3>Поддержка заказчиков</h3>
+                        <p>Полное сопровождение по 44-ФЗ и 223-ФЗ</p>
+                        <ul>
+                            <li>Разработка Положения о закупке</li>
+                            <li>Подготовка извещений</li>
+                            <li>Проведение процедур</li>
+                            <li>Контроль исполнения контрактов</li>
+                        </ul>
+                    </div>
+
+                    <div class="consult-card">
+                        <h3>Поддержка поставщиков</h3>
+                        <p>Помощь в победе тендеров и защите прав</p>
+                        <ul>
+                            <li>Поиск релевантных закупок</li>
+                            <li>Подготовка заявок</li>
+                            <li>Участие в торгах</li>
+                            <li>Обжалование нарушений</li>
+                        </ul>
+                    </div>
+
+                    <div class="consult-card">
+                        <h3>Юридическая поддержка</h3>
+                        <p>Защита интересов в контролирующих органах</p>
+                        <ul>
+                            <li>Жалобы в ФАС</li>
+                            <li>Судебные споры</li>
+                            <li>Досудебное урегулирование</li>
+                            <li>Экспертиза документации</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">10+</div>
+                        <div class="stat-label">Лет на рынке</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">20к+</div>
+                        <div class="stat-label">Слушателей</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Довольных клиентов</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Экспертов</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacts Section -->
+        <section class="contacts-section" id="contacts">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Контакты</h2>
+                    <p class="section-subtitle">Свяжитесь с нами для консультации</p>
+                </div>
+
+                <div class="contacts-grid">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                            </div>
+                            <div class="contact-text">
+                                <h3>Адрес</h3>
+                                <p>г. Казань, ул. Петербургская, 86</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>
+                            </div>
+                            <div class="contact-text">
+                                <h3>Телефон</h3>
+                                <a href="tel:88001017892">8 (800) 101-78-92</a>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                    <polyline points="22,6 12,13 2,6" />
+                                </svg>
+                            </div>
+                            <div class="contact-text">
+                                <h3>Email</h3>
+                                <a href="mailto:crz.rt@tatar.ru">crz.rt@tatar.ru</a>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                            </div>
+                            <div class="contact-text">
+                                <h3>Режим работы</h3>
+                                <p>Пн-Чт: 09:00 — 18:00<br>Пт: 09:00 — 16:45</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-form">
+                        <h3>Оставить заявку</h3>
+                        <form id="contactForm">
+                            <input type="text" placeholder="Ваше имя" required>
+                            <input type="tel" placeholder="Телефон" required>
+                            <input type="email" placeholder="Email" required>
+                            <textarea placeholder="Сообщение" rows="4"></textarea>
+                            <button type="submit" class="btn-primary">Отправить заявку</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
-            <footer class="footer">
+    <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
                 <h4>Центр развития закупок</h4>
-                <p>© 2026 АО «Центр развития закупок РТ»</p>
+                <p> 2026 АО «Центр развития закупок РТ»</p>
             </div>
             <div class="footer-col">
                 <h4>Обучение</h4>
-                <a href="courses.html">Заказчикам</a>
-                <a href="courses.html">Поставщикам</a>
-                <a href="calendar.html">Календарь</a>
+                <a href="#education">Заказчикам</a>
+                <a href="#education">Поставщикам</a>
+                <a href="#contacts">Календарь</a>
             </div>
             <div class="footer-col">
                 <h4>Компания</h4>
-                <a href="about.html">О нас</a>
-                <a href="contacts.html">Контакты</a>
-                <a href="knowledge.html">База знаний</a>
+                <a href="#home">О нас</a>
+                <a href="#contacts">Контакты</a>
+                <a href="#">База знаний</a>
             </div>
             <div class="footer-col">
                 <h4>Связаться</h4>
@@ -119,6 +769,56 @@
             </div>
         </div>
     </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Smooth scrolling for anchor links
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update navigation links to use anchors
+            const navLinks = document.querySelectorAll('.nav-item-link');
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === 'obuchenie.html') {
+                    link.setAttribute('href', '#education');
+                } else if (href === 'consulting.html') {
+                    link.setAttribute('href', '#consulting');
+                } else if (href === 'about.html') {
+                    link.setAttribute('href', '#home');
+                } else if (href === 'contacts.html') {
+                    link.setAttribute('href', '#contacts');
+                }
+            });
+
+            // Smooth scroll for all anchor links
+            const anchorLinks = document.querySelectorAll('a[href^="#"]');
+            anchorLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        const headerHeight = document.querySelector('.header').offsetHeight;
+                        const targetPosition = targetElement.offsetTop - headerHeight - 20;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Form submission handler
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Спасибо за заявку! Мы свяжемся с вами в ближайшее время.');
+                    this.reset();
+                });
+            }
+        });
+    </script>
 
     <script src="script.js"></script>
 </body>
