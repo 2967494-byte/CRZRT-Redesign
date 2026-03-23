@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .hero-title, .hero-subtitle, .why-card, .direction-tile, .section-title, .tag, 
         .testimonial-card, .contact-form, .section-desc, .event-tile, .news-item,
         .interactive-calendar, .filters-bar, .ad-banner-placeholder,
-        .edu-card, .consult-card
+        .edu-card, .consult-card, .service-card
     `);
 
     const revealObserver = new IntersectionObserver((entries) => {

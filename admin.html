@@ -1123,6 +1123,30 @@
         let imageInput, uploadWrapper, imageToCrop, cropperWrapper, cropperActions;
         let btnZoomIn, btnZoomOut, btnCrop, btnCancelCrop, croppedResultContainer, croppedResult;
 
+        function initUploadElements() {
+            imageInput = document.getElementById('imageInput');
+            uploadWrapper = document.getElementById('uploadWrapper');
+            imageToCrop = document.getElementById('imageToCrop');
+            cropperWrapper = document.getElementById('cropperWrapper');
+            cropperActions = document.getElementById('cropperActions');
+            btnZoomIn = document.getElementById('btnZoomIn');
+            btnZoomOut = document.getElementById('btnZoomOut');
+            btnCrop = document.getElementById('btnCrop');
+            btnCancelCrop = document.getElementById('btnCancelCrop');
+            croppedResultContainer = document.getElementById('croppedResultContainer');
+            croppedResult = document.getElementById('croppedResult');
+            const btnCropperClose = document.getElementById('btnCropperClose');
+
+            if (uploadWrapper && imageInput) {
+                uploadWrapper.addEventListener('click', () => imageInput.click());
+            } else {
+                console.error("Upload elements NOT found during early init!");
+            }
+            if (btnCropperClose && btnCancelCrop) {
+                btnCropperClose.addEventListener('click', () => btnCancelCrop.click());
+            }
+        }
+
         // Theme Toggle for Admin
         const themeBtn = document.getElementById('theme-toggle-admin');
         const root = document.documentElement;
@@ -1150,6 +1174,9 @@
                 iconMoon.style.display = 'block';
             }
         });
+
+        // Initialize upload elements immediately
+        initUploadElements();
 
         // User & Role Management Logic
         const defaultUsers = {
@@ -2277,27 +2304,25 @@
         // Call init immediately and also whenever users section might be re-rendered or tab switched
         initUsersEventListeners();
 
-        // Initialize Cropper DOM elements
-        imageInput = document.getElementById('imageInput');
-        uploadWrapper = document.getElementById('uploadWrapper');
-        imageToCrop = document.getElementById('imageToCrop');
-        cropperWrapper = document.getElementById('cropperWrapper');
-        cropperActions = document.getElementById('cropperActions');
-        btnZoomIn = document.getElementById('btnZoomIn');
-        btnZoomOut = document.getElementById('btnZoomOut');
-        btnCrop = document.getElementById('btnCrop');
-        btnCancelCrop = document.getElementById('btnCancelCrop');
-        croppedResultContainer = document.getElementById('croppedResultContainer');
-        croppedResult = document.getElementById('croppedResult');
-        const btnCropperClose = document.getElementById('btnCropperClose');
-
-        uploadWrapper.addEventListener('click', () => imageInput.click());
-        btnCropperClose.addEventListener('click', () => btnCancelCrop.click());
-
         // Drag and drop for uploadWrapper
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadWrapper.addEventListener(eventName, preventDefaults, false);
-        });
+        if (uploadWrapper) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadWrapper.addEventListener(eventName, preventDefaults, false);
+            });
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadWrapper.addEventListener(eventName, highlight, false);
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadWrapper.addEventListener(eventName, unhighlight, false);
+            });
+            uploadWrapper.addEventListener('drop', handleDrop, false);
+        }
+
+        if (imageInput) {
+            imageInput.addEventListener('change', function (e) {
+                handleFiles(this.files);
+            });
+        }
 
         function preventDefaults(e) {
             e.preventDefault();
