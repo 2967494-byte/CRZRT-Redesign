@@ -244,8 +244,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderPage(mainPageData) {
         // 1. Hero Background Image Logic (via CSS Variable)
         if (mainPageData.heroBgImage) {
-            document.documentElement.style.setProperty('--hero-bg', `url(${mainPageData.heroBgImage})`);
+            console.log("Applying hero background, size:", mainPageData.heroBgImage.length);
+            document.documentElement.style.setProperty('--hero-bg', `url("${mainPageData.heroBgImage}")`);
         } else {
+            console.log("No hero background image found in data");
             document.documentElement.style.removeProperty('--hero-bg');
         }
 
