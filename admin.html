@@ -701,6 +701,16 @@
                 </div>
 
                 <div class="admin-card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Статистика (Цифры на главной)</span>
+                        <button class="btn-save" id="btnAddStat" style="padding: 8px 16px; font-size: 0.85rem;" type="button">+ Добавить</button>
+                    </div>
+                    <div id="mainStatsAdmin" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <div class="admin-card">
                     <div class="card-header">Об организации (Why Us)</div>
                     <div id="mainOrganizationAdmin" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
                         <!-- Cards will be rendered here -->
@@ -1195,6 +1205,12 @@
                 { title: 'Юридический Консалтинг', subtitle: 'Защита в ФАС и судах.', link: '#consulting', image: '' },
                 { title: 'Сопровождение Торгов', subtitle: 'Подготовка заявок и жалоб.', link: '#consulting', image: '' }
             ],
+            stats: [
+                { value: '10+', label: 'Лет на рынке' },
+                { value: '20к+', label: 'Слушателей' },
+                { value: '98%', label: 'Довольных клиентов' },
+                { value: '50+', label: 'Экспертов' }
+            ],
             orgBlocks: [
                 { title: 'Специализированная организация', text: 'Мы — официальный партнер в сфере 44-ФЗ и 223-ФЗ с безупречной репутацией.' },
                 { title: '10 лет экспертизы', text: 'Сотни успешно защищенных интересов в ФАС и тысячи подготовленных специалистов.' },
@@ -1359,6 +1375,29 @@
                 `);
             });
 
+            // Stats
+            const statsContainer = document.getElementById('mainStatsAdmin');
+            if (statsContainer) {
+                statsContainer.innerHTML = '';
+                if (mainPageData.stats) {
+                    mainPageData.stats.forEach((s, i) => {
+                        statsContainer.insertAdjacentHTML('beforeend', `
+                            <div style="padding: 15px; border: 1px solid var(--card-border); border-radius: 12px; background: rgba(0,0,0,0.02); position: relative;">
+                                <button class="btn-delete" type="button" style="position: absolute; top: 10px; right: 10px; padding: 5px 10px;" onclick="window.removeStat(${i})">×</button>
+                                <div class="form-group" style="margin-bottom: 10px; padding-right: 30px;">
+                                    <label>Значение (напр. 20к+)</label>
+                                    <input type="text" class="form-control" id="m_stat_val_${i}" value="${s.value}">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Подпись</label>
+                                    <input type="text" class="form-control" id="m_stat_lbl_${i}" value="${s.label}">
+                                </div>
+                            </div>
+                        `);
+                    });
+                }
+            }
+
             // Org Blocks
             const orgContainer = document.getElementById('mainOrganizationAdmin');
             orgContainer.innerHTML = '';
@@ -1452,7 +1491,14 @@
                 // Hero background image is already correctly maintained in mainPageData.heroBgImage
                 // by clearHeroBgImage() → '' or by the crop callback → data URI.
                 // Do NOT read from croppedResult.src — the browser resolves empty src to the page URL.
-
+                if (Array.isArray(mainPageData.stats)) {
+                    mainPageData.stats.forEach((s, i) => {
+                        const val = document.getElementById(`m_stat_val_${i}`);
+                        const lbl = document.getElementById(`m_stat_lbl_${i}`);
+                        if (val) s.value = val.value;
+                        if (lbl) s.label = lbl.value;
+                    });
+                }
 
                 if (Array.isArray(mainPageData.orgBlocks)) {
                     mainPageData.orgBlocks.forEach((b, i) => {
@@ -1506,6 +1552,27 @@
                 renderMainPageAdmin();
             });
         }
+
+        const btnAddStat = document.getElementById('btnAddStat');
+        if (btnAddStat) {
+            btnAddStat.addEventListener('click', (e) => {
+                e.preventDefault();
+                saveMainPageStateToMemory();
+                if (!mainPageData.stats) {
+                    mainPageData.stats = [];
+                }
+                mainPageData.stats.push({ value: '0', label: 'Новая статистика' });
+                renderMainPageAdmin();
+            });
+        }
+
+        window.removeStat = function (index) {
+            if (confirm('Удалить этот блок статистики?')) {
+                saveMainPageStateToMemory();
+                mainPageData.stats.splice(index, 1);
+                renderMainPageAdmin();
+            }
+        };
 
         window.removeFeatureCard = function (index) {
             if (confirm('Удалить эту плитку?')) {

@@ -80,15 +80,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const stats = document.querySelectorAll('.stat-number');
 
     const countUp = (el) => {
-        const target = +el.getAttribute('data-target');
-        const count = +el.innerText.replace('+', ''); // Remove + for safety
-        const speed = target / 100; // Increment step
+        const targetStr = el.getAttribute('data-target') || '0';
+        const targetNum = parseFloat(targetStr.replace(/[^\d.]/g, '')) || 0;
+        const suffix = targetStr.replace(/[\d.]/g, ''); // Extract non-digits
+        const currentStr = el.innerText || '0';
+        const count = parseFloat(currentStr.replace(/[^\d.]/g, '')) || 0;
+        
+        const speed = targetNum / 50; 
 
-        if (count < target) {
-            el.innerText = Math.ceil(count + speed) + (el.getAttribute('data-plus') ? '+' : '');
+        if (count < targetNum) {
+            el.innerText = Math.ceil(count + speed) + suffix;
             el.dataset.tid = setTimeout(() => countUp(el), 20);
         } else {
-            el.innerText = target + (el.getAttribute('data-plus') ? '+' : '');
+            el.innerText = targetStr;
         }
     };
 
@@ -205,6 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Юридический Консалтинг', subtitle: 'Защита в ФАС и судах.', link: '#consulting', image: '' },
             { title: 'Сопровождение Торгов', subtitle: 'Подготовка заявок и жалоб.', link: '#consulting', image: '' }
         ],
+        stats: [
+            { value: '10+', label: 'Лет на рынке' },
+            { value: '20к+', label: 'Слушателей' },
+            { value: '98%', label: 'Довольных клиентов' },
+            { value: '50+', label: 'Экспертов' }
+        ],
         orgBlocks: [
             { title: 'Специализированная организация', text: 'Мы — официальный партнер в сфере 44-ФЗ и 223-ФЗ с безупречной репутацией.' },
             { title: '10 лет экспертизы', text: 'Сотни успешно защищенных интересов в ФАС и тысячи подготовленных специалистов.' },
@@ -313,6 +323,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (titleEl) titleEl.innerHTML = c.title || '';
                 if (descEl) descEl.innerHTML = c.subtitle || '';
                 if (linkEl && c.link) linkEl.href = c.link;
+            });
+        }
+
+        // 7. Stats
+        if (mainPageData.stats && Array.isArray(mainPageData.stats)) {
+            mainPageData.stats.forEach((s, i) => {
+                const numEl = document.getElementById(`m_stat_num_${i}`);
+                const lblEl = document.getElementById(`m_stat_lbl_${i}`);
+                if (numEl) {
+                    numEl.setAttribute('data-target', s.value || '0');
+                    if (!numEl.dataset.tid) numEl.innerText = '0'; // reset for animation if not currently animating
+                }
+                if (lblEl) lblEl.innerText = s.label || '';
             });
         }
 
