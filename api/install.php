@@ -18,19 +18,19 @@ try {
     $pdo->exec("CREATE TABLE IF NOT EXISTS settings (
         id INT AUTO_INCREMENT PRIMARY KEY,
         setting_key VARCHAR(100) NOT NULL UNIQUE,
-        setting_value TEXT,
+        setting_value LONGTEXT,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )");
 
     // Создаем первого админа (если база пустая)
     $stmt = $pdo->query("SELECT COUNT(*) FROM users");
     if ($stmt->fetchColumn() == 0) {
-        // Пароль по умолчанию: admin123 
+        // Пароль по умолчанию: crzrt_2026 
         // (Обязательно поменяем его потом из админки!)
-        $hash = password_hash('admin123', PASSWORD_DEFAULT);
+        $hash = password_hash('crzrt_2026', PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)");
         $stmt->execute(['Главный Админ', 'admin@crzrt.ru', $hash, 'superadmin']);
-        echo "✅ База данных успешно инициализирована! Создан пользователь admin@crzrt.ru с паролем admin123.";
+        echo "✅ База данных успешно инициализирована! Создан пользователь admin@crzrt.ru с паролем crzrt_2026.";
     } else {
         echo "✅ Таблицы уже существуют. Админ уже создан.";
     }

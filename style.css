@@ -611,7 +611,10 @@ ul {
     content: '';
     position: absolute;
     inset: 0;
-    background: url('Pic12.png') center/cover no-repeat;
+    /* Use dynamic background from settings, fallback to Pic12.png */
+    background: var(--hero-bg, url('Pic12.png')) center/cover no-repeat;
+    /* For "handshake" style, we often want the subject on the right */
+    background-position: right center;
     animation: heroZoom 30s linear infinite alternate;
     z-index: 1;
 }
@@ -684,13 +687,14 @@ ul {
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%);
-    backdrop-filter: blur(2px);
+    /* Gradient blend: solid brand color on left to transparent on right for readability */
+    background: linear-gradient(90deg, var(--bg-color) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 100%);
+    backdrop-filter: blur(1px);
     z-index: 2;
 }
 
 [data-theme="light"] .hero-overlay {
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.8) 100%);
+    background: linear-gradient(90deg, var(--bg-color) 0%, rgba(255, 255, 255, 0.4) 40%, transparent 100%);
 }
 
 [data-theme="light"] .hero-title {

@@ -225,164 +225,171 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
-    const savedMainData = JSON.parse(localStorage.getItem('crzrt_main_page_data')) || {};
-    // Override old defaults if present in localstorage
-    if (savedMainData.heroTitle === 'Ваш успех в госзакупках.') {
-        savedMainData.heroTitle = defaultMainData.heroTitle;
-        savedMainData.heroSubtitle = defaultMainData.heroSubtitle;
-    }
-    const mainPageData = { ...defaultMainData, ...savedMainData };
-
-    // Sidebar Events Rendering
-    const eventsList = document.getElementById('sidebarEventsList');
-    if (eventsList && mainPageData.events) {
-        eventsList.innerHTML = mainPageData.events.map(e => `
-            <a href="${e.link || '#'}" class="event-tile">
-                <div class="event-date">${e.date}</div>
-                <div class="event-title">${e.title}</div>
-            </a>
-        `).join('');
-    }
-
-    // Sidebar News Rendering
-    const sideNewsList = document.getElementById('sidebarNewsList');
-    if (sideNewsList && mainPageData.sideNews) {
-        sideNewsList.innerHTML = mainPageData.sideNews.map(n => `
-            <a href="${n.link || '#'}" class="news-item">
-                <div class="news-item-date">${n.date}</div>
-                <div class="news-item-title">${n.title}</div>
-            </a>
-        `).join('');
-    }
-
-    // Sanitize heroBgImage — reject bad values from old buggy code (e.g. admin.html URL stored as src)
-    if (mainPageData.heroBgImage &&
-        mainPageData.heroBgImage !== '' &&
-        !mainPageData.heroBgImage.startsWith('data:') &&
-        (mainPageData.heroBgImage.includes('.html') || mainPageData.heroBgImage.includes('.htm'))) {
-        // Bad value stored (e.g. file:///admin.html) — fall back to default
-        mainPageData.heroBgImage = defaultMainData.heroBgImage;
-    }
-
-    // Hero Section
-    const heroTitle = document.querySelector('.hero-title');
-    const heroSubtitle = document.querySelector('.hero-subtitle');
-    if (heroTitle && mainPageData.heroTitle) {
-        // Just insert the HTML directly, new text has <br> in it.
-        heroTitle.innerHTML = mainPageData.heroTitle;
-    }
-    if (heroSubtitle && mainPageData.heroSubtitle) {
-        heroSubtitle.innerText = mainPageData.heroSubtitle;
-    }
-
-    // Hero Background Image
-    const heroMain = document.querySelector('.hero-main');
-    if (heroMain) {
-        // Create or find the dynamic style tag
-        let heroBgStyle = document.getElementById('heroBgDynamic');
-        if (!heroBgStyle) {
-            heroBgStyle = document.createElement('style');
-            heroBgStyle.id = 'heroBgDynamic';
-            document.head.appendChild(heroBgStyle);
+    // Load function that can be called multiple times
+    async function initPageData() {
+        let savedMainData = JSON.parse(localStorage.getItem('crzrt_main_page_data')) || {};
+        
+        // Sync with server API
+        try {
+            const response = await fetch('api/settings.php?key=crzrt_main_page_data');
+            if (response.ok) {
+                const serverData = await response.json();
+                if (serverData && Object.keys(serverData).length > 0) {
+                    savedMainData = serverData;
+                    localStorage.setItem('crzrt_main_page_data', JSON.stringify(serverData));
+                }
+            }
+        } catch (e) {
+            console.warn("Failed to sync settings with server:", e);
         }
 
-        if (mainPageData.heroBgImage && mainPageData.heroBgImage !== '') {
-            // Show custom image
-            heroBgStyle.textContent = `.hero-main::before { background-image: url('${mainPageData.heroBgImage}') !important; animation: heroZoom 30s linear infinite alternate; }`;
-            heroMain.classList.remove('no-hero-bg');
-            heroMain.style.height = '';
-            heroMain.style.padding = '';
-        } else if (mainPageData.heroBgImage === '') {
-            // Image deleted — collapse to text height
-            heroBgStyle.textContent = `.hero-main::before { background-image: none !important; animation: none !important; } .hero-main.no-hero-bg { height: auto !important; padding: 140px 0 60px !important; overflow: visible !important; }`;
-            heroMain.classList.add('no-hero-bg');
-            heroMain.style.height = 'auto';
-            heroMain.style.padding = '140px 0 60px';
-            heroMain.style.overflow = 'visible';
-            // Hide overlay
-            const overlay = heroMain.querySelector('.hero-overlay');
-            if (overlay) overlay.style.display = 'none';
-        }
+        const mainPageData = { ...defaultMainData, ...savedMainData };
+        renderPage(mainPageData);
     }
 
-    // Feature Cards (Dynamic Grid)
-    const featureGrid = document.getElementById('mainFeatureGrid');
-    if (featureGrid && mainPageData.featureCards) {
-        featureGrid.innerHTML = mainPageData.featureCards.map((c, i) => `
-            <a href="${c.link || '#'}" class="feature-card ${c.image ? '' : 'no-image'}" id="feature-card-${i + 1}">
-                <div class="feature-card-bg" style="${c.image ? `background-image: url(${c.image})` : ''}"></div>
-                <div class="feature-card-link-arrow">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="7" y1="17" x2="17" y2="7"></line>
-                        <polyline points="7 7 17 7 17 17"></polyline>
-                    </svg>
+    function renderPage(mainPageData) {
+        // 1. Hero Background Image Logic (via CSS Variable)
+        if (mainPageData.heroBgImage) {
+            document.documentElement.style.setProperty('--hero-bg', `url(${mainPageData.heroBgImage})`);
+        } else {
+            document.documentElement.style.removeProperty('--hero-bg');
+        }
+
+        // 2. Hero Section collapse/style logic
+        const heroMain = document.querySelector('.hero-main');
+        if (heroMain) {
+            if (mainPageData.heroBgImage === '') {
+                heroMain.classList.add('no-hero-bg');
+                heroMain.style.height = 'auto';
+                heroMain.style.padding = '140px 0 60px';
+                heroMain.style.overflow = 'visible';
+                const overlay = heroMain.querySelector('.hero-overlay');
+                if (overlay) overlay.style.display = 'none';
+            } else {
+                heroMain.classList.remove('no-hero-bg');
+                heroMain.style.height = '';
+                heroMain.style.padding = '';
+                heroMain.style.overflow = '';
+                const overlay = heroMain.querySelector('.hero-overlay');
+                if (overlay) overlay.style.display = 'block';
+            }
+        }
+
+        // 3. Hero Texts
+        const heroTitle = document.querySelector('.hero-title');
+        const heroSubtitle = document.querySelector('.hero-subtitle');
+        if (heroTitle && mainPageData.heroTitle) {
+            heroTitle.innerHTML = mainPageData.heroTitle;
+        }
+        if (heroSubtitle && mainPageData.heroSubtitle) {
+            heroSubtitle.innerText = mainPageData.heroSubtitle;
+        }
+
+        // 4. Sidebar Events Rendering
+        const eventsList = document.getElementById('sidebarEventsList');
+        if (eventsList && mainPageData.events) {
+            eventsList.innerHTML = mainPageData.events.map(e => `
+                <a href="${e.link || '#'}" class="event-tile">
+                    <div class="event-date">${e.date}</div>
+                    <div class="event-title">${e.title}</div>
+                </a>
+            `).join('');
+        }
+
+        // 5. Sidebar News Rendering
+        const sideNewsList = document.getElementById('sidebarNewsList');
+        if (sideNewsList && mainPageData.sideNews) {
+            sideNewsList.innerHTML = mainPageData.sideNews.map(n => `
+                <a href="${n.link || '#'}" class="news-item">
+                    <div class="news-item-date">${n.date}</div>
+                    <div class="news-item-title">${n.title}</div>
+                </a>
+            `).join('');
+        }
+
+        // 6. Feature Cards (Dynamic Grid)
+        const featureGrid = document.getElementById('mainFeatureGrid');
+        if (featureGrid && mainPageData.featureCards) {
+            featureGrid.innerHTML = mainPageData.featureCards.map((c, i) => `
+                <a href="${c.link || '#'}" class="feature-card ${c.image ? '' : 'no-image'}" id="feature-card-${i + 1}">
+                    <div class="feature-card-bg" style="${c.image ? `background-image: url(${c.image})` : ''}"></div>
+                    <div class="feature-card-link-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="7" y1="17" x2="17" y2="7"></line>
+                            <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
+                    </div>
+                    <div class="feature-card-content">
+                        <h3>${c.title}</h3>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // 7. Why Us Grid
+        const orgGrid = document.getElementById('mainOrgGrid');
+        if (orgGrid && mainPageData.orgBlocks) {
+            orgGrid.innerHTML = mainPageData.orgBlocks.map(b => `
+                <div class="why-card">
+                    <h3>${b.title}</h3>
+                    <p>${b.text}</p>
                 </div>
-                <div class="feature-card-content">
-                    <h3>${c.title}</h3>
-                </div>
-            </a>
-        `).join('');
-    }
-
-    // Why Us Grid
-    const orgGrid = document.getElementById('mainOrgGrid');
-    if (orgGrid && mainPageData.orgBlocks) {
-        orgGrid.innerHTML = mainPageData.orgBlocks.map(b => `
-            <div class="why-card">
-                <h3>${b.title}</h3>
-                <p>${b.text}</p>
-            </div>
-        `).join('');
-    }
-
-    // Testimonials Sidebar
-    const testimonialsList = document.getElementById('sidebarTestimonialsList');
-    if (testimonialsList && mainPageData.testimonials) {
-        testimonialsList.innerHTML = mainPageData.testimonials.slice(0, 3).map(t => `
-            <div class="sidebar-testimonial-card testimonial-card">
-                <div class="client-name">${t.client}</div>
-                <p>${t.text}</p>
-            </div>
-        `).join('');
-    }
-
-    // Re-catch newly added cards for tilt and reveal effects
-    const newRevealElements = document.querySelectorAll(`
-        .why-card, .testimonial-card, .news-strip, .feature-card, 
-        .news-item, .event-tile
-    `);
-    newRevealElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)';
-        revealObserver.observe(el);
-
-        if (el.classList.contains('why-card') || el.classList.contains('testimonial-card')) {
-            el.addEventListener('mousemove', (e) => {
-                const rect = el.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -5;
-                const rotateY = ((x - centerX) / centerX) * 5;
-                el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-            });
-            el.addEventListener('mouseleave', () => {
-                el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-            });
+            `).join('');
         }
-    });
 
-    // === DYNAMIC MEGA MENU ДЛЯ УСЛУГ (Консалтинг) ===
+        // 8. Testimonials Sidebar
+        const testimonialsList = document.getElementById('sidebarTestimonialsList');
+        if (testimonialsList && mainPageData.testimonials) {
+            testimonialsList.innerHTML = mainPageData.testimonials.slice(0, 3).map(t => `
+                <div class="sidebar-testimonial-card testimonial-card">
+                    <div class="client-name">${t.client}</div>
+                    <p>${t.text}</p>
+                </div>
+            `).join('');
+        }
+
+        // 9. Re-catch reveal elements for Scroll Animations
+        const newRevealElements = document.querySelectorAll(`
+            .why-card, .testimonial-card, .news-strip, .feature-card, 
+            .news-item, .event-tile
+        `);
+        newRevealElements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            revealObserver.observe(el);
+
+            if (el.classList.contains('why-card') || el.classList.contains('testimonial-card')) {
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -5;
+                    const rotateY = ((x - centerX) / centerX) * 5;
+                    el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                });
+            }
+        });
+
+        // 10. Update Services Mega Menu
+        renderServicesMegaMenu();
+    }
+
+    // Call it initially (async fetch inside)
+    initPageData();
+
+    // === DYNAMIC MEGA MENU для Услуг ===
     function renderServicesMegaMenu() {
         const servicesMegaGrid = document.getElementById('servicesMegaGrid');
         if (!servicesMegaGrid) return;
 
-        // Если в grid уже есть контент (из header.js), и в localStorage пусто - ничего не трогаем
         const localData = JSON.parse(localStorage.getItem('crzrt_consulting_data'));
         if (localData && localData.services && localData.services.length > 0) {
-            // Авто-категоризация для старых данных или данных по умолчанию
             const processedServices = localData.services.map((s, idx) => {
                 const sid = s.id || `service_${idx}`;
                 let cat = s.category;
@@ -395,7 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return { ...s, id: sid, category: cat };
             });
 
-            // Если есть данные в админке, можем перерисовать
             servicesMegaGrid.innerHTML = `
                 <div class="mega-col">
                     ${processedServices.filter(s => s.category === 'customers').map(s => `<a href="consulting.html#${s.id}">${s.title || 'Без названия'}</a>`).join('')}
@@ -407,8 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Initial call
-    renderServicesMegaMenu();
     document.addEventListener('headerLoaded', renderServicesMegaMenu);
 
     // Cookie Banner Logic
