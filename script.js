@@ -200,10 +200,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { date: '25.02.2026', title: 'Новые правила электронного актирования в ЕИС', link: '#' }
         ],
         featureCards: [
-            { title: 'Обучение', link: 'courses.html', image: '' },
-            { title: 'Консалтинг', link: 'consulting.html', image: '' },
-            { title: 'Закупки (ЭТП)', link: 'https://etpzakupki.tatar', image: '' },
-            { title: 'Сопровождение', link: 'consulting.html#deals', image: '' }
+            { title: 'Электронная Торговая Площадка', subtitle: 'Проводите торги онлайн.', link: 'https://etpzakupki.tatar', image: '' },
+            { title: 'Обучение Госзакупкам', subtitle: 'Курсы по 44-ФЗ и 223-ФЗ.', link: '#education', image: '' },
+            { title: 'Юридический Консалтинг', subtitle: 'Защита в ФАС и судах.', link: '#consulting', image: '' },
+            { title: 'Сопровождение Торгов', subtitle: 'Подготовка заявок и жалоб.', link: '#consulting', image: '' }
         ],
         orgBlocks: [
             { title: 'Специализированная организация', text: 'Мы — официальный партнер в сфере 44-ФЗ и 223-ФЗ с безупречной репутацией.' },
@@ -303,23 +303,17 @@ document.addEventListener('DOMContentLoaded', () => {
             `).join('');
         }
 
-        // 6. Feature Cards (Dynamic Grid)
-        const featureGrid = document.getElementById('mainFeatureGrid');
-        if (featureGrid && mainPageData.featureCards) {
-            featureGrid.innerHTML = mainPageData.featureCards.map((c, i) => `
-                <a href="${c.link || '#'}" class="feature-card ${c.image ? '' : 'no-image'}" id="feature-card-${i + 1}">
-                    <div class="feature-card-bg" style="${c.image ? `background-image: url(${c.image})` : ''}"></div>
-                    <div class="feature-card-link-arrow">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="7" y1="17" x2="17" y2="7"></line>
-                            <polyline points="7 7 17 7 17 17"></polyline>
-                        </svg>
-                    </div>
-                    <div class="feature-card-content">
-                        <h3>${c.title}</h3>
-                    </div>
-                </a>
-            `).join('');
+        // 6. Services / Feature Cards
+        if (mainPageData.featureCards && Array.isArray(mainPageData.featureCards)) {
+            mainPageData.featureCards.forEach((c, i) => {
+                const titleEl = document.getElementById(`m_srv_title_${i}`);
+                const descEl = document.getElementById(`m_srv_desc_${i}`);
+                const linkEl = document.getElementById(`m_srv_link_${i}`);
+                
+                if (titleEl) titleEl.innerHTML = c.title || '';
+                if (descEl) descEl.innerHTML = c.subtitle || '';
+                if (linkEl && c.link) linkEl.href = c.link;
+            });
         }
 
         // 7. Why Us Grid
