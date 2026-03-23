@@ -1227,8 +1227,7 @@
         let mainPageData = { ...defaultMainData };
         let aboutData = { ...defaultAboutData };
         let contactsData = { ...defaultContactsData };
-        let educationData = { ...defaultEducationData };
-        let consultingData = { ...defaultConsultingData };
+        // educationData and consultingData are initialized AFTER their const defaults are declared below
 
         async function syncAllDataFromServer() {
             const keys = [
@@ -2490,7 +2489,9 @@
             ]
         };
 
-        consultingData = JSON.parse(localStorage.getItem('crzrt_consulting_data')) || defaultConsultingData;
+        // Initialize here — AFTER all const defaults are declared (fixes TDZ error)
+        let educationData = JSON.parse(localStorage.getItem('crzrt_education_data')) || { ...defaultEducationData };
+        let consultingData = JSON.parse(localStorage.getItem('crzrt_consulting_data')) || { ...defaultConsultingData };
         const consultingAuthorsAdmin = document.getElementById('consultingAuthorsAdmin');
         const consultingServicesAdmin = document.getElementById('consultingServicesAdmin');
 
@@ -2772,5 +2773,6 @@
         // Initialize display
         checkAuth();
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 </body>
 </html>

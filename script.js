@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-visible');
-            } else {
+            } else if (entry.boundingClientRect.top > 0) {
                 entry.target.classList.remove('is-visible');
             }
         });
@@ -51,17 +51,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (entry.isIntersecting) {
                 const children = Array.from(entry.target.children);
                 children.forEach((child, index) => {
-                    // Stagger delay based on index
                     child.style.transitionDelay = `${index * 0.15}s`;
-                    // Brief timeout to ensure CSS registers the delay before adding active class
                     setTimeout(() => {
                         child.classList.add('reveal-active');
                     }, 50);
                 });
-            } else {
+            } else if (entry.boundingClientRect.top > 0) {
                 const children = Array.from(entry.target.children);
                 children.forEach((child) => {
-                    // Remove stagger delay for an immediate reverse animation
                     child.style.transitionDelay = `0s`;
                     child.classList.remove('reveal-active');
                 });
@@ -442,6 +439,45 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 600);
         });
     };
+
+    // Consulting – Bottom-Slide Staggered Stack
+    // Cards 2–4 slide UP from bottom:-100vh to bottom:0
+    // Card 1 is always visible (no animation needed)
+    const scrollWrapper = document.querySelector('.consulting-scroll-wrapper');
+    const slidingCards = [
+        document.getElementById('s-card-2'),  // animates first
+        document.getElementById('s-card-3'),  // animates second
+        document.getElementById('s-card-4'),  // animates third
+    ];
+
+    if (scrollWrapper) {
+        function updateCards() {
+            const rect = scrollWrapper.getBoundingClientRect();
+            const viewH = window.innerHeight;
+            const totalScrollable = rect.height - viewH;
+
+            // Clamp progress 0→1 across the entire scroll zone
+            let progress = -rect.top / totalScrollable;
+            progress = Math.max(0, Math.min(1, progress));
+
+            slidingCards.forEach((card, i) => {
+                if (!card) return;
+                // Stagger: card[0] uses 0.0–0.33, card[1] 0.33–0.66, card[2] 0.66–1.0
+                const start = i / slidingCards.length;
+                const end   = (i + 1) / slidingCards.length;
+                let p = (progress - start) / (end - start);
+                p = Math.max(0, Math.min(1, p));
+                // Ease-out cubic
+                const eased = 1 - Math.pow(1 - p, 3);
+                // Slide from -100vh to 0
+                const bottomPx = (-100 + eased * 100);
+                card.style.bottom = `${bottomPx}vh`;
+            });
+        }
+
+        window.addEventListener('scroll', updateCards, { passive: true });
+        updateCards(); // run once on load
+    }
 
     initCookieBanner();
 });

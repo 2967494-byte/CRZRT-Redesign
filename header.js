@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="container header-content">
             <a href="index.html" class="logo">
                 <img src="logo.png" alt="Logo" class="logo-img">
-                <span>Центр развития закупок</span>
+                <span>Центр развития закупок РТ</span>
             </a>
             <div class="header-actions">
                 <a href="tel:88001017892" id="h-phone-link" class="header-phone" style="margin-right: 20px; font-weight: 600; font-size: 1rem; color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;">
