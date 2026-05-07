@@ -1,502 +1,84 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Reveal functionality (Single Elements)
-    const revealElements = document.querySelectorAll(`
-        .hero-title, .hero-subtitle, .why-card, .direction-tile, .section-title, .tag, 
-        .testimonial-card, .contact-form, .section-desc, .event-tile, .news-item,
-        .interactive-calendar, .filters-bar, .ad-banner-placeholder,
-        .edu-card, .consult-card, .service-card
-    `);
+    // 1. Reveal Animations on Scroll
+    const revealElements = document.querySelectorAll('.hero-text-block, .hero-image-block, .service-card-new, .news-card, .banner-box, .partner-logo, .review-card, .contact-container');
+    
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
 
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('is-revealed');
-            } else if (entry.boundingClientRect.top > 0) {
-                entry.target.classList.remove('is-revealed');
+                entry.target.classList.add('reveal-active');
             }
         });
-    }, {
-        threshold: 0.05,
-        rootMargin: "0px 0px -20px 0px"
-    });
+    }, observerOptions);
 
     revealElements.forEach(el => {
-        el.classList.add('reveal-on-scroll');
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
         revealObserver.observe(el);
     });
 
-    // 4-sides reveal for main services
-    const sidesElements = document.querySelectorAll('.slide-from-left, .slide-from-right, .slide-from-top, .slide-from-bottom');
-    const sidesObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-            } else if (entry.boundingClientRect.top > 0) {
-                entry.target.classList.remove('is-visible');
-            }
-        });
-    }, {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px"
-    });
-    
-    sidesElements.forEach(el => {
-        sidesObserver.observe(el);
-    });
+    // Add a specific class to trigger animations in CSS
+    document.styleSheets[0].insertRule('.reveal-active { opacity: 1 !important; transform: translateY(0) !important; }', 0);
 
-    // Staggered Grid Reveal (Highly attractive animation for cards)
-    const grids = document.querySelectorAll('.education-grid, .consulting-grid, .stats-grid, .contacts-grid, .feature-grid, .course-list');
-    const gridObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const children = Array.from(entry.target.children);
-                children.forEach((child, index) => {
-                    child.style.transitionDelay = `${index * 0.15}s`;
-                    setTimeout(() => {
-                        child.classList.add('reveal-active');
-                    }, 50);
-                });
-            } else if (entry.boundingClientRect.top > 0) {
-                const children = Array.from(entry.target.children);
-                children.forEach((child) => {
-                    child.style.transitionDelay = `0s`;
-                    child.classList.remove('reveal-active');
+    // 2. Smooth Scrolling for all internal links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                const headerHeight = document.querySelector('.header').offsetHeight;
+                const offsetPosition = targetElement.offsetTop - headerHeight;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
                 });
             }
         });
-    }, {
-        threshold: 0.15,
-        rootMargin: "0px 0px -50px 0px"
     });
 
-    grids.forEach(grid => {
-        Array.from(grid.children).forEach(child => {
-            child.classList.add('reveal-item');
-        });
-        gridObserver.observe(grid);
-    });
+    // 3. Form Handling
+    const mainForm = document.getElementById('mainContactForm');
+    if (mainForm) {
+        mainForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = mainForm.querySelector('button');
+            const originalText = btn.innerText;
+            
+            btn.innerText = 'Отправка...';
+            btn.disabled = true;
 
-    // Stats Counter
-    const stats = document.querySelectorAll('.stat-number');
-
-    const countUp = (el) => {
-        const targetStr = el.getAttribute('data-target') || '0';
-        const targetNum = parseFloat(targetStr.replace(/[^\d.]/g, '')) || 0;
-        const suffix = targetStr.replace(/[\d.]/g, ''); // Extract non-digits
-        const currentStr = el.innerText || '0';
-        const count = parseFloat(currentStr.replace(/[^\d.]/g, '')) || 0;
-        
-        const speed = targetNum / 50; 
-
-        if (count < targetNum) {
-            el.innerText = Math.ceil(count + speed) + suffix;
-            el.dataset.tid = setTimeout(() => countUp(el), 20);
-        } else {
-            el.innerText = targetStr;
-        }
-    };
-
-    const statsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                countUp(entry.target);
-            } else {
-                if (entry.target.dataset.tid) {
-                    clearTimeout(entry.target.dataset.tid);
-                }
-                entry.target.innerText = '0';
-            }
-        });
-    }, { threshold: 0.5 });
-    
-    stats.forEach(stat => {
-        statsObserver.observe(stat);
-    });
-
-
-    // Tilt Effect for Cards
-    const cards = document.querySelectorAll('.why-card, .course-card');
-
-    cards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-
-            const rotateX = ((y - centerY) / centerY) * -5; // Max rotation deg
-            const rotateY = ((x - centerX) / centerX) * 5;
-
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-        });
-
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-        });
-    });
-
-
-
-    // Header Blur Effect on Scroll
-    const header = document.querySelector('.header');
-    let lastScroll = 0;
-
-    window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
-        if (currentScroll > 50) {
-            header.style.boxShadow = "0 10px 30px rgba(0,0,0,0.1)";
-        } else {
-            header.style.boxShadow = "0 4px 20px rgba(0,0,0,0.05)";
-        }
-        lastScroll = currentScroll;
-    });
-
-
-    // Theme Toggle Logic is handled in header.js
-
-    // Check for saved theme
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-    } else {
-        // Default to light
-        document.documentElement.setAttribute('data-theme', 'light');
-    }
-
-    // Smooth Scroll for Header Nav Bar
-    const navBarItems = document.querySelectorAll('.nav-bar-item');
-
-    navBarItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            const targetId = item.getAttribute('href');
-            if (targetId.startsWith('#')) {
-                e.preventDefault();
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    const headerHeight = document.querySelector('.header').offsetHeight;
-                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-
-                    window.scrollTo({
-                        top: targetPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            }
-        });
-    });
-
-
-    // === DYNAMIC CONTENT FOR MAIN PAGE ===
-    const defaultMainData = {
-        heroTitle: 'Ваш надежный<br>партнёр в мире закупок',
-        heroSubtitle: 'ЭТП — Обучение — Сопровождение — Юридический консалтинг',
-        heroBgImage: '',
-        events: [
-            { date: '23-27 МАРТА', title: 'Очный курс: Закупки по 44-ФЗ (108 ч)', link: 'course-44fz.html' },
-            { date: '25-27 МАРТА', title: 'Очный курс: Закупки по 223-ФЗ (72 ч)', link: 'course-223fz.html' },
-            { date: '20 АПРЕЛЯ', title: 'Семинар: Новые правила ГИС в 2026 году', link: 'seminars.html' }
-        ],
-        sideNews: [
-            { date: '06.03.2026', title: 'Запущен новый раздел "База знаний"', link: 'knowledge.html' },
-            { date: '01.03.2026', title: 'Обновлено расписание курсов на весну 2026', link: 'calendar.html' },
-            { date: '25.02.2026', title: 'Новые правила электронного актирования в ЕИС', link: '#' }
-        ],
-        featureCards: [
-            { title: 'Электронная Торговая Площадка', subtitle: 'Проводите торги онлайн.', link: 'https://etpzakupki.tatar', image: '' },
-            { title: 'Обучение Госзакупкам', subtitle: 'Курсы по 44-ФЗ и 223-ФЗ.', link: '#education', image: '' },
-            { title: 'Юридический Консалтинг', subtitle: 'Защита в ФАС и судах.', link: '#consulting', image: '' },
-            { title: 'Сопровождение Торгов', subtitle: 'Подготовка заявок и жалоб.', link: '#consulting', image: '' }
-        ],
-        stats: [
-            { value: '10+', label: 'Лет на рынке' },
-            { value: '20к+', label: 'Слушателей' },
-            { value: '98%', label: 'Довольных клиентов' },
-            { value: '50+', label: 'Экспертов' }
-        ],
-        orgBlocks: [
-            { title: 'Специализированная организация', text: 'Мы — официальный партнер в сфере 44-ФЗ и 223-ФЗ с безупречной репутацией.' },
-            { title: '10 лет экспертизы', text: 'Сотни успешно защищенных интересов в ФАС и тысячи подготовленных специалистов.' },
-            { title: 'Собственная экосистема', text: 'Мы объединяем обучение, ЭТП и юридическую поддержку в одном месте.' }
-        ],
-        testimonials: [
-            { client: 'ТрансТехСервис', text: '«Выражаем благодарность за высокий уровень организации обучения сотрудников в сфере государственных закупок.»' },
-            { client: 'Министерство экологии РТ', text: '«Профессиональный подход к подготовке кадров и глубокая экспертиза преподавательского состава.»' },
-            { client: 'ГБУ «Научный центр БЖД»', text: '«Курсы повышения квалификации помогли нам систематизировать работу с тендерами по 44-ФЗ.»' },
-            { client: 'Компания «ВАТ»', text: '«Отмечаем доступность изложения сложного материала и практическую направленность программы.»' },
-            { client: 'АО «Казанский Гипронииавиапром»', text: '«Своевременная поддержка и квалифицированные консультации по вопросам сложных торгов.»' }
-        ]
-    };
-
-    // Load function that can be called multiple times
-    async function initPageData() {
-        let savedMainData = JSON.parse(localStorage.getItem('crzrt_main_page_data')) || {};
-        
-        // Sync with server API
-        try {
-            const response = await fetch('api/settings.php?key=crzrt_main_page_data');
-            if (response.ok) {
-                const serverData = await response.json();
-                if (serverData && Object.keys(serverData).length > 0) {
-                    savedMainData = serverData;
-                    localStorage.setItem('crzrt_main_page_data', JSON.stringify(serverData));
-                }
-            }
-        } catch (e) {
-            console.warn("Failed to sync settings with server:", e);
-        }
-
-        const mainPageData = { ...defaultMainData, ...savedMainData };
-        renderPage(mainPageData);
-    }
-
-    function renderPage(mainPageData) {
-        // 1. Hero Background Image Logic (via CSS Variable)
-        if (mainPageData.heroBgImage) {
-            console.log("Applying hero background, size:", mainPageData.heroBgImage.length);
-            document.documentElement.style.setProperty('--hero-bg', `url("${mainPageData.heroBgImage}")`);
-        } else {
-            console.log("No hero background image found in data");
-            document.documentElement.style.removeProperty('--hero-bg');
-        }
-
-        // 2. Hero Section collapse/style logic
-        const heroMain = document.querySelector('.hero-main');
-        if (heroMain) {
-            if (mainPageData.heroBgImage === '') {
-                heroMain.classList.add('no-hero-bg');
-                heroMain.style.height = 'auto';
-                heroMain.style.padding = '140px 0 60px';
-                heroMain.style.overflow = 'visible';
-                const overlay = heroMain.querySelector('.hero-overlay');
-                if (overlay) overlay.style.display = 'none';
-            } else {
-                heroMain.classList.remove('no-hero-bg');
-                heroMain.style.height = '';
-                heroMain.style.padding = '';
-                heroMain.style.overflow = '';
-                const overlay = heroMain.querySelector('.hero-overlay');
-                if (overlay) overlay.style.display = 'block';
-            }
-        }
-
-        // 3. Hero Texts
-        const heroTitle = document.querySelector('.hero-title');
-        const heroSubtitle = document.querySelector('.hero-subtitle');
-        if (heroTitle && mainPageData.heroTitle) {
-            heroTitle.innerHTML = mainPageData.heroTitle;
-        }
-        if (heroSubtitle && mainPageData.heroSubtitle) {
-            heroSubtitle.innerText = mainPageData.heroSubtitle;
-        }
-
-        // 4. Sidebar Events Rendering
-        const eventsList = document.getElementById('sidebarEventsList');
-        if (eventsList && mainPageData.events) {
-            eventsList.innerHTML = mainPageData.events.map(e => `
-                <a href="${e.link || '#'}" class="event-tile">
-                    <div class="event-date">${e.date}</div>
-                    <div class="event-title">${e.title}</div>
-                </a>
-            `).join('');
-        }
-
-        // 5. Sidebar News Rendering
-        const sideNewsList = document.getElementById('sidebarNewsList');
-        if (sideNewsList && mainPageData.sideNews) {
-            sideNewsList.innerHTML = mainPageData.sideNews.map(n => `
-                <a href="${n.link || '#'}" class="news-item">
-                    <div class="news-item-date">${n.date}</div>
-                    <div class="news-item-title">${n.title}</div>
-                </a>
-            `).join('');
-        }
-
-        // 6. Services / Feature Cards
-        if (mainPageData.featureCards && Array.isArray(mainPageData.featureCards)) {
-            mainPageData.featureCards.forEach((c, i) => {
-                const titleEl = document.getElementById(`m_srv_title_${i}`);
-                const descEl = document.getElementById(`m_srv_desc_${i}`);
-                const linkEl = document.getElementById(`m_srv_link_${i}`);
-                
-                if (titleEl) titleEl.innerHTML = c.title || '';
-                if (descEl) descEl.innerHTML = c.subtitle || '';
-                if (linkEl && c.link) linkEl.href = c.link;
-            });
-        }
-
-        // 7. Stats
-        if (mainPageData.stats && Array.isArray(mainPageData.stats)) {
-            mainPageData.stats.forEach((s, i) => {
-                const numEl = document.getElementById(`m_stat_num_${i}`);
-                const lblEl = document.getElementById(`m_stat_lbl_${i}`);
-                if (numEl) {
-                    numEl.setAttribute('data-target', s.value || '0');
-                    if (!numEl.dataset.tid) numEl.innerText = '0'; // reset for animation if not currently animating
-                }
-                if (lblEl) lblEl.innerText = s.label || '';
-            });
-        }
-
-        // 7. Why Us Grid
-        const orgGrid = document.getElementById('mainOrgGrid');
-        if (orgGrid && mainPageData.orgBlocks) {
-            orgGrid.innerHTML = mainPageData.orgBlocks.map(b => `
-                <div class="why-card">
-                    <h3>${b.title}</h3>
-                    <p>${b.text}</p>
-                </div>
-            `).join('');
-        }
-
-        // 8. Testimonials Sidebar
-        const testimonialsList = document.getElementById('sidebarTestimonialsList');
-        if (testimonialsList && mainPageData.testimonials) {
-            testimonialsList.innerHTML = mainPageData.testimonials.slice(0, 3).map(t => `
-                <div class="sidebar-testimonial-card testimonial-card">
-                    <div class="client-name">${t.client}</div>
-                    <p>${t.text}</p>
-                </div>
-            `).join('');
-        }
-
-        // 9. Re-catch reveal elements for Scroll Animations
-        const newRevealElements = document.querySelectorAll(`
-            .why-card, .testimonial-card, .news-strip, .feature-card, 
-            .news-item, .event-tile
-        `);
-        newRevealElements.forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)';
-            revealObserver.observe(el);
-
-            if (el.classList.contains('why-card') || el.classList.contains('testimonial-card')) {
-                el.addEventListener('mousemove', (e) => {
-                    const rect = el.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const rotateX = ((y - centerY) / centerY) * -5;
-                    const rotateY = ((x - centerX) / centerX) * 5;
-                    el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-                });
-                el.addEventListener('mouseleave', () => {
-                    el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-                });
-            }
-        });
-
-        // 10. Update Services Mega Menu
-        renderServicesMegaMenu();
-    }
-
-    // Call it initially (async fetch inside)
-    initPageData();
-
-    // === DYNAMIC MEGA MENU для Услуг ===
-    function renderServicesMegaMenu() {
-        const servicesMegaGrid = document.getElementById('servicesMegaGrid');
-        if (!servicesMegaGrid) return;
-
-        const localData = JSON.parse(localStorage.getItem('crzrt_consulting_data'));
-        if (localData && localData.services && localData.services.length > 0) {
-            const processedServices = localData.services.map((s, idx) => {
-                const sid = s.id || `service_${idx}`;
-                let cat = s.category;
-                if (!cat) {
-                    const customersIds = ['public', 'deals', 'business', 'corporate'];
-                    const suppliersIds = ['competitor', 'disputes'];
-                    cat = (customersIds.includes(sid) ? 'customers' :
-                        (suppliersIds.includes(sid) ? 'suppliers' : 'customers'));
-                }
-                return { ...s, id: sid, category: cat };
-            });
-
-            servicesMegaGrid.innerHTML = `
-                <div class="mega-col">
-                    ${processedServices.filter(s => s.category === 'customers').map(s => `<a href="consulting.html#${s.id}">${s.title || 'Без названия'}</a>`).join('')}
-                </div>
-                <div class="mega-col">
-                    ${processedServices.filter(s => s.category === 'suppliers').map(s => `<a href="consulting.html#${s.id}">${s.title || 'Без названия'}</a>`).join('')}
-                </div>
-            `;
-        }
-    }
-
-    document.addEventListener('headerLoaded', renderServicesMegaMenu);
-
-    // Cookie Banner Logic
-    const initCookieBanner = () => {
-        if (localStorage.getItem('crzrt_cookies_accepted')) return;
-
-        const bannerHtml = `
-            <div class="cookie-banner" id="cookieBanner">
-                <div class="cookie-text">
-                    Мы используем файлы cookie для улучшения работы сайта и анализа трафика. 
-                    Продолжая использовать сайт, вы соглашаетесь с нашей <a href="#">Политикой конфиденциальности</a>.
-                </div>
-                <button class="btn-cookie-accept" id="btnAcceptCookies">Принять</button>
-            </div>
-        `;
-
-        document.body.insertAdjacentHTML('beforeend', bannerHtml);
-        const banner = document.getElementById('cookieBanner');
-        const btn = document.getElementById('btnAcceptCookies');
-
-        setTimeout(() => {
-            banner.classList.add('show');
-        }, 2000);
-
-        btn.addEventListener('click', () => {
-            localStorage.setItem('crzrt_cookies_accepted', 'true');
-            banner.classList.remove('show');
+            // Simulate API call
             setTimeout(() => {
-                banner.remove();
-            }, 600);
+                alert('Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.');
+                mainForm.reset();
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, 1500);
         });
-    };
-
-    // Consulting – Bottom-Slide Staggered Stack
-    // Cards 2–4 slide UP from bottom:-100vh to bottom:0
-    // Card 1 is always visible (no animation needed)
-    const scrollWrapper = document.querySelector('.consulting-scroll-wrapper');
-    const slidingCards = [
-        document.getElementById('s-card-2'),  // animates first
-        document.getElementById('s-card-3'),  // animates second
-        document.getElementById('s-card-4'),  // animates third
-    ];
-
-    if (scrollWrapper) {
-        function updateCards() {
-            const rect = scrollWrapper.getBoundingClientRect();
-            const viewH = window.innerHeight;
-            const totalScrollable = rect.height - viewH;
-
-            // Clamp progress 0→1 across the entire scroll zone
-            let progress = -rect.top / totalScrollable;
-            progress = Math.max(0, Math.min(1, progress));
-
-            slidingCards.forEach((card, i) => {
-                if (!card) return;
-                // Stagger: card[0] uses 0.0–0.33, card[1] 0.33–0.66, card[2] 0.66–1.0
-                const start = i / slidingCards.length;
-                const end   = (i + 1) / slidingCards.length;
-                let p = (progress - start) / (end - start);
-                p = Math.max(0, Math.min(1, p));
-                // Ease-out cubic
-                const eased = 1 - Math.pow(1 - p, 3);
-                // Slide from -100vh to 0
-                const bottomPx = (-100 + eased * 100);
-                card.style.bottom = `${bottomPx}vh`;
-            });
-        }
-
-        window.addEventListener('scroll', updateCards, { passive: true });
-        updateCards(); // run once on load
     }
 
-    initCookieBanner();
+    // 4. Header Background Change on Scroll
+    const header = document.querySelector('.header');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.style.background = 'var(--glass-bg)';
+            header.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)';
+        } else {
+            header.style.background = 'transparent';
+            header.style.boxShadow = 'none';
+        }
+    });
+
+    // 5. Theme Toggle Integration (matches header.js)
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
 });

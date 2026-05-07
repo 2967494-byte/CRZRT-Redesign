@@ -4,15 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Центр Развития Закупок РТ | Обучение Будущего</title>
+    <title>Центр Развития Закупок РТ | Главная</title>
     <link rel="stylesheet" href="style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* CSS moved to style.css for better organization */
-    </style>
-    </style>
 </head>
 
 <body>
@@ -21,474 +14,260 @@
     <script src="header.js"></script>
 
     <main>
-        <section class="hero-main" id="home">
-            <div class="hero-overlay"></div>
-            <div class="container hero-content">
-                <h1 class="hero-title reveal-text">
-                    <span class="reveal-text">Ваш надежный партнёр</span>
-                    <span class="reveal-text gradient-text">в мире закупок</span>
-                </h1>
-                <p class="hero-subtitle">
-                    ЭТП — Обучение — Сопровождение — Юридический консалтинг
-                </p>
-                <div class="hero-cta">
-                    <a href="#services" class="btn-success btn-lg">Узнать больше</a>
+        <!-- Section 1: Hero Slider -->
+        <section class="hero-slider" id="about">
+            <div class="slider-track">
+                <div class="slide active">
+                    <div class="container hero-container">
+                        <div class="hero-text-block">
+                            <span class="tag">Надежность и опыт</span>
+                            <h1 class="hero-title">Тендерное сопровождение <br><span class="accent">и обучение</span></h1>
+                            <p class="hero-desc">Помогаем компаниям выигрывать закупки по 44-ФЗ и 223-ФЗ. Обучаем профессионалов и сопровождаем на всех этапах.</p>
+                            <div class="hero-btns">
+                                <a href="#contacts" class="btn-header">Оставить заявку</a>
+                                <a href="#services" class="btn-outline">Наши услуги</a>
+                            </div>
+                        </div>
+                        <div class="hero-image-block">
+                            <div class="hero-icon-wrapper">
+                                <svg viewBox="0 0 200 200" class="hero-3d-icon">
+                                    <defs>
+                                        <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#00A859;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#007D42;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M40,60 L100,30 L160,60 L160,140 L100,170 L40,140 Z" fill="url(#iconGrad)" opacity="0.1" />
+                                    <path d="M100,30 L100,170 M40,60 L160,60 M40,140 L160,140" stroke="url(#iconGrad)" stroke-width="2" fill="none" />
+                                    <circle cx="100" cy="100" r="40" fill="url(#iconGrad)" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Services Section -->
+        <!-- Section 2: Services Grid -->
         <section class="services-section" id="services">
             <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Наши услуги</h2>
-                    <p class="section-subtitle">Комплексные решения для вашего бизнеса</p>
+                <div class="section-header center">
+                    <h2 class="section-title">Направления деятельности</h2>
+                    <p class="section-desc">Комплексный подход к развитию закупочной деятельности в Республике Татарстан</p>
                 </div>
-                
-                <div class="services-grid new-services-grid">
-                    <!-- 1. Электронная Торговая Площадка -->
-                    <a href="https://etpzakupki.tatar" target="_blank" class="service-card slide-from-left" id="m_srv_link_0">
-                        <div class="service-icon-img">
-                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Monitor Base -->
-                                <path d="M45 75h10v10H45z" fill="#0b418e"/>
-                                <path d="M30 85h40v6H30v-6z" fill="#0b418e"/>
-                                <!-- Screen -->
-                                <rect x="10" y="20" width="80" height="55" rx="4" fill="#0b418e"/>
-                                <rect x="14" y="24" width="72" height="47" rx="2" fill="#f0f4f8"/>
-                                <!-- UI elements -->
-                                <rect x="20" y="30" width="40" height="15" rx="2" fill="#c4d4e8"/>
-                                <rect x="64" y="30" width="16" height="15" rx="2" fill="#c4d4e8"/>
-                                <rect x="20" y="50" width="25" height="15" rx="2" fill="#5892d4"/>
-                                <path d="M49 52h31M49 57h31M49 62h20" stroke="#0b418e" stroke-width="2" stroke-linecap="round"/>
-                                
-                                <!-- Green Shield overlay -->
-                                <g transform="translate(62, 55)">
-                                    <path d="M15 0C8 0 0 3 0 3v12c0 10 15 17 15 17s15-7 15-17V3c0 0-8-3-15-3z" fill="url(#gradShield)"/>
-                                    <path d="M15 0v32c0 0 15-7 15-17V3c0 0-8-3-15-3z" fill="#2eb05b" opacity="0.6"/>
-                                </g>
-                                <defs>
-                                    <linearGradient id="gradShield" x1="0" y1="0" x2="30" y2="30" gradientUnits="userSpaceOnUse">
-                                        <stop stop-color="#3dd874"/>
-                                        <stop offset="1" stop-color="#239249"/>
-                                    </linearGradient>
-                                </defs>
+
+                <div class="services-grid-new">
+                    <a href="obuchenie.html" class="service-card-new">
+                        <div class="card-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                             </svg>
                         </div>
-                        <div class="service-card-text">
-                            <h3 id="m_srv_title_0">Электронная Торговая<br>Площадка</h3>
-                            <p id="m_srv_desc_0">Проводите торги онлайн.</p>
-                        </div>
+                        <h3>Обучение госзакупкам</h3>
+                        <p>Курсы повышения квалификации и профессиональной переподготовки по 44-ФЗ и 223-ФЗ.</p>
+                        <span class="card-link">Подробнее &rarr;</span>
                     </a>
 
-                    <!-- 2. Обучение Госзакупкам -->
-                    <a href="#education" class="service-card slide-from-top" id="m_srv_link_1">
-                        <div class="service-icon-img">
-                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Books -->
-                                <path d="M10 70l40 15 40-15-40-15-40 15z" fill="#d8e3ed"/>
-                                <path d="M10 70v5l40 15v-5L10 70z" fill="#b0c0d1"/>
-                                <path d="M50 85l40-15v5L50 90v-5z" fill="#c5d5e5"/>
-                                
-                                <path d="M25 60l25 10 35-13-25-10-35 13z" fill="#1b5ebf"/>
-                                <path d="M25 60v6l25 10v-6L25 60z" fill="#10428d"/>
-                                <path d="M50 70l35-13v6L50 76v-6z" fill="#1551a6"/>
-                                
-                                <!-- Graduation Cap -->
-                                <path d="M50 20L10 40l40 20 40-20-40-20z" fill="#0b418e"/>
-                                <path d="M30 50v15c0 8 40 8 40 0V50c-20 8-20 8-40 0z" fill="#1551a6"/>
-                                <!-- Tassel -->
-                                <path d="M50 30v15H20v15" stroke="#f2bc18" stroke-width="3" fill="none"/>
-                                <circle cx="20" cy="65" r="5" fill="#f2bc18"/>
+                    <a href="#support" class="service-card-new">
+                        <div class="card-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="8.5" cy="7" r="4" />
+                                <polyline points="17 11 19 13 23 9" />
                             </svg>
                         </div>
-                        <div class="service-card-text">
-                            <h3 id="m_srv_title_1">Обучение<br>Госзакупкам</h3>
-                            <p id="m_srv_desc_1">Курсы по 44-ФЗ и 223-ФЗ.</p>
-                        </div>
+                        <h3>Сопровождение</h3>
+                        <p>Полный цикл подготовки заявок, участие в торгах и защита интересов в ФАС.</p>
+                        <span class="card-link">Подробнее &rarr;</span>
                     </a>
 
-                    <!-- 3. Сопровождение Закупок -->
-                    <a href="#consulting" class="service-card slide-from-bottom" id="m_srv_link_3">
-                        <div class="service-icon-img">
-                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Clipboard Back -->
-                                <rect x="20" y="15" width="60" height="75" rx="4" fill="#e8851a"/>
-                                <rect x="25" y="20" width="50" height="65" fill="#fff"/>
-                                <!-- Clip -->
-                                <rect x="40" y="8" width="20" height="12" rx="2" fill="#cbd5e1"/>
-                                <!-- Checks and lines -->
-                                <path d="M35 35l5 5 10-10" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                                <line x1="55" y1="35" x2="68" y2="35" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
-                                
-                                <path d="M35 55l5 5 10-10" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                                <line x1="55" y1="55" x2="68" y2="55" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
-                                
-                                <line x1="35" y1="70" x2="60" y2="70" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
-
-                                <!-- Green Check Mark Circle overlay -->
-                                <g transform="translate(50, 50)">
-                                    <circle cx="20" cy="20" r="18" fill="url(#gradCheck)"/>
-                                    <circle cx="20" cy="20" r="18" fill="#2eb05b" opacity="0.4"/>
-                                    <path d="M12 20l5 5 10-10" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                                </g>
-                                <defs>
-                                    <linearGradient id="gradCheck" x1="2" y1="2" x2="38" y2="38" gradientUnits="userSpaceOnUse">
-                                        <stop stop-color="#4ae786"/>
-                                        <stop offset="1" stop-color="#239249"/>
-                                    </linearGradient>
-                                </defs>
+                    <a href="#consulting" class="service-card-new">
+                        <div class="card-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
                             </svg>
                         </div>
-                        <div class="service-card-text">
-                            <h3 id="m_srv_title_3">Сопровождение<br>Торгов</h3>
-                            <p id="m_srv_desc_3">Подготовка заявок и жалоб.</p>
-                        </div>
+                        <h3>Юр. Консалтинг</h3>
+                        <p>Правовая экспертиза, аудит закупок и представительство в судах всех уровней.</p>
+                        <span class="card-link">Подробнее &rarr;</span>
                     </a>
 
-                    <!-- 4. Юридический Консалтинг -->
-                    <a href="#consulting" class="service-card slide-from-right" id="m_srv_link_2">
-                        <div class="service-icon-img">
-                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Sound Block -->
-                                <ellipse cx="50" cy="80" rx="30" ry="10" fill="#29395f"/>
-                                <path d="M20 80v6c0 5 15 10 30 10s30-5 30-10v-6c0 5-15 10-30 10S20 85 20 80z" fill="#1b2642"/>
-                                <ellipse cx="50" cy="76" rx="26" ry="8" fill="#31426e"/>
-
-                                <!-- Gavel Mallet Handle -->
-                                <path d="M30 65 L10 45" stroke="#1d2740" stroke-width="8" stroke-linecap="round"/>
-                                
-                                <!-- Gavel Head -->
-                                <g transform="matrix(0.866 -0.5 0.5 0.866 -4 20)">
-                                    <path d="M40 30h20v25H40z" fill="#f2bc18"/>
-                                    <path d="M40 30h5v25h-5z" fill="#d9a40e"/>
-                                    <path d="M55 30h5v25h-5z" fill="#fde05f"/>
-                                    
-                                    <rect x="35" y="35" width="30" height="15" fill="#e4a806"/>
-                                    
-                                    <path d="M33 32h4v21h-4z" fill="#1d2740"/>
-                                    <path d="M63 32h4v21h-4z" fill="#1d2740"/>
-                                    <path d="M28 35h5v15h-5z" fill="#29395f"/>
-                                    <path d="M67 35h5v15h-5z" fill="#29395f"/>
-                                </g>
+                    <a href="https://etpzakupki.tatar" target="_blank" class="service-card-new">
+                        <div class="card-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                                <line x1="8" y1="21" x2="16" y2="21" />
+                                <line x1="12" y1="17" x2="12" y2="21" />
                             </svg>
                         </div>
-                        <div class="service-card-text">
-                            <h3 id="m_srv_title_2">Юридический<br>Консалтинг</h3>
-                            <p id="m_srv_desc_2">Защита в ФАС и судах.</p>
-                        </div>
+                        <h3>ЭТП «Закупки РТ»</h3>
+                        <p>Электронная торговая площадка для проведения закупок и участия в торгах.</p>
+                        <span class="card-link">Перейти &rarr;</span>
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- Education Section -->
-        <section class="education-section" id="education">
+        <!-- Section 3: News -->
+        <section class="news-section" id="news">
             <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Обучение</h2>
-                    <p class="section-subtitle">Профессиональная подготовка по госзакупкам</p>
-                </div>
-
-                <div class="education-grid">
-                    <div class="edu-card">
-                        <div class="edu-header">
-                            <h3>Очное обучение</h3>
-                            <div class="edu-badge">Популярное</div>
-                        </div>
-                        <p>Интенсивные курсы в Казани с практическими занятиями</p>
-                        <ul>
-                            <li>44-ФЗ для заказчиков</li>
-                            <li>223-ФЗ для поставщиков</li>
-                            <li>Контрактная система</li>
-                        </ul>
-                        <a href="#contacts" class="btn-secondary">Записаться</a>
+                <div class="news-flex">
+                    <div class="news-left">
+                        <h2 class="section-title">Новости и события</h2>
+                        <p class="section-desc">Будьте в курсе последних изменений в законодательстве и жизни Центра.</p>
+                        <a href="#" class="btn-text">Все новости &rarr;</a>
                     </div>
-
-                    <div class="edu-card">
-                        <div class="edu-header">
-                            <h3>Дистанционное обучение</h3>
-                            <div class="edu-badge">Онлайн</div>
-                        </div>
-                        <p>Удобное обучение из любой точки России</p>
-                        <ul>
-                            <li>Видеолекции и вебинары</li>
-                            <li>Тестирование и сертификаты</li>
-                            <li>Поддержка преподавателей</li>
-                        </ul>
-                        <a href="#contacts" class="btn-secondary">Начать обучение</a>
-                    </div>
-
-                    <div class="edu-card">
-                        <div class="edu-header">
-                            <h3>Корпоративное обучение</h3>
-                            <div class="edu-badge">Для компаний</div>
-                        </div>
-                        <p>Специальные программы для ваших сотрудников</p>
-                        <ul>
-                            <li>Индивидуальный план</li>
-                            <li>Выездные занятия</li>
-                            <li>Сертификация персонала</li>
-                        </ul>
-                        <a href="#contacts" class="btn-secondary">Получить предложение</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Consulting Section -->
-        <section class="consulting-section" id="consulting">
-            <div class="consulting-scroll-wrapper">
-                <div class="consulting-sticky-container">
-
-                    <!-- Section title pinned at top of sticky area -->
-                    <div class="consulting-title-area">
-                        <h2 class="section-title">Консалтинг и сопровождение</h2>
-                        <p class="section-desc">Экспертная поддержка на всех этапах закупок</p>
-                    </div>
-
-                    <!-- Card 1: always visible -->
-                    <div class="staggered-card" id="s-card-1">
-                        <div class="card-left"><h3>Поддержка заказчиков</h3></div>
-                        <div class="card-right">
-                            <p>Полное сопровождение по 44-ФЗ и 223-ФЗ. Мы берем на себя все этапы закупки.</p>
-                            <ul>
-                                <li>Разработка Положения о закупке</li>
-                                <li>Подготовка извещений и документации</li>
-                                <li>Проведение процедур в ЕИС и на ЭТП</li>
-                                <li>Контроль исполнения контрактов</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Card 2 -->
-                    <div class="staggered-card" id="s-card-2">
-                        <div class="card-left"><h3>Поддержка поставщиков</h3></div>
-                        <div class="card-right">
-                            <p>Помощь в победе тендеров и защите ваших прав в контролирующих органах.</p>
-                            <ul>
-                                <li>Регистрация в ЕРУЗ и на площадках</li>
-                                <li>Подготовка победных заявок</li>
-                                <li>Участие в торгах от вашего имени</li>
-                                <li>Обжалование нарушений в ФАС</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Card 3 -->
-                    <div class="staggered-card" id="s-card-3">
-                        <div class="card-left"><h3>Юридическая поддержка</h3></div>
-                        <div class="card-right">
-                            <p>Профессиональная защита интересов в ФАС и судебных инстанциях.</p>
-                            <ul>
-                                <li>Представительство в судах всех уровней</li>
-                                <li>Досудебное урегулирование споров</li>
-                                <li>Правовой аудит закупочной деятельности</li>
-                                <li>Экспертиза сложных контрактов</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Card 4 -->
-                    <div class="staggered-card" id="s-card-4">
-                        <div class="card-left"><h3>Сопровождение сделок</h3></div>
-                        <div class="card-right">
-                            <p>Минимизация рисков при заключении и исполнении крупных контрактов.</p>
-                            <ul>
-                                <li>Проверка контрагентов</li>
-                                <li>Сопровождение банковских гарантий</li>
-                                <li>Правовое сопровождение приемки</li>
-                                <li>Взыскание задолженностей и неустоек</li>
-                            </ul>
+                    <div class="news-right">
+                        <div class="news-grid">
+                            <div class="news-card">
+                                <span class="news-date">15 Июня 2026</span>
+                                <h4>Запуск нового курса по цифровым контрактам</h4>
+                                <p>Программа разработана совместно с экспертами ФАС России.</p>
+                            </div>
+                            <div class="news-card">
+                                <span class="news-date">10 Июня 2026</span>
+                                <h4>Вебинар: Изменения в 223-ФЗ в 2026 году</h4>
+                                <p>Разбор основных поправок и практические рекомендации.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Stats Section -->
-        <section class="stats-section">
+        <!-- Section 4: Banner -->
+        <section class="banner-section">
             <div class="container">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-number" id="m_stat_num_0" data-target="10+">10+</div>
-                        <div class="stat-label" id="m_stat_lbl_0">Лет на рынке</div>
+                <div class="banner-box">
+                    <div class="banner-content">
+                        <h2>Дистанционный курс по 44-ФЗ</h2>
+                        <p>Получите удостоверение о повышении квалификации, не выходя из дома.</p>
+                        <a href="obuchenie.html" class="btn-header">Узнать программу</a>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number" id="m_stat_num_1" data-target="20к+">20к+</div>
-                        <div class="stat-label" id="m_stat_lbl_1">Слушателей</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" id="m_stat_num_2" data-target="98%">98%</div>
-                        <div class="stat-label" id="m_stat_lbl_2">Довольных клиентов</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" id="m_stat_num_3" data-target="50+">50+</div>
-                        <div class="stat-label" id="m_stat_lbl_3">Экспертов</div>
+                    <div class="banner-decor">
+                        <div class="circle-decor"></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Contacts Section -->
-        <section class="contacts-section" id="contacts">
+        <!-- Section 5: Partners -->
+        <section class="partners-section" id="partners">
             <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Контакты</h2>
-                    <p class="section-subtitle">Свяжитесь с нами для консультации</p>
+                <div class="section-header center">
+                    <h2 class="section-title">Нам доверяют</h2>
+                    <p class="section-desc">Работаем с ведущими государственными и коммерческими организациями</p>
                 </div>
+                <div class="partners-grid">
+                    <div class="partner-logo"><span>Минэкономики РТ</span></div>
+                    <div class="partner-logo"><span>Госкомитет по закупкам</span></div>
+                    <div class="partner-logo"><span>Татнефть</span></div>
+                    <div class="partner-logo"><span>АК БАРС Банк</span></div>
+                </div>
+            </div>
+        </section>
 
-                <div class="contacts-grid">
-                    <div class="contact-info">
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                    <circle cx="12" cy="10" r="3" />
-                                </svg>
-                            </div>
-                            <div class="contact-text">
-                                <h3>Адрес</h3>
-                                <p>г. Казань, ул. Петербургская, 86</p>
-                            </div>
-                        </div>
-
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                                </svg>
-                            </div>
-                            <div class="contact-text">
-                                <h3>Телефон</h3>
-                                <a href="tel:88001017892">8 (800) 101-78-92</a>
-                            </div>
-                        </div>
-
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                    <polyline points="22,6 12,13 2,6" />
-                                </svg>
-                            </div>
-                            <div class="contact-text">
-                                <h3>Email</h3>
-                                <a href="mailto:crz.rt@tatar.ru">crz.rt@tatar.ru</a>
-                            </div>
-                        </div>
-
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                    <line x1="16" y1="2" x2="16" y2="6" />
-                                    <line x1="8" y1="2" x2="8" y2="6" />
-                                    <line x1="3" y1="10" x2="21" y2="10" />
-                                </svg>
-                            </div>
-                            <div class="contact-text">
-                                <h3>Режим работы</h3>
-                                <p>Пн-Чт: 09:00 — 18:00<br>Пт: 09:00 — 16:45</p>
-                            </div>
+        <!-- Section 6: Reviews -->
+        <section class="reviews-section">
+            <div class="container">
+                <div class="section-header center">
+                    <h2 class="section-title">Отзывы клиентов</h2>
+                </div>
+                <div class="reviews-grid">
+                    <div class="review-card">
+                        <p>«Благодарим за высокий профессионализм в сопровождении наших тендеров. Процент побед значительно вырос.»</p>
+                        <div class="review-author">
+                            <strong>Алексей Петров</strong>
+                            <span>ООО «ТехСтрой»</span>
                         </div>
                     </div>
+                    <div class="review-card">
+                        <p>«Обучение прошло на высшем уровне. Вся информация структурирована и применима на практике.»</p>
+                        <div class="review-author">
+                            <strong>Мария Иванова</strong>
+                            <span>МБУ «ГосСнаб»</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                    <div class="contact-form">
-                        <h3>Оставить заявку</h3>
-                        <form id="contactForm">
-                            <input type="text" placeholder="Ваше имя" required>
-                            <input type="tel" placeholder="Телефон" required>
-                            <input type="email" placeholder="Email" required>
-                            <textarea placeholder="Сообщение" rows="4"></textarea>
-                            <button type="submit" class="btn-primary">Отправить заявку</button>
+        <!-- Section 7: Contact Form -->
+        <section class="contact-form-section" id="contacts">
+            <div class="container">
+                <div class="contact-container">
+                    <div class="contact-form-block">
+                        <h2 class="section-title">Оставьте заявку</h2>
+                        <p>Наш эксперт свяжется с вами в течение 15 минут для консультации.</p>
+                        <form id="mainContactForm">
+                            <div class="form-group">
+                                <input type="text" name="name" placeholder="Ваше имя" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea name="message" placeholder="Как мы можем вам помочь?" rows="4"></textarea>
+                            </div>
+                            <button type="submit" class="btn-header">Отправить заявку</button>
+                            <p class="form-note">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</p>
                         </form>
+                    </div>
+                    <div class="contact-image-block">
+                        <div class="contact-img-overlay"></div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="footer">
-        <div class="container footer-content">
-            <div class="footer-col">
-                <h4>Центр развития закупок РТ</h4>
-                <p>© 2026 АО «Центр развития закупок РТ»</p>
-            </div>
-            <div class="footer-col">
-                <h4>Обучение</h4>
-                <a href="#education">Заказчикам</a>
-                <a href="#education">Поставщикам</a>
-                <a href="#contacts">Календарь</a>
-            </div>
-            <div class="footer-col">
-                <h4>Компания</h4>
-                <a href="#home">О нас</a>
-                <a href="#contacts">Контакты</a>
-                <a href="#">База знаний</a>
-            </div>
-            <div class="footer-col">
-                <h4>Связаться</h4>
-                <a href="tel:88001017892">8 (800) 101-78-92</a>
-                <div class="socials">
-                    <a href="https://t.me/crzrt">TG</a>
-                    <a href="https://vk.com/aocrz">VK</a>
+    <footer class="footer-new">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <a href="#" class="logo light">
+                        <span>ЦРЗ РТ</span>
+                    </a>
+                    <p>Центр развития закупок Республики Татарстан — ваш надежный партнер в сфере государственных и коммерческих закупок.</p>
                 </div>
+                <div class="footer-links">
+                    <h4>Услуги</h4>
+                    <ul>
+                        <li><a href="obuchenie.html">Обучение</a></li>
+                        <li><a href="#support">Сопровождение</a></li>
+                        <li><a href="#consulting">Консалтинг</a></li>
+                        <li><a href="https://etpzakupki.tatar">ЭТП</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Компания</h4>
+                    <ul>
+                        <li><a href="#about">О нас</a></li>
+                        <li><a href="#news">Новости</a></li>
+                        <li><a href="#contacts">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contacts">
+                    <h4>Контакты</h4>
+                    <p>Казань, ул. Петербургская, 86</p>
+                    <a href="tel:88001017892" class="footer-phone">8 (800) 101-78-92</a>
+                    <div class="social-links">
+                        <a href="#">VK</a>
+                        <a href="#">TG</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 АО «Центр развития закупок РТ». Все права защищены.</p>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        // Smooth scrolling for anchor links
-        document.addEventListener('DOMContentLoaded', function() {
-            // Update navigation links to use anchors
-            const navLinks = document.querySelectorAll('.nav-item-link');
-            navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href === 'obuchenie.html') {
-                    link.setAttribute('href', '#education');
-                } else if (href === 'consulting.html') {
-                    link.setAttribute('href', '#consulting');
-                } else if (href === 'about.html') {
-                    link.setAttribute('href', '#home');
-                } else if (href === 'contacts.html') {
-                    link.setAttribute('href', '#contacts');
-                }
-            });
-
-            // Smooth scroll for all anchor links
-            const anchorLinks = document.querySelectorAll('a[href^="#"]');
-            anchorLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                        const headerHeight = document.querySelector('.header').offsetHeight;
-                        const targetPosition = targetElement.offsetTop - headerHeight - 20;
-                        
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-
-            // Form submission handler
-            const contactForm = document.getElementById('contactForm');
-            if (contactForm) {
-                contactForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    alert('Спасибо за заявку! Мы свяжемся с вами в ближайшее время.');
-                    this.reset();
-                });
-            }
-        });
-    </script>
-
-    <script src="script.js"></script>
 </body>
+</html>
 
 </html>
