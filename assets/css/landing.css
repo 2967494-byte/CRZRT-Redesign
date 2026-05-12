@@ -1347,6 +1347,12 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin: 0;
 }
 
+@media (max-width: 1100px) {
+  .nav {
+    display: none;
+  }
+}
+
 @media (max-width: 992px) {
   .reviews-grid {
     grid-template-columns: 1fr;
@@ -1436,6 +1442,81 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .footer__copyright p {
     grid-column: 1;
   }
+
+  /* NEW MOBILE FIXES FOR 992px */
+  .hero-slider {
+    height: auto;
+    min-height: 380px;
+    border-radius: 16px;
+  }
+  .hero-slide {
+    padding: 30px 20px;
+    align-items: flex-start;
+  }
+  .hero-slide__title {
+    font-size: 32px;
+  }
+  .hero-slide__subtitle {
+    font-size: 16px;
+  }
+  .hero-slide__arrows {
+    right: 20px;
+    bottom: 20px;
+  }
+  .hero-slide__dots {
+    left: 20px;
+    right: 20px;
+  }
+  .hero-slide__image {
+    display: none; /* Hide decorative image on smaller screens to save space */
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .events-news-grid {
+    flex-direction: column;
+  }
+  .events-card, .news-card {
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    padding: 30px 20px;
+  }
+  .events-card__title, .news-card__title {
+    font-size: 36px;
+    margin-bottom: 24px;
+  }
+
+  .promo-banner {
+    flex-direction: column;
+    height: auto;
+    padding: 30px 20px;
+    text-align: center;
+    align-items: center;
+  }
+  .promo-banner__image {
+    width: 100%;
+    height: auto;
+    max-width: 320px;
+    aspect-ratio: 2 / 1;
+    margin-top: 20px;
+  }
+  .promo-banner__title {
+    font-size: 36px;
+  }
+
+  .header__inner {
+    height: auto;
+    padding: 15px 0;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .logo__img {
+    height: 50px;
+    width: auto;
+  }
 }
 
 @media (max-width: 560px) {
@@ -1458,6 +1539,46 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
   .footer-phone {
     font-size: 28px !important;
+  }
+
+  /* NEW MOBILE FIXES FOR 560px */
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+  .service-card {
+    height: 240px;
+  }
+
+  .hero-slide__title {
+    font-size: 26px;
+  }
+
+  .header__actions .btn--green {
+    font-size: 16px;
+    padding: 0 12px;
+    height: 44px;
+  }
+  .btn-icon {
+    width: 44px;
+    height: 44px;
+  }
+  .header__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .logo {
+    margin: 0 auto;
+  }
+  .first-screen {
+    padding-top: 140px;
+  }
+
+  .partner-logo img {
+    height: 150px;
+  }
+  .login-popover {
+    width: calc(100vw - 40px);
+    right: -20px; /* shift because container has 24px padding */
   }
 }
 
