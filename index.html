@@ -1,273 +1,432 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Центр Развития Закупок РТ | Главная</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Центр развития закупок Республики Татарстан</title>
+  <meta name="description" content="Центр развития закупок РТ — надёжное тендерное сопровождение, обучение, юридический консалтинг и ЭТП">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Google+Sans:wght@400;500;700&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/landing.css">
 </head>
-
 <body>
 
-    <div id="global-header"></div>
-    <script src="header.js"></script>
+<!-- HEADER -->
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="logo">
+      <img src="assets/img/logo.svg" alt="Центр развития закупок" class="logo__img">
+    </a>
 
-    <main>
-        <!-- Section 1: Hero Slider -->
-        <section class="hero-slider" id="about">
-            <div class="slider-track">
-                <div class="slide active">
-                    <div class="container hero-container">
-                        <div class="hero-text-block">
-                            <span class="tag">Надежность и опыт</span>
-                            <h1 class="hero-title">Тендерное сопровождение <br><span class="accent">и обучение</span></h1>
-                            <p class="hero-desc">Помогаем компаниям выигрывать закупки по 44-ФЗ и 223-ФЗ. Обучаем профессионалов и сопровождаем на всех этапах.</p>
-                            <div class="hero-btns">
-                                <a href="#contacts" class="btn-header">Оставить заявку</a>
-                                <a href="#services" class="btn-outline">Наши услуги</a>
-                            </div>
-                        </div>
-                        <div class="hero-image-block">
-                            <div class="hero-icon-wrapper">
-                                <svg viewBox="0 0 200 200" class="hero-3d-icon">
-                                    <defs>
-                                        <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" style="stop-color:#00A859;stop-opacity:1" />
-                                            <stop offset="100%" style="stop-color:#007D42;stop-opacity:1" />
-                                        </linearGradient>
-                                    </defs>
-                                    <path d="M40,60 L100,30 L160,60 L160,140 L100,170 L40,140 Z" fill="url(#iconGrad)" opacity="0.1" />
-                                    <path d="M100,30 L100,170 M40,60 L160,60 M40,140 L160,140" stroke="url(#iconGrad)" stroke-width="2" fill="none" />
-                                    <circle cx="100" cy="100" r="40" fill="url(#iconGrad)" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <nav class="nav">
+      <a href="#" class="nav__link">О нас</a>
+      <a href="#news" class="nav__link">Новости</a>
+      <a href="#reviews" class="nav__link">Нам доверяют</a>
+      <a href="#contacts" class="nav__link">Контакты</a>
+    </nav>
+
+    <div class="header__actions">
+      <a href="tel:88001017892" class="btn btn--green">8 800 101-78-92</a>
+      <button id="openLoginModal" class="btn-icon" aria-label="Личный кабинет">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <div id="loginModal" class="login-popover">
+        <button id="closeLoginModal" class="btn-modal-close" aria-label="Закрыть">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <h2 class="modal-title">Вход в систему</h2>
+        <div id="loginError" class="modal-error">Неверный e-mail или пароль</div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">E-mail</label>
+            <input type="email" id="loginEmail" class="form-control" required placeholder="example@mail.ru">
+          </div>
+          <div class="form-group">
+            <label for="loginPass">Пароль</label>
+            <input type="password" id="loginPass" class="form-control" required placeholder="********">
+          </div>
+          <button type="submit" class="btn-save" style="width: 100%; margin-top: 20px;">Войти</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="first-screen">
+  <main>
+
+    <!-- HERO SLIDER -->
+    <section class="section hero-section">
+      <div class="container">
+        <div class="hero-slider">
+          <div class="hero-slide active">
+            <div class="hero-slide__dots">
+              <span class="dot active"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
             </div>
-        </section>
-
-        <!-- Section 2: Services Grid -->
-        <section class="services-section" id="services">
-            <div class="container">
-                <div class="section-header center">
-                    <h2 class="section-title">Направления деятельности</h2>
-                    <p class="section-desc">Комплексный подход к развитию закупочной деятельности в Республике Татарстан</p>
-                </div>
-
-                <div class="services-grid-new">
-                    <a href="obuchenie.html" class="service-card-new">
-                        <div class="card-icon-box">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                            </svg>
-                        </div>
-                        <h3>Обучение госзакупкам</h3>
-                        <p>Курсы повышения квалификации и профессиональной переподготовки по 44-ФЗ и 223-ФЗ.</p>
-                        <span class="card-link">Подробнее &rarr;</span>
-                    </a>
-
-                    <a href="#support" class="service-card-new">
-                        <div class="card-icon-box">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                <circle cx="8.5" cy="7" r="4" />
-                                <polyline points="17 11 19 13 23 9" />
-                            </svg>
-                        </div>
-                        <h3>Сопровождение</h3>
-                        <p>Полный цикл подготовки заявок, участие в торгах и защита интересов в ФАС.</p>
-                        <span class="card-link">Подробнее &rarr;</span>
-                    </a>
-
-                    <a href="#consulting" class="service-card-new">
-                        <div class="card-icon-box">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="16" y1="13" x2="8" y2="13" />
-                                <line x1="16" y1="17" x2="8" y2="17" />
-                            </svg>
-                        </div>
-                        <h3>Юр. Консалтинг</h3>
-                        <p>Правовая экспертиза, аудит закупок и представительство в судах всех уровней.</p>
-                        <span class="card-link">Подробнее &rarr;</span>
-                    </a>
-
-                    <a href="https://etpzakupki.tatar" target="_blank" class="service-card-new">
-                        <div class="card-icon-box">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-                                <line x1="8" y1="21" x2="16" y2="21" />
-                                <line x1="12" y1="17" x2="12" y2="21" />
-                            </svg>
-                        </div>
-                        <h3>ЭТП «Закупки РТ»</h3>
-                        <p>Электронная торговая площадка для проведения закупок и участия в торгах.</p>
-                        <span class="card-link">Перейти &rarr;</span>
-                    </a>
-                </div>
+            <div class="hero-slide__content">
+              <h1 class="hero-slide__title">Надежное тендерное<br>сопровождение</h1>
+              <p class="hero-slide__subtitle">Поиск выгодных закупок<br>и оценка целесообразности участия</p>
             </div>
-        </section>
-
-        <!-- Section 3: News -->
-        <section class="news-section" id="news">
-            <div class="container">
-                <div class="news-flex">
-                    <div class="news-left">
-                        <h2 class="section-title">Новости и события</h2>
-                        <p class="section-desc">Будьте в курсе последних изменений в законодательстве и жизни Центра.</p>
-                        <a href="#" class="btn-text">Все новости &rarr;</a>
-                    </div>
-                    <div class="news-right">
-                        <div class="news-grid">
-                            <div class="news-card">
-                                <span class="news-date">15 Июня 2026</span>
-                                <h4>Запуск нового курса по цифровым контрактам</h4>
-                                <p>Программа разработана совместно с экспертами ФАС России.</p>
-                            </div>
-                            <div class="news-card">
-                                <span class="news-date">10 Июня 2026</span>
-                                <h4>Вебинар: Изменения в 223-ФЗ в 2026 году</h4>
-                                <p>Разбор основных поправок и практические рекомендации.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="hero-slide__arrows">
+              <button class="arrow-btn" id="hero-prev">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button class="arrow-btn" id="hero-next">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg>
+              </button>
             </div>
-        </section>
-
-        <!-- Section 4: Banner -->
-        <section class="banner-section">
-            <div class="container">
-                <div class="banner-box">
-                    <div class="banner-content">
-                        <h2>Дистанционный курс по 44-ФЗ</h2>
-                        <p>Получите удостоверение о повышении квалификации, не выходя из дома.</p>
-                        <a href="obuchenie.html" class="btn-header">Узнать программу</a>
-                    </div>
-                    <div class="banner-decor">
-                        <div class="circle-decor"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section 5: Partners -->
-        <section class="partners-section" id="partners">
-            <div class="container">
-                <div class="section-header center">
-                    <h2 class="section-title">Нам доверяют</h2>
-                    <p class="section-desc">Работаем с ведущими государственными и коммерческими организациями</p>
-                </div>
-                <div class="partners-grid">
-                    <div class="partner-logo"><span>Минэкономики РТ</span></div>
-                    <div class="partner-logo"><span>Госкомитет по закупкам</span></div>
-                    <div class="partner-logo"><span>Татнефть</span></div>
-                    <div class="partner-logo"><span>АК БАРС Банк</span></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section 6: Reviews -->
-        <section class="reviews-section">
-            <div class="container">
-                <div class="section-header center">
-                    <h2 class="section-title">Отзывы клиентов</h2>
-                </div>
-                <div class="reviews-grid">
-                    <div class="review-card">
-                        <p>«Благодарим за высокий профессионализм в сопровождении наших тендеров. Процент побед значительно вырос.»</p>
-                        <div class="review-author">
-                            <strong>Алексей Петров</strong>
-                            <span>ООО «ТехСтрой»</span>
-                        </div>
-                    </div>
-                    <div class="review-card">
-                        <p>«Обучение прошло на высшем уровне. Вся информация структурирована и применима на практике.»</p>
-                        <div class="review-author">
-                            <strong>Мария Иванова</strong>
-                            <span>МБУ «ГосСнаб»</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section 7: Contact Form -->
-        <section class="contact-form-section" id="contacts">
-            <div class="container">
-                <div class="contact-container">
-                    <div class="contact-form-block">
-                        <h2 class="section-title">Оставьте заявку</h2>
-                        <p>Наш эксперт свяжется с вами в течение 15 минут для консультации.</p>
-                        <form id="mainContactForm">
-                            <div class="form-group">
-                                <input type="text" name="name" placeholder="Ваше имя" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required>
-                            </div>
-                            <div class="form-group">
-                                <textarea name="message" placeholder="Как мы можем вам помочь?" rows="4"></textarea>
-                            </div>
-                            <button type="submit" class="btn-header">Отправить заявку</button>
-                            <p class="form-note">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</p>
-                        </form>
-                    </div>
-                    <div class="contact-image-block">
-                        <div class="contact-img-overlay"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="footer-new">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-info">
-                    <a href="#" class="logo light">
-                        <span>ЦРЗ РТ</span>
-                    </a>
-                    <p>Центр развития закупок Республики Татарстан — ваш надежный партнер в сфере государственных и коммерческих закупок.</p>
-                </div>
-                <div class="footer-links">
-                    <h4>Услуги</h4>
-                    <ul>
-                        <li><a href="obuchenie.html">Обучение</a></li>
-                        <li><a href="#support">Сопровождение</a></li>
-                        <li><a href="#consulting">Консалтинг</a></li>
-                        <li><a href="https://etpzakupki.tatar">ЭТП</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Компания</h4>
-                    <ul>
-                        <li><a href="#about">О нас</a></li>
-                        <li><a href="#news">Новости</a></li>
-                        <li><a href="#contacts">Контакты</a></li>
-                    </ul>
-                </div>
-                <div class="footer-contacts">
-                    <h4>Контакты</h4>
-                    <p>Казань, ул. Петербургская, 86</p>
-                    <a href="tel:88001017892" class="footer-phone">8 (800) 101-78-92</a>
-                    <div class="social-links">
-                        <a href="#">VK</a>
-                        <a href="#">TG</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 АО «Центр развития закупок РТ». Все права защищены.</p>
-            </div>
+          </div>
         </div>
-    </footer>
+      </div>
+    </section>
 
-    <script src="script.js"></script>
+    <!-- SERVICES CARDS -->
+    <section class="section">
+      <div class="container">
+        <div class="services-grid">
+          <a href="obuchenie.html" class="service-card service-card--green">
+            <div class="service-card__body">
+              <h3 class="service-card__title">Обучение</h3>
+              <p class="service-card__desc">Как зарабатывать на госзакупках и тендерах</p>
+            </div>
+            <img src="assets/img/obuch.png" alt="Обучение" class="service-card__icon">
+          </a>
+          <a href="consulting.html" class="service-card service-card--peach">
+            <div class="service-card__body">
+              <h3 class="service-card__title">Сопровождение</h3>
+              <p class="service-card__desc">Комплексная помощь экспертов на всех этапах закупок</p>
+            </div>
+            <img src="assets/img/sopr.png" alt="Сопровождение" class="service-card__icon">
+          </a>
+          <a href="consulting.html" class="service-card service-card--purple">
+            <div class="service-card__body">
+              <h3 class="service-card__title">Юридический консалтинг</h3>
+              <p class="service-card__desc">Профессиональные консультационные услуги по правовым вопросам</p>
+            </div>
+            <img src="assets/img/u_k.png" alt="Юридический консалтинг" class="service-card__icon">
+          </a>
+          <a href="https://etpzakupki.tatar" target="_blank" class="service-card service-card--blue">
+            <div class="service-card__body">
+              <h3 class="service-card__title">ЭТП</h3>
+              <p class="service-card__desc">Электронная торговая площадка</p>
+            </div>
+            <img src="assets/img/etp.png" alt="ЭТП" class="service-card__icon">
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="second-screen">
+  <!-- EVENTS + NEWS -->
+  <section class="section events-news-section">
+    <div class="container">
+      <div class="events-news-grid">
+        <!-- Events -->
+        <div class="events-card reveal-init">
+          <h2 class="events-card__title">Предстоящие события</h2>
+          <ul class="events-list">
+            <li class="events-list__item">
+              <div class="event-date"><span class="event-date__range">23–27</span><span class="event-date__month">март</span></div>
+              <div class="event-desc">Очный курс повышения квалификации по 44-ФЗ (108 ак.ч.)</div>
+            </li>
+            <li class="events-list__item">
+              <div class="event-date"><span class="event-date__range">20–22</span><span class="event-date__month">май</span></div>
+              <div class="event-desc">Очный курс повышения квалификации по 44-ФЗ (108 ак.ч.)</div>
+            </li>
+            <li class="events-list__item">
+              <div class="event-date"><span class="event-date__range">18–20</span><span class="event-date__month">июнь</span></div>
+              <div class="event-desc">Очный курс повышения квалификации по 44-ФЗ (108 ак.ч.)</div>
+            </li>
+            <li class="events-list__item">
+              <div class="event-date"><span class="event-date__range">18–20</span><span class="event-date__month">июнь</span></div>
+              <div class="event-desc">Очный курс повышения квалификации по 44-ФЗ (108 ак.ч.)</div>
+            </li>
+          </ul>
+          <a href="seminars.html" class="all-link">все события <span>↗</span></a>
+        </div>
+
+        <!-- News -->
+        <div class="news-card reveal-init" id="news">
+          <h2 class="news-card__title">Новости</h2>
+          <ul class="news-list">
+            <li class="news-list__item">
+              <span class="news-date">26.03.2026</span>
+              <p>Применительно к закупкам работ и услуг Минфин разъяснил, по каким признакам товар считается «поставляемым»</p>
+            </li>
+            <li class="news-list__item">
+              <span class="news-date">26.03.2026</span>
+              <p>Применительно к закупкам работ и услуг Минфин разъяснил, по каким признакам товар считается «поставляемым»</p>
+            </li>
+            <li class="news-list__item">
+              <span class="news-date">26.03.2026</span>
+              <p>Применительно к закупкам работ и услуг Минфин разъяснил, по каким признакам товар считается «поставляемым»</p>
+            </li>
+          </ul>
+          <a href="#" class="all-link">все новости <span>↗</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO BANNER -->
+  <section class="section">
+    <div class="container">
+      <div class="promo-banner reveal-init">
+        <div class="promo-banner__content">
+          <h2 class="promo-banner__title">Дистанционный курс<br>по 44 ФЗ для заказчиков</h2>
+          <p class="promo-banner__date">2-4 июня 2026 года</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div> <!-- /second-screen -->
+
+<!-- TRUSTED BY (Partners logos) -->
+<section class="section partners-section reveal-init">
+  <div class="container">
+    <h2 class="section-title">Наши партнеры</h2>
+    <div class="partners-slider">
+      <button type="button" class="partners-arrow partners-arrow--prev" id="partners-prev" aria-label="Предыдущие партнёры">
+        <svg class="partners-arrow__svg" viewBox="0 0 24 24" width="72" height="72" aria-hidden="true" focusable="false">
+          <polyline points="15 6 9 12 15 18" fill="none" stroke="#ADB8C6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="partners-track">
+        <div class="partner-logo">
+          <img src="assets/img/Group 303.png" alt="Партнер 1">
+        </div>
+        <div class="partner-logo">
+          <img src="assets/img/Group 302.png" alt="Партнер 2">
+        </div>
+        <div class="partner-logo">
+          <img src="assets/img/Group 304.png" alt="Партнер 3">
+        </div>
+        <div class="partner-logo">
+          <img src="assets/img/Group 305.png" alt="Партнер 4">
+        </div>
+        <div class="partner-logo">
+          <img src="assets/img/TNV.png" alt="Партнер 5">
+        </div>
+      </div>
+      <button type="button" class="partners-arrow partners-arrow--next" id="partners-next" aria-label="Следующие партнёры">
+        <svg class="partners-arrow__svg" viewBox="0 0 24 24" width="72" height="72" aria-hidden="true" focusable="false">
+          <polyline points="9 6 15 12 9 18" fill="none" stroke="#ADB8C6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<div class="third-screen">
+  <!-- REVIEWS -->
+  <section class="section reviews-section reveal-init" id="reviews">
+    <div class="container">
+      <h2 class="section-title">Отзывы клиентов</h2>
+      <div class="reviews-grid">
+        <div class="review-card reveal-init">
+          <p class="review-card__text">В целом Интерфейс понятный, удобный. Если нужны какие-то улучшения, Росэлторг их активно рассматривает. Не всегда, но движения в этом вопросе точно есть.</p>
+          <div class="review-card__footer">
+            <div class="review-card__author">
+              <p class="review-card__name">
+                <span class="review-card__name-line">Сергеев</span>
+                <span class="review-card__name-line">Александр</span>
+              </p>
+              <p class="review-card__role">
+                <span class="review-card__role-line">Руководитель</span>
+                <span class="review-card__role-line">тендерного отдела</span>
+              </p>
+            </div>
+          </div>
+          <div class="review-card__quote" aria-hidden="true">
+            <img src="assets/img/quote.svg" alt="" class="review-card__quote-img" width="179" height="182" decoding="async">
+          </div>
+        </div>
+        <div class="review-card reveal-init">
+          <p class="review-card__text">В целом Интерфейс понятный, удобный. Если нужны какие-то улучшения, Росэлторг их активно рассматривает. Не всегда, но движения в этом вопросе точно есть.</p>
+          <div class="review-card__footer">
+            <div class="review-card__author">
+              <p class="review-card__name">
+                <span class="review-card__name-line">Сергеев</span>
+                <span class="review-card__name-line">Александр</span>
+              </p>
+              <p class="review-card__role">
+                <span class="review-card__role-line">Руководитель</span>
+                <span class="review-card__role-line">тендерного отдела</span>
+              </p>
+            </div>
+          </div>
+          <div class="review-card__quote" aria-hidden="true">
+            <img src="assets/img/quote.svg" alt="" class="review-card__quote-img" width="179" height="182" decoding="async">
+          </div>
+        </div>
+        <div class="review-card reveal-init">
+          <p class="review-card__text">В целом Интерфейс понятный, удобный. Если нужны какие-то улучшения, Росэлторг их активно рассматривает. Не всегда, но движения в этом вопросе точно есть.</p>
+          <div class="review-card__footer">
+            <div class="review-card__author">
+              <p class="review-card__name">
+                <span class="review-card__name-line">Сергеев</span>
+                <span class="review-card__name-line">Александр</span>
+              </p>
+              <p class="review-card__role">
+                <span class="review-card__role-line">Руководитель</span>
+                <span class="review-card__role-line">тендерного отдела</span>
+              </p>
+            </div>
+          </div>
+          <div class="review-card__quote" aria-hidden="true">
+            <img src="assets/img/quote.svg" alt="" class="review-card__quote-img" width="179" height="182" decoding="async">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL NETWORKS BANNER -->
+  <section class="section social-section">
+    <div class="container">
+      <div class="social-banner reveal-init">
+        <h2 class="social-banner__title">Мы в социальных сетях</h2>
+        <div class="social-banner__links">
+          <a href="#" class="social-btn" aria-label="Max">
+            <span class="social-btn__icon-wrap">
+              <img src="assets/img/max.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
+            </span>
+            <span class="social-btn__label">Max</span>
+          </a>
+          <a href="#" class="social-btn" aria-label="Телеграм">
+            <span class="social-btn__icon-wrap">
+              <img src="assets/img/tg.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
+            </span>
+            <span class="social-btn__label">Телеграм</span>
+          </a>
+          <a href="#" class="social-btn" aria-label="В контакте">
+            <span class="social-btn__icon-wrap">
+              <img src="assets/img/vk.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
+            </span>
+            <span class="social-btn__label">В контакте</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONSULTATION FORM -->
+  <section class="section consultation-section" id="contacts">
+    <div class="container">
+      <div class="consultation-card">
+        <div class="consultation-card__left reveal-init">
+          <h2 class="consultation-card__title">
+            <span class="consultation-card__title-line">Получить</span>
+            <span class="consultation-card__title-line">консультацию</span>
+          </h2>
+          <div class="consultation-card__person"></div>
+        </div>
+        <div class="consultation-card__right reveal-init">
+          <form class="consult-form" id="consultForm">
+            <div class="consult-form__row">
+              <input type="text" class="form-input" placeholder="Имя" id="consultName">
+              <input type="text" class="form-input" placeholder="Фамилия" id="consultSurname">
+            </div>
+            <input type="tel" class="form-input" placeholder="Телефон" id="consultPhone">
+            <input type="email" class="form-input" placeholder="Электронная почта" id="consultEmail">
+            <p class="form-label">Мне интересно</p>
+            <select class="form-input form-select" id="consultInterest">
+              <option value="">---Выберите---</option>
+              <option>Обучение</option>
+              <option>Сопровождение</option>
+              <option>Юридический консалтинг</option>
+              <option>ЭТП</option>
+            </select>
+            <label class="form-check" for="agreePolicy">
+              <input type="checkbox" id="agreePolicy">
+              <span>Я соглашаюсь с политикой персональных данных</span>
+            </label>
+            <label class="form-check" for="agreeNews">
+              <input type="checkbox" id="agreeNews">
+              <span>Я хочу получать новости и полезные материалы на эл. почту</span>
+            </label>
+            <button type="submit" class="btn btn--green btn--large">Отправить</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__col footer__col--address">
+      <p>г. Казань,</p>
+      <p>ул. Петербургская, 86</p>
+      <p>Пн-Чт с 09:00 до 18:00</p>
+      <p>Пт с 09:00 до 17:00</p>
+    </div>
+
+    <div class="footer__col footer__col--nav">
+      <a href="about.html">О нас</a>
+      <a href="#news">Новости</a>
+      <a href="#reviews">Нам доверяют</a>
+      <a href="contacts.html">Контакты</a>
+    </div>
+
+    <div class="footer__col footer__col--links">
+      <a href="knowledge.html">Документы</a>
+      <a href="team.html">Карьера</a>
+    </div>
+
+    <div class="footer__col footer__col--contacts">
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Телефон</p>
+        <a href="tel:88001017892" class="footer-phone">8 800 101-78-92</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Основная почта</p>
+        <a href="mailto:crz.rt@tatar.ru" class="footer-email">crz.rt@tatar.ru</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Социальные сети</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-icon footer-social-icon--max" aria-label="Max">
+            <img src="assets/img/max.png" alt="Max">
+          </a>
+          <a href="#" class="footer-social-icon footer-social-icon--tg" aria-label="Телеграм">
+            <img src="assets/img/tg.png" alt="Телеграм">
+          </a>
+          <a href="#" class="footer-social-icon footer-social-icon--vk" aria-label="ВКонтакте">
+            <img src="assets/img/vk.png" alt="ВКонтакте">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner">
+      <div class="footer__bottom-links">
+        <a href="#" class="footer__bottom-link">Политика конфиденциальности</a>
+        <a href="#" class="footer__bottom-link">Согласие на обработку персональных данных</a>
+      </div>
+      <p class="footer__bottom-text">Мы используем файлы cookie, для персонализации сервисов и повышения удобства пользования сайтом. Если вы не согласны на их использование, поменяйте настройки браузера.</p>
+    </div>
+    <div class="container footer__copyright">
+      <p>АО «Центр развития закупок РТ» 2026 (с) Все права защищены</p>
+    </div>
+  </div>
+</footer>
+
+
+  <script src="assets/js/landing.js"></script>
 </body>
-</html>
-
 </html>
