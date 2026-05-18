@@ -767,7 +767,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   padding: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: x proximity;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -782,6 +782,15 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   align-items: center;
   justify-content: center;
   scroll-snap-align: center;
+  cursor: default;
+  filter: grayscale(100%);
+  opacity: 0.6;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.partner-logo:hover {
+  filter: grayscale(0%);
+  opacity: 1;
 }
 
 .partner-logo img {
@@ -790,14 +799,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   height: 300px;
   max-width: 500px;
   object-fit: contain;
-  filter: grayscale(100%);
-  opacity: 0.6;
-  transition: all 0.3s ease;
-}
-
-.partner-logo img:hover {
-  filter: grayscale(0%);
-  opacity: 1;
+  pointer-events: none;
 }
 
 /* Стрелки карусели: зона ~96×96 (×3 от 32px), SVG 72px — горизонтальные ‹ › */
