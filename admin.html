@@ -656,110 +656,58 @@
 
             <div id="mainPageBlock" class="admin-block active" data-required-role="main-page">
                 <div class="admin-card">
-                    <div class="card-header">Верхний анонс (Анонс событий)</div>
-                    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 15px;">
-                        <input type="checkbox" id="m_news_active" style="width: 20px; height: 20px;">
-                        <span>Показывать полоску анонса на главной</span>
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Hero-слайдер (до 8 слайдов)</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addHeroSlide()">+ Слайд</button>
                     </div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">Фон в формате как hero_section.png (~1520×420). Перенос строки — Enter.</p>
+                    <div id="mHeroSlidesAdmin" style="display:flex;flex-direction:column;gap:16px;"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header">Карточки услуг (4 блока)</div>
+                    <div id="mServiceCardsAdmin" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;"></div>
+                </div>
+                <div class="admin-card" style="opacity:0.65;">
+                    <div class="card-header">Предстоящие события и новости</div>
+                    <p style="color:var(--text-secondary);margin:0;">Отдельные редакторы — в следующих обновлениях.</p>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header">Промо-баннер</div>
+                    <div class="form-group"><label>Заголовок (Enter — перенос)</label>
+                        <textarea class="form-control" id="m_promo_title" rows="2"></textarea></div>
+                    <div class="form-group"><label>Дата / подпись</label>
+                        <input type="text" class="form-control" id="m_promo_date"></div>
+                    <div class="form-group"><label>Ссылка при клике (необязательно)</label>
+                        <input type="text" class="form-control" id="m_promo_link" placeholder="seminars.html или https://..."></div>
                     <div class="form-group">
-                        <label>Текст тега (например, "Событие")</label>
-                        <input type="text" class="form-control" id="m_news_tag">
-                    </div>
-                    <div class="form-group">
-                        <label>Заголовок анонса</label>
-                        <input type="text" class="form-control" id="m_news_title">
-                    </div>
-                    <div class="form-group">
-                        <label>Ссылка (например, "seminars.html")</label>
-                        <input type="text" class="form-control" id="m_news_link">
+                        <label>Фон баннера (~1520×253)</label>
+                        <img id="m_promo_img_preview" alt="" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;display:none;margin-bottom:8px;">
+                        <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="AdminLanding.pickImage('m_promo_img')">Загрузить</button>
+                        <button type="button" class="btn-delete" id="m_promo_img_clear" style="padding:8px 14px;margin-left:8px;display:none;" onclick="AdminLanding.clearImage('m_promo_img')">Удалить</button>
+                        <input type="hidden" id="m_promo_img_val" value="">
                     </div>
                 </div>
-
                 <div class="admin-card">
-                    <div class="card-header">Тексты на главном экране (Hero Section)</div>
-                    <div class="form-group">
-                        <label>Главный заголовок (шрифт 1)</label>
-                        <input type="text" class="form-control" id="m_hero_title" value="Ваш успех в госзакупках.">
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Наши партнёры</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addPartner()">+ Партнёр</button>
                     </div>
-                    <div class="form-group">
-                        <label>Подзаголовок (шрифт 2)</label>
-                        <textarea id="m_hero_subtitle"
-                            class="form-control">Единая экосистема для заказчиков и поставщиков.&#13;&#10;От обучения до сопровождения сложных тендеров.</textarea>
-                    </div>
+                    <div id="mPartnersAdmin" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"></div>
                 </div>
-
                 <div class="admin-card">
-                    <div class="card-header"
-                        style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>Основные блоки (Плитки на главной)</span>
-                        <button class="btn-save" id="btnAddFeatureCard" style="padding: 8px 16px; font-size: 0.85rem;">+
-                            Добавить плитку</button>
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Отзывы клиентов</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addReview()">+ Отзыв</button>
                     </div>
-                    <div id="mainFeatureCardsAdmin" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <!-- Rendered by JS -->
-                    </div>
+                    <div id="mReviewsAdmin" style="display:flex;flex-direction:column;gap:16px;"></div>
                 </div>
-
                 <div class="admin-card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>Статистика (Цифры на главной)</span>
-                        <button class="btn-save" id="btnAddStat" style="padding: 8px 16px; font-size: 0.85rem;" type="button">+ Добавить</button>
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Получить консультацию — фото</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addConsultPhoto()">+ Фото</button>
                     </div>
-                    <div id="mainStatsAdmin" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <!-- Rendered by JS -->
-                    </div>
-                </div>
-
-                <div class="admin-card">
-                    <div class="card-header">Об организации (Why Us)</div>
-                    <div id="mainOrganizationAdmin" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
-                        <!-- Cards will be rendered here -->
-                    </div>
-                </div>
-
-                <div class="admin-card">
-                    <div class="card-header">Отзывы (Testimonials)</div>
-                    <div id="mainTestimonialsAdmin"
-                        style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 20px;">
-                        <!-- Testimonials will be rendered here -->
-                    </div>
-                    <button class="btn-secondary" id="btnAddTestimonial"
-                        style="width: 100%; border: 1px dashed var(--text-secondary);">+ Добавить отзыв</button>
-                </div>
-
-                <div class="admin-card">
-                    <div class="card-header">Фоновое фото</div>
-                    <div class="form-group">
-                        <label>Загрузите большое фото для фона. Вы сможете обрезать и отмасштабировать его.</label>
-
-                        <div id="croppedResultContainer"
-                            style="display: block; margin-bottom: 20px; position: relative;">
-                            <img id="croppedResult" src=""
-                                style="display: none; width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; border: 1px solid var(--card-border);">
-                            <button id="btnDeleteHeroBg" class="btn-delete" onclick="window.clearHeroBgImage()"
-                                style="position: absolute; top: 12px; right: 12px; padding: 8px 16px; display: flex; align-items: center; gap: 6px; border-radius: 10px;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                                Удалить фото
-                            </button>
-                        </div>
-
-                        <div class="image-upload-wrapper" id="uploadWrapper">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)"
-                                stroke-width="2" style="margin-bottom: 15px;">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="17 8 12 3 7 8"></polyline>
-                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                            </svg>
-                            <div style="font-size: 1.1rem; font-weight: 500;">Нажмите, чтобы выбрать новое фото</div>
-                            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px;">или
-                                перетащите файл сюда</div>
-                        </div>
-
-                    </div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">При каждом обновлении страницы — случайное фото из списка (~396×509).</p>
+                    <div id="mConsultPhotosAdmin" style="display:flex;flex-direction:column;gap:16px;"></div>
                 </div>
             </div>
 
@@ -1112,6 +1060,8 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="assets/js/landing-content.js"></script>
+    <script src="assets/js/admin-landing.js"></script>
     <script>
         // Загрузка настроек с бэкенда (Синхронно)
         try {
@@ -1196,34 +1146,7 @@
         };
 
         let usersDb = JSON.parse(localStorage.getItem('crzrt_users'));
-        const defaultMainData = {
-            heroTitle: 'Ваш успех в госзакупках.',
-            heroSubtitle: 'Единая экосистема для заказчиков и поставщиков.\nОт обучения до сопровождения сложных тендеров.',
-            featureCards: [
-                { title: 'Электронная Торговая Площадка', subtitle: 'Проводите торги онлайн.', link: 'https://etpzakupki.tatar', image: '' },
-                { title: 'Обучение Госзакупкам', subtitle: 'Курсы по 44-ФЗ и 223-ФЗ.', link: '#education', image: '' },
-                { title: 'Юридический Консалтинг', subtitle: 'Защита в ФАС и судах.', link: '#consulting', image: '' },
-                { title: 'Сопровождение Торгов', subtitle: 'Подготовка заявок и жалоб.', link: '#consulting', image: '' }
-            ],
-            stats: [
-                { value: '10+', label: 'Лет на рынке' },
-                { value: '20к+', label: 'Слушателей' },
-                { value: '98%', label: 'Довольных клиентов' },
-                { value: '50+', label: 'Экспертов' }
-            ],
-            orgBlocks: [
-                { title: 'Специализированная организация', text: 'Мы — официальный партнер в сфере 44-ФЗ и 223-ФЗ с безупречной репутацией.' },
-                { title: '10 лет экспертизы', text: 'Сотни успешно защищенных интересов в ФАС и тысячи подготовленных специалистов.' },
-                { title: 'Собственная экосистема', text: 'Мы объединяем обучение, ЭТП и юридическую поддержку в одном месте.' }
-            ],
-            testimonials: [
-                { client: 'ТрансТехСервис', text: '«Выражаем благодарность за высокий уровень организации обучения сотрудников в сфере государственных закупок.»' },
-                { client: 'Министерство экологии РТ', text: '«Профессиональный подход к подготовке кадров и глубокая экспертиза преподавательского состава.»' },
-                { client: 'ГБУ «Научный центр БЖД»', text: '«Курсы повышения квалификации помогли нам систематизировать работу с тендерами по 44-ФЗ.»' },
-                { client: 'Компания «ВАТ»', text: '«Отмечаем доступность изложения сложного материала и практическую направленность программы.»' },
-                { client: 'АО «Казанский Гипронииавиапром»', text: '«Своевременная поддержка и квалифицированные консультации по вопросам сложных торгов.»' }
-            ]
-        };
+        const defaultMainData = AdminLanding.DEFAULT_LANDING_MAIN;
 
         const defaultAboutData = {
             heroTitle: 'Профессионализм и Опыт',
@@ -1240,7 +1163,13 @@
             email: 'info@crzrt.ru',
             requisites: 'АО «ЦРЗ РТ»\nИНН 1655291703\nКПП 165501001\nОГРН 1141690029800'
         };
-        let mainPageData = { ...defaultMainData };
+        let mainPageData = AdminLanding.migrateMainPageData(
+            JSON.parse(localStorage.getItem('crzrt_main_page_data') || 'null')
+        );
+        window.mainPageData = mainPageData;
+        window.saveMainPageStateToMemory = function () {
+            AdminLanding.collectMainPageFromForm(mainPageData);
+        };
         let aboutData = { ...defaultAboutData };
         let contactsData = { ...defaultContactsData };
         let educationData; // assigned after defaultEducationData is declared (~line 1570)
@@ -1261,7 +1190,10 @@
                     if (resp.ok) {
                         const data = await resp.json();
                         if (data && Object.keys(data).length > 0) {
-                            if (key === 'crzrt_main_page_data') mainPageData = { ...defaultMainData, ...data };
+                            if (key === 'crzrt_main_page_data') {
+                                mainPageData = AdminLanding.migrateMainPageData(data);
+                                window.mainPageData = mainPageData;
+                            }
                             else if (key === 'crzrt_about_data') aboutData = { ...defaultAboutData, ...data };
                             else if (key === 'crzrt_contacts') contactsData = { ...defaultContactsData, ...data };
                             else if (key === 'crzrt_education_data') educationData = { ...educationData, ...data };
@@ -1327,260 +1259,8 @@
         const btnLogout = document.getElementById('btnLogout');
 
         function renderMainPageAdmin() {
-            // News
-            document.getElementById('m_news_active').checked = mainPageData.news ? mainPageData.news.active : false;
-            document.getElementById('m_news_tag').value = (mainPageData.news && mainPageData.news.tag) ? mainPageData.news.tag : 'Событие';
-            document.getElementById('m_news_title').value = (mainPageData.news && mainPageData.news.title) ? mainPageData.news.title : '';
-            document.getElementById('m_news_link').value = (mainPageData.news && mainPageData.news.link) ? mainPageData.news.link : '';
-
-            // Hero
-            document.getElementById('m_hero_title').value = mainPageData.heroTitle || '';
-            document.getElementById('m_hero_subtitle').value = mainPageData.heroSubtitle || '';
-
-            // Restore hero bg image preview
-            if (mainPageData.heroBgImage) {
-                if (croppedResult) croppedResult.src = mainPageData.heroBgImage;
-                croppedResultContainer.style.display = 'block';
-                uploadWrapper.style.display = 'block';
-                const delHeroBtn = document.getElementById('btnDeleteHeroBg');
-                if (delHeroBtn) delHeroBtn.style.display = 'flex';
-            } else if (mainPageData.heroBgImage === '') {
-                if (croppedResult) croppedResult.src = '';
-                croppedResultContainer.style.display = 'none';
-                const delHeroBtn = document.getElementById('btnDeleteHeroBg');
-                if (delHeroBtn) delHeroBtn.style.display = 'none';
-            }
-
-            // Feature Cards
-            const featureContainer = document.getElementById('mainFeatureCardsAdmin');
-            featureContainer.innerHTML = '';
-            mainPageData.featureCards.forEach((c, i) => {
-                featureContainer.insertAdjacentHTML('beforeend', `
-                    <div style="padding: 15px; border: 1px solid var(--card-border); border-radius: 12px; background: rgba(0,0,0,0.02); position: relative;">
-                        <button class="btn-delete" style="position: absolute; top: 10px; right: 10px; padding: 5px 10px;" onclick="window.removeFeatureCard(${i})">×</button>
-                        <div class="form-group" style="margin-bottom: 10px; padding-right: 30px;">
-                            <label>Заголовок (Услуга ${i + 1})</label>
-                            <input type="text" class="form-control" id="m_feat_title_${i}" value="${c.title}">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <label>Описание (Подзаголовок)</label>
-                            <input type="text" class="form-control" id="m_feat_subtitle_${i}" value="${c.subtitle || ''}">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <label>Ссылка</label>
-                            <input type="text" class="form-control" id="m_feat_link_${i}" value="${c.link}">
-                        </div>
-                        </div>
-                    </div>
-                `);
-            });
-
-            // Stats
-            const statsContainer = document.getElementById('mainStatsAdmin');
-            if (statsContainer) {
-                statsContainer.innerHTML = '';
-                if (mainPageData.stats) {
-                    mainPageData.stats.forEach((s, i) => {
-                        statsContainer.insertAdjacentHTML('beforeend', `
-                            <div style="padding: 15px; border: 1px solid var(--card-border); border-radius: 12px; background: rgba(0,0,0,0.02); position: relative;">
-                                <button class="btn-delete" type="button" style="position: absolute; top: 10px; right: 10px; padding: 5px 10px;" onclick="window.removeStat(${i})">×</button>
-                                <div class="form-group" style="margin-bottom: 10px; padding-right: 30px;">
-                                    <label>Значение (напр. 20к+)</label>
-                                    <input type="text" class="form-control" id="m_stat_val_${i}" value="${s.value}">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label>Подпись</label>
-                                    <input type="text" class="form-control" id="m_stat_lbl_${i}" value="${s.label}">
-                                </div>
-                            </div>
-                        `);
-                    });
-                }
-            }
-
-            // Org Blocks
-            const orgContainer = document.getElementById('mainOrganizationAdmin');
-            orgContainer.innerHTML = '';
-            if (mainPageData.orgBlocks) {
-                mainPageData.orgBlocks.forEach((b, i) => {
-                    orgContainer.insertAdjacentHTML('beforeend', `
-                        <div style="padding: 20px; border: 1px solid var(--card-border); border-radius: 12px; background: rgba(0,0,0,0.02);">
-                            <div class="form-group" style="margin-bottom: 10px;">
-                                <label>Заголовок блока ${i + 1}</label>
-                                <input type="text" class="form-control" id="m_org_title_${i}" value="${b.title}">
-                            </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label>Текст блока ${i + 1}</label>
-                                <textarea class="form-control" id="m_org_text_${i}" style="min-height: 60px;">${b.text}</textarea>
-                            </div>
-                        </div>
-                    `);
-                });
-            }
-
-            // Testimonials
-            const testContainer = document.getElementById('mainTestimonialsAdmin');
-            testContainer.innerHTML = '';
-            if (mainPageData.testimonials) {
-                mainPageData.testimonials.forEach((t, i) => {
-                    testContainer.insertAdjacentHTML('beforeend', `
-                        <div style="padding: 20px; border: 1px solid var(--card-border); border-radius: 12px; background: rgba(0,0,0,0.02); position: relative;">
-                            <button class="btn-delete" style="position: absolute; top: 10px; right: 10px;" onclick="window.removeTestimonial(${i})">×</button>
-                            <div class="form-group" style="margin-bottom: 10px;">
-                                <label>Клиент / Организация</label>
-                                <input type="text" class="form-control" id="m_test_client_${i}" value="${t.client}">
-                            </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label>Текст отзыва</label>
-                                <textarea class="form-control" id="m_test_text_${i}" style="min-height: 60px;">${t.text}</textarea>
-                            </div>
-                        </div>
-                    `);
-                });
-            }
+            AdminLanding.renderMainPageAdmin(mainPageData);
         }
-        window.clearFeatureCardImage = function (index) {
-            const preview = document.getElementById(`m_feat_img_preview_${index}`);
-            const valInput = document.getElementById(`m_feat_img_val_${index}`);
-            const delBtn = document.getElementById(`m_feat_img_del_${index}`);
-
-            if (preview) {
-                preview.src = '';
-                preview.style.display = 'none';
-                if (preview.nextElementSibling) preview.nextElementSibling.style.display = 'block'; // Show span
-            }
-            if (valInput) valInput.value = '';
-            if (delBtn) delBtn.style.display = 'none';
-        };
-
-        window.clearHeroBgImage = function () {
-            // Hide the preview container
-            croppedResultContainer.style.display = 'none';
-            // Show empty upload zone
-            uploadWrapper.style.display = 'block';
-            // Clear stored image in memory
-            mainPageData.heroBgImage = '';
-            // If croppedResult exists, clear its src
-            if (croppedResult) croppedResult.src = '';
-        };
-
-        function saveMainPageStateToMemory() {
-            try {
-                if (!mainPageData.news) mainPageData.news = {};
-                mainPageData.news.active = document.getElementById('m_news_active').checked;
-                mainPageData.news.title = document.getElementById('m_news_title').value;
-                mainPageData.news.tag = document.getElementById('m_news_tag').value;
-                mainPageData.news.link = document.getElementById('m_news_link').value;
-
-                const hTitle = document.getElementById('m_hero_title');
-                const hSub = document.getElementById('m_hero_subtitle');
-                if (hTitle) mainPageData.heroTitle = hTitle.value;
-                if (hSub) mainPageData.heroSubtitle = hSub.value;
-
-                if (Array.isArray(mainPageData.featureCards)) {
-                    mainPageData.featureCards.forEach((c, i) => {
-                        const t = document.getElementById(`m_feat_title_${i}`);
-                        const sub = document.getElementById(`m_feat_subtitle_${i}`);
-                        const l = document.getElementById(`m_feat_link_${i}`);
-                        if (t) c.title = t.value;
-                        if (sub) c.subtitle = sub.value;
-                        if (l) c.link = l.value;
-                    });
-                }
-
-                // Hero background image is already correctly maintained in mainPageData.heroBgImage
-                // by clearHeroBgImage() → '' or by the crop callback → data URI.
-                // Do NOT read from croppedResult.src — the browser resolves empty src to the page URL.
-                if (Array.isArray(mainPageData.stats)) {
-                    mainPageData.stats.forEach((s, i) => {
-                        const val = document.getElementById(`m_stat_val_${i}`);
-                        const lbl = document.getElementById(`m_stat_lbl_${i}`);
-                        if (val) s.value = val.value;
-                        if (lbl) s.label = lbl.value;
-                    });
-                }
-
-                if (Array.isArray(mainPageData.orgBlocks)) {
-                    mainPageData.orgBlocks.forEach((b, i) => {
-                        const tEl = document.getElementById(`m_org_title_${i}`);
-                        const txEl = document.getElementById(`m_org_text_${i}`);
-                        if (tEl) b.title = tEl.value;
-                        if (txEl) b.text = txEl.value;
-                    });
-                }
-
-                const testContainer = document.getElementById('mainTestimonialsAdmin');
-                if (testContainer) {
-                    const newList = [];
-                    const testEntries = testContainer.children.length;
-                    for (let i = 0; i < testEntries; i++) {
-                        const client = document.getElementById(`m_test_client_${i}`);
-                        const text = document.getElementById(`m_test_text_${i}`);
-                        if (client && text) {
-                            newList.push({ client: client.value, text: text.value });
-                        }
-                    }
-                    if (newList.length > 0) {
-                        mainPageData.testimonials = newList;
-                    }
-                }
-            } catch (e) {
-                console.error("Save state error:", e);
-            }
-        }
-
-        window.removeTestimonial = function (index) {
-            saveMainPageStateToMemory();
-            mainPageData.testimonials.splice(index, 1);
-            renderMainPageAdmin();
-        };
-
-        const btnAddTestimonial = document.getElementById('btnAddTestimonial');
-        if (btnAddTestimonial) {
-            btnAddTestimonial.addEventListener('click', () => {
-                saveMainPageStateToMemory();
-                mainPageData.testimonials.push({ client: 'Новый клиент', text: '' });
-                renderMainPageAdmin();
-            });
-        }
-
-        const btnAddFeatureCard = document.getElementById('btnAddFeatureCard');
-        if (btnAddFeatureCard) {
-            btnAddFeatureCard.addEventListener('click', () => {
-                saveMainPageStateToMemory();
-                mainPageData.featureCards.push({ title: 'Новая плитка', link: '#', image: '' });
-                renderMainPageAdmin();
-            });
-        }
-
-        const btnAddStat = document.getElementById('btnAddStat');
-        if (btnAddStat) {
-            btnAddStat.addEventListener('click', (e) => {
-                e.preventDefault();
-                saveMainPageStateToMemory();
-                if (!mainPageData.stats) {
-                    mainPageData.stats = [];
-                }
-                mainPageData.stats.push({ value: '0', label: 'Новая статистика' });
-                renderMainPageAdmin();
-            });
-        }
-
-        window.removeStat = function (index) {
-            if (confirm('Удалить этот блок статистики?')) {
-                saveMainPageStateToMemory();
-                mainPageData.stats.splice(index, 1);
-                renderMainPageAdmin();
-            }
-        };
-
-        window.removeFeatureCard = function (index) {
-            if (confirm('Удалить эту плитку?')) {
-                saveMainPageStateToMemory();
-                mainPageData.featureCards.splice(index, 1);
-                renderMainPageAdmin();
-            }
-        };
 
         // ═══════════════════════════════════════════════
         //  EDUCATION ADMIN MODULE
@@ -2384,18 +2064,18 @@
             e.stopPropagation();
         }
 
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadWrapper.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadWrapper.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight(e) { uploadWrapper.style.borderColor = 'var(--accent-color)'; uploadWrapper.style.background = 'rgba(41, 151, 255, 0.1)'; }
-        function unhighlight(e) { uploadWrapper.style.borderColor = ''; uploadWrapper.style.background = ''; }
-
-        uploadWrapper.addEventListener('drop', handleDrop, false);
+        function highlight(e) {
+            if (uploadWrapper) {
+                uploadWrapper.style.borderColor = 'var(--accent-color)';
+                uploadWrapper.style.background = 'rgba(41, 151, 255, 0.1)';
+            }
+        }
+        function unhighlight(e) {
+            if (uploadWrapper) {
+                uploadWrapper.style.borderColor = '';
+                uploadWrapper.style.background = '';
+            }
+        }
 
         function handleDrop(e) {
             const dt = e.dataTransfer;
@@ -2417,27 +2097,25 @@
                     const globalContainer = document.getElementById('cropperGlobalContainer');
                     globalContainer.style.display = 'flex'; // Modal is flex centered
 
-                    if (window.activeAuthorIndex === null && window.activeFeatureCardIndex === undefined) {
-                        // If hero, hide hero results
-                        uploadWrapper.style.display = 'none';
-                        croppedResultContainer.style.display = 'none';
-                    }
-
                     if (cropper) {
                         cropper.destroy();
                     }
 
-                    // Aspect ratio logic: 1:1 for authors, 16:9 for hero/features
-                    const currentAspect = window.activeAuthorIndex !== null ? 1 : 16 / 9;
+                    let currentAspect = window.activeAuthorIndex !== null ? 1 : 16 / 9;
+                    if (window.cropTarget && AdminLanding) {
+                        const a = AdminLanding.getAspect(window.cropTarget.uploadId);
+                        currentAspect = Number.isNaN(a) ? NaN : a;
+                    }
 
-                    cropper = new Cropper(imageToCrop, {
-                        aspectRatio: currentAspect,
+                    const cropperOpts = {
                         viewMode: 2,
                         dragMode: 'move',
                         autoCropArea: 1,
                         background: false,
                         zoomable: true
-                    });
+                    };
+                    if (!Number.isNaN(currentAspect)) cropperOpts.aspectRatio = currentAspect;
+                    cropper = new Cropper(imageToCrop, cropperOpts);
                 };
                 reader.readAsDataURL(files[0]);
             }
@@ -2448,10 +2126,14 @@
 
         btnCrop.addEventListener('click', () => {
             if (cropper) {
-                // Resolution logic: 400x400 for avatars, 1200x675 for hero/features (16:9)
-                const isAuthor = window.activeAuthorIndex !== null;
-                const resWidth = isAuthor ? 400 : 1200;
-                const resHeight = isAuthor ? 400 : 675;
+                let resWidth = 1200;
+                let resHeight = 675;
+                if (window.activeAuthorIndex !== null) {
+                    resWidth = 400;
+                    resHeight = 400;
+                } else if (window.cropTarget && AdminLanding) {
+                    [resWidth, resHeight] = AdminLanding.getCropSize(window.cropTarget.uploadId);
+                }
 
                 const canvas = cropper.getCroppedCanvas({
                     width: resWidth,
@@ -2470,19 +2152,9 @@
                         document.getElementById(`c_author_avatarUrl_${idx}`).value = resultBase64;
                     }
                     window.activeAuthorIndex = null;
-                } else if (window.activeFeatureCardIndex !== undefined) {
-                    const idx = window.activeFeatureCardIndex;
-                    const el = document.getElementById(`m_feat_img_preview_${idx}`);
-                    if (el) {
-                        el.src = resultBase64;
-                        el.style.display = 'block';
-                        if (el.nextElementSibling) el.nextElementSibling.style.display = 'none'; // Hide span
-                        document.getElementById(`m_feat_img_val_${idx}`).value = resultBase64;
-                        // Show delete button
-                        const delBtn = document.getElementById(`m_feat_img_del_${idx}`);
-                        if (delBtn) delBtn.style.display = 'flex';
-                    }
-                    window.activeFeatureCardIndex = undefined;
+                } else if (window.cropTarget && AdminLanding) {
+                    AdminLanding.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
+                    window.cropTarget = null;
                 } else if (window.activeAboutImage) {
                     const el = document.getElementById('a_image_preview');
                     if (el) {
@@ -2492,28 +2164,14 @@
                         document.getElementById('a_image_val').value = resultBase64;
                     }
                     window.activeAboutImage = false;
-                } else {
-                    if (croppedResult) {
-                        croppedResult.src = resultBase64;
-                        croppedResult.style.display = 'block';
-                        mainPageData.heroBgImage = resultBase64;
-                        // Give a visual hint to Save the changes
-                        const saveBtn = document.getElementById('globalSaveBtn');
-                        if (saveBtn) {
-                            saveBtn.style.boxShadow = '0 0 15px rgba(52, 199, 89, 0.5)';
-                            saveBtn.innerText = 'Сохраните изменения! 💾';
-                        }
-                    }
                 }
 
                 document.getElementById('cropperGlobalContainer').style.display = 'none';
-                uploadWrapper.style.display = 'block';
-                croppedResultContainer.style.display = 'block';
-                // Show delete button for hero bg
-                const delHeroBtn = document.getElementById('btnDeleteHeroBg');
-                if (delHeroBtn) delHeroBtn.style.display = 'flex';
-
-                uploadWrapper.querySelector('div').innerText = 'Загрузить другое фото';
+                const saveBtnHint = document.getElementById('globalSaveBtn');
+                if (saveBtnHint) {
+                    saveBtnHint.style.boxShadow = '0 0 15px rgba(52, 199, 89, 0.5)';
+                    saveBtnHint.innerText = 'Сохраните изменения! 💾';
+                }
 
                 cropper.destroy();
                 cropper = null;
@@ -2526,11 +2184,10 @@
                 cropper = null;
             }
             document.getElementById('cropperGlobalContainer').style.display = 'none';
-            uploadWrapper.style.display = 'block';
-            croppedResultContainer.style.display = 'block';
             window.activeAuthorIndex = null;
             window.activeFeatureCardIndex = undefined;
             window.activeAboutImage = false;
+            window.cropTarget = null;
         });
 
         // =======================
