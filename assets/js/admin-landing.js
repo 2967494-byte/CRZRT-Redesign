@@ -83,6 +83,25 @@
       </div>`;
   }
 
+  function partnerImageUploadHtml(id, previewSrc) {
+    const show = previewSrc ? 'block' : 'none';
+    return `
+      <div class="form-group partner-upload-group">
+        <label>Логотип</label>
+        <div class="image-upload-mini" data-upload-id="${id}">
+          <div class="partner-logo-preview">
+            <img id="${id}_preview" class="partner-logo-preview__img" src="${escapeAttr(previewSrc)}" alt="" style="display:${show};">
+          </div>
+          <div class="partner-upload-actions">
+            <button type="button" class="btn-save" onclick="AdminLanding.pickImage('${id}')">Загрузить</button>
+            <button type="button" class="btn-delete" id="${id}_clear" onclick="AdminLanding.clearImage('${id}')" style="${previewSrc ? '' : 'display:none;'}">Удалить</button>
+          </div>
+          <input type="hidden" id="${id}_val" value="${escapeAttr(previewSrc)}">
+        </div>
+        <small class="partner-upload-hint">На сайте — цвет; в покое — серый, при наведении — цвет.</small>
+      </div>`;
+  }
+
   function renderHeroSlides(container, slides) {
     container.innerHTML = '';
     slides.forEach((slide, i) => {
@@ -122,10 +141,10 @@
     partners.forEach((p, i) => {
       container.insertAdjacentHTML(
         'beforeend',
-        `<div style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;">
-          <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;" onclick="AdminLanding.removePartner(${i})">×</button>
+        `<div class="partner-admin-card">
+          <button type="button" class="btn-delete partner-admin-card__remove" onclick="AdminLanding.removePartner(${i})" aria-label="Удалить">×</button>
           <div class="form-group"><label>Название (alt)</label><input type="text" class="form-control" id="m_partner_alt_${i}" value="${escapeAttr(p.alt)}"></div>
-          ${imageUploadHtml(`m_partner_img_${i}`, 'Логотип (цветной)', p.image)}
+          ${partnerImageUploadHtml(`m_partner_img_${i}`, p.image)}
         </div>`
       );
     });
@@ -290,7 +309,7 @@
     if (uploadId.startsWith('m_hero_bg_')) return 1520 / 420;
     if (uploadId === 'm_promo_img') return 1520 / 253;
     if (uploadId.startsWith('m_consult_photo_')) return 396 / 509;
-    if (uploadId.startsWith('m_partner_img_')) return NaN;
+    if (uploadId.startsWith('m_partner_img_')) return 1;
     if (uploadId.startsWith('m_svc_icon_')) return 1;
     return 16 / 9;
   }
@@ -299,7 +318,7 @@
     if (uploadId.startsWith('m_hero_bg_')) return [1520, 420];
     if (uploadId === 'm_promo_img') return [1520, 253];
     if (uploadId.startsWith('m_consult_photo_')) return [396, 509];
-    if (uploadId.startsWith('m_partner_img_')) return [500, 300];
+    if (uploadId.startsWith('m_partner_img_')) return [400, 400];
     if (uploadId.startsWith('m_svc_icon_')) return [400, 400];
     return [1200, 675];
   }

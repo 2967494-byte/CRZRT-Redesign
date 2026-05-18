@@ -226,6 +226,102 @@
             background: rgba(41, 151, 255, 0.05);
         }
 
+        /* Партнёры: 4 карточки в ряд, квадратное превью */
+        .m-partners-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        @media (max-width: 1280px) {
+            .m-partners-admin-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .partner-admin-card {
+            position: relative;
+            min-width: 0;
+            padding: 10px;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+        }
+
+        .partner-admin-card__remove {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            z-index: 1;
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            line-height: 1;
+            font-size: 1rem;
+        }
+
+        .partner-admin-card .form-group {
+            margin-bottom: 8px;
+        }
+
+        .partner-admin-card .form-group label {
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+
+        .partner-admin-card .form-control {
+            padding: 8px 10px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
+        .partner-upload-group {
+            margin-bottom: 0 !important;
+        }
+
+        .partner-logo-preview {
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        [data-theme="light"] .partner-logo-preview {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .partner-logo-preview__img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        .partner-upload-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .partner-upload-actions .btn-save,
+        .partner-upload-actions .btn-delete {
+            padding: 6px 10px !important;
+            font-size: 0.75rem !important;
+            margin-left: 0 !important;
+        }
+
+        .partner-upload-hint {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.65rem;
+            line-height: 1.35;
+            color: var(--text-secondary);
+        }
+
         .cropper-container-wrapper {
             display: none;
             margin-top: 20px;
@@ -692,7 +788,7 @@
                         <span>Наши партнёры</span>
                         <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addPartner()">+ Партнёр</button>
                     </div>
-                    <div id="mPartnersAdmin" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"></div>
+                    <div id="mPartnersAdmin" class="m-partners-admin-grid"></div>
                 </div>
                 <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
