@@ -23,12 +23,12 @@
 
         .admin-sidebar {
             width: 280px;
-            background: var(--glass-bg);
+            background: var(--card-bg);
             border-right: 1px solid var(--card-border);
-            padding: 30px 20px;
+            padding: 24px 16px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
             position: sticky;
             top: 0;
             height: 100vh;
@@ -59,8 +59,8 @@
         }
 
         .nav-item {
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 10px 12px; font-size: 0.95rem;
+            border-radius: 8px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
@@ -79,7 +79,7 @@
         .user-role {
             margin-top: auto;
             padding: 15px;
-            border-radius: 12px;
+            border-radius: 8px;
             background: rgba(41, 151, 255, 0.1);
             border: 1px solid rgba(41, 151, 255, 0.2);
             font-size: 0.875rem;
@@ -109,20 +109,20 @@
 
         .admin-main {
             flex: 1;
-            padding: 40px 60px;
+            padding: 32px 40px;
             overflow-y: auto;
-            background-image: radial-gradient(circle at top right, rgba(41, 151, 255, 0.05), transparent 400px);
+            
         }
 
         .admin-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-bottom: 40px;
+            margin-bottom: 24px;
         }
 
         .admin-title {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
             margin-top: 10px;
             letter-spacing: -0.02em;
@@ -131,10 +131,10 @@
         .admin-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         }
 
         .card-header {
@@ -160,10 +160,10 @@
 
         .form-control {
             width: 100%;
-            padding: 14px 16px;
+            padding: 10px 14px;
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
+            border-radius: 8px;
             color: var(--text-primary);
             font-family: var(--font-inter);
             font-size: 1rem;
@@ -183,15 +183,15 @@
 
         textarea.form-control {
             resize: vertical;
-            min-height: 120px;
+            min-height: 80px;
         }
 
         .btn-save {
             background-color: #00AE4D;
             color: #fff;
             border: none;
-            padding: 10px 24px;
-            border-radius: 24px;
+            padding: 8px 20px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: opacity var(--transition-fast), transform var(--transition-fast);
@@ -208,7 +208,7 @@
 
         .image-upload-wrapper {
             border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
+            border-radius: 8px;
             padding: 60px 40px;
             text-align: center;
             cursor: pointer;
@@ -367,14 +367,22 @@
             color: var(--text-secondary);
         }
 
-        /* Отзывы: компактные строки */
+        /* Отзывы: 3 карточки в ряд */
         .m-reviews-admin {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            align-items: start;
+        }
+
+        @media (max-width: 1200px) {
+            .m-reviews-admin {
+                grid-template-columns: 1fr;
+            }
         }
 
         .review-admin-card {
+            min-width: 0;
             padding: 10px 12px;
             border: 1px solid var(--card-border);
             border-radius: 10px;
@@ -417,6 +425,34 @@
             margin-bottom: 3px;
         }
 
+        .review-admin-card__text-field > label {
+            margin-bottom: 0;
+        }
+
+        .review-admin-card__label-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 3px;
+        }
+
+        .review-admin-card__label-row label {
+            margin-bottom: 0;
+        }
+
+        .review-admin-card__counter {
+            font-size: 0.68rem;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .review-admin-card__counter--limit {
+            color: #e85c4a;
+            font-weight: 600;
+        }
+
         .review-admin-card .form-control {
             padding: 7px 9px;
             font-size: 0.82rem;
@@ -430,14 +466,117 @@
 
         .review-admin-card__meta {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
         }
 
-        @media (max-width: 1100px) {
-            .review-admin-card__meta {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
+        /* Фото блока «Получить консультацию» */
+        .consult-photos-admin {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .consult-photo-card {
+            position: relative;
+            padding: 10px 14px;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+        }
+
+        .consult-photo-card__remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+            width: 26px;
+            height: 26px;
+            padding: 0;
+            line-height: 1;
+            font-size: 1rem;
+        }
+
+        .consult-photo-card__body {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            padding-right: 32px;
+        }
+
+        .consult-photo-card__media {
+            flex-shrink: 0;
+        }
+
+        .consult-photo-frame {
+            --consult-preview-w: 158px;
+            width: var(--consult-preview-w);
+            aspect-ratio: 396 / 509;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        [data-theme="light"] .consult-photo-frame {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .consult-photo-frame__img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .consult-photo-frame--empty .consult-photo-frame__img {
+            display: none;
+        }
+
+        .consult-photo-frame__empty {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            opacity: 0.75;
+            user-select: none;
+        }
+
+        .consult-photo-frame:not(.consult-photo-frame--empty) .consult-photo-frame__empty {
+            display: none;
+        }
+
+        .consult-photo-card__info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .consult-photo-card__title {
+            display: block;
+            margin: 0 0 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .consult-photo-card__hint {
+            margin: 0 0 14px;
+            font-size: 0.82rem;
+            line-height: 1.45;
+            color: var(--text-secondary);
+        }
+
+        .consult-photo-card__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .consult-photo-card__actions .btn-save,
+        .consult-photo-card__actions .btn-delete {
+            padding: 8px 14px !important;
+            font-size: 0.85rem !important;
+            margin-left: 0 !important;
         }
 
         .cropper-container-wrapper {
@@ -445,7 +584,7 @@
             margin-top: 20px;
             height: 500px;
             background: #000;
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
             position: relative;
         }
@@ -567,8 +706,8 @@
             background-color: transparent;
             color: var(--text-primary);
             border: 1px solid var(--text-primary);
-            padding: 10px 20px;
-            border-radius: 24px;
+            padding: 8px 16px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 500;
@@ -700,7 +839,7 @@
         .modal-content {
             background: var(--bg-color);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
+            border-radius: 8px;
             padding: 40px;
             width: 100%;
             max-width: 400px;
@@ -777,7 +916,7 @@
             color: #ff4d4d;
             border: 1px solid #ff4d4d;
             padding: 6px 14px;
-            border-radius: 20px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.85rem;
@@ -794,7 +933,7 @@
             color: var(--accent-color);
             border: 1px solid var(--accent-color);
             padding: 6px 14px;
-            border-radius: 20px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.85rem;
@@ -837,7 +976,7 @@
             margin-top: 10px;
             padding: 15px;
             background: rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
+            border-radius: 8px;
             border: 1px solid var(--card-border);
         }
 
@@ -972,7 +1111,7 @@
                 <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                         <span>Hero-слайдер (до 8 слайдов)</span>
-                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addHeroSlide()">+ Слайд</button>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addHeroSlide()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Слайд</button>
                     </div>
                     <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">Фон в формате как hero_section.png (~1520×420). Перенос строки — Enter.</p>
                     <div id="mHeroSlidesAdmin" style="display:flex;flex-direction:column;gap:16px;"></div>
@@ -1004,24 +1143,24 @@
                 <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                         <span>Наши партнёры</span>
-                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addPartner()">+ Партнёр</button>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addPartner()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Партнёр</button>
                     </div>
                     <div id="mPartnersAdmin" class="m-partners-admin-grid"></div>
                 </div>
                 <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                         <span>Отзывы клиентов</span>
-                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addReview()">+ Отзыв</button>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addReview()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Отзыв</button>
                     </div>
                     <div id="mReviewsAdmin" class="m-reviews-admin"></div>
                 </div>
                 <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                         <span>Получить консультацию — фото</span>
-                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addConsultPhoto()">+ Фото</button>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addConsultPhoto()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Фото</button>
                     </div>
                     <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">При каждом обновлении страницы — случайное фото из списка (~396×509).</p>
-                    <div id="mConsultPhotosAdmin" style="display:flex;flex-direction:column;gap:16px;"></div>
+                    <div id="mConsultPhotosAdmin" class="consult-photos-admin"></div>
                 </div>
             </div>
 
@@ -1089,7 +1228,7 @@
                     </p>
                     <div id="consultingServicesAdmin" style="display: flex; flex-direction: column; gap: 30px;"></div>
                     <button class="btn-secondary" id="btnAddConsultingService"
-                        style="margin-top: 20px; width: 100%; border: 1px dashed var(--text-secondary);">+ Добавить
+                        style="margin-top: 20px; width: 100%; border: 1px dashed var(--text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Добавить
                         услугу</button>
                 </div>
             </div>
@@ -1129,7 +1268,7 @@
                     <div class="card-header">Медиа (О нас)</div>
                     <div class="form-group" style="margin-bottom: 0;">
                         <label>Главное фото</label>
-                        <div style="height: 200px; border: 1px dashed var(--card-border); border-radius: 12px; overflow: hidden; position: relative; cursor: pointer; background: #eee; display: flex; align-items: center; justify-content: center;"
+                        <div style="height: 200px; border: 1px dashed var(--card-border); border-radius: 8px; overflow: hidden; position: relative; cursor: pointer; background: #eee; display: flex; align-items: center; justify-content: center;"
                             onclick="window.activeAboutImage = true; document.getElementById('imageInput').click();">
                             <img id="a_image_preview" src=""
                                 style="width: 100%; height: 100%; object-fit: cover; display: none;">
@@ -1182,8 +1321,7 @@
                         <div class="card-header"
                             style="display:flex; justify-content:space-between; align-items:center;">
                             <span>Список курсов</span>
-                            <button class="btn-save" id="btnAddCourse" style="padding:8px 16px; font-size:0.85rem;">+
-                                Добавить курс</button>
+                            <button class="btn-save" id="btnAddCourse" style="padding:8px 16px; font-size:0.85rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Добавить курс</button>
                         </div>
                         <div id="eduCoursesAdmin" style="display:flex; flex-direction:column; gap:20px;"></div>
                     </div>
@@ -1195,8 +1333,7 @@
                         <div class="card-header"
                             style="display:flex; justify-content:space-between; align-items:center;">
                             <span>Ближайшие мероприятия</span>
-                            <button class="btn-save" id="btnAddEvent" style="padding:8px 16px; font-size:0.85rem;">+
-                                Добавить</button>
+                            <button class="btn-save" id="btnAddEvent" style="padding:8px 16px; font-size:0.85rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Добавить</button>
                         </div>
                         <div id="eduEventsAdmin" style="display:flex; flex-direction:column; gap:20px;"></div>
                     </div>
@@ -1208,8 +1345,7 @@
                         <div class="card-header"
                             style="display:flex; justify-content:space-between; align-items:center;">
                             <span>Преподаватели</span>
-                            <button class="btn-save" id="btnAddTeacher" style="padding:8px 16px; font-size:0.85rem;">+
-                                Добавить</button>
+                            <button class="btn-save" id="btnAddTeacher" style="padding:8px 16px; font-size:0.85rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Добавить</button>
                         </div>
                         <div id="eduTeachersAdmin" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;"></div>
                     </div>
@@ -1234,11 +1370,11 @@
                             <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
                     </button>
-                    <h2 class="modal-title" id="userModalTitle" style="text-align: left; margin-bottom: 30px;">
+                    <h2 class="modal-title" id="userModalTitle" style="text-align: left; margin-bottom: 24px;">
                         Добавить
                         пользователя</h2>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                         <div class="form-group">
                             <label>Имя</label>
                             <input type="text" id="newUserName" class="form-control" placeholder="Иван Иванов">
@@ -1312,7 +1448,7 @@
                         </svg>
                     </button>
 
-                    <h2 class="modal-title" style="text-align: left; margin-bottom: 30px;">Редактор изображения</h2>
+                    <h2 class="modal-title" style="text-align: left; margin-bottom: 24px;">Редактор изображения</h2>
 
                     <p id="partnerCropHint" class="partner-crop-hint">
                         Серые поля — отступы на сайте. Красная сетка — зона логотипа. При открытии логотип вписывается в сетку автоматически; «Уменьшить» / «Вписать в сетку» — подогнать вручную. Пустое место при сохранении станет белым фоном.
@@ -1929,7 +2065,7 @@
                         <span id="teacher_photo_placeholder_${i}" style="font-size:0.85rem; color:var(--text-secondary); display:${t.photo ? 'none' : 'block'};">
                             Нажмите, чтобы загрузить фото
                         </span>
-                        ${t.photo ? `<button class="btn-delete" onclick="event.stopPropagation(); window.clearTeacherPhoto(${i})" style="position:absolute;top:8px;right:8px;padding:4px 10px;font-size:0.75rem;">✕ Удалить</button>` : ''}
+                        ${t.photo ? `<button class="btn-delete" onclick="event.stopPropagation(); window.clearTeacherPhoto(${i})" style="position:absolute;top:8px;right:8px;padding:4px 10px;font-size:0.75rem;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>Удалить</button>` : ''}
                         <input type="hidden" id="teacher_photo_val_${i}" value="${t.photo || ''}">
                         <input type="file" id="teacher_photo_input_${i}" accept="image/*" style="display:none;" onchange="window.handleTeacherPhotoChange(event, ${i})">
                     </div>
@@ -2532,7 +2668,7 @@
                 const saveBtnHint = document.getElementById('globalSaveBtn');
                 if (saveBtnHint) {
                     saveBtnHint.style.boxShadow = '0 0 15px rgba(52, 199, 89, 0.5)';
-                    saveBtnHint.innerText = 'Сохраните изменения! 💾';
+                    saveBtnHint.innerText = 'Сохраните изменения!';
                 }
 
                 cropper.destroy();
@@ -2608,7 +2744,7 @@
             consultingAuthorsAdmin.innerHTML = '';
             consultingData.authors.forEach((author, index) => {
                 const authorHTML = `
-                    <div style="border-left: 3px solid var(--accent-color); padding-left: 20px; margin-bottom: 30px; background: rgba(0,0,0,0.02); padding: 25px; border-radius: 0 16px 16px 0;">
+                    <div style="border-left: 3px solid var(--accent-color); padding-left: 20px; margin-bottom: 24px; background: rgba(0,0,0,0.02); padding: 25px; border-radius: 0 16px 16px 0;">
                         <h4 style="margin-bottom: 20px; font-weight: 600; font-size: 1.1rem; color: var(--accent-color);">Автор ${index + 1}</h4>
                         
                         <!-- Row 1: Photo & Avatar Text -->
@@ -2617,7 +2753,7 @@
                                 <label>Фото (Аватар)</label>
                                 <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--card-border); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; border: 2px solid var(--accent-color);" onclick="window.activeAuthorIndex = ${index}; window.activeFeatureCardIndex = undefined; document.getElementById('imageInput').click()">
                                     <img id="c_author_photo_preview_${index}" src="${author.avatarUrl || ''}" style="width: 100%; height: 100%; object-fit: cover; display: ${author.avatarUrl ? 'block' : 'none'};">
-                                    <span id="c_author_photo_text_${index}" style="font-size: 2.5rem; font-weight: 700; color: var(--text-secondary); display: ${author.avatarUrl ? 'none' : 'block'};">${author.avatarText || 'ИИ'}</span>
+                                    <span id="c_author_photo_text_${index}" style="font-size: 2rem; font-weight: 700; color: var(--text-secondary); display: ${author.avatarUrl ? 'none' : 'block'};">${author.avatarText || 'ИИ'}</span>
                                     <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); font-size: 0.7rem; text-align: center; color: white; padding: 4px 0;">ИЗМЕНИТЬ</div>
                                 </div>
                                 <input type="hidden" id="c_author_avatarUrl_${index}" value="${author.avatarUrl || ''}">
@@ -2630,7 +2766,7 @@
                         </div>
 
                         <!-- Row 2: Basic Info -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>ФИО</label>
                                 <input type="text" class="form-control" id="c_author_name_${index}" value="${author.name || ''}" placeholder="Иванов И.И.">
@@ -2653,7 +2789,7 @@
             consultingServicesAdmin.innerHTML = '';
             consultingData.services.forEach((service, index) => {
                 const serviceHTML = `
-                    <div style="background: rgba(0,0,0,0.05); padding: 20px; border-radius: 12px; border: 1px solid var(--card-border);">
+                    <div style="background: rgba(0,0,0,0.05); padding: 20px; border-radius: 8px; border: 1px solid var(--card-border);">
                         <h3 style="margin-bottom: 15px; font-weight: 600; color: var(--accent-color);">${service.title}</h3>
                         <input type="hidden" id="c_service_id_${index}" value="${service.id}">
                         
@@ -2674,7 +2810,7 @@
                         </div>
                         <div class="form-group">
                             <label>Список получаемых результатов (каждый пункт с новой строки, без тире)</label>
-                            <textarea class="form-control" id="c_service_benefits_${index}" style="min-height: 120px;">${service.benefits || ''}</textarea>
+                            <textarea class="form-control" id="c_service_benefits_${index}" style="min-height: 80px;">${service.benefits || ''}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Мелкий шрифт (сноска, если есть)</label>
@@ -2831,6 +2967,12 @@
 
                 if (!result.success) {
                     throw new Error(result.error || 'Ошибка сервера');
+                }
+
+                try {
+                    localStorage.setItem(keyToSave, JSON.stringify(dataToSave));
+                } catch (storageErr) {
+                    console.warn('localStorage backup failed', storageErr);
                 }
 
                 // Визуальный отклик об успехе

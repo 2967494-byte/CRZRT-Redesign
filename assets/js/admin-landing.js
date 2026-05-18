@@ -4,6 +4,9 @@
 (function () {
   const MAX_HERO_SLIDES = 8;
 
+  /** Макс. длина текста отзыва на карточке лендинга (≈ объём «Все понятно, очень интересно!» ×8 + «Все») */
+  const REVIEW_TEXT_MAX_LENGTH = 243;
+
   /** Поля и сетка для логотипов партнёров (доли от стороны кадра 0–1) */
   const PARTNER_LOGO_CROP = {
     width: 400,
@@ -79,6 +82,40 @@
       return window.LandingContent.migrateLandingData(raw);
     }
     return { ...DEFAULT_LANDING_MAIN, ...(raw || {}) };
+  }
+
+  /** Заполняет превью/hidden без вставки base64 в HTML-разметку (иначе браузер обрезает длинные value/src). */
+  function setImageUploadState(id, src) {
+    const v = src ? String(src) : '';
+    const prev = document.getElementById(`${id}_preview`);
+    const val = document.getElementById(`${id}_val`);
+    const clr = document.getElementById(`${id}_clear`);
+    if (val) val.value = v;
+    if (prev) prev.src = v;
+    const frame = document.querySelector(`[data-consult-frame-for="${id}"]`);
+    if (frame) frame.classList.toggle('consult-photo-frame--empty', !v);
+    if (clr) clr.style.display = v ? 'inline-flex' : 'none';
+  }
+
+  function consultPhotoUploadShell(id, label) {
+    return `
+      <div class="consult-photo-card__body">
+        <div class="consult-photo-card__media">
+          <div class="consult-photo-frame consult-photo-frame--empty" data-consult-frame-for="${id}">
+            <span class="consult-photo-frame__empty">396×509</span>
+            <img id="${id}_preview" class="consult-photo-frame__img" src="" alt="">
+          </div>
+        </div>
+        <div class="consult-photo-card__info">
+          <span class="consult-photo-card__title">${label}</span>
+          <p class="consult-photo-card__hint">При обновлении страницы на сайте показывается случайное фото из списка.</p>
+          <div class="consult-photo-card__actions image-upload-mini" data-upload-id="${id}">
+            <button type="button" class="btn-save" onclick="AdminLanding.pickImage('${id}')">Загрузить</button>
+            <button type="button" class="btn-delete" id="${id}_clear" style="display:none;" onclick="AdminLanding.clearImage('${id}')">Удалить</button>
+            <input type="hidden" id="${id}_val" value="">
+          </div>
+        </div>
+      </div>`;
   }
 
   function imageUploadHtml(id, label, previewSrc) {
@@ -169,10 +206,42 @@
     });
   }
 
+  function truncateReviewText(text) {
+    const s = String(text || '');
+    return s.length > REVIEW_TEXT_MAX_LENGTH ? s.slice(0, REVIEW_TEXT_MAX_LENGTH) : s;
+  }
+
+  function updateReviewTextLimit(textarea) {
+    if (!textarea) return;
+    const max = REVIEW_TEXT_MAX_LENGTH;
+    if (textarea.value.length > max) {
+      textarea.value = textarea.value.slice(0, max);
+    }
+    const counter = textarea.closest('.review-admin-card')?.querySelector('.review-admin-card__counter');
+    if (counter) {
+      const len = textarea.value.length;
+      counter.textContent = `${len} / ${max}`;
+      counter.classList.toggle('review-admin-card__counter--limit', len >= max);
+    }
+  }
+
+  function bindReviewTextLimits(root) {
+    if (!root) return;
+    root.querySelectorAll('textarea[id^="m_rev_text_"]').forEach((ta) => {
+      ta.setAttribute('maxlength', String(REVIEW_TEXT_MAX_LENGTH));
+      ta.addEventListener('input', () => updateReviewTextLimit(ta));
+      ta.addEventListener('paste', () => {
+        requestAnimationFrame(() => updateReviewTextLimit(ta));
+      });
+      updateReviewTextLimit(ta);
+    });
+  }
+
   function renderReviews(container, reviews) {
     container.innerHTML = '';
     reviews.forEach((r, i) => {
       const num = i + 1;
+      const reviewText = truncateReviewText(r.text);
       container.insertAdjacentHTML(
         'beforeend',
         `<div class="review-admin-card">
@@ -180,44 +249,50 @@
             <span class="review-admin-card__title">Отзыв №${num}</span>
             <button type="button" class="btn-delete review-admin-card__remove" onclick="AdminLanding.removeReview(${i})" aria-label="Удалить отзыв №${num}">×</button>
           </div>
-          <div class="form-group">
-            <label for="m_rev_text_${i}">Текст</label>
-            <textarea class="form-control" id="m_rev_text_${i}" rows="2">${escapeAttr(r.text)}</textarea>
+          <div class="form-group review-admin-card__text-field">
+            <div class="review-admin-card__label-row">
+              <label for="m_rev_text_${i}">Текст</label>
+              <span class="review-admin-card__counter" id="m_rev_count_${i}">0 / ${REVIEW_TEXT_MAX_LENGTH}</span>
+            </div>
+            <textarea class="form-control" id="m_rev_text_${i}" rows="2" maxlength="${REVIEW_TEXT_MAX_LENGTH}">${escapeAttr(reviewText)}</textarea>
           </div>
           <div class="review-admin-card__meta">
             <div class="form-group">
-              <label for="m_rev_name1_${i}">Имя, стр. 1</label>
+              <label for="m_rev_name1_${i}">Имя 1</label>
               <input type="text" class="form-control" id="m_rev_name1_${i}" value="${escapeAttr(r.nameLines?.[0] || '')}">
             </div>
             <div class="form-group">
-              <label for="m_rev_name2_${i}">Имя, стр. 2</label>
+              <label for="m_rev_name2_${i}">Имя 2</label>
               <input type="text" class="form-control" id="m_rev_name2_${i}" value="${escapeAttr(r.nameLines?.[1] || '')}">
             </div>
             <div class="form-group">
-              <label for="m_rev_role1_${i}">Должность, стр. 1</label>
+              <label for="m_rev_role1_${i}">Должн. 1</label>
               <input type="text" class="form-control" id="m_rev_role1_${i}" value="${escapeAttr(r.roleLines?.[0] || '')}">
             </div>
             <div class="form-group">
-              <label for="m_rev_role2_${i}">Должность, стр. 2</label>
+              <label for="m_rev_role2_${i}">Должн. 2</label>
               <input type="text" class="form-control" id="m_rev_role2_${i}" value="${escapeAttr(r.roleLines?.[1] || '')}">
             </div>
           </div>
         </div>`
       );
     });
+    bindReviewTextLimits(container);
   }
 
   function renderConsultPhotos(container, photos) {
     container.innerHTML = '';
-    photos.forEach((src, i) => {
+    const list = Array.isArray(photos) && photos.length ? photos : [''];
+    list.forEach((src, i) => {
+      const uploadId = `m_consult_photo_${i}`;
       container.insertAdjacentHTML(
         'beforeend',
-        `<div style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;">
-          <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;" onclick="AdminLanding.removeConsultPhoto(${i})">×</button>
-          ${imageUploadHtml(`m_consult_photo_${i}`, 'Фото (${i + 1})', src)}
-          <small style="color:var(--text-secondary);">При обновлении страницы показывается случайное фото из списка.</small>
+        `<div class="consult-photo-card">
+          <button type="button" class="btn-delete consult-photo-card__remove" onclick="AdminLanding.removeConsultPhoto(${i})" aria-label="Удалить фото">×</button>
+          ${consultPhotoUploadShell(uploadId, `Фото ${i + 1}`)}
         </div>`
       );
+      setImageUploadState(uploadId, src);
     });
   }
 
@@ -247,6 +322,46 @@
 
   function readImageVal(id) {
     return document.getElementById(`${id}_val`)?.value || '';
+  }
+
+  function collectConsultationPhotosFromForm() {
+    const inputs = Array.from(
+      document.querySelectorAll('input[type="hidden"][id^="m_consult_photo_"][id$="_val"]')
+    ).sort((a, b) => {
+      const indexFromId = (el) => parseInt(el.id.replace('m_consult_photo_', '').replace('_val', ''), 10);
+      return indexFromId(a) - indexFromId(b);
+    });
+    const photos = [];
+    inputs.forEach((input) => {
+      const v = (input.value || '').trim();
+      if (v) photos.push(v);
+    });
+    return photos;
+  }
+
+  function consultationPhotosForSave() {
+    const photos = collectConsultationPhotosFromForm();
+    return photos.length ? photos : ['assets/img/mask_group.png'];
+  }
+
+  function syncConsultPhotoToMemory(uploadId, dataUrl) {
+    const match = /^m_consult_photo_(\d+)$/.exec(uploadId || '');
+    if (!match || !window.mainPageData) return;
+    const index = parseInt(match[1], 10);
+    const main = window.mainPageData;
+    if (!main.consultation) main.consultation = { photos: [] };
+    const photos = Array.isArray(main.consultation.photos) ? [...main.consultation.photos] : [];
+    while (photos.length <= index) photos.push('');
+    photos[index] = dataUrl;
+    main.consultation.photos = photos;
+  }
+
+  function clearConsultPhotoInMemory(uploadId) {
+    const match = /^m_consult_photo_(\d+)$/.exec(uploadId || '');
+    if (!match || !window.mainPageData?.consultation?.photos) return;
+    const index = parseInt(match[1], 10);
+    const photos = window.mainPageData.consultation.photos;
+    if (index >= 0 && index < photos.length) photos[index] = '';
   }
 
   function collectMainPageFromForm(mainPageData) {
@@ -287,7 +402,7 @@
     const rCount = document.querySelectorAll('[id^="m_rev_text_"]').length;
     for (let i = 0; i < rCount; i++) {
       reviews.push({
-        text: document.getElementById(`m_rev_text_${i}`)?.value || '',
+        text: truncateReviewText(document.getElementById(`m_rev_text_${i}`)?.value || ''),
         nameLines: [
           document.getElementById(`m_rev_name1_${i}`)?.value || '',
           document.getElementById(`m_rev_name2_${i}`)?.value || ''
@@ -297,12 +412,6 @@
           document.getElementById(`m_rev_role2_${i}`)?.value || ''
         ].filter(Boolean)
       });
-    }
-
-    const photos = [];
-    for (let i = 0; document.getElementById(`m_consult_photo_${i}_val`); i++) {
-      const v = readImageVal(`m_consult_photo_${i}`);
-      if (v) photos.push(v);
     }
 
     mainPageData.heroSlides = heroSlides;
@@ -315,7 +424,7 @@
     };
     mainPageData.partners = partners;
     mainPageData.reviews = reviews;
-    mainPageData.consultation = { photos: photos.length ? photos : ['assets/img/mask_group.png'] };
+    mainPageData.consultation = { photos: consultationPhotosForSave() };
     return mainPageData;
   }
 
@@ -328,6 +437,11 @@
   }
 
   function clearImage(uploadId) {
+    if (uploadId?.startsWith('m_consult_photo_')) {
+      clearConsultPhotoInMemory(uploadId);
+      setImageUploadState(uploadId, '');
+      return;
+    }
     const prev = document.getElementById(`${uploadId}_preview`);
     const val = document.getElementById(`${uploadId}_val`);
     const clr = document.getElementById(`${uploadId}_clear`);
@@ -337,6 +451,11 @@
   }
 
   function applyCroppedImage(uploadId, dataUrl) {
+    if (uploadId?.startsWith('m_consult_photo_')) {
+      syncConsultPhotoToMemory(uploadId, dataUrl);
+      setImageUploadState(uploadId, dataUrl);
+      return;
+    }
     const prev = document.getElementById(`${uploadId}_preview`);
     const val = document.getElementById(`${uploadId}_val`);
     const clr = document.getElementById(`${uploadId}_clear`);
@@ -527,6 +646,8 @@
     setPartnerCropperMode,
     fitPartnerLogoToSafeZone,
     partnerZoomBy,
+    REVIEW_TEXT_MAX_LENGTH,
+    updateReviewTextLimit,
     MAX_HERO_SLIDES,
     addHeroSlide() {
       const main = window.mainPageData;
@@ -574,7 +695,7 @@
     addConsultPhoto() {
       const main = window.mainPageData;
       window.saveMainPageStateToMemory?.();
-      if (!main.consultation) main.consultation = { photos: [] };
+      main.consultation = { photos: collectConsultationPhotosFromForm() };
       main.consultation.photos.push('');
       renderMainPageAdmin(main);
     },
@@ -582,6 +703,7 @@
       const main = window.mainPageData;
       window.saveMainPageStateToMemory?.();
       main.consultation.photos.splice(i, 1);
+      if (!main.consultation.photos.length) main.consultation.photos.push('');
       renderMainPageAdmin(main);
     }
   };

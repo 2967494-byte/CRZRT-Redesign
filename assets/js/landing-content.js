@@ -6,6 +6,7 @@
   const CONTENT_PENDING_CLASS = 'landing-content-pending';
   const CONTENT_READY_CLASS = 'landing-content-ready';
   const REVEAL_TIMEOUT_MS = 10000;
+  const REVIEW_TEXT_MAX_LENGTH = 243;
 
   document.documentElement.classList.add(CONTENT_PENDING_CLASS);
 
@@ -107,6 +108,26 @@
       .join('<br>');
   }
 
+  function normalizeConsultationPhotos(raw, data) {
+    let photos = [];
+    if (Array.isArray(data?.consultation?.photos)) {
+      photos = [...data.consultation.photos];
+    } else if (typeof data?.consultation === 'string' && data.consultation.trim()) {
+      photos = [data.consultation.trim()];
+    }
+    if (!photos.length && Array.isArray(raw?.consultation?.photos)) {
+      photos = [...raw.consultation.photos];
+    }
+    if (!photos.length && raw?.consultationPhoto) {
+      photos = [raw.consultationPhoto];
+    }
+    photos = photos.map((p) => (p && String(p).trim()) || '').filter(Boolean);
+    if (!photos.length) {
+      photos = [...LANDING_DEFAULTS.consultation.photos];
+    }
+    return { photos };
+  }
+
   function migrateLandingData(raw) {
     const data = { ...LANDING_DEFAULTS, ...(raw || {}) };
 
@@ -157,13 +178,7 @@
       }
     }
 
-    if (!data.consultation || !Array.isArray(data.consultation.photos)) {
-      data.consultation = {
-        photos: raw?.consultationPhoto
-          ? [raw.consultationPhoto]
-          : [...LANDING_DEFAULTS.consultation.photos]
-      };
-    }
+    data.consultation = normalizeConsultationPhotos(raw, data);
 
     return data;
   }
@@ -340,8 +355,10 @@
       .map((r) => {
         const nameLines = (r.nameLines || []).map((line) => `<span class="review-card__name-line">${escapeHtml(line)}</span>`).join('');
         const roleLines = (r.roleLines || []).map((line) => `<span class="review-card__role-line">${escapeHtml(line)}</span>`).join('');
+        const text = String(r.text || '');
+        const reviewText = text.length > REVIEW_TEXT_MAX_LENGTH ? text.slice(0, REVIEW_TEXT_MAX_LENGTH) : text;
         return `<div class="review-card reveal-init">
-          <p class="review-card__text">${escapeHtml(r.text)}</p>
+          <p class="review-card__text">${escapeHtml(reviewText)}</p>
           <div class="review-card__footer">
             <div class="review-card__author">
               <p class="review-card__name">${nameLines}</p>
@@ -361,10 +378,11 @@
   function renderConsultationPhoto(photos) {
     const person = document.querySelector('.consultation-card__person');
     if (!person) return;
-    const list = (photos || []).filter(Boolean);
+    const list = (photos || []).map((p) => (p && String(p).trim()) || '').filter(Boolean);
     const pool = list.length ? list : LANDING_DEFAULTS.consultation.photos;
     const chosen = pool[Math.floor(Math.random() * pool.length)];
-    person.style.backgroundImage = `url('${chosen}')`;
+    const safeUrl = String(chosen).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    person.style.backgroundImage = `url("${safeUrl}")`;
     person.style.backgroundRepeat = 'no-repeat';
     person.style.backgroundPosition = 'right bottom';
     person.style.backgroundSize = 'contain';
@@ -413,6 +431,7 @@
   window.LandingContent = {
     loadLandingData,
     migrateLandingData,
+    normalizeConsultationPhotos,
     LANDING_DEFAULTS,
     applyHeroSlide
   };
