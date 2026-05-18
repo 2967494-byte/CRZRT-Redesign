@@ -10,8 +10,8 @@
     height: 400,
     marginX: 0.18,
     marginY: 0.14,
-    minZoomRatio: 0.02,
-    zoomStep: 0.12
+    minZoomRatio: 0.001,
+    zoomStep: 0.18
   };
 
   let partnerCropGuidesEl = null;
@@ -370,6 +370,42 @@
     if (wrapperEl) wrapperEl.classList.toggle('cropper-wrapper--partner', Boolean(enabled));
     const hint = document.getElementById('partnerCropHint');
     if (hint) hint.style.display = enabled ? 'block' : 'none';
+    const btnFit = document.getElementById('btnPartnerFit');
+    if (btnFit) btnFit.style.display = enabled ? 'inline-flex' : 'none';
+  }
+
+  /** Вписать логотип в красную сетку (с учётом серых полей) */
+  function fitPartnerLogoToSafeZone(cropperInstance) {
+    if (!cropperInstance) return;
+    const crop = cropperInstance.getCropBoxData();
+    const img = cropperInstance.getImageData();
+    if (!crop?.width || !img?.naturalWidth) return;
+
+    const safeW = crop.width * (1 - 2 * PARTNER_LOGO_CROP.marginX);
+    const safeH = crop.height * (1 - 2 * PARTNER_LOGO_CROP.marginY);
+    let targetRatio = Math.min(safeW / img.naturalWidth, safeH / img.naturalHeight) * 0.92;
+    targetRatio = Math.max(targetRatio, PARTNER_LOGO_CROP.minZoomRatio);
+
+    cropperInstance.zoomTo(targetRatio);
+
+    const canvas = cropperInstance.getCanvasData();
+    cropperInstance.setCanvasData({
+      left: crop.left + (crop.width - canvas.width) / 2,
+      top: crop.top + (crop.height - canvas.height) / 2
+    });
+    mountPartnerCropGuides(cropperInstance);
+  }
+
+  function partnerZoomBy(cropperInstance, direction) {
+    if (!cropperInstance) return;
+    const img = cropperInstance.getImageData();
+    const factor = direction < 0 ? 0.82 : 1.22;
+    let next = (img.ratio || 1) * factor;
+    if (direction < 0) {
+      next = Math.max(next, PARTNER_LOGO_CROP.minZoomRatio);
+    }
+    cropperInstance.zoomTo(next);
+    mountPartnerCropGuides(cropperInstance);
   }
 
   function getCropperOptions(uploadId) {
@@ -391,38 +427,28 @@
     }
 
     return {
-      viewMode: 1,
+      viewMode: 0,
       dragMode: 'move',
       aspectRatio: 1,
-      autoCropArea: 1,
+      autoCropArea: 0.92,
       background: false,
       zoomable: true,
       zoomOnWheel: true,
-      wheelZoomRatio: 0.08,
+      wheelZoomRatio: 0.12,
       guides: false,
-      center: false,
+      center: true,
       highlight: false,
-      modal: true,
+      modal: false,
       cropBoxMovable: false,
       cropBoxResizable: false,
       toggleDragModeOnDblclick: false,
-      minContainerWidth: 200,
-      minContainerHeight: 200,
       ready() {
-        mountPartnerCropGuides(this);
-        try {
-          this.zoomTo(PARTNER_LOGO_CROP.minZoomRatio + 0.15);
-        } catch (e) {
-          /* cropper может не поддерживать zoomTo в старых сборках */
-        }
+        const cropper = this;
+        mountPartnerCropGuides(cropper);
+        setTimeout(() => fitPartnerLogoToSafeZone(cropper), 50);
       },
       crop() {
         mountPartnerCropGuides(this);
-      },
-      zoom(event) {
-        if (event.detail.ratio < PARTNER_LOGO_CROP.minZoomRatio) {
-          event.preventDefault();
-        }
       }
     };
   }
@@ -438,7 +464,7 @@
 
   function getZoomStep(uploadId, direction) {
     if (isPartnerUploadId(uploadId)) {
-      return direction < 0 ? -PARTNER_LOGO_CROP.zoomStep : PARTNER_LOGO_CROP.zoomStep;
+      return null;
     }
     return direction < 0 ? -0.1 : 0.1;
   }
@@ -478,6 +504,8 @@
     getZoomStep,
     unmountPartnerCropGuides,
     setPartnerCropperMode,
+    fitPartnerLogoToSafeZone,
+    partnerZoomBy,
     MAX_HERO_SLIDES,
     addHeroSlide() {
       const main = window.mainPageData;
