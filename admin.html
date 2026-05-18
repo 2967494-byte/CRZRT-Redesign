@@ -279,22 +279,67 @@
         }
 
         .partner-logo-preview {
+            --partner-mx: 18%;
+            --partner-my: 14%;
             aspect-ratio: 1 / 1;
             width: 100%;
             margin-bottom: 8px;
             border-radius: 8px;
-            background: rgba(0, 0, 0, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #fff;
             overflow: hidden;
         }
 
-        [data-theme="light"] .partner-logo-preview {
-            background: rgba(0, 0, 0, 0.06);
+        .partner-logo-preview__inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .partner-logo-preview__margin {
+            position: absolute;
+            background: #d4dae2;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        [data-theme="light"] .partner-logo-preview__margin {
+            background: #c8cfd8;
+        }
+
+        .partner-logo-preview__margin--left {
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--partner-mx);
+        }
+
+        .partner-logo-preview__margin--right {
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--partner-mx);
+        }
+
+        .partner-logo-preview__margin--top {
+            left: var(--partner-mx);
+            right: var(--partner-mx);
+            top: 0;
+            height: var(--partner-my);
+        }
+
+        .partner-logo-preview__margin--bottom {
+            left: var(--partner-mx);
+            right: var(--partner-mx);
+            bottom: 0;
+            height: var(--partner-my);
         }
 
         .partner-logo-preview__img {
+            position: relative;
+            z-index: 1;
             width: 100%;
             height: 100%;
             object-fit: contain;
@@ -331,6 +376,106 @@
             overflow: hidden;
             position: relative;
         }
+
+        .cropper-container-wrapper.cropper-wrapper--partner {
+            background: #fff;
+        }
+
+        .cropper-wrapper--partner .cropper-bg {
+            background: #fff;
+        }
+
+        .cropper-wrapper--partner .cropper-modal {
+            opacity: 0.35;
+        }
+
+        .cropper-wrapper--partner .cropper-view-box {
+            outline: 2px solid rgba(220, 50, 50, 0.85);
+            outline-offset: -1px;
+        }
+
+        .partner-crop-hint {
+            display: none;
+            margin: 0 0 12px;
+            font-size: 0.85rem;
+            line-height: 1.45;
+            color: var(--text-secondary);
+        }
+
+        .partner-crop-guides {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .partner-crop-guides__zone {
+            position: absolute;
+            background: rgba(173, 184, 198, 0.52);
+        }
+
+        .partner-crop-guides__zone--left {
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--partner-mx, 18%);
+        }
+
+        .partner-crop-guides__zone--right {
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--partner-mx, 18%);
+        }
+
+        .partner-crop-guides__zone--top {
+            left: var(--partner-mx, 18%);
+            right: var(--partner-mx, 18%);
+            top: 0;
+            height: var(--partner-my, 14%);
+        }
+
+        .partner-crop-guides__zone--bottom {
+            left: var(--partner-mx, 18%);
+            right: var(--partner-mx, 18%);
+            bottom: 0;
+            height: var(--partner-my, 14%);
+        }
+
+        .partner-crop-guides__safe {
+            position: absolute;
+            left: var(--partner-mx, 18%);
+            right: var(--partner-mx, 18%);
+            top: var(--partner-my, 14%);
+            bottom: var(--partner-my, 14%);
+            border: 1px solid rgba(220, 50, 50, 0.8);
+            box-sizing: border-box;
+        }
+
+        .partner-crop-guides__line {
+            position: absolute;
+            background: rgba(230, 45, 45, 0.9);
+        }
+
+        .partner-crop-guides__line--v1,
+        .partner-crop-guides__line--v2 {
+            top: 0;
+            bottom: 0;
+            width: 1px;
+        }
+
+        .partner-crop-guides__line--v1 { left: 33.333%; }
+        .partner-crop-guides__line--v2 { left: 66.666%; }
+
+        .partner-crop-guides__line--h1,
+        .partner-crop-guides__line--h2 {
+            left: 0;
+            right: 0;
+            height: 1px;
+        }
+
+        .partner-crop-guides__line--h1 { top: 33.333%; }
+        .partner-crop-guides__line--h2 { top: 66.666%; }
 
         #imageToCrop {
             max-width: 100%;
@@ -1095,6 +1240,10 @@
                     </button>
 
                     <h2 class="modal-title" style="text-align: left; margin-bottom: 30px;">Редактор изображения</h2>
+
+                    <p id="partnerCropHint" class="partner-crop-hint">
+                        Серые поля — отступы на сайте. Красная сетка — зона логотипа. «Уменьшить» отдаляет знак; пустое место при сохранении заполнится белым фоном.
+                    </p>
 
                     <div class="cropper-container-wrapper" id="cropperWrapper" style="display: block;">
                         <img id="imageToCrop" src="">
@@ -2195,30 +2344,53 @@
 
                     if (cropper) {
                         cropper.destroy();
+                        cropper = null;
+                    }
+                    if (AdminLanding?.unmountPartnerCropGuides) AdminLanding.unmountPartnerCropGuides();
+
+                    const uploadId = window.cropTarget?.uploadId;
+                    const isPartner = AdminLanding?.isPartnerUploadId?.(uploadId);
+
+                    if (AdminLanding?.setPartnerCropperMode) {
+                        AdminLanding.setPartnerCropperMode(isPartner, cropperWrapper);
                     }
 
-                    let currentAspect = window.activeAuthorIndex !== null ? 1 : 16 / 9;
-                    if (window.cropTarget && AdminLanding) {
-                        const a = AdminLanding.getAspect(window.cropTarget.uploadId);
-                        currentAspect = Number.isNaN(a) ? NaN : a;
+                    let cropperOpts;
+                    if (AdminLanding?.getCropperOptions && uploadId) {
+                        cropperOpts = AdminLanding.getCropperOptions(uploadId);
+                    } else {
+                        let currentAspect = window.activeAuthorIndex !== null ? 1 : 16 / 9;
+                        if (window.cropTarget && AdminLanding) {
+                            const a = AdminLanding.getAspect(uploadId);
+                            currentAspect = Number.isNaN(a) ? NaN : a;
+                        }
+                        cropperOpts = {
+                            viewMode: 2,
+                            dragMode: 'move',
+                            autoCropArea: 1,
+                            background: false,
+                            zoomable: true
+                        };
+                        if (!Number.isNaN(currentAspect)) cropperOpts.aspectRatio = currentAspect;
                     }
-
-                    const cropperOpts = {
-                        viewMode: 2,
-                        dragMode: 'move',
-                        autoCropArea: 1,
-                        background: false,
-                        zoomable: true
-                    };
-                    if (!Number.isNaN(currentAspect)) cropperOpts.aspectRatio = currentAspect;
                     cropper = new Cropper(imageToCrop, cropperOpts);
                 };
                 reader.readAsDataURL(files[0]);
             }
         }
 
-        btnZoomIn.addEventListener('click', () => cropper && cropper.zoom(0.1));
-        btnZoomOut.addEventListener('click', () => cropper && cropper.zoom(-0.1));
+        btnZoomIn.addEventListener('click', () => {
+            if (!cropper) return;
+            const uploadId = window.cropTarget?.uploadId;
+            const step = AdminLanding?.getZoomStep?.(uploadId, 1) ?? 0.1;
+            cropper.zoom(step);
+        });
+        btnZoomOut.addEventListener('click', () => {
+            if (!cropper) return;
+            const uploadId = window.cropTarget?.uploadId;
+            const step = AdminLanding?.getZoomStep?.(uploadId, -1) ?? -0.1;
+            cropper.zoom(step);
+        });
 
         btnCrop.addEventListener('click', () => {
             if (cropper) {
@@ -2231,12 +2403,16 @@
                     [resWidth, resHeight] = AdminLanding.getCropSize(window.cropTarget.uploadId);
                 }
 
-                const canvas = cropper.getCroppedCanvas({
-                    width: resWidth,
-                    height: resHeight
-                });
-                // Use image/jpeg with 0.7 quality to save space in localStorage
-                const resultBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                const uploadId = window.cropTarget?.uploadId;
+                let canvasOpts = { width: resWidth, height: resHeight };
+                if (window.cropTarget && AdminLanding?.getCroppedCanvasOptions) {
+                    canvasOpts = AdminLanding.getCroppedCanvasOptions(uploadId);
+                }
+                const canvas = cropper.getCroppedCanvas(canvasOpts);
+                const isPartner = AdminLanding?.isPartnerUploadId?.(uploadId);
+                const resultBase64 = isPartner
+                    ? canvas.toDataURL('image/png')
+                    : canvas.toDataURL('image/jpeg', 0.7);
 
                 if (window.activeAuthorIndex !== null) {
                     const idx = window.activeAuthorIndex;
@@ -2271,6 +2447,8 @@
 
                 cropper.destroy();
                 cropper = null;
+                if (AdminLanding?.unmountPartnerCropGuides) AdminLanding.unmountPartnerCropGuides();
+                if (AdminLanding?.setPartnerCropperMode) AdminLanding.setPartnerCropperMode(false, cropperWrapper);
             }
         });
 
@@ -2279,6 +2457,8 @@
                 cropper.destroy();
                 cropper = null;
             }
+            if (AdminLanding?.unmountPartnerCropGuides) AdminLanding.unmountPartnerCropGuides();
+            if (AdminLanding?.setPartnerCropperMode) AdminLanding.setPartnerCropperMode(false, cropperWrapper);
             document.getElementById('cropperGlobalContainer').style.display = 'none';
             window.activeAuthorIndex = null;
             window.activeFeatureCardIndex = undefined;

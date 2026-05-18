@@ -3,6 +3,19 @@
  */
 (function () {
   const MAX_HERO_SLIDES = 8;
+
+  /** Поля и сетка для логотипов партнёров (доли от стороны кадра 0–1) */
+  const PARTNER_LOGO_CROP = {
+    width: 400,
+    height: 400,
+    marginX: 0.18,
+    marginY: 0.14,
+    minZoomRatio: 0.02,
+    zoomStep: 0.12
+  };
+
+  let partnerCropGuidesEl = null;
+
   const SERVICE_VARIANTS = [
     { id: 'green', label: 'Зелёная' },
     { id: 'peach', label: 'Персиковая' },
@@ -89,8 +102,14 @@
       <div class="form-group partner-upload-group">
         <label>Логотип</label>
         <div class="image-upload-mini" data-upload-id="${id}">
-          <div class="partner-logo-preview">
-            <img id="${id}_preview" class="partner-logo-preview__img" src="${escapeAttr(previewSrc)}" alt="" style="display:${show};">
+          <div class="partner-logo-preview" style="--partner-mx:${PARTNER_LOGO_CROP.marginX * 100}%;--partner-my:${PARTNER_LOGO_CROP.marginY * 100}%;">
+            <div class="partner-logo-preview__inner">
+              <span class="partner-logo-preview__margin partner-logo-preview__margin--left" aria-hidden="true"></span>
+              <span class="partner-logo-preview__margin partner-logo-preview__margin--right" aria-hidden="true"></span>
+              <span class="partner-logo-preview__margin partner-logo-preview__margin--top" aria-hidden="true"></span>
+              <span class="partner-logo-preview__margin partner-logo-preview__margin--bottom" aria-hidden="true"></span>
+              <img id="${id}_preview" class="partner-logo-preview__img" src="${escapeAttr(previewSrc)}" alt="" style="display:${show};">
+            </div>
           </div>
           <div class="partner-upload-actions">
             <button type="button" class="btn-save" onclick="AdminLanding.pickImage('${id}')">Загрузить</button>
@@ -305,6 +324,125 @@
     if (clr) clr.style.display = 'inline-flex';
   }
 
+  function isPartnerUploadId(uploadId) {
+    return Boolean(uploadId && uploadId.startsWith('m_partner_img_'));
+  }
+
+  function getPartnerGuidesElement() {
+    if (partnerCropGuidesEl) return partnerCropGuidesEl;
+    const mx = `${PARTNER_LOGO_CROP.marginX * 100}%`;
+    const my = `${PARTNER_LOGO_CROP.marginY * 100}%`;
+    const el = document.createElement('div');
+    el.className = 'partner-crop-guides';
+    el.setAttribute('aria-hidden', 'true');
+    el.style.setProperty('--partner-mx', mx);
+    el.style.setProperty('--partner-my', my);
+    el.innerHTML = `
+      <span class="partner-crop-guides__zone partner-crop-guides__zone--left"></span>
+      <span class="partner-crop-guides__zone partner-crop-guides__zone--right"></span>
+      <span class="partner-crop-guides__zone partner-crop-guides__zone--top"></span>
+      <span class="partner-crop-guides__zone partner-crop-guides__zone--bottom"></span>
+      <span class="partner-crop-guides__safe">
+        <span class="partner-crop-guides__line partner-crop-guides__line--v1"></span>
+        <span class="partner-crop-guides__line partner-crop-guides__line--v2"></span>
+        <span class="partner-crop-guides__line partner-crop-guides__line--h1"></span>
+        <span class="partner-crop-guides__line partner-crop-guides__line--h2"></span>
+      </span>`;
+    partnerCropGuidesEl = el;
+    return partnerCropGuidesEl;
+  }
+
+  function mountPartnerCropGuides(cropperInstance) {
+    const root = cropperInstance?.cropper;
+    const viewBox = root?.querySelector('.cropper-view-box');
+    if (!viewBox) return;
+    const guides = getPartnerGuidesElement();
+    if (guides.parentElement !== viewBox) viewBox.appendChild(guides);
+  }
+
+  function unmountPartnerCropGuides() {
+    if (partnerCropGuidesEl?.parentElement) {
+      partnerCropGuidesEl.parentElement.removeChild(partnerCropGuidesEl);
+    }
+  }
+
+  function setPartnerCropperMode(enabled, wrapperEl) {
+    if (wrapperEl) wrapperEl.classList.toggle('cropper-wrapper--partner', Boolean(enabled));
+    const hint = document.getElementById('partnerCropHint');
+    if (hint) hint.style.display = enabled ? 'block' : 'none';
+  }
+
+  function getCropperOptions(uploadId) {
+    const base = {
+      viewMode: 2,
+      dragMode: 'move',
+      autoCropArea: 1,
+      background: false,
+      zoomable: true,
+      guides: true,
+      center: true,
+      highlight: true
+    };
+
+    if (!isPartnerUploadId(uploadId)) {
+      const aspect = getAspect(uploadId);
+      if (!Number.isNaN(aspect)) base.aspectRatio = aspect;
+      return base;
+    }
+
+    return {
+      viewMode: 1,
+      dragMode: 'move',
+      aspectRatio: 1,
+      autoCropArea: 1,
+      background: false,
+      zoomable: true,
+      zoomOnWheel: true,
+      wheelZoomRatio: 0.08,
+      guides: false,
+      center: false,
+      highlight: false,
+      modal: true,
+      cropBoxMovable: false,
+      cropBoxResizable: false,
+      toggleDragModeOnDblclick: false,
+      minContainerWidth: 200,
+      minContainerHeight: 200,
+      ready() {
+        mountPartnerCropGuides(this);
+        try {
+          this.zoomTo(PARTNER_LOGO_CROP.minZoomRatio + 0.15);
+        } catch (e) {
+          /* cropper может не поддерживать zoomTo в старых сборках */
+        }
+      },
+      crop() {
+        mountPartnerCropGuides(this);
+      },
+      zoom(event) {
+        if (event.detail.ratio < PARTNER_LOGO_CROP.minZoomRatio) {
+          event.preventDefault();
+        }
+      }
+    };
+  }
+
+  function getCroppedCanvasOptions(uploadId) {
+    const [width, height] = getCropSize(uploadId);
+    const opts = { width, height, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' };
+    if (isPartnerUploadId(uploadId)) {
+      opts.fillColor = '#ffffff';
+    }
+    return opts;
+  }
+
+  function getZoomStep(uploadId, direction) {
+    if (isPartnerUploadId(uploadId)) {
+      return direction < 0 ? -PARTNER_LOGO_CROP.zoomStep : PARTNER_LOGO_CROP.zoomStep;
+    }
+    return direction < 0 ? -0.1 : 0.1;
+  }
+
   function getAspect(uploadId) {
     if (uploadId.startsWith('m_hero_bg_')) return 1520 / 420;
     if (uploadId === 'm_promo_img') return 1520 / 253;
@@ -318,7 +456,7 @@
     if (uploadId.startsWith('m_hero_bg_')) return [1520, 420];
     if (uploadId === 'm_promo_img') return [1520, 253];
     if (uploadId.startsWith('m_consult_photo_')) return [396, 509];
-    if (uploadId.startsWith('m_partner_img_')) return [400, 400];
+    if (uploadId.startsWith('m_partner_img_')) return [PARTNER_LOGO_CROP.width, PARTNER_LOGO_CROP.height];
     if (uploadId.startsWith('m_svc_icon_')) return [400, 400];
     return [1200, 675];
   }
@@ -333,6 +471,13 @@
     applyCroppedImage,
     getAspect,
     getCropSize,
+    PARTNER_LOGO_CROP,
+    isPartnerUploadId,
+    getCropperOptions,
+    getCroppedCanvasOptions,
+    getZoomStep,
+    unmountPartnerCropGuides,
+    setPartnerCropperMode,
     MAX_HERO_SLIDES,
     addHeroSlide() {
       const main = window.mainPageData;
