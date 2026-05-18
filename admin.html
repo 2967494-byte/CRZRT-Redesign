@@ -367,6 +367,79 @@
             color: var(--text-secondary);
         }
 
+        /* Отзывы: компактные строки */
+        .m-reviews-admin {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .review-admin-card {
+            padding: 10px 12px;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+        }
+
+        .review-admin-card__head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .review-admin-card__title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .review-admin-card__remove {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            line-height: 1;
+            font-size: 1rem;
+        }
+
+        .review-admin-card .form-group {
+            margin-bottom: 8px;
+        }
+
+        .review-admin-card .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .review-admin-card .form-group label {
+            font-size: 0.7rem;
+            margin-bottom: 3px;
+        }
+
+        .review-admin-card .form-control {
+            padding: 7px 9px;
+            font-size: 0.82rem;
+            border-radius: 8px;
+        }
+
+        .review-admin-card textarea.form-control {
+            min-height: 0;
+            resize: vertical;
+        }
+
+        .review-admin-card__meta {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        @media (max-width: 1100px) {
+            .review-admin-card__meta {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
         .cropper-container-wrapper {
             display: none;
             margin-top: 20px;
@@ -940,7 +1013,7 @@
                         <span>Отзывы клиентов</span>
                         <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addReview()">+ Отзыв</button>
                     </div>
-                    <div id="mReviewsAdmin" style="display:flex;flex-direction:column;gap:16px;"></div>
+                    <div id="mReviewsAdmin" class="m-reviews-admin"></div>
                 </div>
                 <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">

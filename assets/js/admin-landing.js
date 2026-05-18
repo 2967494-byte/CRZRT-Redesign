@@ -172,15 +172,36 @@
   function renderReviews(container, reviews) {
     container.innerHTML = '';
     reviews.forEach((r, i) => {
+      const num = i + 1;
       container.insertAdjacentHTML(
         'beforeend',
-        `<div style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;">
-          <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;" onclick="AdminLanding.removeReview(${i})">×</button>
-          <div class="form-group"><label>Текст отзыва</label><textarea class="form-control" id="m_rev_text_${i}" rows="3">${escapeAttr(r.text)}</textarea></div>
-          <div class="form-group"><label>Имя (строка 1)</label><input type="text" class="form-control" id="m_rev_name1_${i}" value="${escapeAttr(r.nameLines?.[0] || '')}"></div>
-          <div class="form-group"><label>Имя (строка 2)</label><input type="text" class="form-control" id="m_rev_name2_${i}" value="${escapeAttr(r.nameLines?.[1] || '')}"></div>
-          <div class="form-group"><label>Должность (строка 1)</label><input type="text" class="form-control" id="m_rev_role1_${i}" value="${escapeAttr(r.roleLines?.[0] || '')}"></div>
-          <div class="form-group"><label>Должность (строка 2)</label><input type="text" class="form-control" id="m_rev_role2_${i}" value="${escapeAttr(r.roleLines?.[1] || '')}"></div>
+        `<div class="review-admin-card">
+          <div class="review-admin-card__head">
+            <span class="review-admin-card__title">Отзыв №${num}</span>
+            <button type="button" class="btn-delete review-admin-card__remove" onclick="AdminLanding.removeReview(${i})" aria-label="Удалить отзыв №${num}">×</button>
+          </div>
+          <div class="form-group">
+            <label for="m_rev_text_${i}">Текст</label>
+            <textarea class="form-control" id="m_rev_text_${i}" rows="2">${escapeAttr(r.text)}</textarea>
+          </div>
+          <div class="review-admin-card__meta">
+            <div class="form-group">
+              <label for="m_rev_name1_${i}">Имя, стр. 1</label>
+              <input type="text" class="form-control" id="m_rev_name1_${i}" value="${escapeAttr(r.nameLines?.[0] || '')}">
+            </div>
+            <div class="form-group">
+              <label for="m_rev_name2_${i}">Имя, стр. 2</label>
+              <input type="text" class="form-control" id="m_rev_name2_${i}" value="${escapeAttr(r.nameLines?.[1] || '')}">
+            </div>
+            <div class="form-group">
+              <label for="m_rev_role1_${i}">Должность, стр. 1</label>
+              <input type="text" class="form-control" id="m_rev_role1_${i}" value="${escapeAttr(r.roleLines?.[0] || '')}">
+            </div>
+            <div class="form-group">
+              <label for="m_rev_role2_${i}">Должность, стр. 2</label>
+              <input type="text" class="form-control" id="m_rev_role2_${i}" value="${escapeAttr(r.roleLines?.[1] || '')}">
+            </div>
+          </div>
         </div>`
       );
     });
