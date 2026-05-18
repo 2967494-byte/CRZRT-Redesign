@@ -3,6 +3,19 @@
 =========================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Контент из API: не показывать статичные заглушки до подстановки */
+html.landing-content-pending .landing-dynamic {
+  visibility: hidden;
+}
+
+html.landing-content-ready .landing-dynamic {
+  visibility: visible;
+}
+
+html.landing-content-pending .partners-track {
+  min-height: 160px;
+}
+
 html {
   scroll-behavior: smooth;
 }

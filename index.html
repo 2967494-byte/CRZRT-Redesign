@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Google+Sans:wght@400;500;700&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/landing.css">
+  <script>document.documentElement.classList.add('landing-content-pending');</script>
 </head>
 <body>
 
@@ -63,7 +64,7 @@
   <main>
 
     <!-- HERO SLIDER -->
-    <section class="section hero-section">
+    <section class="section hero-section landing-dynamic">
       <div class="container">
         <div class="hero-slider">
           <div class="hero-slide active">
@@ -91,7 +92,7 @@
     </section>
 
     <!-- SERVICES CARDS -->
-    <section class="section">
+    <section class="section landing-dynamic">
       <div class="container">
         <div class="services-grid">
           <a href="obuchenie.html" class="service-card service-card--green">
@@ -183,7 +184,7 @@
   <!-- PROMO BANNER -->
   <section class="section">
     <div class="container">
-      <div class="promo-banner reveal-init">
+      <div class="promo-banner reveal-init landing-dynamic">
         <div class="promo-banner__content">
           <h2 class="promo-banner__title">Дистанционный курс<br>по 44 ФЗ для заказчиков</h2>
           <p class="promo-banner__date">2-4 июня 2026 года</p>
@@ -194,7 +195,7 @@
 </div> <!-- /second-screen -->
 
 <!-- TRUSTED BY (Partners logos) -->
-<section class="section partners-section reveal-init">
+<section class="section partners-section reveal-init landing-dynamic">
   <div class="container">
     <h2 class="section-title">Наши партнеры</h2>
     <div class="partners-slider">
@@ -203,23 +204,7 @@
           <polyline points="15 6 9 12 15 18" fill="none" stroke="#ADB8C6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div class="partners-track">
-        <div class="partner-logo">
-          <img src="assets/img/Group 303.png" alt="Партнер 1">
-        </div>
-        <div class="partner-logo">
-          <img src="assets/img/Group 302.png" alt="Партнер 2">
-        </div>
-        <div class="partner-logo">
-          <img src="assets/img/Group 304.png" alt="Партнер 3">
-        </div>
-        <div class="partner-logo">
-          <img src="assets/img/Group 305.png" alt="Партнер 4">
-        </div>
-        <div class="partner-logo">
-          <img src="assets/img/TNV.png" alt="Партнер 5">
-        </div>
-      </div>
+      <div class="partners-track"></div>
       <button type="button" class="partners-arrow partners-arrow--next" id="partners-next" aria-label="Следующие партнёры">
         <svg class="partners-arrow__svg" viewBox="0 0 24 24" width="72" height="72" aria-hidden="true" focusable="false">
           <polyline points="9 6 15 12 9 18" fill="none" stroke="#ADB8C6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -231,7 +216,7 @@
 
 <div class="third-screen">
   <!-- REVIEWS -->
-  <section class="section reviews-section reveal-init" id="reviews">
+  <section class="section reviews-section reveal-init landing-dynamic" id="reviews">
     <div class="container">
       <h2 class="section-title">Отзывы клиентов</h2>
       <div class="reviews-grid">
@@ -331,7 +316,7 @@
             <span class="consultation-card__title-line">Получить</span>
             <span class="consultation-card__title-line">консультацию</span>
           </h2>
-          <div class="consultation-card__person"></div>
+          <div class="consultation-card__person landing-dynamic"></div>
         </div>
         <div class="consultation-card__right reveal-init">
           <form class="consult-form" id="consultForm">

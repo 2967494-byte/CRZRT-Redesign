@@ -3,6 +3,11 @@
  */
 (function () {
   const STORAGE_KEY = 'crzrt_main_page_data';
+  const CONTENT_PENDING_CLASS = 'landing-content-pending';
+  const CONTENT_READY_CLASS = 'landing-content-ready';
+  const REVEAL_TIMEOUT_MS = 10000;
+
+  document.documentElement.classList.add(CONTENT_PENDING_CLASS);
 
   const LANDING_DEFAULTS = {
     heroSlides: [
@@ -77,6 +82,14 @@
       photos: ['assets/img/mask_group.png']
     }
   };
+
+  function escapeAttr(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -153,6 +166,46 @@
     }
 
     return data;
+  }
+
+  function collectImageUrls(data) {
+    const urls = [];
+    (data.heroSlides || []).forEach((s) => {
+      if (s?.background) urls.push(s.background);
+    });
+    (data.serviceCards || []).forEach((c) => {
+      if (c?.icon) urls.push(c.icon);
+    });
+    if (data.promoBanner?.image) urls.push(data.promoBanner.image);
+    (data.partners || []).forEach((p) => {
+      if (p?.image) urls.push(p.image);
+    });
+    (data.consultation?.photos || []).forEach((src) => {
+      if (src) urls.push(src);
+    });
+    return [...new Set(urls)];
+  }
+
+  function preloadImages(urls) {
+    const list = urls.filter(Boolean);
+    if (!list.length) return Promise.resolve();
+    return Promise.all(
+      list.map(
+        (url) =>
+          new Promise((resolve) => {
+            const img = new Image();
+            const done = () => resolve();
+            img.onload = done;
+            img.onerror = done;
+            img.src = url;
+          })
+      )
+    );
+  }
+
+  function markLandingContentReady() {
+    document.documentElement.classList.remove(CONTENT_PENDING_CLASS);
+    document.documentElement.classList.add(CONTENT_READY_CLASS);
   }
 
   async function loadLandingData() {
@@ -273,7 +326,7 @@
     track.innerHTML = list
       .map(
         (p) => `<div class="partner-logo">
-          <img src="${p.image}" alt="${escapeHtml(p.alt || 'Партнёр')}" loading="lazy" decoding="async">
+          <img src="${escapeAttr(p.image)}" alt="${escapeHtml(p.alt || 'Партнёр')}" decoding="async">
         </div>`
       )
       .join('');
@@ -334,17 +387,27 @@
   }
 
   async function initLandingContent() {
-    const data = await loadLandingData();
-    renderHero(data);
-    renderServiceCards(data.serviceCards);
-    renderPromoBanner(data.promoBanner);
-    renderPartners(data.partners);
-    renderReviews(data.reviews);
-    renderConsultationPhoto(data.consultation?.photos);
-    bindPromoClick();
+    const revealTimer = window.setTimeout(markLandingContentReady, REVEAL_TIMEOUT_MS);
+    try {
+      const data = await loadLandingData();
+      await preloadImages(collectImageUrls(data));
+      renderHero(data);
+      renderServiceCards(data.serviceCards);
+      renderPromoBanner(data.promoBanner);
+      renderPartners(data.partners);
+      renderReviews(data.reviews);
+      renderConsultationPhoto(data.consultation?.photos);
+      bindPromoClick();
+      markLandingContentReady();
 
-    window.applyHeroSlide = applyHeroSlide;
-    document.dispatchEvent(new CustomEvent('landingContentReady', { detail: data }));
+      window.applyHeroSlide = applyHeroSlide;
+      document.dispatchEvent(new CustomEvent('landingContentReady', { detail: data }));
+    } catch (e) {
+      console.error('Landing content init failed', e);
+      markLandingContentReady();
+    } finally {
+      window.clearTimeout(revealTimer);
+    }
   }
 
   window.LandingContent = {
