@@ -155,7 +155,7 @@
               <div class="event-desc">Очный курс повышения квалификации по 44-ФЗ (108 ак.ч.)</div>
             </li>
           </ul>
-          <a href="seminars.html" class="all-link">все события <span>↗</span></a>
+          <a href="seminars.html" class="all-link">все события <span class="arrow-down-right"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#0FAA4B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
         </div>
 
         <!-- News -->
@@ -175,7 +175,7 @@
               <p>Применительно к закупкам работ и услуг Минфин разъяснил, по каким признакам товар считается «поставляемым»</p>
             </li>
           </ul>
-          <a href="#" class="all-link">все новости <span>↗</span></a>
+          <a href="#" class="all-link">все новости <span class="arrow-down-right"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#0FAA4B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
         </div>
       </div>
     </div>
@@ -286,19 +286,19 @@
         <div class="social-banner__links">
           <a href="#" class="social-btn" aria-label="Max">
             <span class="social-btn__icon-wrap">
-              <img src="assets/img/max.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
+              <img src="assets/img/social-max.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
             </span>
             <span class="social-btn__label">Max</span>
           </a>
           <a href="#" class="social-btn" aria-label="Телеграм">
             <span class="social-btn__icon-wrap">
-              <img src="assets/img/tg.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
+              <img src="assets/img/social-tg.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
             </span>
             <span class="social-btn__label">Телеграм</span>
           </a>
           <a href="#" class="social-btn" aria-label="В контакте">
             <span class="social-btn__icon-wrap">
-              <img src="assets/img/vk.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
+              <img src="assets/img/social-vk.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
             </span>
             <span class="social-btn__label">В контакте</span>
           </a>
@@ -327,8 +327,8 @@
             <input type="tel" class="form-input" placeholder="Телефон" id="consultPhone">
             <input type="email" class="form-input" placeholder="Электронная почта" id="consultEmail">
             <p class="form-label">Мне интересно</p>
-            <select class="form-input form-select" id="consultInterest">
-              <option value="">---Выберите---</option>
+            <select class="form-input form-select" id="consultInterest" required>
+              <option value="" disabled selected hidden>---Выберите---</option>
               <option>Обучение</option>
               <option>Сопровождение</option>
               <option>Юридический консалтинг</option>

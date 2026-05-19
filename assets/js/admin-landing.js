@@ -91,17 +91,25 @@
     const val = document.getElementById(`${id}_val`);
     const clr = document.getElementById(`${id}_clear`);
     if (val) val.value = v;
-    if (prev) prev.src = v;
-    const frame = document.querySelector(`[data-consult-frame-for="${id}"]`);
-    if (frame) frame.classList.toggle('consult-photo-frame--empty', !v);
+    if (prev) {
+      prev.src = v;
+      if (!document.querySelector(`[data-upload-frame-for="${id}"]`)) {
+        prev.style.display = v ? 'block' : 'none';
+      }
+    }
+    const frame = document.querySelector(`[data-upload-frame-for="${id}"]`);
+    if (frame) {
+      frame.classList.toggle('consult-photo-frame--empty', !v);
+      frame.classList.toggle('hero-slide-frame--empty', !v);
+    }
     if (clr) clr.style.display = v ? 'inline-flex' : 'none';
   }
 
-  function consultPhotoUploadShell(id, label) {
+  function consultPhotoUploadShell(id, label, index) {
     return `
       <div class="consult-photo-card__body">
         <div class="consult-photo-card__media">
-          <div class="consult-photo-frame consult-photo-frame--empty" data-consult-frame-for="${id}">
+          <div class="consult-photo-frame consult-photo-frame--empty" data-upload-frame-for="${id}">
             <span class="consult-photo-frame__empty">396×509</span>
             <img id="${id}_preview" class="consult-photo-frame__img" src="" alt="">
           </div>
@@ -111,25 +119,39 @@
           <p class="consult-photo-card__hint">При обновлении страницы на сайте показывается случайное фото из списка.</p>
           <div class="consult-photo-card__actions image-upload-mini" data-upload-id="${id}">
             <button type="button" class="btn-save" onclick="AdminLanding.pickImage('${id}')">Загрузить</button>
-            <button type="button" class="btn-delete" id="${id}_clear" style="display:none;" onclick="AdminLanding.clearImage('${id}')">Удалить</button>
+            <button type="button" class="btn-delete" onclick="AdminLanding.removeConsultPhoto(${index})">Удалить</button>
             <input type="hidden" id="${id}_val" value="">
           </div>
         </div>
       </div>`;
   }
 
-  function imageUploadHtml(id, label, previewSrc) {
-    const show = previewSrc ? 'block' : 'none';
+  function imageUploadHtml(id, label) {
     return `
       <div class="form-group" style="margin-bottom:0;">
         <label>${label}</label>
         <div class="image-upload-mini" data-upload-id="${id}">
-          <img id="${id}_preview" src="${escapeAttr(previewSrc)}" alt="" style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;display:${show};margin-bottom:8px;background:rgba(0,0,0,0.15);">
+          <img id="${id}_preview" src="" alt="" style="max-width:160px;max-height:160px;object-fit:contain;border-radius:8px;display:none;margin-bottom:8px;background:rgba(0,0,0,0.15);">
           <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="AdminLanding.pickImage('${id}')">Загрузить</button>
-          <button type="button" class="btn-delete" style="padding:8px 14px;margin-left:8px;font-size:0.85rem;${previewSrc ? '' : 'display:none;'}" id="${id}_clear" onclick="AdminLanding.clearImage('${id}')">Удалить</button>
-          <input type="hidden" id="${id}_val" value="${escapeAttr(previewSrc)}">
+          <button type="button" class="btn-delete" style="padding:8px 14px;margin-left:8px;font-size:0.85rem;display:none;" id="${id}_clear" onclick="AdminLanding.clearImage('${id}')">Удалить</button>
+          <input type="hidden" id="${id}_val" value="">
         </div>
-        <small style="color:var(--text-secondary);display:block;margin-top:6px;">На сайте цветное фото; в покое — оттенки серого, при наведении — цвет.</small>
+      </div>`;
+  }
+
+  function heroBgUploadShell(id, label) {
+    return `
+      <div class="form-group hero-slide-upload-group" style="margin-bottom:0;">
+        <label>${label}</label>
+        <div class="hero-slide-frame hero-slide-frame--empty" data-upload-frame-for="${id}">
+          <span class="hero-slide-frame__empty">1520×420</span>
+          <img id="${id}_preview" class="hero-slide-frame__img" src="" alt="">
+        </div>
+        <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}">
+          <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="AdminLanding.pickImage('${id}')">Загрузить</button>
+          <button type="button" class="btn-delete" style="padding:8px 14px;font-size:0.85rem;display:none;" id="${id}_clear" onclick="AdminLanding.clearImage('${id}')">Удалить</button>
+          <input type="hidden" id="${id}_val" value="">
+        </div>
       </div>`;
   }
 
@@ -169,9 +191,10 @@
             <textarea class="form-control" id="m_hero_title_${i}" rows="2">${escapeAttr(slide.title)}</textarea></div>
           <div class="form-group"><label>Подзаголовок</label>
             <textarea class="form-control" id="m_hero_subtitle_${i}" rows="2">${escapeAttr(slide.subtitle)}</textarea></div>
-          ${imageUploadHtml(`m_hero_bg_${i}`, 'Фон слайда (как hero_section.png, ~1520×420)', slide.background)}
+          ${heroBgUploadShell(`m_hero_bg_${i}`, 'Фон слайда (как hero_section.png, ~1520×420)')}
         </div>`
       );
+      setImageUploadState(`m_hero_bg_${i}`, slide.background);
     });
   }
 
@@ -186,9 +209,10 @@
           <div class="form-group"><label>Описание</label><input type="text" class="form-control" id="m_svc_desc_${i}" value="${escapeAttr(card.desc)}"></div>
           <div class="form-group"><label>Ссылка</label><input type="text" class="form-control" id="m_svc_link_${i}" value="${escapeAttr(card.link)}"></div>
           <div class="form-group"><label>Цвет карточки</label><select class="form-control" id="m_svc_variant_${i}">${opts}</select></div>
-          ${imageUploadHtml(`m_svc_icon_${i}`, 'Картинка блока', card.icon)}
+          ${imageUploadHtml(`m_svc_icon_${i}`, 'Картинка блока')}
         </div>`
       );
+      setImageUploadState(`m_svc_icon_${i}`, card.icon);
     });
   }
 
@@ -254,7 +278,7 @@
               <label for="m_rev_text_${i}">Текст</label>
               <span class="review-admin-card__counter" id="m_rev_count_${i}">0 / ${REVIEW_TEXT_MAX_LENGTH}</span>
             </div>
-            <textarea class="form-control" id="m_rev_text_${i}" rows="2" maxlength="${REVIEW_TEXT_MAX_LENGTH}">${escapeAttr(reviewText)}</textarea>
+            <textarea class="form-control review-admin-card__textarea" id="m_rev_text_${i}" rows="7" maxlength="${REVIEW_TEXT_MAX_LENGTH}">${escapeAttr(reviewText)}</textarea>
           </div>
           <div class="review-admin-card__meta">
             <div class="form-group">
@@ -288,8 +312,7 @@
       container.insertAdjacentHTML(
         'beforeend',
         `<div class="consult-photo-card">
-          <button type="button" class="btn-delete consult-photo-card__remove" onclick="AdminLanding.removeConsultPhoto(${i})" aria-label="Удалить фото">×</button>
-          ${consultPhotoUploadShell(uploadId, `Фото ${i + 1}`)}
+          ${consultPhotoUploadShell(uploadId, `Фото ${i + 1}`, i)}
         </div>`
       );
       setImageUploadState(uploadId, src);
@@ -439,6 +462,12 @@
   function clearImage(uploadId) {
     if (uploadId?.startsWith('m_consult_photo_')) {
       clearConsultPhotoInMemory(uploadId);
+    }
+    if (
+      uploadId?.startsWith('m_consult_photo_') ||
+      uploadId?.startsWith('m_hero_bg_') ||
+      uploadId?.startsWith('m_svc_icon_')
+    ) {
       setImageUploadState(uploadId, '');
       return;
     }
@@ -453,6 +482,12 @@
   function applyCroppedImage(uploadId, dataUrl) {
     if (uploadId?.startsWith('m_consult_photo_')) {
       syncConsultPhotoToMemory(uploadId, dataUrl);
+    }
+    if (
+      uploadId?.startsWith('m_consult_photo_') ||
+      uploadId?.startsWith('m_hero_bg_') ||
+      uploadId?.startsWith('m_svc_icon_')
+    ) {
       setImageUploadState(uploadId, dataUrl);
       return;
     }

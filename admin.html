@@ -460,8 +460,11 @@
         }
 
         .review-admin-card textarea.form-control {
-            min-height: 0;
+            /* ~7 строк под лимит 243 символа в узкой колонке */
+            min-height: 10.5rem;
+            line-height: 1.45;
             resize: vertical;
+            overflow-y: auto;
         }
 
         .review-admin-card__meta {
@@ -470,37 +473,90 @@
             gap: 8px;
         }
 
+        /* Hero-слайдер: превью фона 1520×420 */
+        .hero-slide-upload-group label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .hero-slide-frame {
+            --hero-preview-w: 304px;
+            width: var(--hero-preview-w);
+            aspect-ratio: 1520 / 420;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        [data-theme="light"] .hero-slide-frame {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .hero-slide-frame__img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .hero-slide-frame--empty .hero-slide-frame__img {
+            display: none;
+        }
+
+        .hero-slide-frame__empty {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            opacity: 0.75;
+            user-select: none;
+        }
+
+        .hero-slide-frame:not(.hero-slide-frame--empty) .hero-slide-frame__empty {
+            display: none;
+        }
+
+        .hero-slide-upload-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .hero-slide-upload-actions .btn-save,
+        .hero-slide-upload-actions .btn-delete {
+            padding: 8px 14px !important;
+            font-size: 0.85rem !important;
+            margin-left: 0 !important;
+        }
+
         /* Фото блока «Получить консультацию» */
         .consult-photos-admin {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 12px;
+            align-items: start;
+        }
+
+        @media (max-width: 720px) {
+            .consult-photos-admin {
+                grid-template-columns: 1fr;
+            }
         }
 
         .consult-photo-card {
-            position: relative;
-            padding: 10px 14px;
+            min-width: 0;
+            padding: 12px 14px;
             border: 1px solid var(--card-border);
-            border-radius: 8px;
-        }
-
-        .consult-photo-card__remove {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1;
-            width: 26px;
-            height: 26px;
-            padding: 0;
-            line-height: 1;
-            font-size: 1rem;
+            border-radius: 10px;
         }
 
         .consult-photo-card__body {
             display: flex;
-            gap: 18px;
+            gap: 14px;
             align-items: flex-start;
-            padding-right: 32px;
         }
 
         .consult-photo-card__media {

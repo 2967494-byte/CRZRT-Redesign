@@ -11,7 +11,7 @@
     --card-border: rgba(0, 0, 0, 0.05);
     --hero-gradient: linear-gradient(135deg, #00A859 0%, #007D42 100%);
     --font-main: 'Manrope', 'Inter', -apple-system, sans-serif;
-    --footer-bg: #1B2B3C;
+    --footer-bg: #1E334C;
     --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
