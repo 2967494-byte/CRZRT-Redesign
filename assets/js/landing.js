@@ -36,12 +36,7 @@ const partnersNext = document.getElementById('partners-next');
 
 function partnersScrollStep() {
   if (!partnersTrack) return 320;
-  const first = partnersTrack.querySelector('.partner-logo');
-  if (!first) return 320;
-  const w = first.getBoundingClientRect().width;
-  const style = window.getComputedStyle(partnersTrack);
-  const gap = parseFloat(style.columnGap || style.gap) || 0;
-  return Math.round(w + gap);
+  return Math.round(partnersTrack.clientWidth);
 }
 
 partnersPrev?.addEventListener('click', () => {
