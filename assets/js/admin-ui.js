@@ -1444,6 +1444,82 @@
 
         // Global Cropper logic is handled in the unified block (lines 1138-1265)
 
+        function isImageDataUrl(value) {
+            return typeof value === 'string' && /^data:image\/[a-zA-Z0-9.+-]+;base64,/.test(value);
+        }
+
+        async function uploadDataUrlImage(dataUrl, slot, maxWidth, maxHeight) {
+            const response = await fetch('api/upload.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dataUrl, slot, maxWidth, maxHeight })
+            });
+            const raw = await response.text();
+            let payload = null;
+            try {
+                payload = raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                throw new Error(`Ошибка загрузки медиа (HTTP ${response.status})`);
+            }
+            if (!response.ok || !payload?.success || !payload?.url) {
+                throw new Error(payload?.error || 'Не удалось загрузить изображение');
+            }
+            return payload.url;
+        }
+
+        async function replaceMainPageBase64WithUploads(data) {
+            const cache = new Map();
+            const uploadOrReuse = (src, slot, maxWidth, maxHeight) => {
+                if (!isImageDataUrl(src)) return Promise.resolve(src);
+                const key = `${slot}:${src.slice(0, 64)}:${src.length}`;
+                if (!cache.has(key)) {
+                    cache.set(key, uploadDataUrlImage(src, slot, maxWidth, maxHeight));
+                }
+                return cache.get(key);
+            };
+
+            if (Array.isArray(data.heroSlides)) {
+                for (let i = 0; i < data.heroSlides.length; i++) {
+                    const slide = data.heroSlides[i];
+                    if (!slide) continue;
+                    slide.background = await uploadOrReuse(slide.background, `hero_${i}`, 1520, 420);
+                }
+            }
+
+            if (Array.isArray(data.serviceCards)) {
+                for (let i = 0; i < data.serviceCards.length; i++) {
+                    const card = data.serviceCards[i];
+                    if (!card) continue;
+                    card.icon = await uploadOrReuse(card.icon, `service_icon_${i}`, 400, 400);
+                }
+            }
+
+            if (data.promoBanner) {
+                data.promoBanner.image = await uploadOrReuse(data.promoBanner.image, 'promo_banner', 1520, 253);
+            }
+
+            if (Array.isArray(data.partners)) {
+                for (let i = 0; i < data.partners.length; i++) {
+                    const partner = data.partners[i];
+                    if (!partner) continue;
+                    partner.image = await uploadOrReuse(partner.image, `partner_${i}`, 400, 400);
+                }
+            }
+
+            if (data.consultation && Array.isArray(data.consultation.photos)) {
+                for (let i = 0; i < data.consultation.photos.length; i++) {
+                    data.consultation.photos[i] = await uploadOrReuse(
+                        data.consultation.photos[i],
+                        `consult_photo_${i}`,
+                        396,
+                        509
+                    );
+                }
+            }
+
+            return data;
+        }
+
         document.getElementById('globalSaveBtn').addEventListener('click', async () => {
             const btn = document.getElementById('globalSaveBtn');
             const originalText = btn.innerText;
@@ -1478,6 +1554,17 @@
                 btn.innerText = 'Сохраняется...';
                 btn.style.opacity = '0.8';
                 btn.disabled = true;
+
+                if (currentTarget === 'main-page') {
+                    btn.innerText = 'Загрузка медиа...';
+                    const snapshot = JSON.parse(JSON.stringify(dataToSave));
+                    dataToSave = await replaceMainPageBase64WithUploads(snapshot);
+                    mainPageData = dataToSave;
+                    window.mainPageData = mainPageData;
+                    renderMainPageAdmin();
+                }
+
+                btn.innerText = 'Сохраняется...';
 
                 // Отправляем данные на Бэкенд
                 const response = await fetch('api/settings.php', {
@@ -1521,7 +1608,7 @@
 
             } catch (e) {
                 console.error("Storage error:", e);
-                alert("Ошибка сохранения: " + e.message + "\nВозможно, фото слишком большое. Уменьшите его размер перед загрузкой.");
+                alert("Ошибка сохранения: " + e.message + "\nПроверьте формат/размер изображения и повторите.");
                 btn.innerText = originalText;
                 btn.style.opacity = '1';
                 btn.disabled = false;
