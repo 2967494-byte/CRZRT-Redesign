@@ -7,6 +7,7 @@
   const CONTENT_READY_CLASS = 'landing-content-ready';
   const REVEAL_TIMEOUT_MS = 10000;
   const REVIEW_TEXT_MAX_LENGTH = 243;
+  let promoBound = false;
 
   document.documentElement.classList.add(CONTENT_PENDING_CLASS);
 
@@ -183,47 +184,22 @@
     return data;
   }
 
-  function collectImageUrls(data) {
-    const urls = [];
-    (data.heroSlides || []).forEach((s) => {
-      if (s?.background) urls.push(s.background);
-    });
-    (data.serviceCards || []).forEach((c) => {
-      if (c?.icon) urls.push(c.icon);
-    });
-    if (data.promoBanner?.image) urls.push(data.promoBanner.image);
-    (data.partners || []).forEach((p) => {
-      if (p?.image) urls.push(p.image);
-    });
-    (data.consultation?.photos || []).forEach((src) => {
-      if (src) urls.push(src);
-    });
-    return [...new Set(urls)];
-  }
-
-  function preloadImages(urls) {
-    const list = urls.filter(Boolean);
-    if (!list.length) return Promise.resolve();
-    return Promise.all(
-      list.map(
-        (url) =>
-          new Promise((resolve) => {
-            const img = new Image();
-            const done = () => resolve();
-            img.onload = done;
-            img.onerror = done;
-            img.src = url;
-          })
-      )
-    );
-  }
-
   function markLandingContentReady() {
     document.documentElement.classList.remove(CONTENT_PENDING_CLASS);
     document.documentElement.classList.add(CONTENT_READY_CLASS);
   }
 
-  async function loadLandingData() {
+  function loadLandingDataFromLocal() {
+    try {
+      const local = localStorage.getItem(STORAGE_KEY);
+      if (local) return migrateLandingData(JSON.parse(local));
+    } catch (e) {
+      console.warn('Landing: localStorage parse error', e);
+    }
+    return null;
+  }
+
+  async function loadLandingDataFromApi() {
     try {
       const resp = await fetch(`api/settings.php?key=${STORAGE_KEY}`);
       if (resp.ok) {
@@ -235,15 +211,7 @@
     } catch (e) {
       console.warn('Landing: API unavailable, using local fallback', e);
     }
-
-    try {
-      const local = localStorage.getItem(STORAGE_KEY);
-      if (local) return migrateLandingData(JSON.parse(local));
-    } catch (e) {
-      console.warn('Landing: localStorage parse error', e);
-    }
-
-    return migrateLandingData(null);
+    return null;
   }
 
   function renderHero(data) {
@@ -389,6 +357,7 @@
   }
 
   function bindPromoClick() {
+    if (promoBound) return;
     const el = document.querySelector('.promo-banner');
     if (!el) return;
     const go = () => {
@@ -402,24 +371,50 @@
         go();
       }
     });
+    promoBound = true;
+  }
+
+  function getHeroLcpImage(data) {
+    return (data?.heroSlides || []).find((slide) => slide?.background)?.background || '';
+  }
+
+  function preloadImage(url) {
+    if (!url) return;
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = url;
+  }
+
+  function renderLanding(data) {
+    renderHero(data);
+    renderServiceCards(data.serviceCards);
+    renderPromoBanner(data.promoBanner);
+    renderPartners(data.partners);
+    renderReviews(data.reviews);
+    renderConsultationPhoto(data.consultation?.photos);
+    bindPromoClick();
+    window.applyHeroSlide = applyHeroSlide;
+    document.dispatchEvent(new CustomEvent('landingContentReady', { detail: data }));
   }
 
   async function initLandingContent() {
     const revealTimer = window.setTimeout(markLandingContentReady, REVEAL_TIMEOUT_MS);
     try {
-      const data = await loadLandingData();
-      await preloadImages(collectImageUrls(data));
-      renderHero(data);
-      renderServiceCards(data.serviceCards);
-      renderPromoBanner(data.promoBanner);
-      renderPartners(data.partners);
-      renderReviews(data.reviews);
-      renderConsultationPhoto(data.consultation?.photos);
-      bindPromoClick();
+      const localData = loadLandingDataFromLocal();
+      renderLanding(localData || migrateLandingData(null));
       markLandingContentReady();
+      preloadImage(getHeroLcpImage(localData));
 
-      window.applyHeroSlide = applyHeroSlide;
-      document.dispatchEvent(new CustomEvent('landingContentReady', { detail: data }));
+      const apiData = await loadLandingDataFromApi();
+      if (apiData) {
+        renderLanding(apiData);
+        preloadImage(getHeroLcpImage(apiData));
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(apiData));
+        } catch (e) {
+          console.warn('Landing: localStorage update failed', e);
+        }
+      }
     } catch (e) {
       console.error('Landing content init failed', e);
       markLandingContentReady();
@@ -429,7 +424,8 @@
   }
 
   window.LandingContent = {
-    loadLandingData,
+    loadLandingDataFromApi,
+    loadLandingDataFromLocal,
     migrateLandingData,
     normalizeConsultationPhotos,
     LANDING_DEFAULTS,
