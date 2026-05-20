@@ -1069,6 +1069,48 @@
             }
         }
 
+        const HERO_MAX_BASE64_BYTES = 420 * 1024;
+
+        function dataUrlBytes(dataUrl) {
+            const commaIdx = dataUrl?.indexOf(',');
+            if (commaIdx === -1) return 0;
+            const base64 = dataUrl.slice(commaIdx + 1);
+            const padding = (base64.match(/=+$/) || [''])[0].length;
+            return Math.floor((base64.length * 3) / 4) - padding;
+        }
+
+        function scaleCanvas(sourceCanvas, scale) {
+            const next = document.createElement('canvas');
+            next.width = Math.max(1, Math.round(sourceCanvas.width * scale));
+            next.height = Math.max(1, Math.round(sourceCanvas.height * scale));
+            const ctx = next.getContext('2d');
+            if (ctx) {
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(sourceCanvas, 0, 0, next.width, next.height);
+            }
+            return next;
+        }
+
+        function makeHeroDataUrlWithinLimit(canvas) {
+            let quality = 0.76;
+            let workingCanvas = canvas;
+            let result = workingCanvas.toDataURL('image/jpeg', quality);
+            let tries = 0;
+
+            while (dataUrlBytes(result) > HERO_MAX_BASE64_BYTES && tries < 8) {
+                tries += 1;
+                if (quality > 0.52) {
+                    quality = Math.max(0.52, quality - 0.08);
+                } else {
+                    workingCanvas = scaleCanvas(workingCanvas, 0.88);
+                }
+                result = workingCanvas.toDataURL('image/jpeg', quality);
+            }
+
+            return result;
+        }
+
         btnZoomIn.addEventListener('click', () => {
             if (!cropper) return;
             const uploadId = window.cropTarget?.uploadId;
@@ -1114,9 +1156,12 @@
                 }
                 const canvas = cropper.getCroppedCanvas(canvasOpts);
                 const isPartner = AdminLanding?.isPartnerUploadId?.(uploadId);
+                const isHeroSlide = Boolean(uploadId && uploadId.startsWith('m_hero_bg_'));
                 const resultBase64 = isPartner
                     ? canvas.toDataURL('image/png')
-                    : canvas.toDataURL('image/jpeg', 0.7);
+                    : isHeroSlide
+                        ? makeHeroDataUrlWithinLimit(canvas)
+                        : canvas.toDataURL('image/jpeg', 0.7);
 
                 if (window.activeAuthorIndex !== null) {
                     const idx = window.activeAuthorIndex;
@@ -1441,9 +1486,17 @@
                     body: JSON.stringify({ key: keyToSave, value: dataToSave })
                 });
 
-                const result = await response.json();
+                const rawResponse = await response.text();
+                let result = null;
+                try {
+                    result = rawResponse ? JSON.parse(rawResponse) : null;
+                } catch (parseErr) {
+                    throw new Error(
+                        `Сервер вернул не-JSON ответ (HTTP ${response.status}). Обычно это из-за слишком большого изображения.`
+                    );
+                }
 
-                if (!result.success) {
+                if (!response.ok || !result?.success) {
                     throw new Error(result.error || 'Ошибка сервера');
                 }
 
