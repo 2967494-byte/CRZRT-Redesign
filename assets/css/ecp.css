@@ -1014,11 +1014,11 @@ body.theme-blue .hero-slide__dots.is-hidden {
 }
 
 .ecp-manual__icon {
-  color: #1D9DFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  width: 45px;
+  height: 51px;
   flex-shrink: 0;
+  object-fit: contain;
 }
 
 .ecp-manual__link {

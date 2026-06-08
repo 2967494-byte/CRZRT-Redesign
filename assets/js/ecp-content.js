@@ -9,8 +9,7 @@
   const DOWNLOAD_ARROW_SVG =
     '<span class="arrow-down-right"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#1D9DFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
 
-  const MANUAL_PDF_ICON =
-    '<svg width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 0C1.79086 0 0 1.79086 0 4V24C0 26.2091 1.79086 28 4 28H20C22.2091 28 24 26.2091 24 24V8L16 0H4Z" fill="#1D9DFF"/><path d="M16 0V8H24L16 0Z" fill="#8BE1FF" fill-opacity="0.8"/><rect x="4" y="14" width="16" height="8" rx="1.5" fill="white"/><text x="6" y="21" font-family="Inter, sans-serif" font-size="7" font-weight="800" fill="#1D9DFF" letter-spacing="-0.02em">PDF</text></svg>';
+  const MANUAL_PDF_ICON_SRC = 'assets/img/ecp/icon-pdf.png';
 
   const VIDEO_PLAY_SVG =
     '<svg class="ecp-video-card__play" width="134" height="134" viewBox="0 0 134 134" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="67" cy="67" r="63" stroke="white" stroke-width="6"/><path d="M90 67L54 87.5V46.5L90 67Z" fill="white"/></svg>';
@@ -294,7 +293,7 @@
         .map((item) => {
           const link = fileLinkAttrs(item.file);
           return `<li class="ecp-manual__item">
-            <span class="ecp-manual__icon">${MANUAL_PDF_ICON}</span>
+            <img src="${MANUAL_PDF_ICON_SRC}" alt="" class="ecp-manual__icon" width="45" height="51" decoding="async">
             <a href="${link.href}" class="ecp-manual__link"${link.target}${link.download}>${escapeHtml(item.title)}</a>
           </li>`;
         })
