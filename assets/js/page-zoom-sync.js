@@ -7,18 +7,12 @@
   var MIN_ZOOM = 0.25;
   var MAX_ZOOM = 3;
 
-  function defaultEffectiveZoom() {
+  function defaultCssZoom() {
     return window.innerWidth >= DESKTOP_BREAKPOINT ? DEFAULT_DESKTOP_ZOOM : DEFAULT_MOBILE_ZOOM;
   }
 
   function clampZoom(value) {
     return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
-  }
-
-  function getViewportScale() {
-    return window.visualViewport && window.visualViewport.scale
-      ? window.visualViewport.scale
-      : 1;
   }
 
   function parseStoredZoom(raw) {
@@ -54,21 +48,21 @@
     return null;
   }
 
-  function readStoredEffectiveZoom() {
+  function readStoredCssZoom() {
     return readZoomFromUrl()
       || readZoomFromWindowName()
       || readZoomFromSession();
   }
 
-  function writeStoredEffectiveZoom(value) {
-    var effective = clampZoom(value);
+  function writeStoredCssZoom(value) {
+    var cssZoom = clampZoom(value);
 
     try {
-      window.name = WINDOW_NAME_PREFIX + String(effective);
+      window.name = WINDOW_NAME_PREFIX + String(cssZoom);
     } catch (error) {}
 
     try {
-      sessionStorage.setItem(STORAGE_KEY, String(effective));
+      sessionStorage.setItem(STORAGE_KEY, String(cssZoom));
     } catch (error) {}
   }
 
@@ -87,28 +81,21 @@
     return currentCssZoom;
   }
 
-  function getEffectiveZoom() {
-    return clampZoom(getCssZoom() * getViewportScale());
-  }
-
-  function setEffectiveZoom(effectiveZoom) {
-    currentCssZoom = applyCssZoom(effectiveZoom / getViewportScale());
-    writeStoredEffectiveZoom(effectiveZoom);
+  function setCssZoom(cssZoom) {
+    currentCssZoom = applyCssZoom(cssZoom);
+    writeStoredCssZoom(currentCssZoom);
     return currentCssZoom;
   }
 
-  var storedEffectiveZoom = readStoredEffectiveZoom();
-  var initialEffectiveZoom = storedEffectiveZoom !== null
-    ? storedEffectiveZoom
-    : defaultEffectiveZoom();
-  var currentCssZoom = applyCssZoom(initialEffectiveZoom / getViewportScale());
-  writeStoredEffectiveZoom(initialEffectiveZoom);
+  var storedCssZoom = readStoredCssZoom();
+  var initialCssZoom = storedCssZoom !== null ? storedCssZoom : defaultCssZoom();
+  var currentCssZoom = setCssZoom(initialCssZoom);
 
   function persistZoom() {
-    writeStoredEffectiveZoom(getEffectiveZoom());
+    writeStoredCssZoom(getCssZoom());
   }
 
-  function appendZoomParam(href, effectiveZoom) {
+  function appendZoomParam(href, cssZoom) {
     if (!href || href.charAt(0) === '#') {
       return href;
     }
@@ -124,7 +111,7 @@
     var path = queryIndex >= 0 ? base.slice(0, queryIndex) : base;
     var params = new URLSearchParams(queryIndex >= 0 ? base.slice(queryIndex + 1) : '');
 
-    params.set('z', String(clampZoom(effectiveZoom)));
+    params.set('z', String(clampZoom(cssZoom)));
     var query = params.toString();
 
     return path + (query ? '?' + query : '') + hash;
@@ -152,33 +139,33 @@
       return;
     }
 
-    link.setAttribute('href', appendZoomParam(link.getAttribute('href'), getEffectiveZoom()));
+    link.setAttribute('href', appendZoomParam(link.getAttribute('href'), getCssZoom()));
+  }
+
+  function prepareAllInternalLinks() {
+    document.querySelectorAll('a[href]').forEach(prepareInternalLink);
   }
 
   window.addEventListener('pagehide', persistZoom);
   window.addEventListener('beforeunload', persistZoom);
-
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', persistZoom);
-  }
 
   document.addEventListener('keydown', function (event) {
     if (!event.ctrlKey && !event.metaKey) {
       return;
     }
 
-    var effectiveZoom = getEffectiveZoom();
+    var cssZoom = getCssZoom();
     var step = 0.1;
     var changed = false;
 
     if (event.key === '+' || event.key === '=' || event.code === 'NumpadAdd') {
-      effectiveZoom = clampZoom(effectiveZoom + step);
+      cssZoom = clampZoom(cssZoom + step);
       changed = true;
     } else if (event.key === '-' || event.code === 'NumpadSubtract') {
-      effectiveZoom = clampZoom(effectiveZoom - step);
+      cssZoom = clampZoom(cssZoom - step);
       changed = true;
     } else if (event.key === '0' || event.code === 'Numpad0') {
-      effectiveZoom = defaultEffectiveZoom();
+      cssZoom = defaultCssZoom();
       changed = true;
     }
 
@@ -186,7 +173,7 @@
       return;
     }
 
-    setEffectiveZoom(effectiveZoom);
+    setCssZoom(cssZoom);
     event.preventDefault();
   });
 
@@ -200,13 +187,19 @@
     persistZoom();
   }, true);
 
-  function prepareAllInternalLinks() {
-    document.querySelectorAll('a[href]').forEach(prepareInternalLink);
-  }
+  document.addEventListener('landingContentReady', prepareAllInternalLinks);
+  document.addEventListener('ecpContentReady', prepareAllInternalLinks);
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', prepareAllInternalLinks);
   } else {
     prepareAllInternalLinks();
   }
+
+  window.CrzrtZoomSync = {
+    getCssZoom: getCssZoom,
+    setCssZoom: setCssZoom,
+    prepareAllInternalLinks: prepareAllInternalLinks,
+    appendZoomParam: appendZoomParam
+  };
 })();

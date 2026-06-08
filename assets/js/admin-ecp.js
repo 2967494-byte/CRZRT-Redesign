@@ -158,33 +158,6 @@
     return video?.thumbnail || '';
   }
 
-  async function hydrateVkAdminPreviews(videos) {
-    if (!window.EcpContent?.vkVideoId) return;
-
-    const tasks = (videos || []).map(async (video, index) => {
-      if (video?.thumbnail || resolveAdminVideoPreview(video) || !window.EcpContent.vkVideoId(video?.url)) {
-        return;
-      }
-
-      const preview = document.getElementById(`ecp_video_auto_preview_${index}`);
-      if (!preview) return;
-
-      try {
-        const resp = await fetch(`api/video-thumb.php?url=${encodeURIComponent(video.url)}`);
-        if (!resp.ok) return;
-        const data = await resp.json();
-        if (data?.success && data.thumbnail) {
-          preview.src = data.thumbnail;
-          preview.style.display = 'block';
-        }
-      } catch (error) {
-        console.warn('Admin ECP: VK thumbnail fetch failed', error);
-      }
-    });
-
-    await Promise.all(tasks);
-  }
-
   function renderVideosAdmin(data) {
     const el = document.getElementById('ecpVideosAdmin');
     if (!el) return;
@@ -205,7 +178,6 @@
       })
       .join('');
     list.forEach((video, i) => setImageUploadState(`ecp_video_thumb_${i}`, video.thumbnail || ''));
-    hydrateVkAdminPreviews(list);
   }
 
   function renderSupportAdmin(data) {

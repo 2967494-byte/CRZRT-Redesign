@@ -176,9 +176,25 @@
   }
 
   function vkVideoId(url) {
-    const match = String(url || '').match(/(?:vk\.com|vkvideo\.ru)\/video(-?\d+)_(\d+)/i);
-    if (!match) return '';
-    return `${match[1]}_${match[2]}`;
+    const str = String(url || '');
+    const patterns = [
+      /(?:vk\.com|vkvideo\.ru|vk\.ru|m\.vk\.com)\/video(-?\d+)_(\d+)/i,
+      /[?&]z=video(-?\d+)_(\d+)/i,
+      /[?&]vid=(-?\d+)_(\d+)/i
+    ];
+    for (const pattern of patterns) {
+      const match = str.match(pattern);
+      if (match) return `${match[1]}_${match[2]}`;
+    }
+    const oidMatch = str.match(/[?&]oid=(-?\d+)/i);
+    const idMatch = str.match(/[?&]id=(\d+)/i);
+    if (oidMatch && idMatch) return `${oidMatch[1]}_${idMatch[1]}`;
+    return '';
+  }
+
+  function vkVideoThumbProxyUrl(url) {
+    if (!vkVideoId(url)) return '';
+    return `api/video-thumb.php?url=${encodeURIComponent(url)}&proxy=1`;
   }
 
   function resolveVideoThumbnail(video) {
@@ -187,51 +203,28 @@
     if (youtubeId) return `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
     const rutubeId = rutubeVideoId(video?.url);
     if (rutubeId) return `https://pic.rutube.ru/video/${rutubeId}.jpg`;
-    return '';
-  }
-
-  function applyVideoThumbnail(card, thumbnailUrl) {
-    if (!card || !thumbnailUrl) return;
-    const thumbEl = card.querySelector('.ecp-video-card__thumbnail');
-    if (!thumbEl) return;
-    const safeUrl = String(thumbnailUrl).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-    thumbEl.style.backgroundImage = `url("${safeUrl}")`;
-    thumbEl.style.backgroundSize = 'cover';
-    thumbEl.style.backgroundPosition = 'center';
-  }
-
-  async function hydrateVkVideoThumbnails(videos) {
-    const cards = document.querySelectorAll('.ecp-videos__grid .ecp-video-card');
-    if (!cards.length) return;
-
-    const tasks = (videos || []).map(async (video, index) => {
-      if (video?.thumbnail || !vkVideoId(video?.url)) return;
-      const card = cards[index];
-      if (!card) return;
-
-      try {
-        const resp = await fetch(`api/video-thumb.php?url=${encodeURIComponent(video.url)}`);
-        if (!resp.ok) return;
-        const data = await resp.json();
-        if (data?.success && data.thumbnail) {
-          applyVideoThumbnail(card, data.thumbnail);
-        }
-      } catch (error) {
-        console.warn('ECP: VK thumbnail fetch failed', error);
-      }
-    });
-
-    await Promise.all(tasks);
+    return vkVideoThumbProxyUrl(video?.url);
   }
 
   function renderHero(hero) {
     const titleEl = document.querySelector('.ecp-hero-title');
     const subtitleEl = document.querySelector('.ecp-hero-subtitle');
     const imageEl = document.querySelector('.ecp-hero-monitor');
+    const dotsWrap = document.querySelector('.hero-slide__dots');
+    const arrowsWrap = document.querySelector('.hero-slide__arrows');
+
     if (titleEl) titleEl.innerHTML = multilineHtml(hero.title);
     if (subtitleEl) subtitleEl.innerHTML = multilineHtml(hero.subtitle);
     if (imageEl && hero.monitorImage) {
       imageEl.src = hero.monitorImage;
+    }
+
+    if (dotsWrap) {
+      dotsWrap.innerHTML = '';
+      dotsWrap.classList.add('is-hidden');
+    }
+    if (arrowsWrap) {
+      arrowsWrap.classList.add('is-hidden');
     }
   }
 
@@ -324,7 +317,6 @@
       .join('');
 
     if (window.__reinitReveal) window.__reinitReveal('.ecp-video-card');
-    hydrateVkVideoThumbnails(list);
   }
 
   function bindSupportButton(support) {
@@ -404,7 +396,7 @@
     loadEcpDataFromLocal,
     resolveVideoThumbnail,
     vkVideoId,
-    hydrateVkVideoThumbnails
+    vkVideoThumbProxyUrl
   };
 
   if (document.readyState === 'loading') {

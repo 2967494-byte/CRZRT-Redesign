@@ -27,8 +27,22 @@ document.getElementById('hero-next')?.addEventListener('click', () => {
   setHeroDot((heroCurrent + 1) % heroSlideCount());
 });
 
+function syncHeroControls() {
+  const count = heroSlideCount();
+  const hide = count <= 1;
+  document.querySelector('.hero-slide__arrows')?.classList.toggle('is-hidden', hide);
+  document.querySelector('.hero-slide__dots')?.classList.toggle('is-hidden', hide);
+}
+
 document.addEventListener('landingContentReady', () => {
   heroCurrent = window.__heroCurrent ?? 0;
+  syncHeroControls();
+  window.CrzrtZoomSync?.prepareAllInternalLinks?.();
+});
+
+document.addEventListener('heroSlidesUpdated', () => {
+  heroCurrent = window.__heroCurrent ?? 0;
+  syncHeroControls();
 });
 
 // Карусель «Наши партнёры» — прокрутка трека

@@ -451,6 +451,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   stroke-linejoin: round;
 }
 
+.hero-slide__arrows.is-hidden {
+  display: none;
+}
+
+.hero-slide__dots.is-hidden {
+  display: none;
+}
+
 /* ===========================
    SERVICE CARDS
 =========================== */

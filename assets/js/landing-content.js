@@ -280,14 +280,25 @@
     if (subEl) subEl.innerHTML = multilineHtml(first.subtitle);
 
     const dotsWrap = slideEl.querySelector('.hero-slide__dots');
+    const arrowsWrap = slideEl.querySelector('.hero-slide__arrows');
+    const hasMultipleSlides = slides.length > 1;
+
     if (dotsWrap) {
-      dotsWrap.innerHTML = slides
-        .map((_, i) => `<span class="dot${i === 0 ? ' active' : ''}" data-slide="${i}"></span>`)
-        .join('');
+      dotsWrap.innerHTML = hasMultipleSlides
+        ? slides
+            .map((_, i) => `<span class="dot${i === 0 ? ' active' : ''}" data-slide="${i}"></span>`)
+            .join('')
+        : '';
+      dotsWrap.classList.toggle('is-hidden', !hasMultipleSlides);
+    }
+
+    if (arrowsWrap) {
+      arrowsWrap.classList.toggle('is-hidden', !hasMultipleSlides);
     }
 
     window.__heroSlides = slides;
     window.__heroCurrent = 0;
+    document.dispatchEvent(new CustomEvent('heroSlidesUpdated', { detail: { count: slides.length } }));
   }
 
   function applyHeroSlide(index) {

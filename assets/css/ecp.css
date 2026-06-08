@@ -145,6 +145,25 @@ body.theme-blue .hero-slide__arrows .arrow-btn:active {
   transform: scale(0.95);
 }
 
+body.theme-blue .hero-slide__arrows .arrow-btn svg {
+  display: block;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+body.theme-blue .hero-slide__arrows .arrow-btn svg polyline {
+  stroke: #FFFFFF;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body.theme-blue .hero-slide__arrows.is-hidden,
+body.theme-blue .hero-slide__dots.is-hidden {
+  display: none;
+}
+
 .ecp-banner__graphic {
   position: absolute;
   right: 68px;
