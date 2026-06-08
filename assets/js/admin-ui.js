@@ -105,6 +105,14 @@
         window.saveMainPageStateToMemory = function () {
             AdminLanding.collectMainPageFromForm(mainPageData);
         };
+        let ecpPageData = AdminEcp.migrateEcpPageData(
+            JSON.parse(localStorage.getItem('crzrt_ecp_page_data') || 'null')
+        );
+        window.ecpPageData = ecpPageData;
+        window.saveEcpPageStateToMemory = function () {
+            ecpPageData = AdminEcp.collectEcpPageFromForm(ecpPageData);
+            window.ecpPageData = ecpPageData;
+        };
         let aboutData = { ...defaultAboutData };
         let contactsData = { ...defaultContactsData };
         let educationData; // assigned after defaultEducationData is declared (~line 1570)
@@ -112,7 +120,8 @@
 
         async function syncAllDataFromServer() {
             const keys = [
-                'crzrt_main_page_data', 
+                'crzrt_main_page_data',
+                'crzrt_ecp_page_data',
                 'crzrt_about_data', 
                 'crzrt_contacts', 
                 'crzrt_education_data', 
@@ -129,6 +138,10 @@
                                 mainPageData = AdminLanding.migrateMainPageData(data);
                                 window.mainPageData = mainPageData;
                             }
+                            else if (key === 'crzrt_ecp_page_data') {
+                                ecpPageData = AdminEcp.migrateEcpPageData(data);
+                                window.ecpPageData = ecpPageData;
+                            }
                             else if (key === 'crzrt_about_data') aboutData = { ...defaultAboutData, ...data };
                             else if (key === 'crzrt_contacts') contactsData = { ...defaultContactsData, ...data };
                             else if (key === 'crzrt_education_data') educationData = { ...educationData, ...data };
@@ -141,6 +154,7 @@
                 }
                 // Refresh appropriate views
                 if (currentTarget === 'main-page') renderMainPageAdmin();
+                else if (currentTarget === 'ecp-page') renderEcpPageAdmin();
                 else if (currentTarget === 'about-us') renderAboutUsAdmin();
                 else if (currentTarget === 'contacts') renderContactsAdmin();
                 else if (currentTarget === 'education') renderEducationAdmin();
@@ -195,6 +209,10 @@
 
         function renderMainPageAdmin() {
             AdminLanding.renderMainPageAdmin(mainPageData);
+        }
+
+        function renderEcpPageAdmin() {
+            AdminEcp.renderEcpPageAdmin(ecpPageData);
         }
 
         // ═══════════════════════════════════════════════
@@ -730,6 +748,7 @@
             blocks.forEach(block => {
                 const blockTargetMap = {
                     'main-page': 'mainPageBlock',
+                    'ecp-page': 'ecpPageBlock',
                     'consulting': 'consultingBlock',
                     'education': 'educationBlock',
                     'users': 'usersBlock',
@@ -757,6 +776,7 @@
 
                 // Trigger specific renders based on active tab
                 if (currentTarget === 'main-page') renderMainPageAdmin();
+                if (currentTarget === 'ecp-page') renderEcpPageAdmin();
                 if (currentTarget === 'consulting') renderConsultingAdmin();
                 if (currentTarget === 'education') renderEducationAdmin();
                 if (currentTarget === 'users') renderUsers();
@@ -1022,6 +1042,45 @@
             handleFiles(this.files);
         });
 
+        const docFileInput = document.getElementById('docFileInput');
+        if (docFileInput) {
+            docFileInput.addEventListener('change', async function () {
+                const file = this.files && this.files[0];
+                const targetId = window.fileUploadTarget;
+                this.value = '';
+                if (!file || !targetId) return;
+
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('slot', targetId.replace(/[^a-z0-9_]/gi, '_'));
+
+                try {
+                    const response = await fetch('api/upload-file.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result?.success || !result?.url) {
+                        throw new Error(result?.error || 'Не удалось загрузить файл');
+                    }
+                    const input = document.getElementById(targetId);
+                    if (input) input.value = result.url;
+                    if (AdminEcp?.setFileUploadState) {
+                        AdminEcp.setFileUploadState(targetId, result.url, result.name || file.name);
+                    }
+                    const saveBtnHint = document.getElementById('globalSaveBtn');
+                    if (saveBtnHint) {
+                        saveBtnHint.style.boxShadow = '0 0 15px rgba(52, 199, 89, 0.5)';
+                        saveBtnHint.innerText = 'Сохраните изменения!';
+                    }
+                } catch (error) {
+                    alert('Ошибка загрузки файла: ' + error.message);
+                } finally {
+                    window.fileUploadTarget = null;
+                }
+            });
+        }
+
         function handleFiles(files) {
             if (files && files.length > 0) {
                 const reader = new FileReader();
@@ -1050,8 +1109,13 @@
                         cropperOpts = AdminLanding.getCropperOptions(uploadId);
                     } else {
                         let currentAspect = window.activeAuthorIndex !== null ? 1 : 16 / 9;
-                        if (window.cropTarget && AdminLanding) {
-                            const a = AdminLanding.getAspect(uploadId);
+                        if (window.cropTarget) {
+                            let a = NaN;
+                            if (AdminEcp?.isEcpUploadId?.(uploadId)) {
+                                a = AdminEcp.getAspect(uploadId);
+                            } else if (AdminLanding) {
+                                a = AdminLanding.getAspect(uploadId);
+                            }
                             currentAspect = Number.isNaN(a) ? NaN : a;
                         }
                         cropperOpts = {
@@ -1145,6 +1209,8 @@
                 if (window.activeAuthorIndex !== null) {
                     resWidth = 400;
                     resHeight = 400;
+                } else if (window.cropTarget && AdminEcp?.isEcpUploadId?.(window.cropTarget.uploadId)) {
+                    [resWidth, resHeight] = AdminEcp.getCropSize(window.cropTarget.uploadId);
                 } else if (window.cropTarget && AdminLanding) {
                     [resWidth, resHeight] = AdminLanding.getCropSize(window.cropTarget.uploadId);
                 }
@@ -1173,6 +1239,9 @@
                         document.getElementById(`c_author_avatarUrl_${idx}`).value = resultBase64;
                     }
                     window.activeAuthorIndex = null;
+                } else if (window.cropTarget && AdminEcp?.isEcpUploadId?.(window.cropTarget.uploadId)) {
+                    AdminEcp.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
+                    window.cropTarget = null;
                 } else if (window.cropTarget && AdminLanding) {
                     AdminLanding.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
                     window.cropTarget = null;
@@ -1520,6 +1589,44 @@
             return data;
         }
 
+        async function replaceEcpBase64WithUploads(data) {
+            const cache = new Map();
+            const uploadOrReuse = (src, slot, maxWidth, maxHeight) => {
+                if (!isImageDataUrl(src)) return Promise.resolve(src);
+                const key = `${slot}:${src.slice(0, 64)}:${src.length}`;
+                if (!cache.has(key)) {
+                    cache.set(key, uploadDataUrlImage(src, slot, maxWidth, maxHeight));
+                }
+                return cache.get(key);
+            };
+
+            if (data.hero) {
+                data.hero.monitorImage = await uploadOrReuse(data.hero.monitorImage, 'ecp_hero_monitor', 561, 482);
+            }
+
+            if (data.blanks) {
+                data.blanks.patternImage = await uploadOrReuse(data.blanks.patternImage, 'ecp_blanks_pattern', 400, 480);
+            }
+
+            if (data.manual) {
+                data.manual.bookImage = await uploadOrReuse(data.manual.bookImage, 'ecp_manual_book', 396, 509);
+            }
+
+            if (data.support) {
+                data.support.image = await uploadOrReuse(data.support.image, 'ecp_support_image', 887, 698);
+            }
+
+            if (Array.isArray(data.videos)) {
+                for (let i = 0; i < data.videos.length; i++) {
+                    const video = data.videos[i];
+                    if (!video) continue;
+                    video.thumbnail = await uploadOrReuse(video.thumbnail, `ecp_video_thumb_${i}`, 474, 290);
+                }
+            }
+
+            return data;
+        }
+
         document.getElementById('globalSaveBtn').addEventListener('click', async () => {
             const btn = document.getElementById('globalSaveBtn');
             const originalText = btn.innerText;
@@ -1536,6 +1643,10 @@
                     saveMainPageStateToMemory();
                     keyToSave = 'crzrt_main_page_data';
                     dataToSave = mainPageData;
+                } else if (currentTarget === 'ecp-page') {
+                    saveEcpPageStateToMemory();
+                    keyToSave = 'crzrt_ecp_page_data';
+                    dataToSave = ecpPageData;
                 } else if (currentTarget === 'about-us') {
                     saveAboutUsStateToMemory();
                     keyToSave = 'crzrt_about_data';
@@ -1562,6 +1673,15 @@
                     mainPageData = dataToSave;
                     window.mainPageData = mainPageData;
                     renderMainPageAdmin();
+                }
+
+                if (currentTarget === 'ecp-page') {
+                    btn.innerText = 'Загрузка медиа...';
+                    const snapshot = JSON.parse(JSON.stringify(dataToSave));
+                    dataToSave = await replaceEcpBase64WithUploads(snapshot);
+                    ecpPageData = dataToSave;
+                    window.ecpPageData = ecpPageData;
+                    renderEcpPageAdmin();
                 }
 
                 btn.innerText = 'Сохраняется...';

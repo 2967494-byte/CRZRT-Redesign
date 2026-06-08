@@ -44,10 +44,10 @@
       {
         title: 'ЭТП',
         desc: 'Электронная торговая площадка',
-        link: 'https://etpzakupki.tatar',
+        link: 'ecp.html',
         variant: 'blue',
         icon: 'assets/img/etp.png',
-        external: true
+        external: false
       }
     ],
     promoBanner: {
@@ -82,6 +82,29 @@
     ],
     consultation: {
       photos: ['assets/img/mask_group.png']
+    },
+    socialLinks: [
+      { id: 'max', label: 'Max', href: '#' },
+      { id: 'tg', label: 'Телеграм', href: '#' },
+      { id: 'vk', label: 'В контакте', href: '#' }
+    ]
+  };
+
+  const SOCIAL_ICON_ASSETS = {
+    max: {
+      banner: 'assets/img/social-max.png',
+      footer: 'assets/img/max.png',
+      footerClass: 'footer-social-icon--max'
+    },
+    tg: {
+      banner: 'assets/img/social-tg.png',
+      footer: 'assets/img/tg.png',
+      footerClass: 'footer-social-icon--tg'
+    },
+    vk: {
+      banner: 'assets/img/social-vk.png',
+      footer: 'assets/img/vk.png',
+      footerClass: 'footer-social-icon--vk'
     }
   };
 
@@ -159,6 +182,15 @@
       }
     }
 
+    data.serviceCards = data.serviceCards.map((card) => {
+      const title = String(card?.title || '').trim();
+      const link = String(card?.link || '').trim();
+      if (title === 'ЭТП' && /etpzakupki/i.test(link)) {
+        return { ...card, link: 'ecp.html', external: false };
+      }
+      return card;
+    });
+
     if (!data.promoBanner || typeof data.promoBanner !== 'object') {
       data.promoBanner = { ...LANDING_DEFAULTS.promoBanner };
     }
@@ -180,6 +212,21 @@
     }
 
     data.consultation = normalizeConsultationPhotos(raw, data);
+
+    if (!Array.isArray(data.socialLinks) || !data.socialLinks.length) {
+      data.socialLinks = LANDING_DEFAULTS.socialLinks.map((link) => ({ ...link }));
+    } else {
+      data.socialLinks = data.socialLinks
+        .map((link, index) => {
+          const fallback = LANDING_DEFAULTS.socialLinks[index] || LANDING_DEFAULTS.socialLinks[0];
+          return {
+            id: link?.id || fallback.id,
+            label: link?.label || fallback.label,
+            href: link?.href || fallback.href || '#'
+          };
+        })
+        .filter((link) => SOCIAL_ICON_ASSETS[link.id]);
+    }
 
     return data;
   }
@@ -218,6 +265,7 @@
     const slider = document.querySelector('.hero-slider');
     const slideEl = document.querySelector('.hero-slide');
     if (!slider || !slideEl) return;
+    if (document.body.classList.contains('theme-blue')) return;
 
     const slides = (data.heroSlides || []).filter((s) => s && (s.background || s.title));
     if (!slides.length) return;
@@ -243,6 +291,7 @@
   }
 
   function applyHeroSlide(index) {
+    if (document.body.classList.contains('theme-blue')) return;
     const slides = window.__heroSlides;
     if (!slides || !slides.length) return;
     const i = ((index % slides.length) + slides.length) % slides.length;
@@ -309,7 +358,7 @@
     track.innerHTML = list
       .map(
         (p) => `<div class="partner-logo">
-          <img src="${escapeAttr(p.image)}" alt="${escapeHtml(p.alt || 'Партнёр')}" decoding="async">
+          <img src="${escapeAttr(p.image)}" alt="${escapeHtml(p.alt || 'Партнёр')}" loading="lazy" decoding="async">
         </div>`
       )
       .join('');
@@ -341,6 +390,45 @@
       .join('');
 
     if (window.__reinitReveal) window.__reinitReveal('.review-card');
+  }
+
+  function renderSocialLinks(socialLinks) {
+    const bannerLinks = document.querySelector('.social-banner__links');
+    const footerLinks = document.querySelector('.footer-socials');
+    const list = socialLinks && socialLinks.length ? socialLinks : LANDING_DEFAULTS.socialLinks;
+
+    if (bannerLinks) {
+      bannerLinks.innerHTML = list
+        .map((link) => {
+          const assets = SOCIAL_ICON_ASSETS[link.id];
+          if (!assets) return '';
+          const href = link.href || '#';
+          const ext = /^https?:\/\//i.test(href);
+          const target = ext ? ' target="_blank" rel="noopener noreferrer"' : '';
+          return `<a href="${escapeHtml(href)}" class="social-btn" aria-label="${escapeHtml(link.label || link.id)}"${target}>
+            <span class="social-btn__icon-wrap">
+              <img src="${escapeAttr(assets.banner)}" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
+            </span>
+            <span class="social-btn__label">${escapeHtml(link.label || link.id)}</span>
+          </a>`;
+        })
+        .join('');
+    }
+
+    if (footerLinks) {
+      footerLinks.innerHTML = list
+        .map((link) => {
+          const assets = SOCIAL_ICON_ASSETS[link.id];
+          if (!assets) return '';
+          const href = link.href || '#';
+          const ext = /^https?:\/\//i.test(href);
+          const target = ext ? ' target="_blank" rel="noopener noreferrer"' : '';
+          return `<a href="${escapeHtml(href)}" class="footer-social-icon ${assets.footerClass}" aria-label="${escapeHtml(link.label || link.id)}"${target}>
+            <img src="${escapeAttr(assets.footer)}" alt="${escapeHtml(link.label || link.id)}">
+          </a>`;
+        })
+        .join('');
+    }
   }
 
   function renderConsultationPhoto(photos) {
@@ -378,10 +466,27 @@
     return (data?.heroSlides || []).find((slide) => slide?.background)?.background || '';
   }
 
-  function preloadImage(url) {
-    if (!url) return;
+  function preloadLcpImage(url) {
+    if (!url || String(url).startsWith('data:')) return;
+    const href = String(url);
+    let link = document.querySelector('link[data-preload-lcp="hero"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.setAttribute('data-preload-lcp', 'hero');
+      document.head.appendChild(link);
+    }
+    link.href = href;
+  }
+
+  function preloadImage(url, options) {
+    if (!url || String(url).startsWith('data:')) return;
     const img = new Image();
     img.decoding = 'async';
+    if (options?.highPriority && 'fetchPriority' in img) {
+      img.fetchPriority = 'high';
+    }
     img.src = url;
   }
 
@@ -391,6 +496,7 @@
     renderPromoBanner(data.promoBanner);
     renderPartners(data.partners);
     renderReviews(data.reviews);
+    renderSocialLinks(data.socialLinks);
     renderConsultationPhoto(data.consultation?.photos);
     bindPromoClick();
     window.applyHeroSlide = applyHeroSlide;
@@ -401,14 +507,16 @@
     const revealTimer = window.setTimeout(markLandingContentReady, REVEAL_TIMEOUT_MS);
     try {
       const localData = loadLandingDataFromLocal();
-      renderLanding(localData || migrateLandingData(null));
+      const initialData = localData || migrateLandingData(null);
+      preloadLcpImage(getHeroLcpImage(initialData));
+      renderLanding(initialData);
       markLandingContentReady();
-      preloadImage(getHeroLcpImage(localData));
+      preloadImage(getHeroLcpImage(initialData), { highPriority: true });
 
       const apiData = await loadLandingDataFromApi();
       if (apiData) {
         renderLanding(apiData);
-        preloadImage(getHeroLcpImage(apiData));
+        preloadImage(getHeroLcpImage(apiData), { highPriority: true });
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(apiData));
         } catch (e) {

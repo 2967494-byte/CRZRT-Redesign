@@ -3,11 +3,12 @@
 session_start();
 require_once 'db.php';
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 // ==== 1. ЧТЕНИЕ НАСТРОЕК (GET запрос) ====
 // Публично: сайт или админка будет запрашивать данные отсюда
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    header('Cache-Control: public, max-age=60, stale-while-revalidate=120');
     $key = $_GET['key'] ?? '';
     
     try {

@@ -45,6 +45,14 @@
                     </svg>
                     Главная страница
                 </div>
+                <div class="nav-item" data-target="ecp-page">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    Страница ЭТП
+                </div>
                 <div class="nav-item" data-target="consulting">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -179,12 +187,60 @@
                     <div id="mReviewsAdmin" class="m-reviews-admin"></div>
                 </div>
                 <div class="admin-card">
+                    <div class="card-header">
+                        <span>Мы в социальных сетях</span>
+                    </div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">Ссылки и подписи используются в блоке «Мы в социальных сетях» и в подвале на всех страницах.</p>
+                    <div id="mSocialAdmin"></div>
+                </div>
+                <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                         <span>Получить консультацию — фото</span>
                         <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminLanding.addConsultPhoto()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Фото</button>
                     </div>
                     <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">При каждом обновлении страницы — случайное фото из списка (~396×509).</p>
                     <div id="mConsultPhotosAdmin" class="consult-photos-admin"></div>
+                </div>
+            </div>
+
+            <div id="ecpPageBlock" class="admin-block" data-required-role="main-page">
+                <div class="admin-card">
+                    <div class="card-header"><span>Верхний баннер</span></div>
+                    <div id="ecpHeroAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Тарифы</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminEcp.addTariff()">+ Карточка</button>
+                    </div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">Для каждой карточки — название и файл (ссылка или загрузка PDF/DOC).</p>
+                    <div id="ecpTariffsAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Бланки и шаблоны</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminEcp.addBlank()">+ Бланк</button>
+                    </div>
+                    <div id="ecpBlanksAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Руководство пользователя</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminEcp.addManualItem()">+ Документ</button>
+                    </div>
+                    <div id="ecpManualAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Видеоинструкции</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminEcp.addVideo()">+ Видео</button>
+                    </div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">Ссылка на YouTube, Rutube или VK — превью подставится автоматически.</p>
+                    <div id="ecpVideosAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header"><span>Баннер «Оперативная поддержка»</span></div>
+                    <div id="ecpSupportAdmin"></div>
                 </div>
             </div>
 
@@ -461,6 +517,7 @@
 
             <!-- Global Image Cropper Modal -->
             <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <input type="file" id="docFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.rtf,.txt,.odt,.ods" style="display: none;">
 
             <div id="cropperGlobalContainer" class="modal-overlay" style="display: none;">
                 <div class="modal-content modal-large">
@@ -542,7 +599,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="assets/js/landing-content.js"></script>
+    <script src="assets/js/ecp-content.js"></script>
     <script src="assets/js/admin-landing.js"></script>
+    <script src="assets/js/admin-ecp.js"></script>
     <script src="assets/js/admin-ui.js"></script>
 </body>
 </html>

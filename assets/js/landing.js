@@ -18,10 +18,12 @@ function setHeroDot(i) {
 }
 
 document.getElementById('hero-prev')?.addEventListener('click', () => {
+  if (document.body.classList.contains('theme-blue')) return;
   setHeroDot((heroCurrent - 1 + heroSlideCount()) % heroSlideCount());
 });
 
 document.getElementById('hero-next')?.addEventListener('click', () => {
+  if (document.body.classList.contains('theme-blue')) return;
   setHeroDot((heroCurrent + 1) % heroSlideCount());
 });
 
@@ -49,6 +51,7 @@ partnersNext?.addEventListener('click', () => {
 
 // Auto-advance hero
 setInterval(() => {
+  if (document.body.classList.contains('theme-blue')) return;
   if (heroSlideCount() > 1) {
     setHeroDot((heroCurrent + 1) % heroSlideCount());
   }
@@ -88,7 +91,8 @@ const revealObserver = new IntersectionObserver(
 );
 
 const REVEAL_SELECTORS =
-  '.events-card, .news-card, .promo-banner, .partners-section, .review-card, .consultation-card__left, .consultation-card__right, .social-banner';
+  '.events-card, .news-card, .promo-banner, .partners-section, .review-card, .consultation-card__left, .consultation-card__right, .social-banner, ' +
+  '.ecp-card, .ecp-btn-large, .ecp-panel, .ecp-tariffs__title, .ecp-tariff-card, .ecp-blanks__title, .ecp-blank-card, .ecp-manual__title, .ecp-manual__item, .ecp-manual__graphic, .ecp-videos__title, .ecp-video-card, .ecp-support-banner';
 
 function observeRevealElements(root = document) {
   root.querySelectorAll(REVEAL_SELECTORS).forEach((el) => {

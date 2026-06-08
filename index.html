@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="assets/js/page-zoom-sync.js"></script>
   <title>Центр развития закупок Республики Татарстан</title>
   <meta name="description" content="Центр развития закупок РТ — надёжное тендерное сопровождение, обучение, юридический консалтинг и ЭТП">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Google+Sans:wght@400;500;700&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/landing.css">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" as="style" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
+  <link rel="preload" href="assets/css/landing.css?v=8" as="style">
+  <link rel="stylesheet" href="assets/css/landing.css?v=8">
   <script>document.documentElement.classList.add('landing-content-pending');</script>
 </head>
 <body>
@@ -79,11 +82,11 @@
               <p class="hero-slide__subtitle">Поиск выгодных закупок<br>и оценка целесообразности участия</p>
             </div>
             <div class="hero-slide__arrows">
-              <button class="arrow-btn" id="hero-prev">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              <button class="arrow-btn" id="hero-prev" aria-label="Предыдущий слайд">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><polyline points="10.5 3.5 5.5 8 10.5 12.5"/></svg>
               </button>
-              <button class="arrow-btn" id="hero-next">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg>
+              <button class="arrow-btn" id="hero-next" aria-label="Следующий слайд">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><polyline points="5.5 3.5 10.5 8 5.5 12.5"/></svg>
               </button>
             </div>
           </div>
@@ -116,7 +119,7 @@
             </div>
             <img src="assets/img/u_k.png" alt="Юридический консалтинг" class="service-card__icon">
           </a>
-          <a href="https://etpzakupki.tatar" target="_blank" class="service-card service-card--blue">
+          <a href="ecp.html" class="service-card service-card--blue">
             <div class="service-card__body">
               <h3 class="service-card__title">ЭТП</h3>
               <p class="service-card__desc">Электронная торговая площадка</p>
@@ -216,93 +219,19 @@
 
 <div class="third-screen">
   <!-- REVIEWS -->
-  <section class="section reviews-section reveal-init landing-dynamic" id="reviews">
+  <section class="section reviews-section landing-dynamic" id="reviews">
     <div class="container">
       <h2 class="section-title">Отзывы клиентов</h2>
-      <div class="reviews-grid">
-        <div class="review-card reveal-init">
-          <p class="review-card__text">В целом Интерфейс понятный, удобный. Если нужны какие-то улучшения, Росэлторг их активно рассматривает. Не всегда, но движения в этом вопросе точно есть.</p>
-          <div class="review-card__footer">
-            <div class="review-card__author">
-              <p class="review-card__name">
-                <span class="review-card__name-line">Сергеев</span>
-                <span class="review-card__name-line">Александр</span>
-              </p>
-              <p class="review-card__role">
-                <span class="review-card__role-line">Руководитель</span>
-                <span class="review-card__role-line">тендерного отдела</span>
-              </p>
-            </div>
-          </div>
-          <div class="review-card__quote" aria-hidden="true">
-            <img src="assets/img/quote.svg" alt="" class="review-card__quote-img" width="179" height="182" decoding="async">
-          </div>
-        </div>
-        <div class="review-card reveal-init">
-          <p class="review-card__text">В целом Интерфейс понятный, удобный. Если нужны какие-то улучшения, Росэлторг их активно рассматривает. Не всегда, но движения в этом вопросе точно есть.</p>
-          <div class="review-card__footer">
-            <div class="review-card__author">
-              <p class="review-card__name">
-                <span class="review-card__name-line">Сергеев</span>
-                <span class="review-card__name-line">Александр</span>
-              </p>
-              <p class="review-card__role">
-                <span class="review-card__role-line">Руководитель</span>
-                <span class="review-card__role-line">тендерного отдела</span>
-              </p>
-            </div>
-          </div>
-          <div class="review-card__quote" aria-hidden="true">
-            <img src="assets/img/quote.svg" alt="" class="review-card__quote-img" width="179" height="182" decoding="async">
-          </div>
-        </div>
-        <div class="review-card reveal-init">
-          <p class="review-card__text">В целом Интерфейс понятный, удобный. Если нужны какие-то улучшения, Росэлторг их активно рассматривает. Не всегда, но движения в этом вопросе точно есть.</p>
-          <div class="review-card__footer">
-            <div class="review-card__author">
-              <p class="review-card__name">
-                <span class="review-card__name-line">Сергеев</span>
-                <span class="review-card__name-line">Александр</span>
-              </p>
-              <p class="review-card__role">
-                <span class="review-card__role-line">Руководитель</span>
-                <span class="review-card__role-line">тендерного отдела</span>
-              </p>
-            </div>
-          </div>
-          <div class="review-card__quote" aria-hidden="true">
-            <img src="assets/img/quote.svg" alt="" class="review-card__quote-img" width="179" height="182" decoding="async">
-          </div>
-        </div>
-      </div>
+      <div class="reviews-grid"></div>
     </div>
   </section>
 
   <!-- SOCIAL NETWORKS BANNER -->
-  <section class="section social-section">
+  <section class="section social-section landing-dynamic">
     <div class="container">
       <div class="social-banner reveal-init">
         <h2 class="social-banner__title">Мы в социальных сетях</h2>
-        <div class="social-banner__links">
-          <a href="#" class="social-btn" aria-label="Max">
-            <span class="social-btn__icon-wrap">
-              <img src="assets/img/social-max.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
-            </span>
-            <span class="social-btn__label">Max</span>
-          </a>
-          <a href="#" class="social-btn" aria-label="Телеграм">
-            <span class="social-btn__icon-wrap">
-              <img src="assets/img/social-tg.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
-            </span>
-            <span class="social-btn__label">Телеграм</span>
-          </a>
-          <a href="#" class="social-btn" aria-label="В контакте">
-            <span class="social-btn__icon-wrap">
-              <img src="assets/img/social-vk.png" alt="" class="social-btn__icon" width="57" height="57" decoding="async">
-            </span>
-            <span class="social-btn__label">В контакте</span>
-          </a>
-        </div>
+        <div class="social-banner__links"></div>
       </div>
     </div>
   </section>
@@ -382,17 +311,7 @@
       </div>
       <div class="footer-contact-group">
         <p class="footer-contact-label">Социальные сети</p>
-        <div class="footer-socials">
-          <a href="#" class="footer-social-icon footer-social-icon--max" aria-label="Max">
-            <img src="assets/img/max.png" alt="Max">
-          </a>
-          <a href="#" class="footer-social-icon footer-social-icon--tg" aria-label="Телеграм">
-            <img src="assets/img/tg.png" alt="Телеграм">
-          </a>
-          <a href="#" class="footer-social-icon footer-social-icon--vk" aria-label="ВКонтакте">
-            <img src="assets/img/vk.png" alt="ВКонтакте">
-          </a>
-        </div>
+        <div class="footer-socials landing-dynamic"></div>
       </div>
     </div>
   </div>
@@ -410,7 +329,7 @@
 </footer>
 
 
-  <script src="assets/js/landing-content.js"></script>
-  <script src="assets/js/landing.js"></script>
+  <script src="assets/js/landing-content.js?v=4" defer></script>
+  <script src="assets/js/landing.js?v=3" defer></script>
 </body>
 </html>

@@ -38,7 +38,7 @@
       { title: 'Обучение', desc: 'Как зарабатывать на госзакупках и тендерах', link: 'obuchenie.html', variant: 'green', icon: 'assets/img/obuch.png' },
       { title: 'Сопровождение', desc: 'Комплексная помощь экспертов на всех этапах закупок', link: 'consulting.html', variant: 'peach', icon: 'assets/img/sopr.png' },
       { title: 'Юридический консалтинг', desc: 'Профессиональные консультационные услуги по правовым вопросам', link: 'consulting.html', variant: 'purple', icon: 'assets/img/u_k.png' },
-      { title: 'ЭТП', desc: 'Электронная торговая площадка', link: 'https://etpzakupki.tatar', variant: 'blue', icon: 'assets/img/etp.png', external: true }
+      { title: 'ЭТП', desc: 'Электронная торговая площадка', link: 'ecp.html', variant: 'blue', icon: 'assets/img/etp.png', external: false }
     ],
     promoBanner: {
       title: 'Дистанционный курс\nпо 44 ФЗ для заказчиков',
@@ -70,7 +70,12 @@
         roleLines: ['Руководитель', 'тендерного отдела']
       }
     ],
-    consultation: { photos: ['assets/img/mask_group.png'] }
+    consultation: { photos: ['assets/img/mask_group.png'] },
+    socialLinks: [
+      { id: 'max', label: 'Max', href: '#' },
+      { id: 'tg', label: 'Телеграм', href: '#' },
+      { id: 'vk', label: 'В контакте', href: '#' }
+    ]
   };
 
   function escapeAttr(s) {
@@ -319,6 +324,35 @@
     });
   }
 
+  function renderSocialLinksAdmin(container, socialLinks) {
+    if (!container) return;
+    const list = socialLinks && socialLinks.length ? socialLinks : DEFAULT_LANDING_MAIN.socialLinks;
+    container.innerHTML = list
+      .map((link, i) => {
+        const platform = link.id === 'max' ? 'Max' : link.id === 'tg' ? 'Telegram' : 'ВКонтакте';
+        return `<div class="admin-social-row" style="display:grid;grid-template-columns:120px 1fr 1fr;gap:12px;align-items:center;margin-bottom:12px;">
+          <span style="font-weight:600;">${escapeAttr(platform)}</span>
+          <input type="text" class="form-control" id="m_social_label_${i}" value="${escapeAttr(link.label || '')}" placeholder="Подпись">
+          <input type="url" class="form-control" id="m_social_href_${i}" value="${escapeAttr(link.href || '')}" placeholder="https://...">
+          <input type="hidden" id="m_social_id_${i}" value="${escapeAttr(link.id || '')}">
+        </div>`;
+      })
+      .join('');
+  }
+
+  function collectSocialLinksFromForm() {
+    const links = [];
+    const count = document.querySelectorAll('[id^="m_social_href_"]').length;
+    for (let i = 0; i < count; i++) {
+      links.push({
+        id: document.getElementById(`m_social_id_${i}`)?.value || DEFAULT_LANDING_MAIN.socialLinks[i]?.id || 'max',
+        label: document.getElementById(`m_social_label_${i}`)?.value || '',
+        href: document.getElementById(`m_social_href_${i}`)?.value || '#'
+      });
+    }
+    return links.length ? links : [...DEFAULT_LANDING_MAIN.socialLinks];
+  }
+
   function renderMainPageAdmin(mainPageData) {
     const heroEl = document.getElementById('mHeroSlidesAdmin');
     const svcEl = document.getElementById('mServiceCardsAdmin');
@@ -340,6 +374,7 @@
     if (svcEl) renderServiceCards(svcEl, mainPageData.serviceCards || []);
     renderPartners(document.getElementById('mPartnersAdmin'), mainPageData.partners || []);
     renderReviews(document.getElementById('mReviewsAdmin'), mainPageData.reviews || []);
+    renderSocialLinksAdmin(document.getElementById('mSocialAdmin'), mainPageData.socialLinks || []);
     renderConsultPhotos(document.getElementById('mConsultPhotosAdmin'), mainPageData.consultation?.photos || []);
   }
 
@@ -447,6 +482,7 @@
     };
     mainPageData.partners = partners;
     mainPageData.reviews = reviews;
+    mainPageData.socialLinks = collectSocialLinksFromForm();
     mainPageData.consultation = { photos: consultationPhotosForSave() };
     return mainPageData;
   }

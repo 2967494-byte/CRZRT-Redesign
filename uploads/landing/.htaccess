@@ -1,0 +1,4 @@
+# Медиа лендинга — долгий кэш (имена файлов уникальны при каждой загрузке)
+<IfModule mod_headers.c>
+  Header set Cache-Control "public, max-age=31536000, immutable"
+</IfModule>

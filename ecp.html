@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="assets/js/page-zoom-sync.js"></script>
+  <title>ЭТП. Центр развития закупок Республики Татарстан</title>
+  <meta name="description" content="Услуги электронной торговой площадки Etpzakupki.tatar, тарифы, документация и поддержка.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" as="style" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
+  <link rel="preload" href="assets/css/landing.css?v=8" as="style">
+  <link rel="preload" href="assets/css/ecp.css?v=1" as="style">
+  <link rel="stylesheet" href="assets/css/landing.css?v=8">
+  <link rel="stylesheet" href="assets/css/ecp.css?v=1">
+  <script>document.documentElement.classList.add('landing-content-pending', 'ecp-content-pending');</script>
+</head>
+<body class="theme-blue">
+
+<!-- HEADER -->
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="logo">
+      <img src="assets/img/logo.svg" alt="Центр развития закупок" class="logo__img">
+    </a>
+
+    <nav class="nav">
+      <a href="index.html#about" class="nav__link">О нас</a>
+      <a href="index.html#news" class="nav__link">Новости</a>
+      <a href="index.html#reviews" class="nav__link">Нам доверяют</a>
+      <a href="#contacts" class="nav__link">Контакты</a>
+    </nav>
+
+    <div class="header__actions">
+      <a href="tel:88001017892" class="btn btn--green">8 800 101-78-92</a>
+      <button id="openLoginModal" class="btn-icon" aria-label="Личный кабинет">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <div id="loginModal" class="login-popover">
+        <button id="closeLoginModal" class="btn-modal-close" aria-label="Закрыть">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <h2 class="modal-title">Вход в систему</h2>
+        <div id="loginError" class="modal-error">Неверный e-mail или пароль</div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">E-mail</label>
+            <input type="email" id="loginEmail" class="form-control" required placeholder="example@mail.ru">
+          </div>
+          <div class="form-group">
+            <label for="loginPass">Пароль</label>
+            <input type="password" id="loginPass" class="form-control" required placeholder="********">
+          </div>
+          <button type="submit" class="btn-save" style="width: 100%; margin-top: 20px;">Войти</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="first-screen">
+  <main>
+    <!-- HERO SLIDER BANNER -->
+    <section class="section">
+      <div class="container">
+        <div class="hero-slider">
+          <div class="hero-slide active">
+
+            <div class="hero-slide__content ecp-dynamic">
+              <h1 class="hero-slide__title ecp-hero-title">Выгодные тарифы<br>поставщикам</h1>
+              <p class="hero-slide__subtitle ecp-hero-subtitle">Порядок осуществления процедур закупок представляет собой строго регламентированный жизненный цикл, который включает в себя шесть основных этапов: планирование, объявление закупки, подача и рассмотрение заявок, определение победителя, заключение контракта и его последующее исполнение.</p>
+            </div>
+            
+            <div class="ecp-banner__graphic ecp-dynamic" aria-hidden="true">
+              <img src="assets/img/ecp/banner-monitor.png?v=1" alt="" class="ecp-banner__image ecp-hero-monitor" width="561" height="482" decoding="async">
+            </div>
+
+            <!-- Arrows -->
+            <div class="hero-slide__arrows">
+              <button class="arrow-btn" id="hero-prev" aria-label="Предыдущий слайд">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><polyline points="10.5 3.5 5.5 8 10.5 12.5"/></svg>
+              </button>
+              <button class="arrow-btn" id="hero-next" aria-label="Следующий слайд">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><polyline points="5.5 3.5 10.5 8 5.5 12.5"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FIVE CARDS GRID -->
+    <section class="section">
+      <div class="container">
+        <div class="ecp-cards-grid">
+          <!-- Card 1: Тарифы -->
+          <a href="#tariffs" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/ecp/icon-tariffs.png?v=2" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+            </div>
+            <div class="ecp-card__label">Тарифы</div>
+          </a>
+
+          <!-- Card 2: Бланки и шаблоны -->
+          <a href="#blanks" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/ecp/icon-forms.png?v=2" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+            </div>
+            <div class="ecp-card__label">Бланки<br>и шаблоны</div>
+          </a>
+
+          <!-- Card 3: Руководство пользователя -->
+          <a href="#manual" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/ecp/icon-manual.png?v=2" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+            </div>
+            <div class="ecp-card__label">Руководство<br>пользователя</div>
+          </a>
+
+          <!-- Card 4: Видеоинструкции -->
+          <a href="#videos" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/ecp/icon-video.png?v=2" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+            </div>
+            <div class="ecp-card__label">Видеоинструкции</div>
+          </a>
+
+          <!-- Card 5: Помощь -->
+          <a href="#help" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/ecp/icon-help.png?v=2" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+            </div>
+            <div class="ecp-card__label">Помощь</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TWO BIG BUTTONS -->
+    <section class="section">
+      <div class="container">
+        <div class="ecp-actions-grid">
+          <a href="https://etpzakupki.tatar" class="ecp-btn-large" target="_blank" rel="noopener noreferrer">Перейти на ЭТП</a>
+          <a href="https://etpzakupki.tatar/app/CheckEds/page" class="ecp-btn-large" target="_blank" rel="noopener noreferrer">Проверить электронную подпись</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TWO INFO PANELS -->
+    <section class="section">
+      <div class="container">
+        <div class="ecp-panels-grid">
+          <!-- Panel 1: Для заказчиков -->
+          <div class="ecp-panel">
+            <div class="ecp-panel__icon-wrap">
+              <img src="assets/img/ecp/icon-panel-customers.png" alt="" class="ecp-panel__icon" width="145" height="145" decoding="async">
+            </div>
+            <h2 class="ecp-panel__title">Для заказчиков</h2>
+            <ul class="ecp-panel__list">
+              <li class="ecp-panel__item">
+                <span class="ecp-panel__item-num">1.</span>
+                <span class="ecp-panel__item-text">Бесплатное размещение закупок для заказчиков</span>
+              </li>
+              <li class="ecp-panel__item">
+                <span class="ecp-panel__item-num">2.</span>
+                <span class="ecp-panel__item-text">Консультации заказчиков по вопросам закупок</span>
+              </li>
+              <li class="ecp-panel__item">
+                <span class="ecp-panel__item-num">3.</span>
+                <span class="ecp-panel__item-text">Помощь в представлении интересов в УФАС</span>
+              </li>
+              <li class="ecp-panel__item">
+                <span class="ecp-panel__item-num">4.</span>
+                <span class="ecp-panel__item-text">Детализированные отчеты по закупкам</span>
+              </li>
+              <li class="ecp-panel__item">
+                <span class="ecp-panel__item-num">5.</span>
+                <div class="ecp-panel__item-text">
+                  Всесторонняя юридическая поддержка
+                  <span class="ecp-panel__item-sub">(полный цикл проведения закупки: от составления ТЗ до подписания договора)</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Panel 2: Для поставщиков -->
+          <div class="ecp-panel">
+            <div class="ecp-panel__icon-wrap">
+              <img src="assets/img/ecp/icon-panel-suppliers.png" alt="" class="ecp-panel__icon" width="145" height="145" decoding="async">
+            </div>
+            <h2 class="ecp-panel__title">Для поставщиков<br>(участников закупок)</h2>
+            <ul class="ecp-panel__list">
+              <li class="ecp-panel__item">
+                <span class="ecp-panel__item-num">1.</span>
+                <span class="ecp-panel__item-text">Выгодные тарифы для поставщиков</span>
+              </li>
+              <li class="ecp-panel__item">
+                <span class="ecp-panel__item-num">2.</span>
+                <span class="ecp-panel__item-text">Бесплатная регистрация и аккредитация для поставщиков</span>
+              </li>
+              <li class="ecp-panel__item">
+                <span class="ecp-panel__item-num">3.</span>
+                <span class="ecp-panel__item-text">Отсутствие абонентской платы для поставщиков и заказчиков</span>
+              </li>
+              <li class="ecp-panel__item">
+                <span class="ecp-panel__item-num">4.</span>
+                <span class="ecp-panel__item-text">Платит только победитель</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TARIFFS SECTION -->
+    <section class="section ecp-tariffs-section" id="tariffs">
+      <div class="container">
+        <h2 class="ecp-tariffs__title">Тарифы</h2>
+        <div class="ecp-tariffs__grid ecp-dynamic"></div>
+      </div>
+    </section>
+
+    <!-- BLANKS SECTION -->
+    <section class="section ecp-blanks-section" id="blanks">
+      <div class="container">
+        <!-- SVG Pattern definitions for cropped blank card icons -->
+        <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="pattern_blank" patternContentUnits="objectBoundingBox" width="1" height="1">
+              <use href="#image_blank" transform="matrix(0.00380409 0 0 0.00322797 -8.35848 -0.100719)"/>
+            </pattern>
+            <image id="image_blank" width="4096" height="419" href="uploads/d4cfd570b4a2548242759c7e47ea853918a2254c.png"/>
+          </defs>
+        </svg>
+
+        <h2 class="ecp-blanks__title">Бланки и шаблоны</h2>
+        <div class="ecp-blanks__grid ecp-dynamic"></div>
+      </div>
+    </section>
+
+    <!-- MANUAL SECTION -->
+    <section class="section ecp-manual-section" id="manual">
+      <div class="container ecp-manual__inner">
+        <div class="ecp-manual__content">
+          <h2 class="ecp-manual__title">Руководство пользователя<br>по работе на ЭТП</h2>
+          <ul class="ecp-manual__list ecp-dynamic"></ul>
+        </div>
+        <div class="ecp-manual__graphic">
+          <img src="uploads/etp-book.png" alt="Руководство пользователя ЭТП" class="ecp-manual__image">
+        </div>
+      </div>
+    </section>
+
+    <!-- VIDEO INSTRUCTIONS SECTION -->
+    <section class="section ecp-videos-section" id="videos">
+      <div class="container ecp-videos__inner">
+        <h2 class="ecp-videos__title">Видео инструкции</h2>
+        <div class="ecp-videos__grid ecp-dynamic"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- SUPPORT BANNER SECTION -->
+<section class="section ecp-support-section" id="help">
+  <div class="container">
+    <div class="ecp-support-banner reveal-init">
+      <div class="ecp-support-banner__content ecp-dynamic">
+        <h2 class="ecp-support-banner__title">Оперативная поддержка</h2>
+        <ul class="ecp-support-banner__list ecp-dynamic"></ul>
+        <button type="button" class="btn ecp-support-banner__btn">Узнать подробнее</button>
+      </div>
+      <div class="ecp-support-banner__graphic ecp-dynamic">
+        <img src="assets/img/ecp/handshake.png" alt="" class="ecp-support-banner__image" width="887" height="698" loading="lazy" decoding="async">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUSTED BY (Partners logos) -->
+<section class="section partners-section reveal-init landing-dynamic">
+  <div class="container">
+    <h2 class="section-title">Наши партнеры</h2>
+    <div class="partners-slider">
+      <button type="button" class="partners-arrow partners-arrow--prev" id="partners-prev" aria-label="Предыдущие партнёры">
+        <svg class="partners-arrow__svg" viewBox="0 0 24 24" width="72" height="72" aria-hidden="true" focusable="false">
+          <polyline points="15 6 9 12 15 18" fill="none" stroke="#ADB8C6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="partners-track"></div>
+      <button type="button" class="partners-arrow partners-arrow--next" id="partners-next" aria-label="Следующие партнёры">
+        <svg class="partners-arrow__svg" viewBox="0 0 24 24" width="72" height="72" aria-hidden="true" focusable="false">
+          <polyline points="9 6 15 12 9 18" fill="none" stroke="#ADB8C6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<div class="third-screen">
+  <!-- REVIEWS -->
+  <section class="section reviews-section landing-dynamic" id="reviews">
+    <div class="container">
+      <h2 class="section-title">Отзывы клиентов</h2>
+      <div class="reviews-grid"></div>
+    </div>
+  </section>
+
+  <!-- SOCIAL NETWORKS BANNER -->
+  <section class="section social-section landing-dynamic">
+    <div class="container">
+      <div class="social-banner reveal-init">
+        <h2 class="social-banner__title">Мы в социальных сетях</h2>
+        <div class="social-banner__links"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONSULTATION FORM -->
+  <section class="section consultation-section" id="contacts">
+    <div class="container">
+      <div class="consultation-card">
+        <div class="consultation-card__left reveal-init">
+          <h2 class="consultation-card__title">
+            <span class="consultation-card__title-line">Получить</span>
+            <span class="consultation-card__title-line">консультацию</span>
+          </h2>
+          <div class="consultation-card__person landing-dynamic"></div>
+        </div>
+        <div class="consultation-card__right reveal-init">
+          <form class="consult-form" id="consultForm">
+            <div class="consult-form__row">
+              <input type="text" class="form-input" placeholder="Имя" id="consultName">
+              <input type="text" class="form-input" placeholder="Фамилия" id="consultSurname">
+            </div>
+            <input type="tel" class="form-input" placeholder="Телефон" id="consultPhone">
+            <input type="email" class="form-input" placeholder="Электронная почта" id="consultEmail">
+            <p class="form-label">Мне интересно</p>
+            <select class="form-input form-select" id="consultInterest" required>
+              <option value="" disabled selected hidden>---Выберите---</option>
+              <option>Обучение</option>
+              <option>Сопровождение</option>
+              <option>Юридический консалтинг</option>
+              <option>ЭТП</option>
+            </select>
+            <label class="form-check" for="agreePolicy">
+              <input type="checkbox" id="agreePolicy">
+              <span>Я соглашаюсь с политикой персональных данных</span>
+            </label>
+            <label class="form-check" for="agreeNews">
+              <input type="checkbox" id="agreeNews">
+              <span>Я хочу получать новости и полезные материалы на эл. почту</span>
+            </label>
+            <button type="submit" class="btn btn--green btn--large">Отправить</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__col footer__col--address">
+      <p>г. Казань,</p>
+      <p>ул. Петербургская, 86</p>
+      <p>Пн-Чт с 09:00 до 18:00</p>
+      <p>Пт с 09:00 до 17:00</p>
+    </div>
+
+    <div class="footer__col footer__col--nav">
+      <a href="index.html#about">О нас</a>
+      <a href="index.html#news">Новости</a>
+      <a href="index.html#reviews">Нам доверяют</a>
+      <a href="index.html#contacts">Контакты</a>
+    </div>
+
+    <div class="footer__col footer__col--links">
+      <a href="knowledge.html">Документы</a>
+      <a href="team.html">Карьера</a>
+    </div>
+
+    <div class="footer__col footer__col--contacts">
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Телефон</p>
+        <a href="tel:88001017892" class="footer-phone">8 800 101-78-92</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Основная почта</p>
+        <a href="mailto:crz.rt@tatar.ru" class="footer-email">crz.rt@tatar.ru</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Социальные сети</p>
+        <div class="footer-socials landing-dynamic"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner">
+      <a href="#" class="footer__bottom-link footer__bottom-link--policy">Политика конфиденциальности</a>
+      <a href="#" class="footer__bottom-link footer__bottom-link--consent">Согласие на обработку персональных данных</a>
+      <div class="footer__bottom-aside">
+        <p class="footer__bottom-text">Мы используем файлы cookie, для персонализации сервисов и<br>повышения удобства пользования сайтом. Если вы не согласны<br>на их использование, поменяйте настройки браузера.</p>
+        <p class="footer__copyright">АО «Центр развития закупок РТ» 2026 (с) Все права защищены</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/landing-content.js?v=5" defer></script>
+<script src="assets/js/ecp-content.js?v=1" defer></script>
+<script src="assets/js/landing.js?v=3" defer></script>
+</body>
+</html>

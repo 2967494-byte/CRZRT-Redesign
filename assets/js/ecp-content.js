@@ -1,0 +1,415 @@
+/**
+ * Контент страницы ЭТП — загрузка из API / localStorage и отрисовка.
+ */
+(function () {
+  const STORAGE_KEY = 'crzrt_ecp_page_data';
+  const CONTENT_PENDING_CLASS = 'ecp-content-pending';
+  const CONTENT_READY_CLASS = 'ecp-content-ready';
+
+  const DOWNLOAD_ARROW_SVG =
+    '<span class="arrow-down-right"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#1D9DFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+
+  const MANUAL_PDF_ICON =
+    '<svg width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 0C1.79086 0 0 1.79086 0 4V24C0 26.2091 1.79086 28 4 28H20C22.2091 28 24 26.2091 24 24V8L16 0H4Z" fill="#1D9DFF"/><path d="M16 0V8H24L16 0Z" fill="#8BE1FF" fill-opacity="0.8"/><rect x="4" y="14" width="16" height="8" rx="1.5" fill="white"/><text x="6" y="21" font-family="Inter, sans-serif" font-size="7" font-weight="800" fill="#1D9DFF" letter-spacing="-0.02em">PDF</text></svg>';
+
+  const VIDEO_PLAY_SVG =
+    '<svg class="ecp-video-card__play" width="134" height="134" viewBox="0 0 134 134" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="67" cy="67" r="63" stroke="white" stroke-width="6"/><path d="M90 67L54 87.5V46.5L90 67Z" fill="white"/></svg>';
+
+  const ECP_DEFAULTS = {
+    hero: {
+      title: 'Выгодные тарифы\nпоставщикам',
+      subtitle:
+        'Порядок осуществления процедур закупок представляет собой строго регламентированный жизненный цикл, который включает в себя шесть основных этапов: планирование, объявление закупки, подача и рассмотрение заявок, определение победителя, заключение контракта и его последующее исполнение.',
+      monitorImage: 'assets/img/ecp/banner-monitor.png'
+    },
+    tariffs: [
+      { text: 'Тарифы торговых\nпроцедур', file: '' },
+      { text: 'Тарифы АО\n«Татспиртпром»', file: '' },
+      { text: 'Индивидуальные тарифы', file: '' },
+      { text: 'Тарифы АНО ВО\n«Университет Иннополис»', file: '' }
+    ],
+    blanks: {
+      patternImage: 'uploads/d4cfd570b4a2548242759c7e47ea853918a2254c.png',
+      items: [
+        { text: 'Бланк доверенности\nна Представителя, включаемого\nв личный кабинет;', file: '' },
+        { text: 'Бланк заявления\nна запрос логина Представителя;', file: '' },
+        { text: 'Бланк заявления на включение\nПредставителя в личный кабинет;', file: '' },
+        { text: 'Бланк перечня используемых\nЗаказчиком способов закупок\nи протоколов.', file: '' }
+      ]
+    },
+    manual: {
+      bookImage: 'uploads/etp-book.png',
+      items: [
+        { title: 'Регламент пользования АИС ЭТП ЦРЗ РТ;', file: '' },
+        { title: 'Инструкция по настройке АРМ;', file: '' },
+        { title: 'Инструкция по работе Заказчика;', file: '' },
+        { title: 'Инструкция по работе участника.', file: '' }
+      ]
+    },
+    videos: [
+      { url: '', title: 'Инструкция по созданию и наполнению плана закупок;', thumbnail: '' },
+      { url: '', title: 'Инструкция по созданию закупки через Мастер создания закупки по плану;', thumbnail: '' },
+      { url: '', title: 'Инструкция по созданию коммерческих закупок;', thumbnail: '' },
+      { url: '', title: 'Инструкция по формированию ответа на запрос разъяснений;', thumbnail: '' },
+      { url: '', title: 'Инструкция по рассмотрению заявок и размещению протокола;', thumbnail: '' },
+      { url: '', title: 'Инструкция по отправке договора на подписание участнику;', thumbnail: '' },
+      { url: '', title: 'Инструкция по подписанию договора;', thumbnail: '' },
+      { url: '', title: 'Инструкция по прикреплению/обновлению ЭП.', thumbnail: '' }
+    ],
+    support: {
+      title: 'Оперативная поддержка',
+      items: [
+        'Информационно-техническая поддержка',
+        'Персональный менеджер 24/7',
+        'Автоматическая рассылка приглашений к участию в закупке',
+        'Аналитические отчеты (как стандартные, так и по запросу)'
+      ],
+      buttonText: 'Узнать подробнее',
+      buttonLink: '#contacts',
+      image: 'assets/img/ecp/handshake.png'
+    }
+  };
+
+  document.documentElement.classList.add(CONTENT_PENDING_CLASS);
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function escapeAttr(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function multilineHtml(str) {
+    return escapeHtml(str || '')
+      .split('\n')
+      .filter((line, i, arr) => line.length || i < arr.length - 1)
+      .join('<br>');
+  }
+
+  function migrateEcpData(raw) {
+    const data = {
+      hero: { ...ECP_DEFAULTS.hero, ...(raw?.hero || {}) },
+      tariffs: Array.isArray(raw?.tariffs) && raw.tariffs.length ? raw.tariffs : [...ECP_DEFAULTS.tariffs],
+      blanks: {
+        patternImage: raw?.blanks?.patternImage || ECP_DEFAULTS.blanks.patternImage,
+        items:
+          Array.isArray(raw?.blanks?.items) && raw.blanks.items.length
+            ? raw.blanks.items
+            : [...ECP_DEFAULTS.blanks.items]
+      },
+      manual: {
+        bookImage: raw?.manual?.bookImage || ECP_DEFAULTS.manual.bookImage,
+        items:
+          Array.isArray(raw?.manual?.items) && raw.manual.items.length
+            ? raw.manual.items
+            : [...ECP_DEFAULTS.manual.items]
+      },
+      videos: Array.isArray(raw?.videos) && raw.videos.length ? raw.videos : [...ECP_DEFAULTS.videos],
+      support: { ...ECP_DEFAULTS.support, ...(raw?.support || {}) }
+    };
+
+    if (!Array.isArray(data.support.items) || !data.support.items.length) {
+      data.support.items = [...ECP_DEFAULTS.support.items];
+    }
+
+    return data;
+  }
+
+  function markEcpContentReady() {
+    document.documentElement.classList.remove(CONTENT_PENDING_CLASS);
+    document.documentElement.classList.add(CONTENT_READY_CLASS);
+  }
+
+  function loadEcpDataFromLocal() {
+    try {
+      const local = localStorage.getItem(STORAGE_KEY);
+      if (local) return migrateEcpData(JSON.parse(local));
+    } catch (error) {
+      console.warn('ECP: localStorage parse error', error);
+    }
+    return null;
+  }
+
+  async function loadEcpDataFromApi() {
+    try {
+      const resp = await fetch(`api/settings.php?key=${STORAGE_KEY}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && typeof data === 'object' && Object.keys(data).length) {
+          return migrateEcpData(data);
+        }
+      }
+    } catch (error) {
+      console.warn('ECP: API unavailable', error);
+    }
+    return null;
+  }
+
+  function fileLinkAttrs(file) {
+    const href = (file || '').trim() || '#';
+    const isDownload = href !== '#' && !/^https?:\/\//i.test(href);
+    const download = isDownload ? ' download' : '';
+    const target = /^https?:\/\//i.test(href) ? ' target="_blank" rel="noopener noreferrer"' : '';
+    return { href: escapeHtml(href), download, target };
+  }
+
+  function youtubeVideoId(url) {
+    const match = String(url || '').match(
+      /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+    );
+    return match ? match[1] : '';
+  }
+
+  function rutubeVideoId(url) {
+    const match = String(url || '').match(/rutube\.ru\/video\/([a-f0-9]+)/i);
+    return match ? match[1] : '';
+  }
+
+  function vkVideoId(url) {
+    const match = String(url || '').match(/(?:vk\.com|vkvideo\.ru)\/video(-?\d+)_(\d+)/i);
+    if (!match) return '';
+    return `${match[1]}_${match[2]}`;
+  }
+
+  function resolveVideoThumbnail(video) {
+    if (video?.thumbnail) return video.thumbnail;
+    const youtubeId = youtubeVideoId(video?.url);
+    if (youtubeId) return `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+    const rutubeId = rutubeVideoId(video?.url);
+    if (rutubeId) return `https://pic.rutube.ru/video/${rutubeId}.jpg`;
+    return '';
+  }
+
+  function applyVideoThumbnail(card, thumbnailUrl) {
+    if (!card || !thumbnailUrl) return;
+    const thumbEl = card.querySelector('.ecp-video-card__thumbnail');
+    if (!thumbEl) return;
+    const safeUrl = String(thumbnailUrl).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    thumbEl.style.backgroundImage = `url("${safeUrl}")`;
+    thumbEl.style.backgroundSize = 'cover';
+    thumbEl.style.backgroundPosition = 'center';
+  }
+
+  async function hydrateVkVideoThumbnails(videos) {
+    const cards = document.querySelectorAll('.ecp-videos__grid .ecp-video-card');
+    if (!cards.length) return;
+
+    const tasks = (videos || []).map(async (video, index) => {
+      if (video?.thumbnail || !vkVideoId(video?.url)) return;
+      const card = cards[index];
+      if (!card) return;
+
+      try {
+        const resp = await fetch(`api/video-thumb.php?url=${encodeURIComponent(video.url)}`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (data?.success && data.thumbnail) {
+          applyVideoThumbnail(card, data.thumbnail);
+        }
+      } catch (error) {
+        console.warn('ECP: VK thumbnail fetch failed', error);
+      }
+    });
+
+    await Promise.all(tasks);
+  }
+
+  function renderHero(hero) {
+    const titleEl = document.querySelector('.ecp-hero-title');
+    const subtitleEl = document.querySelector('.ecp-hero-subtitle');
+    const imageEl = document.querySelector('.ecp-hero-monitor');
+    if (titleEl) titleEl.innerHTML = multilineHtml(hero.title);
+    if (subtitleEl) subtitleEl.innerHTML = multilineHtml(hero.subtitle);
+    if (imageEl && hero.monitorImage) {
+      imageEl.src = hero.monitorImage;
+    }
+  }
+
+  function renderTariffs(tariffs) {
+    const grid = document.querySelector('.ecp-tariffs__grid');
+    if (!grid) return;
+    const list = tariffs && tariffs.length ? tariffs : ECP_DEFAULTS.tariffs;
+    grid.innerHTML = list
+      .map((item) => {
+        const link = fileLinkAttrs(item.file);
+        return `<a href="${link.href}" class="ecp-tariff-card"${link.target}${link.download}>
+          <div class="ecp-tariff-card__icon-circle">
+            <img src="assets/img/ecp/icon-tariff.png" alt="" class="ecp-tariff-card__icon" width="103" height="103" decoding="async">
+          </div>
+          <span class="ecp-tariff-card__text">${multilineHtml(item.text)}</span>
+          <div class="ecp-tariff-card__download">скачать ${DOWNLOAD_ARROW_SVG}</div>
+        </a>`;
+      })
+      .join('');
+  }
+
+  function renderBlanks(blanks) {
+    const patternImage = document.getElementById('image_blank');
+    if (patternImage && blanks?.patternImage) {
+      patternImage.setAttribute('href', blanks.patternImage);
+    }
+
+    const grid = document.querySelector('.ecp-blanks__grid');
+    if (!grid) return;
+    const list = blanks?.items?.length ? blanks.items : ECP_DEFAULTS.blanks.items;
+    grid.innerHTML = list
+      .map((item) => {
+        const link = fileLinkAttrs(item.file);
+        return `<a href="${link.href}" class="ecp-blank-card"${link.target}${link.download}>
+          <div class="ecp-blank-card__content">
+            <span class="ecp-blank-card__text">${multilineHtml(item.text)}</span>
+            <div class="ecp-blank-card__download">скачать ${DOWNLOAD_ARROW_SVG}</div>
+          </div>
+          <div class="ecp-blank-card__icon">
+            <svg width="90" height="107" viewBox="0 0 90 107">
+              <rect width="90" height="107" fill="url(#pattern_blank)"/>
+            </svg>
+          </div>
+        </a>`;
+      })
+      .join('');
+  }
+
+  function renderManual(manual) {
+    const listEl = document.querySelector('.ecp-manual__list');
+    const bookEl = document.querySelector('.ecp-manual__image');
+    const items = manual?.items?.length ? manual.items : ECP_DEFAULTS.manual.items;
+
+    if (listEl) {
+      listEl.innerHTML = items
+        .map((item) => {
+          const link = fileLinkAttrs(item.file);
+          return `<li class="ecp-manual__item">
+            <span class="ecp-manual__icon">${MANUAL_PDF_ICON}</span>
+            <a href="${link.href}" class="ecp-manual__link"${link.target}${link.download}>${escapeHtml(item.title)}</a>
+          </li>`;
+        })
+        .join('');
+    }
+
+    if (bookEl && manual?.bookImage) {
+      bookEl.src = manual.bookImage;
+    }
+  }
+
+  function renderVideos(videos) {
+    const grid = document.querySelector('.ecp-videos__grid');
+    if (!grid) return;
+    const list = videos && videos.length ? videos : ECP_DEFAULTS.videos;
+    grid.innerHTML = list
+      .map((video) => {
+        const href = (video.url || '').trim() || '#';
+        const thumb = resolveVideoThumbnail(video);
+        const thumbStyle = thumb
+          ? ` style="background-image:url('${escapeAttr(thumb)}');background-size:cover;background-position:center;"`
+          : '';
+        const target = href.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : '';
+        return `<a href="${escapeHtml(href)}" class="ecp-video-card"${target}>
+          <div class="ecp-video-card__thumbnail"${thumbStyle}>
+            ${VIDEO_PLAY_SVG}
+          </div>
+          <div class="ecp-video-card__label">${escapeHtml(video.title)}</div>
+        </a>`;
+      })
+      .join('');
+
+    if (window.__reinitReveal) window.__reinitReveal('.ecp-video-card');
+    hydrateVkVideoThumbnails(list);
+  }
+
+  function bindSupportButton(support) {
+    const btn = document.querySelector('.ecp-support-banner__btn');
+    if (!btn) return;
+    const link = (support?.buttonLink || '#contacts').trim();
+    btn.textContent = support?.buttonText || ECP_DEFAULTS.support.buttonText;
+
+    btn.type = 'button';
+    btn.onclick = function () {
+      if (link.startsWith('#')) {
+        const target = document.querySelector(link);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      if (/^https?:\/\//i.test(link)) {
+        window.open(link, '_blank', 'noopener,noreferrer');
+      } else if (link && link !== '#') {
+        window.location.href = link;
+      }
+    };
+  }
+
+  function renderSupport(support) {
+    const titleEl = document.querySelector('.ecp-support-banner__title');
+    const listEl = document.querySelector('.ecp-support-banner__list');
+    const imageEl = document.querySelector('.ecp-support-banner__image');
+    const data = { ...ECP_DEFAULTS.support, ...(support || {}) };
+
+    if (titleEl) titleEl.textContent = data.title;
+    if (listEl) {
+      listEl.innerHTML = data.items
+        .map((item) => `<li class="ecp-support-banner__item">${escapeHtml(item)}</li>`)
+        .join('');
+    }
+    if (imageEl && data.image) imageEl.src = data.image;
+    bindSupportButton(data);
+  }
+
+  function renderEcpPage(data) {
+    renderHero(data.hero);
+    renderTariffs(data.tariffs);
+    renderBlanks(data.blanks);
+    renderManual(data.manual);
+    renderVideos(data.videos);
+    renderSupport(data.support);
+    document.dispatchEvent(new CustomEvent('ecpContentReady', { detail: data }));
+  }
+
+  async function initEcpContent() {
+    try {
+      const localData = loadEcpDataFromLocal();
+      const initialData = localData || migrateEcpData(null);
+      renderEcpPage(initialData);
+      markEcpContentReady();
+
+      const apiData = await loadEcpDataFromApi();
+      if (apiData) {
+        renderEcpPage(apiData);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(apiData));
+        } catch (error) {
+          console.warn('ECP: localStorage update failed', error);
+        }
+      }
+    } catch (error) {
+      console.error('ECP content init failed', error);
+      markEcpContentReady();
+    }
+  }
+
+  window.EcpContent = {
+    STORAGE_KEY,
+    ECP_DEFAULTS,
+    migrateEcpData,
+    loadEcpDataFromApi,
+    loadEcpDataFromLocal,
+    resolveVideoThumbnail,
+    vkVideoId,
+    hydrateVkVideoThumbnails
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEcpContent);
+  } else {
+    initEcpContent();
+  }
+})();
