@@ -1105,7 +1105,20 @@
                     }
 
                     let cropperOpts;
-                    if (AdminLanding?.getCropperOptions && uploadId) {
+                    if (AdminEcp?.isEcpUploadId?.(uploadId)) {
+                        const aspect = AdminEcp.getAspect(uploadId);
+                        cropperOpts = {
+                            viewMode: 2,
+                            dragMode: 'move',
+                            autoCropArea: 1,
+                            background: false,
+                            zoomable: true,
+                            guides: true,
+                            center: true,
+                            highlight: true,
+                            aspectRatio: aspect
+                        };
+                    } else if (AdminLanding?.getCropperOptions && uploadId) {
                         cropperOpts = AdminLanding.getCropperOptions(uploadId);
                     } else {
                         let currentAspect = window.activeAuthorIndex !== null ? 1 : 16 / 9;
@@ -1217,12 +1230,21 @@
 
                 const uploadId = window.cropTarget?.uploadId;
                 let canvasOpts = { width: resWidth, height: resHeight };
-                if (window.cropTarget && AdminLanding?.getCroppedCanvasOptions) {
+                if (window.cropTarget && AdminEcp?.isEcpUploadId?.(uploadId)) {
+                    canvasOpts = {
+                        width: resWidth,
+                        height: resHeight,
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high'
+                    };
+                } else if (window.cropTarget && AdminLanding?.getCroppedCanvasOptions) {
                     canvasOpts = AdminLanding.getCroppedCanvasOptions(uploadId);
                 }
                 const canvas = cropper.getCroppedCanvas(canvasOpts);
                 const isPartner = AdminLanding?.isPartnerUploadId?.(uploadId);
-                const isHeroSlide = Boolean(uploadId && uploadId.startsWith('m_hero_bg_'));
+                const isHeroSlide = Boolean(
+                    uploadId && (uploadId.startsWith('m_hero_bg_') || uploadId === 'ecp_hero_bg')
+                );
                 const resultBase64 = isPartner
                     ? canvas.toDataURL('image/png')
                     : isHeroSlide
@@ -1601,7 +1623,7 @@
             };
 
             if (data.hero) {
-                data.hero.monitorImage = await uploadOrReuse(data.hero.monitorImage, 'ecp_hero_monitor', 561, 482);
+                data.hero.background = await uploadOrReuse(data.hero.background, 'ecp_hero_bg', 1520, 420);
             }
 
             if (data.blanks) {

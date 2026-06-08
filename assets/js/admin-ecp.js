@@ -3,7 +3,7 @@
  */
 (function () {
   const DEFAULT_ECP_PAGE = window.EcpContent?.ECP_DEFAULTS || {
-    hero: { title: '', subtitle: '', monitorImage: '' },
+    hero: { background: '' },
     tariffs: [],
     blanks: { patternImage: '', items: [] },
     manual: { bookImage: '', items: [] },
@@ -30,9 +30,31 @@
     if (val) val.value = v;
     if (prev) {
       prev.src = v;
-      prev.style.display = v ? 'block' : 'none';
+      if (!document.querySelector(`[data-upload-frame-for="${id}"]`)) {
+        prev.style.display = v ? 'block' : 'none';
+      }
+    }
+    const frame = document.querySelector(`[data-upload-frame-for="${id}"]`);
+    if (frame) {
+      frame.classList.toggle('hero-slide-frame--empty', !v);
     }
     if (clr) clr.style.display = v ? 'inline-flex' : 'none';
+  }
+
+  function heroBgUploadShell(id, label) {
+    return `
+      <div class="form-group hero-slide-upload-group" style="margin-bottom:0;">
+        <label>${label}</label>
+        <div class="hero-slide-frame hero-slide-frame--empty" data-upload-frame-for="${id}">
+          <span class="hero-slide-frame__empty">1520×420</span>
+          <img id="${id}_preview" class="hero-slide-frame__img" src="" alt="">
+        </div>
+        <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}">
+          <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="AdminEcp.pickImage('${id}')">Загрузить</button>
+          <button type="button" class="btn-delete" style="padding:8px 14px;font-size:0.85rem;display:none;" id="${id}_clear" onclick="AdminEcp.clearImage('${id}')">Удалить</button>
+          <input type="hidden" id="${id}_val" value="">
+        </div>
+      </div>`;
   }
 
   function setFileUploadState(id, url, name) {
@@ -76,14 +98,8 @@
     const el = document.getElementById('ecpHeroAdmin');
     if (!el) return;
     const hero = data.hero || {};
-    el.innerHTML = `
-      <div class="form-group"><label>Заголовок (Enter — перенос)</label>
-        <textarea class="form-control" id="ecp_hero_title" rows="2">${escapeAttr(hero.title)}</textarea></div>
-      <div class="form-group"><label>Подзаголовок</label>
-        <textarea class="form-control" id="ecp_hero_subtitle" rows="4">${escapeAttr(hero.subtitle)}</textarea></div>
-      ${imageUploadHtml('ecp_hero_monitor', 'Изображение монитора', '~561×482 px')}
-    `;
-    setImageUploadState('ecp_hero_monitor', hero.monitorImage);
+    el.innerHTML = heroBgUploadShell('ecp_hero_bg', 'Готовый баннер (~1520×420 px, как на главной)');
+    setImageUploadState('ecp_hero_bg', hero.background);
   }
 
   function renderTariffsAdmin(data) {
@@ -216,9 +232,7 @@
     const data = migrateEcpPageData(existing || window.ecpPageData || {});
 
     data.hero = {
-      title: document.getElementById('ecp_hero_title')?.value || '',
-      subtitle: document.getElementById('ecp_hero_subtitle')?.value || '',
-      monitorImage: readImageVal('ecp_hero_monitor')
+      background: readImageVal('ecp_hero_bg')
     };
 
     data.tariffs = [];
@@ -300,7 +314,7 @@
   }
 
   function getAspect(uploadId) {
-    if (uploadId === 'ecp_hero_monitor') return 561 / 482;
+    if (uploadId === 'ecp_hero_bg') return 1520 / 420;
     if (uploadId === 'ecp_blanks_pattern') return 90 / 107;
     if (uploadId === 'ecp_manual_book') return 396 / 509;
     if (uploadId === 'ecp_support_image') return 887 / 698;
@@ -309,7 +323,7 @@
   }
 
   function getCropSize(uploadId) {
-    if (uploadId === 'ecp_hero_monitor') return [561, 482];
+    if (uploadId === 'ecp_hero_bg') return [1520, 420];
     if (uploadId === 'ecp_blanks_pattern') return [400, 480];
     if (uploadId === 'ecp_manual_book') return [396, 509];
     if (uploadId === 'ecp_support_image') return [887, 698];

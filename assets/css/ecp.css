@@ -51,8 +51,20 @@ body.theme-blue .hero-slider {
   height: 420px;
   background-color: #83D8FF;
   background-image: radial-gradient(43.42% 74.44% at 71.22% 54%, #FFFFFF 0%, #83D8FF 100%);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   box-shadow: 0 10px 30px rgba(29, 157, 255, 0.08);
   border-radius: 20px;
+}
+
+body.theme-blue .hero-slider.hero-slider--custom-bg {
+  background-color: #83D8FF;
+}
+
+body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__content.is-hidden,
+body.theme-blue .hero-slider.hero-slider--custom-bg .ecp-banner__graphic.is-hidden {
+  display: none;
 }
 
 body.theme-blue .hero-slide {

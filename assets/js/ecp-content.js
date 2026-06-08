@@ -17,10 +17,7 @@
 
   const ECP_DEFAULTS = {
     hero: {
-      title: 'Выгодные тарифы\nпоставщикам',
-      subtitle:
-        'Порядок осуществления процедур закупок представляет собой строго регламентированный жизненный цикл, который включает в себя шесть основных этапов: планирование, объявление закупки, подача и рассмотрение заявок, определение победителя, заключение контракта и его последующее исполнение.',
-      monitorImage: 'assets/img/ecp/banner-monitor.png'
+      background: ''
     },
     tariffs: [
       { text: 'Тарифы торговых\nпроцедур', file: '' },
@@ -97,8 +94,13 @@
   }
 
   function migrateEcpData(raw) {
+    const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
+    const hero = {
+      background: rawHero.background || ''
+    };
+
     const data = {
-      hero: { ...ECP_DEFAULTS.hero, ...(raw?.hero || {}) },
+      hero,
       tariffs: Array.isArray(raw?.tariffs) && raw.tariffs.length ? raw.tariffs : [...ECP_DEFAULTS.tariffs],
       blanks: {
         patternImage: raw?.blanks?.patternImage || ECP_DEFAULTS.blanks.patternImage,
@@ -207,17 +209,26 @@
   }
 
   function renderHero(hero) {
-    const titleEl = document.querySelector('.ecp-hero-title');
-    const subtitleEl = document.querySelector('.ecp-hero-subtitle');
-    const imageEl = document.querySelector('.ecp-hero-monitor');
+    const slider = document.querySelector('.hero-slider');
+    const contentEl = document.querySelector('.hero-slide__content');
+    const graphicEl = document.querySelector('.ecp-banner__graphic');
     const dotsWrap = document.querySelector('.hero-slide__dots');
     const arrowsWrap = document.querySelector('.hero-slide__arrows');
+    const background = (hero?.background || '').trim();
+    const hasCustomBanner = Boolean(background);
 
-    if (titleEl) titleEl.innerHTML = multilineHtml(hero.title);
-    if (subtitleEl) subtitleEl.innerHTML = multilineHtml(hero.subtitle);
-    if (imageEl && hero.monitorImage) {
-      imageEl.src = hero.monitorImage;
+    if (slider) {
+      if (hasCustomBanner) {
+        slider.style.backgroundImage = `url('${background.replace(/'/g, "\\'")}')`;
+        slider.classList.add('hero-slider--custom-bg');
+      } else {
+        slider.style.backgroundImage = '';
+        slider.classList.remove('hero-slider--custom-bg');
+      }
     }
+
+    if (contentEl) contentEl.classList.toggle('is-hidden', hasCustomBanner);
+    if (graphicEl) graphicEl.classList.toggle('is-hidden', hasCustomBanner);
 
     if (dotsWrap) {
       dotsWrap.innerHTML = '';
