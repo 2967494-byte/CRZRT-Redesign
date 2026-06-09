@@ -1243,7 +1243,10 @@
                 const canvas = cropper.getCroppedCanvas(canvasOpts);
                 const isPartner = AdminLanding?.isPartnerUploadId?.(uploadId);
                 const isHeroSlide = Boolean(
-                    uploadId && (uploadId.startsWith('m_hero_bg_') || uploadId === 'ecp_hero_bg')
+                    uploadId
+                    && (uploadId.startsWith('m_hero_bg_')
+                        || uploadId === 'ecp_hero_bg'
+                        || uploadId === 'ecp_support_bg')
                 );
                 const resultBase64 = isPartner
                     ? canvas.toDataURL('image/png')
@@ -1635,7 +1638,12 @@
             }
 
             if (data.support) {
-                data.support.image = await uploadOrReuse(data.support.image, 'ecp_support_image', 887, 698);
+                data.support.background = await uploadOrReuse(
+                    data.support.background,
+                    'ecp_support_bg',
+                    1520,
+                    435
+                );
             }
 
             if (Array.isArray(data.videos)) {

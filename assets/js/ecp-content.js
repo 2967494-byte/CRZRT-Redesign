@@ -16,7 +16,10 @@
 
   const ECP_DEFAULTS = {
     hero: {
-      background: ''
+      background: '',
+      title: 'Выгодные тарифы\nпоставщикам',
+      subtitle:
+        'Порядок осуществления процедур закупок представляет собой строго регламентированный жизненный цикл, который включает в себя шесть основных этапов: планирование, объявление закупки, подача и рассмотрение заявок, определение победителя, заключение контракта и его последующее исполнение.'
     },
     tariffs: [
       { text: 'Тарифы торговых\nпроцедур', file: '' },
@@ -53,16 +56,7 @@
       { url: '', title: 'Инструкция по прикреплению/обновлению ЭП.', thumbnail: '' }
     ],
     support: {
-      title: 'Оперативная поддержка',
-      items: [
-        'Информационно-техническая поддержка',
-        'Персональный менеджер 24/7',
-        'Автоматическая рассылка приглашений к участию в закупке',
-        'Аналитические отчеты (как стандартные, так и по запросу)'
-      ],
-      buttonText: 'Узнать подробнее',
-      buttonLink: '#contacts',
-      image: 'assets/img/ecp/handshake.png'
+      background: ''
     }
   };
 
@@ -95,7 +89,9 @@
   function migrateEcpData(raw) {
     const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
     const hero = {
-      background: rawHero.background || ''
+      background: rawHero.background || '',
+      title: rawHero.title || ECP_DEFAULTS.hero.title,
+      subtitle: rawHero.subtitle || ECP_DEFAULTS.hero.subtitle
     };
 
     const data = {
@@ -116,12 +112,10 @@
             : [...ECP_DEFAULTS.manual.items]
       },
       videos: Array.isArray(raw?.videos) && raw.videos.length ? raw.videos : [...ECP_DEFAULTS.videos],
-      support: { ...ECP_DEFAULTS.support, ...(raw?.support || {}) }
+      support: {
+        background: raw?.support?.background || ''
+      }
     };
-
-    if (!Array.isArray(data.support.items) || !data.support.items.length) {
-      data.support.items = [...ECP_DEFAULTS.support.items];
-    }
 
     return data;
   }
@@ -210,11 +204,16 @@
   function renderHero(hero) {
     const slider = document.querySelector('.hero-slider');
     const contentEl = document.querySelector('.hero-slide__content');
+    const titleEl = document.querySelector('.ecp-hero-title');
+    const subtitleEl = document.querySelector('.ecp-hero-subtitle');
     const graphicEl = document.querySelector('.ecp-banner__graphic');
     const dotsWrap = document.querySelector('.hero-slide__dots');
     const arrowsWrap = document.querySelector('.hero-slide__arrows');
     const background = (hero?.background || '').trim();
     const hasCustomBanner = Boolean(background);
+
+    if (titleEl) titleEl.innerHTML = multilineHtml(hero?.title);
+    if (subtitleEl) subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
 
     if (slider) {
       if (hasCustomBanner) {
@@ -226,7 +225,7 @@
       }
     }
 
-    if (contentEl) contentEl.classList.toggle('is-hidden', hasCustomBanner);
+    if (contentEl) contentEl.classList.remove('is-hidden');
     if (graphicEl) graphicEl.classList.toggle('is-hidden', hasCustomBanner);
 
     if (dotsWrap) {
@@ -329,41 +328,25 @@
     if (window.__reinitReveal) window.__reinitReveal('.ecp-video-card');
   }
 
-  function bindSupportButton(support) {
-    const btn = document.querySelector('.ecp-support-banner__btn');
-    if (!btn) return;
-    const link = (support?.buttonLink || '#contacts').trim();
-    btn.textContent = support?.buttonText || ECP_DEFAULTS.support.buttonText;
-
-    btn.type = 'button';
-    btn.onclick = function () {
-      if (link.startsWith('#')) {
-        const target = document.querySelector(link);
-        if (target) target.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
-      if (/^https?:\/\//i.test(link)) {
-        window.open(link, '_blank', 'noopener,noreferrer');
-      } else if (link && link !== '#') {
-        window.location.href = link;
-      }
-    };
-  }
-
   function renderSupport(support) {
-    const titleEl = document.querySelector('.ecp-support-banner__title');
-    const listEl = document.querySelector('.ecp-support-banner__list');
-    const imageEl = document.querySelector('.ecp-support-banner__image');
-    const data = { ...ECP_DEFAULTS.support, ...(support || {}) };
+    const banner = document.querySelector('.ecp-support-banner');
+    const contentEl = document.querySelector('.ecp-support-banner__content');
+    const graphicEl = document.querySelector('.ecp-support-banner__graphic');
+    const background = (support?.background || '').trim();
+    const hasCustomBanner = Boolean(background);
 
-    if (titleEl) titleEl.textContent = data.title;
-    if (listEl) {
-      listEl.innerHTML = data.items
-        .map((item) => `<li class="ecp-support-banner__item">${escapeHtml(item)}</li>`)
-        .join('');
+    if (banner) {
+      if (hasCustomBanner) {
+        banner.style.backgroundImage = `url('${background.replace(/'/g, "\\'")}')`;
+        banner.classList.add('ecp-support-banner--custom-bg');
+      } else {
+        banner.style.backgroundImage = '';
+        banner.classList.remove('ecp-support-banner--custom-bg');
+      }
     }
-    if (imageEl && data.image) imageEl.src = data.image;
-    bindSupportButton(data);
+
+    if (contentEl) contentEl.classList.toggle('is-hidden', hasCustomBanner);
+    if (graphicEl) graphicEl.classList.toggle('is-hidden', hasCustomBanner);
   }
 
   function renderEcpPage(data) {

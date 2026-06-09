@@ -3,12 +3,12 @@
  */
 (function () {
   const DEFAULT_ECP_PAGE = window.EcpContent?.ECP_DEFAULTS || {
-    hero: { background: '' },
+    hero: { background: '', title: '', subtitle: '' },
     tariffs: [],
     blanks: { patternImage: '', items: [] },
     manual: { bookImage: '', items: [] },
     videos: [],
-    support: { title: '', items: [], buttonText: '', buttonLink: '', image: '' }
+    support: { background: '' }
   };
 
   function escapeAttr(s) {
@@ -41,12 +41,12 @@
     if (clr) clr.style.display = v ? 'inline-flex' : 'none';
   }
 
-  function heroBgUploadShell(id, label) {
+  function heroBgUploadShell(id, label, sizeLabel = '1520×420') {
     return `
       <div class="form-group hero-slide-upload-group" style="margin-bottom:0;">
         <label>${label}</label>
         <div class="hero-slide-frame hero-slide-frame--empty" data-upload-frame-for="${id}">
-          <span class="hero-slide-frame__empty">1520×420</span>
+          <span class="hero-slide-frame__empty">${sizeLabel}</span>
           <img id="${id}_preview" class="hero-slide-frame__img" src="" alt="">
         </div>
         <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}">
@@ -98,7 +98,17 @@
     const el = document.getElementById('ecpHeroAdmin');
     if (!el) return;
     const hero = data.hero || {};
-    el.innerHTML = heroBgUploadShell('ecp_hero_bg', 'Готовый баннер (~1520×420 px, как на главной)');
+    el.innerHTML = `
+      ${heroBgUploadShell('ecp_hero_bg', 'Готовый баннер (~1520×420 px, как на главной)')}
+      <div class="form-group" style="margin-top:20px;">
+        <label>Заголовок (Enter — перенос строки)</label>
+        <textarea class="form-control" id="ecp_hero_title" rows="2">${escapeAttr(hero.title)}</textarea>
+      </div>
+      <div class="form-group">
+        <label>Текст под заголовком</label>
+        <textarea class="form-control" id="ecp_hero_subtitle" rows="4">${escapeAttr(hero.subtitle)}</textarea>
+      </div>
+    `;
     setImageUploadState('ecp_hero_bg', hero.background);
   }
 
@@ -200,19 +210,12 @@
     const el = document.getElementById('ecpSupportAdmin');
     if (!el) return;
     const support = data.support || {};
-    const items = support.items || [];
-    el.innerHTML = `
-      <div class="form-group"><label>Заголовок</label>
-        <input type="text" class="form-control" id="ecp_support_title" value="${escapeAttr(support.title)}"></div>
-      <div class="form-group"><label>Пункты списка (по одному на строку)</label>
-        <textarea class="form-control" id="ecp_support_items" rows="5">${escapeAttr(items.join('\n'))}</textarea></div>
-      <div class="form-group"><label>Текст кнопки</label>
-        <input type="text" class="form-control" id="ecp_support_btn_text" value="${escapeAttr(support.buttonText)}"></div>
-      <div class="form-group"><label>Ссылка кнопки «Узнать подробнее»</label>
-        <input type="text" class="form-control" id="ecp_support_btn_link" value="${escapeAttr(support.buttonLink)}" placeholder="#contacts или https://..."></div>
-      ${imageUploadHtml('ecp_support_image', 'Изображение баннера (рукопожатие)')}
-    `;
-    setImageUploadState('ecp_support_image', support.image);
+    el.innerHTML = heroBgUploadShell(
+      'ecp_support_bg',
+      'Готовый баннер «Оперативная поддержка»',
+      '1520×435'
+    );
+    setImageUploadState('ecp_support_bg', support.background);
   }
 
   function renderEcpPageAdmin(data) {
@@ -232,7 +235,9 @@
     const data = migrateEcpPageData(existing || window.ecpPageData || {});
 
     data.hero = {
-      background: readImageVal('ecp_hero_bg')
+      background: readImageVal('ecp_hero_bg'),
+      title: document.getElementById('ecp_hero_title')?.value || '',
+      subtitle: document.getElementById('ecp_hero_subtitle')?.value || ''
     };
 
     data.tariffs = [];
@@ -278,13 +283,8 @@
       });
     }
 
-    const supportItemsRaw = document.getElementById('ecp_support_items')?.value || '';
     data.support = {
-      title: document.getElementById('ecp_support_title')?.value || '',
-      items: supportItemsRaw.split('\n').map((s) => s.trim()).filter(Boolean),
-      buttonText: document.getElementById('ecp_support_btn_text')?.value || '',
-      buttonLink: document.getElementById('ecp_support_btn_link')?.value || '#contacts',
-      image: readImageVal('ecp_support_image')
+      background: readImageVal('ecp_support_bg')
     };
 
     return data;
@@ -315,18 +315,18 @@
 
   function getAspect(uploadId) {
     if (uploadId === 'ecp_hero_bg') return 1520 / 420;
+    if (uploadId === 'ecp_support_bg') return 1520 / 435;
     if (uploadId === 'ecp_blanks_pattern') return 90 / 107;
     if (uploadId === 'ecp_manual_book') return 396 / 509;
-    if (uploadId === 'ecp_support_image') return 887 / 698;
     if (uploadId.startsWith('ecp_video_thumb_')) return 474 / 290;
     return 16 / 9;
   }
 
   function getCropSize(uploadId) {
     if (uploadId === 'ecp_hero_bg') return [1520, 420];
+    if (uploadId === 'ecp_support_bg') return [1520, 435];
     if (uploadId === 'ecp_blanks_pattern') return [400, 480];
     if (uploadId === 'ecp_manual_book') return [396, 509];
-    if (uploadId === 'ecp_support_image') return [887, 698];
     if (uploadId.startsWith('ecp_video_thumb_')) return [474, 290];
     return [1200, 675];
   }

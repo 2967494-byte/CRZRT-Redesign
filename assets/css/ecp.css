@@ -60,11 +60,43 @@ body.theme-blue .hero-slider {
 
 body.theme-blue .hero-slider.hero-slider--custom-bg {
   background-color: #83D8FF;
+  --ecp-hero-design-w: 1520;
+  --ecp-hero-design-h: 661;
 }
 
-body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__content.is-hidden,
 body.theme-blue .hero-slider.hero-slider--custom-bg .ecp-banner__graphic.is-hidden {
   display: none;
+}
+
+body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__title {
+  left: calc(268 / var(--ecp-hero-design-w) * 100%);
+  top: calc(241 / var(--ecp-hero-design-h) * 100%);
+  width: calc(552 / var(--ecp-hero-design-w) * 100%);
+  max-width: 552px;
+  height: auto;
+  min-height: calc(120 / var(--ecp-hero-design-h) * 100%);
+  font-family: 'Google Sans', var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(32px, calc(60 / var(--ecp-hero-design-w) * 100vw), 60px);
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #2C84E6;
+}
+
+body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__subtitle {
+  left: calc(260 / var(--ecp-hero-design-w) * 100%);
+  top: calc(482 / var(--ecp-hero-design-h) * 100%);
+  bottom: auto;
+  width: calc(629 / var(--ecp-hero-design-w) * 100%);
+  max-width: 629px;
+  height: auto;
+  min-height: calc(120 / var(--ecp-hero-design-h) * 100%);
+  font-family: 'Google Sans', var(--font);
+  font-weight: 500;
+  font-size: clamp(14px, calc(20 / var(--ecp-hero-design-w) * 100vw), 20px);
+  line-height: 120%;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
 }
 
 body.theme-blue .hero-slide {
@@ -1440,12 +1472,24 @@ body.theme-blue .review-card {
   height: 435.15px;
   border-radius: 20px;
   background: radial-gradient(56.09% 220.27% at 81.38% 45.62%, #FFFFFF 0%, #C6DBFF 40.96%, #516496 100%);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   position: relative;
   overflow: hidden;
   padding: 46px 51px 40px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+}
+
+.ecp-support-banner--custom-bg {
+  padding: 0;
+}
+
+.ecp-support-banner--custom-bg .ecp-support-banner__content.is-hidden,
+.ecp-support-banner--custom-bg .ecp-support-banner__graphic.is-hidden {
+  display: none;
 }
 
 .ecp-support-banner__content {
