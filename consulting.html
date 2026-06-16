@@ -11,9 +11,9 @@
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" as="style" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
   <link rel="preload" href="assets/css/landing.css?v=9" as="style">
-  <link rel="preload" href="assets/css/consulting.css?v=6" as="style">
+  <link rel="preload" href="assets/css/consulting.css?v=7" as="style">
   <link rel="stylesheet" href="assets/css/landing.css?v=9">
-  <link rel="stylesheet" href="assets/css/consulting.css?v=6">
+  <link rel="stylesheet" href="assets/css/consulting.css?v=7">
   <script>document.documentElement.classList.add('landing-content-pending', 'consulting-content-pending');</script>
 </head>
 <body class="theme-purple" data-page="consulting">
@@ -130,146 +130,35 @@
       </div>
     </section>
 
-    <!-- TWO BIG BUTTONS -->
-    <section class="section">
+    <!-- ПОЧЕМУ МЫ -->
+    <section class="consulting-why-section" id="why-us">
       <div class="container">
-        <div class="ecp-actions-grid">
-          <a href="https://etpzakupki.tatar" class="ecp-btn-large" target="_blank" rel="noopener noreferrer">Перейти на ЭТП</a>
-          <a href="https://etpzakupki.tatar/app/CheckEds/page" class="ecp-btn-large" target="_blank" rel="noopener noreferrer">Проверить электронную подпись</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- TWO INFO PANELS -->
-    <section class="section">
-      <div class="container">
-        <div class="ecp-panels-grid">
-          <!-- Panel 1: Для заказчиков -->
-          <div class="ecp-panel">
-            <div class="ecp-panel__icon-wrap">
-              <img src="assets/img/ecp/icon-panel-customers.png" alt="" class="ecp-panel__icon" width="145" height="145" decoding="async">
-            </div>
-            <h2 class="ecp-panel__title">Для заказчиков</h2>
-            <ul class="ecp-panel__list">
-              <li class="ecp-panel__item">
-                <span class="ecp-panel__item-num">1.</span>
-                <span class="ecp-panel__item-text">Бесплатное размещение закупок для заказчиков</span>
-              </li>
-              <li class="ecp-panel__item">
-                <span class="ecp-panel__item-num">2.</span>
-                <span class="ecp-panel__item-text">Консультации заказчиков по вопросам закупок</span>
-              </li>
-              <li class="ecp-panel__item">
-                <span class="ecp-panel__item-num">3.</span>
-                <span class="ecp-panel__item-text">Помощь в представлении интересов в УФАС</span>
-              </li>
-              <li class="ecp-panel__item">
-                <span class="ecp-panel__item-num">4.</span>
-                <span class="ecp-panel__item-text">Детализированные отчеты по закупкам</span>
-              </li>
-              <li class="ecp-panel__item">
-                <span class="ecp-panel__item-num">5.</span>
-                <div class="ecp-panel__item-text">
-                  Всесторонняя юридическая поддержка
-                  <span class="ecp-panel__item-sub">(полный цикл проведения закупки: от составления ТЗ до подписания договора)</span>
-                </div>
-              </li>
-            </ul>
+        <h2 class="consulting-why__title consulting-dynamic">Почему мы?</h2>
+        <div class="consulting-why-mosaic consulting-dynamic">
+          <div class="consulting-why-card consulting-why-card--lead">
+            <p class="consulting-why-card__lead-text">Исключаем, сопровождаем, решаем, помогаем, проводим, начинаем, заканчиваем</p>
           </div>
 
-          <!-- Panel 2: Для поставщиков -->
-          <div class="ecp-panel">
-            <div class="ecp-panel__icon-wrap">
-              <img src="assets/img/ecp/icon-panel-suppliers.png" alt="" class="ecp-panel__icon" width="145" height="145" decoding="async">
+          <div class="consulting-why-card consulting-why-card--side">
+            <p class="consulting-why-card__side-text">Решения для бизнеса, сопровождение сделок, поддержка на каждом этапе</p>
+            <img src="assets/img/consulting/icon-disputes.png" alt="" class="consulting-why-card__scales" width="280" height="280" decoding="async">
+          </div>
+
+          <div class="consulting-why-bottom">
+            <div class="consulting-why-card consulting-why-card--photo">
+              <img src="assets/img/consulting/why-meeting.png" alt="" class="consulting-why-card__photo" width="494" height="329" decoding="async">
+              <p class="consulting-why-card__photo-caption">Проводим индивидуальные консультации</p>
             </div>
-            <h2 class="ecp-panel__title">Для поставщиков<br>(участников закупок)</h2>
-            <ul class="ecp-panel__list">
-              <li class="ecp-panel__item">
-                <span class="ecp-panel__item-num">1.</span>
-                <span class="ecp-panel__item-text">Выгодные тарифы для поставщиков</span>
-              </li>
-              <li class="ecp-panel__item">
-                <span class="ecp-panel__item-num">2.</span>
-                <span class="ecp-panel__item-text">Бесплатная регистрация и аккредитация для поставщиков</span>
-              </li>
-              <li class="ecp-panel__item">
-                <span class="ecp-panel__item-num">3.</span>
-                <span class="ecp-panel__item-text">Отсутствие абонентской платы для поставщиков и заказчиков</span>
-              </li>
-              <li class="ecp-panel__item">
-                <span class="ecp-panel__item-num">4.</span>
-                <span class="ecp-panel__item-text">Платит только победитель</span>
-              </li>
-            </ul>
+            <div class="consulting-why-card consulting-why-card--support">
+              <p class="consulting-why-card__support-text">Помогаем на протяжении всего пути</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- TARIFFS SECTION -->
-    <section class="section ecp-tariffs-section" id="tariffs">
-      <div class="container">
-        <h2 class="ecp-tariffs__title">Тарифы</h2>
-        <div class="ecp-tariffs__grid ecp-dynamic"></div>
-      </div>
-    </section>
-
-    <!-- BLANKS SECTION -->
-    <section class="section ecp-blanks-section" id="blanks">
-      <div class="container">
-        <!-- SVG Pattern definitions for cropped blank card icons -->
-        <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="pattern_blank" patternContentUnits="objectBoundingBox" width="1" height="1">
-              <use href="#image_blank" transform="matrix(0.00380409 0 0 0.00322797 -8.35848 -0.100719)"/>
-            </pattern>
-            <image id="image_blank" width="4096" height="419" href="uploads/d4cfd570b4a2548242759c7e47ea853918a2254c.png"/>
-          </defs>
-        </svg>
-
-        <h2 class="ecp-blanks__title">Бланки и шаблоны</h2>
-        <div class="ecp-blanks__grid ecp-dynamic"></div>
-      </div>
-    </section>
-
-    <!-- MANUAL SECTION -->
-    <section class="section ecp-manual-section" id="manual">
-      <div class="container ecp-manual__inner">
-        <div class="ecp-manual__content">
-          <h2 class="ecp-manual__title">Руководство пользователя<br>по работе на ЭТП</h2>
-          <ul class="ecp-manual__list ecp-dynamic"></ul>
-        </div>
-        <div class="ecp-manual__graphic">
-          <img src="uploads/etp-book.png" alt="Руководство пользователя ЭТП" class="ecp-manual__image">
-        </div>
-      </div>
-    </section>
-
-    <!-- VIDEO INSTRUCTIONS SECTION -->
-    <section class="section ecp-videos-section" id="videos">
-      <div class="container ecp-videos__inner">
-        <h2 class="ecp-videos__title">Видео инструкции</h2>
-        <div class="ecp-videos__grid ecp-dynamic"></div>
-      </div>
-    </section>
   </main>
 </div>
-
-<!-- SUPPORT BANNER SECTION -->
-<section class="section ecp-support-section" id="help">
-  <div class="container">
-    <div class="ecp-support-banner reveal-init">
-      <div class="ecp-support-banner__content ecp-dynamic">
-        <h2 class="ecp-support-banner__title">Оперативная поддержка</h2>
-        <ul class="ecp-support-banner__list"></ul>
-        <button type="button" class="btn ecp-support-banner__btn">Узнать подробнее</button>
-      </div>
-      <div class="ecp-support-banner__graphic ecp-dynamic">
-        <img src="assets/img/ecp/handshake.png" alt="" class="ecp-support-banner__image" width="887" height="698" loading="lazy" decoding="async">
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- TRUSTED BY (Partners logos) -->
 <section class="section partners-section reveal-init landing-dynamic">

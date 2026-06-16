@@ -346,7 +346,7 @@ body.theme-purple .hero-slider.hero-slider--custom-bg .consulting-banner__graphi
 /* Компетенции — 6 карточек в сетке 2×3 (ширина = .container, как шапка) */
 body.theme-purple .consulting-competencies-section.section {
   padding-top: 80px;
-  padding-bottom: 24px;
+  padding-bottom: 0;
 }
 
 .consulting-competencies__title {
@@ -424,6 +424,158 @@ body.theme-purple .consulting-competencies-section.section {
   line-height: 110%;
   letter-spacing: -0.03em;
   color: #354557;
+}
+
+/* Почему мы — мозаика по макету 1520px */
+.consulting-why-section {
+  background: #EEEEFB;
+  padding: 127px 0 172px;
+  width: 100%;
+}
+
+.consulting-why__title {
+  margin: 0 0 39px;
+  width: 289px;
+  max-width: 100%;
+  height: 50px;
+  font-family: 'Google Sans', var(--font-heading);
+  font-weight: 500;
+  font-style: normal;
+  font-size: 50px;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #575B6D;
+}
+
+.consulting-why-mosaic {
+  display: grid;
+  grid-template-columns: minmax(0, 1010fr) 21px minmax(0, 489fr);
+  grid-template-rows: 418px 16px 329px;
+  width: 100%;
+}
+
+.consulting-why-card {
+  border-radius: 20px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.consulting-why-card--lead {
+  grid-column: 1;
+  grid-row: 1;
+  background: #926092;
+  padding: 48px 52px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.consulting-why-card__lead-text {
+  margin: 0;
+  max-width: 720px;
+  font-family: 'Google Sans', var(--font-heading);
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 120%;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+}
+
+.consulting-why-card--side {
+  grid-column: 3;
+  grid-row: 1 / 4;
+  background: radial-gradient(99.39% 63.7% at 71.98% 89.45%, #FFFFFF 0%, #8D5A8D 100%);
+  padding: 48px 40px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.consulting-why-card__side-text {
+  margin: 0;
+  width: 100%;
+  font-family: 'Google Sans', var(--font-heading);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 120%;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  align-self: flex-start;
+}
+
+.consulting-why-card__scales {
+  width: min(280px, 72%);
+  height: auto;
+  object-fit: contain;
+  margin-top: auto;
+}
+
+.consulting-why-card--photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.42) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.consulting-why-bottom {
+  grid-column: 1;
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 494fr) 22px minmax(0, 494fr);
+  gap: 0;
+  min-height: 329px;
+}
+
+.consulting-why-card--photo {
+  position: relative;
+  min-height: 329px;
+  background: #D8D8E8;
+}
+
+.consulting-why-card__photo {
+  width: 100%;
+  height: 100%;
+  min-height: 329px;
+  object-fit: cover;
+  display: block;
+}
+
+.consulting-why-card__photo-caption {
+  position: absolute;
+  left: 28px;
+  bottom: 24px;
+  z-index: 2;
+  margin: 0;
+  max-width: calc(100% - 56px);
+  font-family: 'Google Sans', var(--font-heading);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 120%;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.consulting-why-card--support {
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 32px;
+  min-height: 329px;
+}
+
+.consulting-why-card__support-text {
+  margin: 0;
+  font-family: 'Google Sans', var(--font-heading);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 120%;
+  letter-spacing: -0.02em;
+  color: #575B6D;
+  text-align: center;
 }
 
 .ecp-banner__graphic {
@@ -743,6 +895,53 @@ body.theme-purple .consulting-competencies-section.section {
 
 /* RESPONSIVE DESIGN FOR CONSULTING PAGE */
 @media (max-width: 1200px) {
+  .consulting-why-section {
+    padding: 64px 0 80px;
+  }
+
+  .consulting-why__title {
+    font-size: 40px;
+    height: auto;
+    margin-bottom: 32px;
+  }
+
+  .consulting-why-mosaic {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 16px;
+  }
+
+  .consulting-why-card--lead,
+  .consulting-why-card--side,
+  .consulting-why-bottom {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .consulting-why-card--lead {
+    min-height: 320px;
+  }
+
+  .consulting-why-card--side {
+    min-height: 420px;
+  }
+
+  .consulting-why-bottom {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    min-height: 0;
+  }
+
+  .consulting-why-card--photo,
+  .consulting-why-card--support,
+  .consulting-why-card__photo {
+    min-height: 260px;
+  }
+
+  .consulting-why-card__lead-text {
+    font-size: 32px;
+  }
+
   body.theme-purple .consulting-hero {
     height: auto;
     min-height: 420px;
