@@ -450,42 +450,46 @@ body.theme-purple .consulting-competencies-section.section {
 
 .consulting-why-mosaic {
   display: grid;
-  grid-template-columns: minmax(0, 1010fr) 21px minmax(0, 489fr);
+  grid-template-columns: minmax(0, 494fr) 22px minmax(0, 494fr) 21px minmax(0, 489fr);
   grid-template-rows: 418px 16px 329px;
   width: 100%;
+  max-width: 1520px;
 }
 
 .consulting-why-card {
   border-radius: 20px;
   overflow: hidden;
   box-sizing: border-box;
+  min-width: 0;
 }
 
 .consulting-why-card--lead {
-  grid-column: 1;
+  grid-column: 1 / 4;
   grid-row: 1;
+  height: 418px;
   background: #926092;
-  padding: 48px 52px;
+  padding: 32px 37px;
   display: flex;
   align-items: flex-start;
 }
 
 .consulting-why-card__lead-text {
   margin: 0;
-  max-width: 720px;
+  max-width: 711px;
   font-family: 'Google Sans', var(--font-heading);
   font-weight: 500;
-  font-size: 40px;
-  line-height: 120%;
-  letter-spacing: -0.02em;
+  font-size: 50px;
+  line-height: 100%;
+  letter-spacing: 0;
   color: #FFFFFF;
 }
 
 .consulting-why-card--side {
-  grid-column: 3;
+  grid-column: 5;
   grid-row: 1 / 4;
+  height: 763px;
   background: radial-gradient(99.39% 63.7% at 71.98% 89.45%, #FFFFFF 0%, #8D5A8D 100%);
-  padding: 48px 40px 32px;
+  padding: 40px 39px 32px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -494,12 +498,13 @@ body.theme-purple .consulting-competencies-section.section {
 
 .consulting-why-card__side-text {
   margin: 0;
+  max-width: 352px;
   width: 100%;
   font-family: 'Google Sans', var(--font-heading);
   font-weight: 500;
-  font-size: 28px;
-  line-height: 120%;
-  letter-spacing: -0.02em;
+  font-size: 50px;
+  line-height: 100%;
+  letter-spacing: 0;
   color: #FFFFFF;
   align-self: flex-start;
 }
@@ -511,6 +516,14 @@ body.theme-purple .consulting-competencies-section.section {
   margin-top: auto;
 }
 
+.consulting-why-card--photo {
+  grid-column: 1;
+  grid-row: 3;
+  position: relative;
+  height: 329px;
+  background: #D8D8E8;
+}
+
 .consulting-why-card--photo::after {
   content: '';
   position: absolute;
@@ -520,63 +533,49 @@ body.theme-purple .consulting-competencies-section.section {
   z-index: 1;
 }
 
-.consulting-why-bottom {
-  grid-column: 1;
-  grid-row: 3;
-  display: grid;
-  grid-template-columns: minmax(0, 494fr) 22px minmax(0, 494fr);
-  gap: 0;
-  min-height: 329px;
-}
-
-.consulting-why-card--photo {
-  position: relative;
-  min-height: 329px;
-  background: #D8D8E8;
-}
-
 .consulting-why-card__photo {
   width: 100%;
   height: 100%;
-  min-height: 329px;
   object-fit: cover;
   display: block;
 }
 
 .consulting-why-card__photo-caption {
   position: absolute;
-  left: 28px;
-  bottom: 24px;
+  left: 37px;
+  bottom: 41px;
   z-index: 2;
   margin: 0;
-  max-width: calc(100% - 56px);
+  max-width: 239px;
   font-family: 'Google Sans', var(--font-heading);
   font-weight: 500;
-  font-size: 24px;
-  line-height: 120%;
-  letter-spacing: -0.02em;
+  font-size: 30px;
+  line-height: 100%;
+  letter-spacing: -0.03em;
   color: #FFFFFF;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
 }
 
 .consulting-why-card--support {
+  grid-column: 3;
+  grid-row: 3;
+  height: 329px;
   background: #FFFFFF;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 32px;
-  min-height: 329px;
+  align-items: flex-end;
+  padding: 0 35px 41px;
 }
 
 .consulting-why-card__support-text {
   margin: 0;
+  max-width: 216px;
   font-family: 'Google Sans', var(--font-heading);
   font-weight: 500;
-  font-size: 28px;
-  line-height: 120%;
-  letter-spacing: -0.02em;
+  font-size: 30px;
+  line-height: 110%;
+  letter-spacing: 0;
   color: #575B6D;
-  text-align: center;
+  text-align: left;
 }
 
 /* Partners on consulting */
@@ -927,9 +926,12 @@ body[data-page="consulting"] .consultation-card__title {
 
   .consulting-why-card--lead,
   .consulting-why-card--side,
-  .consulting-why-bottom {
+  .consulting-why-card--photo,
+  .consulting-why-card--support {
     grid-column: 1;
     grid-row: auto;
+    height: auto;
+    min-height: 0;
   }
 
   .consulting-why-card--lead {
@@ -940,19 +942,20 @@ body[data-page="consulting"] .consultation-card__title {
     min-height: 420px;
   }
 
-  .consulting-why-bottom {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    min-height: 0;
+  .consulting-why-card--photo,
+  .consulting-why-card--support {
+    min-height: 260px;
   }
 
-  .consulting-why-card--photo,
-  .consulting-why-card--support,
   .consulting-why-card__photo {
     min-height: 260px;
   }
 
   .consulting-why-card__lead-text {
+    font-size: 32px;
+  }
+
+  .consulting-why-card__side-text {
     font-size: 32px;
   }
 
