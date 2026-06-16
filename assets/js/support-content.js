@@ -414,11 +414,35 @@
     document.dispatchEvent(new CustomEvent('supportContentReady', { detail: data }));
   }
 
+  function initSupportLawToggle() {
+    const toggle = document.querySelector('.support-law-toggle');
+    const btn = toggle?.querySelector('.support-law-toggle__switch');
+    if (!toggle || !btn) return;
+
+    const labels = toggle.querySelectorAll('.support-law-toggle__label');
+
+    function setLaw(law) {
+      const is223 = law === '223';
+      toggle.classList.toggle('support-law-toggle--223', is223);
+      toggle.classList.toggle('support-law-toggle--44', !is223);
+      btn.setAttribute('aria-pressed', is223 ? 'true' : 'false');
+      labels.forEach((label) => {
+        label.classList.toggle('support-law-toggle__label--active', label.dataset.law === law);
+      });
+      toggle.dispatchEvent(new CustomEvent('supportLawChange', { detail: { law } }));
+    }
+
+    btn.addEventListener('click', () => {
+      setLaw(toggle.classList.contains('support-law-toggle--223') ? '44' : '223');
+    });
+  }
+
   async function initSupportContent() {
     try {
       const localData = loadSupportDataFromLocal();
       const initialData = localData || migrateSupportPageData(null);
       renderSupportPage(initialData);
+      initSupportLawToggle();
       markSupportContentReady();
 
       const apiData = await loadSupportDataFromApi();
