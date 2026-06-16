@@ -617,8 +617,6 @@ body[data-page="support"] .consulting-banner__graphic {
 /* 3 nav cards under hero */
 body[data-page="support"] .support-nav-cards-section {
   position: relative;
-  z-index: 2;
-  margin-top: -70px;
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -627,16 +625,66 @@ body[data-page="support"] .support-nav-cards.ecp-cards-grid {
   grid-template-columns: repeat(3, 238px);
   max-width: 750px;
   gap: 18px;
-  margin: 0 auto;
+  margin: 36px auto 0;
 }
 
-body[data-page="support"] .ecp-card__icon {
+body[data-page="support"] .support-nav-cards .ecp-card__icon-wrap {
+  background: transparent;
+}
+
+body[data-page="support"] .support-nav-cards .ecp-card__icon {
   mix-blend-mode: normal;
+  opacity: 1;
+}
+
+body[data-page="support"] .support-nav-cards .ecp-card__label {
+  top: 188px;
+  height: auto;
+  min-height: 48px;
+  line-height: 110%;
+  white-space: normal;
+}
+
+/* Блок «Для заказчиков» */
+body[data-page="support"] .support-customers-section {
+  width: 100%;
+  min-height: 1454px;
+  margin-top: 63px;
+  background-color: #EEEEFB;
+  padding: 75px 0 80px;
+  box-sizing: border-box;
+}
+
+body[data-page="support"] .support-customers-section__inner {
+  max-width: 1520px;
+}
+
+body[data-page="support"] .support-customers-section__title {
+  margin: 0;
+  max-width: 369px;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 50px;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #575B6D;
+}
+
+body[data-page="support"] .support-customers-section__body {
+  min-height: 0;
 }
 
 @media (max-width: 900px) {
-  body[data-page="support"] .support-nav-cards-section {
-    margin-top: 24px;
+  body[data-page="support"] .support-customers-section {
+    min-height: 0;
+    margin-top: 40px;
+    padding: 48px 0 56px;
+  }
+
+  body[data-page="support"] .support-customers-section__title {
+    font-size: 36px;
+    max-width: none;
   }
 
   body[data-page="support"] .support-nav-cards.ecp-cards-grid {
