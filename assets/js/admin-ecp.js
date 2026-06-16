@@ -100,10 +100,17 @@
       </div>`;
   }
 
+  function getMigratedEcpData(data) {
+    if (window.EcpContent?.migrateEcpData) {
+      return window.EcpContent.migrateEcpData(data || {});
+    }
+    return { ...DEFAULT_ECP_PAGE, ...(data || {}) };
+  }
+
   function renderHeroAdmin(data) {
     const el = document.getElementById('ecpHeroAdmin');
     if (!el) return;
-    const hero = data.hero || {};
+    const hero = getMigratedEcpData(data).hero || {};
     el.innerHTML = `
       ${heroBgUploadShell('ecp_hero_bg', 'Готовый баннер (~1520×420 px, как на главной)')}
       <div class="form-group" style="margin-top:20px;">
@@ -215,7 +222,7 @@
   function renderSupportAdmin(data) {
     const el = document.getElementById('ecpSupportAdmin');
     if (!el) return;
-    const support = data.support || {};
+    const support = getMigratedEcpData(data).support || {};
     const items = Array.isArray(support.items) ? support.items : [];
     el.innerHTML = `
       ${heroBgUploadShell(
@@ -257,12 +264,13 @@
   }
 
   function collectEcpPageFromForm(existing) {
-    const data = migrateEcpPageData(existing || window.ecpPageData || {});
+    const data = getMigratedEcpData(existing || window.ecpPageData || {});
+    const existingSupport = data.support || {};
 
     data.hero = {
-      background: readImageVal('ecp_hero_bg'),
-      title: document.getElementById('ecp_hero_title')?.value || '',
-      subtitle: document.getElementById('ecp_hero_subtitle')?.value || ''
+      background: readImageVal('ecp_hero_bg') || data.hero?.background || '',
+      title: document.getElementById('ecp_hero_title')?.value ?? data.hero?.title ?? '',
+      subtitle: document.getElementById('ecp_hero_subtitle')?.value ?? data.hero?.subtitle ?? ''
     };
 
     data.tariffs = [];
@@ -308,13 +316,20 @@
       });
     }
 
-    const supportItemsRaw = document.getElementById('ecp_support_items')?.value || '';
+    const supportItemsRaw = document.getElementById('ecp_support_items')?.value;
+    const supportTitle = document.getElementById('ecp_support_title')?.value;
+    const supportBtnText = document.getElementById('ecp_support_btn_text')?.value;
+    const supportBtnLink = document.getElementById('ecp_support_btn_link')?.value;
+
     data.support = {
-      background: readImageVal('ecp_support_bg'),
-      title: document.getElementById('ecp_support_title')?.value || '',
-      items: supportItemsRaw.split('\n').map((s) => s.trim()).filter(Boolean),
-      buttonText: document.getElementById('ecp_support_btn_text')?.value || '',
-      buttonLink: document.getElementById('ecp_support_btn_link')?.value || '#contacts'
+      background: readImageVal('ecp_support_bg') || existingSupport.background || '',
+      title: supportTitle != null ? supportTitle : (existingSupport.title || ''),
+      items:
+        supportItemsRaw != null
+          ? supportItemsRaw.split('\n').map((s) => s.trim()).filter(Boolean)
+          : (existingSupport.items || []),
+      buttonText: supportBtnText != null ? supportBtnText : (existingSupport.buttonText || ''),
+      buttonLink: supportBtnLink != null ? supportBtnLink : (existingSupport.buttonLink || '#contacts')
     };
 
     return data;

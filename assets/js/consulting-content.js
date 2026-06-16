@@ -1,25 +1,25 @@
 /**
- * Контент страницы ЭТП — загрузка из API / localStorage и отрисовка.
+ * Контент страницы «Юридический консалтинг» — загрузка из API / localStorage и отрисовка.
  */
 (function () {
-  const STORAGE_KEY = 'crzrt_ecp_page_data';
-  const CONTENT_PENDING_CLASS = 'ecp-content-pending';
-  const CONTENT_READY_CLASS = 'ecp-content-ready';
+  const STORAGE_KEY = 'crzrt_consulting_page_data';
+  const CONTENT_PENDING_CLASS = 'consulting-content-pending';
+  const CONTENT_READY_CLASS = 'consulting-content-ready';
 
   const DOWNLOAD_ARROW_SVG =
-    '<span class="arrow-down-right"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#1D9DFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+    '<span class="arrow-down-right"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
 
   const MANUAL_PDF_ICON_SRC = 'assets/img/ecp/icon-pdf.png';
 
   const VIDEO_PLAY_SVG =
     '<svg class="ecp-video-card__play" width="134" height="134" viewBox="0 0 134 134" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="67" cy="67" r="63" stroke="white" stroke-width="6"/><path d="M90 67L54 87.5V46.5L90 67Z" fill="white"/></svg>';
 
-  const ECP_DEFAULTS = {
+  const CONSULTING_DEFAULTS = {
     hero: {
       background: '',
-      title: 'Выгодные тарифы\nпоставщикам',
+      title: 'Защищаем\nваши интересы',
       subtitle:
-        'Порядок осуществления процедур закупок представляет собой строго регламентированный жизненный цикл, который включает в себя шесть основных этапов: планирование, объявление закупки, подача и рассмотрение заявок, определение победителя, заключение контракта и его последующее исполнение.'
+        'Профессиональная юридическая поддержка в сфере закупок: сопровождение сделок, представительство в спорах, консультации для заказчиков и поставщиков на всех этапах.'
     },
     tariffs: [
       { text: 'Тарифы торговых\nпроцедур', file: '' },
@@ -95,32 +95,32 @@
       .join('<br>');
   }
 
-  function migrateEcpData(raw) {
+  function migrateConsultingData(raw) {
     const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
     const hero = {
       background: rawHero.background || '',
-      title: rawHero.title || ECP_DEFAULTS.hero.title,
-      subtitle: rawHero.subtitle || ECP_DEFAULTS.hero.subtitle
+      title: rawHero.title || CONSULTING_DEFAULTS.hero.title,
+      subtitle: rawHero.subtitle || CONSULTING_DEFAULTS.hero.subtitle
     };
 
     const data = {
       hero,
-      tariffs: Array.isArray(raw?.tariffs) && raw.tariffs.length ? raw.tariffs : [...ECP_DEFAULTS.tariffs],
+      tariffs: Array.isArray(raw?.tariffs) && raw.tariffs.length ? raw.tariffs : [...CONSULTING_DEFAULTS.tariffs],
       blanks: {
-        patternImage: raw?.blanks?.patternImage || ECP_DEFAULTS.blanks.patternImage,
+        patternImage: raw?.blanks?.patternImage || CONSULTING_DEFAULTS.blanks.patternImage,
         items:
           Array.isArray(raw?.blanks?.items) && raw.blanks.items.length
             ? raw.blanks.items
-            : [...ECP_DEFAULTS.blanks.items]
+            : [...CONSULTING_DEFAULTS.blanks.items]
       },
       manual: {
-        bookImage: raw?.manual?.bookImage || ECP_DEFAULTS.manual.bookImage,
+        bookImage: raw?.manual?.bookImage || CONSULTING_DEFAULTS.manual.bookImage,
         items:
           Array.isArray(raw?.manual?.items) && raw.manual.items.length
             ? raw.manual.items
-            : [...ECP_DEFAULTS.manual.items]
+            : [...CONSULTING_DEFAULTS.manual.items]
       },
-      videos: Array.isArray(raw?.videos) && raw.videos.length ? raw.videos : [...ECP_DEFAULTS.videos],
+      videos: Array.isArray(raw?.videos) && raw.videos.length ? raw.videos : [...CONSULTING_DEFAULTS.videos],
       support: migrateSupportData(raw?.support)
     };
 
@@ -138,44 +138,44 @@
     }
 
     if (!items.length) {
-      items = [...ECP_DEFAULTS.support.items];
+      items = [...CONSULTING_DEFAULTS.support.items];
     }
 
     return {
       background: raw.background || raw.image || '',
-      title: raw.title || ECP_DEFAULTS.support.title,
+      title: raw.title || CONSULTING_DEFAULTS.support.title,
       items,
-      buttonText: raw.buttonText || ECP_DEFAULTS.support.buttonText,
-      buttonLink: raw.buttonLink || ECP_DEFAULTS.support.buttonLink
+      buttonText: raw.buttonText || CONSULTING_DEFAULTS.support.buttonText,
+      buttonLink: raw.buttonLink || CONSULTING_DEFAULTS.support.buttonLink
     };
   }
 
-  function markEcpContentReady() {
+  function markConsultingContentReady() {
     document.documentElement.classList.remove(CONTENT_PENDING_CLASS);
     document.documentElement.classList.add(CONTENT_READY_CLASS);
   }
 
-  function loadEcpDataFromLocal() {
+  function loadConsultingDataFromLocal() {
     try {
       const local = localStorage.getItem(STORAGE_KEY);
-      if (local) return migrateEcpData(JSON.parse(local));
+      if (local) return migrateConsultingData(JSON.parse(local));
     } catch (error) {
-      console.warn('ECP: localStorage parse error', error);
+      console.warn('Consulting: localStorage parse error', error);
     }
     return null;
   }
 
-  async function loadEcpDataFromApi() {
+  async function loadConsultingDataFromApi() {
     try {
       const resp = await fetch(`api/settings.php?key=${STORAGE_KEY}`);
       if (resp.ok) {
         const data = await resp.json();
         if (data && typeof data === 'object' && Object.keys(data).length) {
-          return migrateEcpData(data);
+          return migrateConsultingData(data);
         }
       }
     } catch (error) {
-      console.warn('ECP: API unavailable', error);
+      console.warn('Consulting: API unavailable', error);
     }
     return null;
   }
@@ -270,7 +270,7 @@
   function renderTariffs(tariffs) {
     const grid = document.querySelector('.ecp-tariffs__grid');
     if (!grid) return;
-    const list = tariffs && tariffs.length ? tariffs : ECP_DEFAULTS.tariffs;
+    const list = tariffs && tariffs.length ? tariffs : CONSULTING_DEFAULTS.tariffs;
     grid.innerHTML = list
       .map((item) => {
         const link = fileLinkAttrs(item.file);
@@ -293,7 +293,7 @@
 
     const grid = document.querySelector('.ecp-blanks__grid');
     if (!grid) return;
-    const list = blanks?.items?.length ? blanks.items : ECP_DEFAULTS.blanks.items;
+    const list = blanks?.items?.length ? blanks.items : CONSULTING_DEFAULTS.blanks.items;
     grid.innerHTML = list
       .map((item) => {
         const link = fileLinkAttrs(item.file);
@@ -315,7 +315,7 @@
   function renderManual(manual) {
     const listEl = document.querySelector('.ecp-manual__list');
     const bookEl = document.querySelector('.ecp-manual__image');
-    const items = manual?.items?.length ? manual.items : ECP_DEFAULTS.manual.items;
+    const items = manual?.items?.length ? manual.items : CONSULTING_DEFAULTS.manual.items;
 
     if (listEl) {
       listEl.innerHTML = items
@@ -337,7 +337,7 @@
   function renderVideos(videos) {
     const grid = document.querySelector('.ecp-videos__grid');
     if (!grid) return;
-    const list = videos && videos.length ? videos : ECP_DEFAULTS.videos;
+    const list = videos && videos.length ? videos : CONSULTING_DEFAULTS.videos;
     grid.innerHTML = list
       .map((video) => {
         const href = (video.url || '').trim() || '#';
@@ -362,7 +362,7 @@
     const btn = document.querySelector('.ecp-support-banner__btn');
     if (!btn) return;
     const link = (support?.buttonLink || '#contacts').trim();
-    btn.textContent = support?.buttonText || ECP_DEFAULTS.support.buttonText;
+    btn.textContent = support?.buttonText || CONSULTING_DEFAULTS.support.buttonText;
 
     btn.type = 'button';
     btn.onclick = function () {
@@ -409,53 +409,53 @@
     bindSupportButton(data);
   }
 
-  function renderEcpPage(data) {
+  function renderConsultingPage(data) {
     renderHero(data.hero);
     renderTariffs(data.tariffs);
     renderBlanks(data.blanks);
     renderManual(data.manual);
     renderVideos(data.videos);
     renderSupport(data.support);
-    document.dispatchEvent(new CustomEvent('ecpContentReady', { detail: data }));
+    document.dispatchEvent(new CustomEvent('consultingContentReady', { detail: data }));
   }
 
-  async function initEcpContent() {
+  async function initConsultingContent() {
     try {
-      const localData = loadEcpDataFromLocal();
-      const initialData = localData || migrateEcpData(null);
-      renderEcpPage(initialData);
-      markEcpContentReady();
+      const localData = loadConsultingDataFromLocal();
+      const initialData = localData || migrateConsultingData(null);
+      renderConsultingPage(initialData);
+      markConsultingContentReady();
 
-      const apiData = await loadEcpDataFromApi();
+      const apiData = await loadConsultingDataFromApi();
       if (apiData) {
-        renderEcpPage(apiData);
+        renderConsultingPage(apiData);
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(apiData));
         } catch (error) {
-          console.warn('ECP: localStorage update failed', error);
+          console.warn('Consulting: localStorage update failed', error);
         }
       }
     } catch (error) {
-      console.error('ECP content init failed', error);
-      markEcpContentReady();
+      console.error('Consulting content init failed', error);
+      markConsultingContentReady();
     }
   }
 
-  window.EcpContent = {
+  window.ConsultingContent = {
     STORAGE_KEY,
-    ECP_DEFAULTS,
-    migrateEcpData,
+    CONSULTING_DEFAULTS,
+    migrateConsultingData,
     migrateSupportData,
-    loadEcpDataFromApi,
-    loadEcpDataFromLocal,
+    loadConsultingDataFromApi,
+    loadConsultingDataFromLocal,
     resolveVideoThumbnail,
     vkVideoId,
     vkVideoThumbProxyUrl
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initEcpContent);
+    document.addEventListener('DOMContentLoaded', initConsultingContent);
   } else {
-    initEcpContent();
+    initConsultingContent();
   }
 })();

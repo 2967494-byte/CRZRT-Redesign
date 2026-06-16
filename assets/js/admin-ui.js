@@ -141,6 +141,7 @@
                             else if (key === 'crzrt_ecp_page_data') {
                                 ecpPageData = AdminEcp.migrateEcpPageData(data);
                                 window.ecpPageData = ecpPageData;
+                                localStorage.setItem(key, JSON.stringify(ecpPageData));
                             }
                             else if (key === 'crzrt_about_data') aboutData = { ...defaultAboutData, ...data };
                             else if (key === 'crzrt_contacts') contactsData = { ...defaultContactsData, ...data };
@@ -148,7 +149,9 @@
                             else if (key === 'crzrt_consulting_data') consultingData = { ...consultingData, ...data };
                             
                             // Save to local for fallback
-                            localStorage.setItem(key, JSON.stringify(data));
+                            if (key !== 'crzrt_ecp_page_data') {
+                                localStorage.setItem(key, JSON.stringify(data));
+                            }
                         }
                     }
                 }

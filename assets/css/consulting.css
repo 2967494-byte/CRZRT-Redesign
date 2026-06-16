@@ -1,10 +1,10 @@
-/* Стили страницы ЭТП (ecp.html) */
+/* Стили страницы Юридический консалтинг (consulting.html) */
 
-html.ecp-content-pending .ecp-dynamic {
+html.consulting-content-pending .ecp-dynamic {
   visibility: hidden;
 }
 
-html.ecp-content-ready .ecp-dynamic {
+html.consulting-content-ready .ecp-dynamic {
   visibility: visible;
 }
 
@@ -22,28 +22,28 @@ body.theme-orange {
   background: #F8FAFC;
 }
 
-body.theme-blue {
-  --green: #1D9DFF;
-  --green-dark: #0084E6;
-  --green-light: #EDF7FF;
+body.theme-purple {
+  --green: #8B5CF6;
+  --green-dark: #7C3AED;
+  --green-light: #F3EEFF;
   --color-heading: #1E2D3D;
   --color-section-title: #575B6D;
   background: #FFFFFF;
 }
 
-body.theme-blue .third-screen {
-  background: #CDEFFF;
+body.theme-purple .third-screen {
+  background: #E8DFF5;
 }
 
-body.theme-blue .review-card {
-  box-shadow: 0 30px 23.6px -24px rgba(29, 157, 255, 0.3);
+body.theme-purple .review-card {
+  box-shadow: 0 30px 23.6px -24px rgba(139, 92, 246, 0.3);
 }
 
-body.theme-blue .review-card.reveal-init.revealed:hover {
-  box-shadow: 0 40px 40px -22px rgba(29, 157, 255, 0.45);
+body.theme-purple .review-card.reveal-init.revealed:hover {
+  box-shadow: 0 40px 40px -22px rgba(139, 92, 246, 0.45);
 }
 
-body.theme-blue .first-screen {
+body.theme-purple .first-screen {
   background: #FFFFFF;
   min-height: auto;
   padding-top: 100px;
@@ -51,26 +51,26 @@ body.theme-blue .first-screen {
 }
 
 /* 1. ECP HERO BANNER SLIDER — координаты Figma (макет 1520×420, 1 в 1 как на главной) */
-body.theme-blue .hero-slider {
+body.theme-purple .hero-slider {
   height: 420px;
-  background-color: #83D8FF;
-  background-image: radial-gradient(43.42% 74.44% at 71.22% 54%, #FFFFFF 0%, #83D8FF 100%);
+  background-color: #C4B5FD;
+  background-image: radial-gradient(43.42% 74.44% at 71.22% 54%, #FFFFFF 0%, #C4B5FD 100%);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  box-shadow: 0 10px 30px rgba(29, 157, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.08);
   border-radius: 20px;
 }
 
-body.theme-blue .hero-slider.hero-slider--custom-bg {
-  background-color: #83D8FF;
+body.theme-purple .hero-slider.hero-slider--custom-bg {
+  background-color: #C4B5FD;
 }
 
-body.theme-blue .hero-slider.hero-slider--custom-bg .ecp-banner__graphic.is-hidden {
+body.theme-purple .hero-slider.hero-slider--custom-bg .ecp-banner__graphic.is-hidden {
   display: none;
 }
 
-body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__title {
+body.theme-purple .hero-slider.hero-slider--custom-bg .hero-slide__title {
   left: 68px;
   top: 108px;
   width: 552px;
@@ -81,10 +81,10 @@ body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__title {
   font-size: 60px;
   line-height: 100%;
   letter-spacing: 0;
-  color: #2C84E6;
+  color: #7C3AED;
 }
 
-body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__subtitle {
+body.theme-purple .hero-slider.hero-slider--custom-bg .hero-slide__subtitle {
   left: 60px;
   bottom: 40px;
   top: auto;
@@ -99,7 +99,7 @@ body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__subtitle {
   color: #FFFFFF;
 }
 
-body.theme-blue .hero-slide {
+body.theme-purple .hero-slide {
   position: relative;
   display: block;
   width: 100%;
@@ -108,7 +108,7 @@ body.theme-blue .hero-slide {
   box-sizing: border-box;
 }
 
-body.theme-blue .hero-slide__dots {
+body.theme-purple .hero-slide__dots {
   position: absolute;
   top: 30px;
   left: 68px;
@@ -118,12 +118,12 @@ body.theme-blue .hero-slide__dots {
   z-index: 4;
 }
 
-body.theme-blue .hero-slide__content {
+body.theme-purple .hero-slide__content {
   display: block;
   position: static;
 }
 
-body.theme-blue .hero-slide__title {
+body.theme-purple .hero-slide__title {
   position: absolute;
   z-index: 2;
   left: 68px;
@@ -134,13 +134,13 @@ body.theme-blue .hero-slide__title {
   font-size: 54px;
   font-weight: 700;
   font-style: normal;
-  color: #2C84E6;
+  color: #7C3AED;
   line-height: 110%;
   letter-spacing: -0.01em;
   margin: 0;
 }
 
-body.theme-blue .hero-slide__subtitle {
+body.theme-purple .hero-slide__subtitle {
   position: absolute;
   z-index: 2;
   left: 68px;
@@ -157,7 +157,7 @@ body.theme-blue .hero-slide__subtitle {
   margin: 0;
 }
 
-body.theme-blue .dot {
+body.theme-purple .dot {
   height: 4px;
   border-radius: 2px;
   background: rgba(255, 255, 255, 0.45);
@@ -165,46 +165,46 @@ body.theme-blue .dot {
   transition: background 0.3s;
 }
 
-body.theme-blue .dot.active {
+body.theme-purple .dot.active {
   background: #FFFFFF;
 }
 
-body.theme-blue .hero-slide__arrows {
+body.theme-purple .hero-slide__arrows {
   z-index: 3;
 }
 
-body.theme-blue .hero-slide__arrows .arrow-btn {
-  background: #1D9DFF;
+body.theme-purple .hero-slide__arrows .arrow-btn {
+  background: #8B5CF6;
   color: #FFFFFF;
   transition: background 0.2s, transform 0.2s;
-  box-shadow: 0 4px 10px rgba(29, 157, 255, 0.15);
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.15);
 }
 
-body.theme-blue .hero-slide__arrows .arrow-btn:hover {
-  background: #0084E6;
+body.theme-purple .hero-slide__arrows .arrow-btn:hover {
+  background: #7C3AED;
   transform: scale(1.05);
 }
 
-body.theme-blue .hero-slide__arrows .arrow-btn:active {
+body.theme-purple .hero-slide__arrows .arrow-btn:active {
   transform: scale(0.95);
 }
 
-body.theme-blue .hero-slide__arrows .arrow-btn svg {
+body.theme-purple .hero-slide__arrows .arrow-btn svg {
   display: block;
   width: 30px;
   height: 30px;
   flex-shrink: 0;
 }
 
-body.theme-blue .hero-slide__arrows .arrow-btn svg polyline {
+body.theme-purple .hero-slide__arrows .arrow-btn svg polyline {
   stroke: #FFFFFF;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-body.theme-blue .hero-slide__arrows.is-hidden,
-body.theme-blue .hero-slide__dots.is-hidden {
+body.theme-purple .hero-slide__arrows.is-hidden,
+body.theme-purple .hero-slide__dots.is-hidden {
   display: none;
 }
 
@@ -330,7 +330,7 @@ body.theme-blue .hero-slide__dots.is-hidden {
   width: 614px;
   height: 82px;
   border-radius: 20px;
-  background: #1D9DFF;
+  background: #8B5CF6;
   color: #FFFFFF;
   display: flex;
   align-items: center;
@@ -350,9 +350,9 @@ body.theme-blue .hero-slide__dots.is-hidden {
 }
 
 .ecp-btn-large:hover {
-  background: #0084E6;
+  background: #7C3AED;
   transform: translateY(-2px);
-  box-shadow: 0px 19px 22.7px 0px #1D9DFF80;
+  box-shadow: 0px 19px 22.7px 0px #8B5CF680;
 }
 
 .ecp-btn-large:active {
@@ -376,7 +376,7 @@ body.theme-blue .hero-slide__dots.is-hidden {
   width: 745px;
   height: 740px;
   border-radius: 20px;
-  background: radial-gradient(78.12% 78.65% at 16.31% 17.84%, #FFFFFF 0%, #83D8FF 100%);
+  background: radial-gradient(78.12% 78.65% at 16.31% 17.84%, #FFFFFF 0%, #C4B5FD 100%);
   padding: 64px 64px 64px 41px;
   box-sizing: border-box;
   display: flex;
@@ -536,12 +536,12 @@ body.theme-blue .hero-slide__dots.is-hidden {
 }
 
 @media (max-width: 1200px) {
-  body.theme-blue .hero-slider {
+  body.theme-purple .hero-slider {
     height: auto;
     min-height: auto;
   }
 
-  body.theme-blue .hero-slide {
+  body.theme-purple .hero-slide {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -549,14 +549,14 @@ body.theme-blue .hero-slide__dots.is-hidden {
     min-height: auto;
   }
 
-  body.theme-blue .hero-slide__dots {
+  body.theme-purple .hero-slide__dots {
     left: 40px;
     right: 40px;
     top: 24px;
     gap: 16px;
   }
 
-  body.theme-blue .hero-slide__content {
+  body.theme-purple .hero-slide__content {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -564,8 +564,8 @@ body.theme-blue .hero-slide__dots.is-hidden {
     margin-bottom: 32px;
   }
 
-  body.theme-blue .hero-slide__title,
-  body.theme-blue .hero-slide__subtitle {
+  body.theme-purple .hero-slide__title,
+  body.theme-purple .hero-slide__subtitle {
     position: static;
     left: auto;
     top: auto;
@@ -573,16 +573,16 @@ body.theme-blue .hero-slide__dots.is-hidden {
     max-width: 100%;
   }
 
-  body.theme-blue .hero-slide__title {
+  body.theme-purple .hero-slide__title {
     font-size: 38px;
     margin-bottom: 0;
   }
 
-  body.theme-blue .hero-slide__subtitle {
+  body.theme-purple .hero-slide__subtitle {
     margin-bottom: 0;
   }
 
-  body.theme-blue .ecp-banner__graphic {
+  body.theme-purple .ecp-banner__graphic {
     position: relative;
     left: auto;
     top: auto;
@@ -593,12 +593,12 @@ body.theme-blue .hero-slide__dots.is-hidden {
     align-self: center;
   }
 
-  body.theme-blue .ecp-banner__image {
+  body.theme-purple .ecp-banner__image {
     width: 100%;
     height: auto;
   }
 
-  body.theme-blue .hero-slide__arrows {
+  body.theme-purple .hero-slide__arrows {
     position: relative;
     bottom: auto;
     right: auto;
@@ -615,29 +615,29 @@ body.theme-blue .hero-slide__dots.is-hidden {
 }
 
 @media (max-width: 992px) {
-  body.theme-blue .hero-slide {
+  body.theme-purple .hero-slide {
     padding: 80px 24px 48px;
     align-items: center;
     text-align: center;
   }
 
-  body.theme-blue .hero-slide__dots {
+  body.theme-purple .hero-slide__dots {
     left: 24px;
     right: 24px;
     top: 24px;
     gap: 12px;
   }
 
-  body.theme-blue .hero-slide__content {
+  body.theme-purple .hero-slide__content {
     align-items: center;
   }
 
-  body.theme-blue .hero-slide__title,
-  body.theme-blue .hero-slide__subtitle {
+  body.theme-purple .hero-slide__title,
+  body.theme-purple .hero-slide__subtitle {
     text-align: center;
   }
 
-  body.theme-blue .hero-slide__arrows {
+  body.theme-purple .hero-slide__arrows {
     position: relative;
     right: auto;
     bottom: auto;
@@ -652,7 +652,7 @@ body.theme-blue .hero-slide__dots.is-hidden {
 }
 
 @media (max-width: 560px) {
-  body.theme-blue .hero-slide__title {
+  body.theme-purple .hero-slide__title {
     font-size: 28px;
   }
   .ecp-card {
@@ -693,7 +693,7 @@ body.theme-blue .hero-slide__dots.is-hidden {
   width: 745px;
   height: 200px;
   border-radius: 20px;
-  background: radial-gradient(41.81% 162.99% at 13.02% 50%, #FFFFFF 0%, #83D8FF 100%);
+  background: radial-gradient(41.81% 162.99% at 13.02% 50%, #FFFFFF 0%, #C4B5FD 100%);
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -1184,7 +1184,7 @@ body.theme-blue .hero-slide__dots.is-hidden {
   width: 474px;
   height: 290px;
   border-radius: 20px;
-  background-color: #83D8FF;
+  background-color: #C4B5FD;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -1287,33 +1287,33 @@ body.theme-blue .hero-slide__dots.is-hidden {
 }
 
 /* ECP Blue Theme overrides for reviews background, quotes, and submit button */
-body.theme-blue .third-screen {
-  background: #CDEFFF;
+body.theme-purple .third-screen {
+  background: #E8DFF5;
 }
 
-body.theme-blue .consultation-section .btn--green {
-  background: #1D9DFF;
+body.theme-purple .consultation-section .btn--green {
+  background: #8B5CF6;
 }
 
-body.theme-blue .consultation-section .btn--green:hover {
-  background: #0084E6;
+body.theme-purple .consultation-section .btn--green:hover {
+  background: #7C3AED;
 }
 
 /* Отзывы на ETP-лендинге: синяя тень по макету */
-body.theme-blue .review-card {
-  box-shadow: 0px 30px 23.6px -24px #1D9DFF42;
+body.theme-purple .review-card {
+  box-shadow: 0px 30px 23.6px -24px #8B5CF642;
 }
 
-body.theme-blue .review-card.reveal-init.revealed:hover {
-  box-shadow: 0px 40px 40px -22px #1D9DFF6B;
+body.theme-purple .review-card.reveal-init.revealed:hover {
+  box-shadow: 0px 40px 40px -22px #8B5CF66B;
 }
 
 /* Override review card quote icons for the blue theme */
-body.theme-blue .review-card__quote img {
+body.theme-purple .review-card__quote img {
   display: none !important;
 }
 
-body.theme-blue .review-card__quote {
+body.theme-purple .review-card__quote {
   background-image: url("data:image/svg+xml,%3Csvg width='179' height='182' viewBox='0 0 179 182' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M179 1.65462L174.575 34.9183C163.312 34.1168 154.865 36.2542 149.234 41.3306C143.602 46.407 139.982 53.3536 138.373 62.1705C133.764 70.9874 136.496 80.7394 137.569 91.4266L179 91.4266L179 182L100.16 182L100.16 79.4035C100.16 51.3498 107.132 30.2427 121.076 16.0822C134.753 1.92179 154.061 -2.88741 179 1.65462ZM78.8405 1.65461L74.4157 34.9183C63.1528 34.1168 54.7056 36.2542 49.0741 41.3306C43.4427 46.407 39.8225 53.3536 38.2135 62.1705C36.6045 70.9874 36.3363 80.7394 37.409 91.4266L78.8404 91.4266L78.8404 182L-1.52588e-05 182L-6.28952e-06 79.4035C-3.83699e-06 51.3498 6.97226 30.2427 20.9168 16.0822C34.5932 1.92179 53.9011 -2.88742 78.8405 1.65461Z' fill='%23CDEFFF'/%3E%3C/svg%3E");
   background-size: contain;
   background-repeat: no-repeat;
@@ -1321,55 +1321,55 @@ body.theme-blue .review-card__quote {
 }
 
 /* ECP: сетка отзывов = сетка видео (3×474 + 2×49) */
-body.theme-blue {
+body.theme-purple {
   --ecp-content-gap: 49px;
 }
 
-body.theme-blue .ecp-videos__inner {
+body.theme-purple .ecp-videos__inner {
   max-width: var(--landing-content-width);
   padding-left: 0;
   padding-right: 0;
 }
 
-body.theme-blue .reviews-grid {
+body.theme-purple .reviews-grid {
   grid-template-columns: repeat(3, 474px);
   gap: var(--ecp-content-gap);
   justify-content: flex-start;
   justify-items: stretch;
 }
 
-body.theme-blue .review-card {
+body.theme-purple .review-card {
   max-width: none;
   width: 100%;
 }
 
 @media (max-width: 1540px) {
-  body.theme-blue .ecp-videos__inner {
+  body.theme-purple .ecp-videos__inner {
     max-width: none;
     padding-left: 24px;
     padding-right: 24px;
   }
 
-  body.theme-blue .ecp-videos__title,
-  body.theme-blue .ecp-videos__grid {
+  body.theme-purple .ecp-videos__title,
+  body.theme-purple .ecp-videos__grid {
     padding-left: 0;
     padding-right: 0;
   }
 
-  body.theme-blue .reviews-grid {
+  body.theme-purple .reviews-grid {
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 30px 24px;
     justify-content: center;
     justify-items: center;
   }
 
-  body.theme-blue .review-card {
+  body.theme-purple .review-card {
     max-width: 483px;
   }
 }
 
 @media (max-width: 992px) {
-  body.theme-blue .reviews-grid {
+  body.theme-purple .reviews-grid {
     grid-template-columns: 1fr;
     gap: 20px;
     justify-content: stretch;
