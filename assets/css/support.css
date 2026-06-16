@@ -1,12 +1,12 @@
-/* Стили страницы Юридический консалтинг (consulting.html) */
+/* Стили страницы Сопровождение (support.html) */
 
-html.consulting-content-pending .ecp-dynamic,
-html.consulting-content-pending .consulting-dynamic {
+html.support-content-pending .ecp-dynamic,
+html.support-content-pending .consulting-dynamic {
   visibility: hidden;
 }
 
-html.consulting-content-ready .ecp-dynamic,
-html.consulting-content-ready .consulting-dynamic {
+html.support-content-ready .ecp-dynamic,
+html.support-content-ready .consulting-dynamic {
   visibility: visible;
 }
 
@@ -578,17 +578,40 @@ body.theme-purple .consulting-competencies-section.section {
   text-align: left;
 }
 
-/* Partners on consulting */
-body[data-page="consulting"] .partners-section {
+/* Partners on support */
+body[data-page="support"] .partners-section {
   padding-top: 99px;
 }
 
-body[data-page="consulting"] .reviews-section .section-title {
+body[data-page="support"] .reviews-section .section-title {
   color: #575B6D;
 }
 
-body[data-page="consulting"] .consultation-card__title {
+body[data-page="support"] .consultation-card__title {
   color: #354557;
+}
+
+/* Peach hero + orange phone button */
+body[data-page="support"] .header__actions .btn--green {
+  background: #FF5512;
+}
+
+body[data-page="support"] .header__actions .btn--green:hover {
+  background: #E64A10;
+}
+
+body[data-page="support"] .consulting-hero {
+  background-color: #FFD1B6;
+  background-image: radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #FFD1B6 100%);
+  box-shadow: 0 10px 30px rgba(255, 85, 18, 0.08);
+}
+
+body[data-page="support"] .consulting-hero.consulting-hero--custom-bg {
+  background-color: #FFD1B6;
+}
+
+body[data-page="support"] .consulting-banner__graphic {
+  display: none;
 }
 
 .ecp-banner__graphic {

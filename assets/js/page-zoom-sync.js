@@ -191,6 +191,7 @@
   document.addEventListener('ecpContentReady', prepareAllInternalLinks);
   document.addEventListener('consultingContentReady', prepareAllInternalLinks);
   document.addEventListener('supportContentReady', prepareAllInternalLinks);
+  document.addEventListener('obuchenieContentReady', prepareAllInternalLinks);
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', prepareAllInternalLinks);

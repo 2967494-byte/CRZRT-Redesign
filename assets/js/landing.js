@@ -5,6 +5,7 @@ function isStandaloneHeroPage() {
   return (
     document.body.dataset.page === 'consulting' ||
     document.body.dataset.page === 'support' ||
+    document.body.dataset.page === 'obuchenie' ||
     document.body.classList.contains('theme-blue') ||
     document.body.classList.contains('theme-purple') ||
     Boolean(document.querySelector('.consulting-hero')) ||

@@ -113,6 +113,18 @@
             ecpPageData = AdminEcp.collectEcpPageFromForm(ecpPageData);
             window.ecpPageData = ecpPageData;
         };
+        let consultingPageData = {};
+        if (typeof AdminConsultingPage !== 'undefined') {
+            consultingPageData = AdminConsultingPage.migrateConsultingPageData(
+                JSON.parse(localStorage.getItem('crzrt_consulting_page_data') || 'null')
+            );
+        }
+        window.consultingPageData = consultingPageData;
+        window.saveConsultingPageStateToMemory = function () {
+            if (typeof AdminConsultingPage === 'undefined') return;
+            consultingPageData = AdminConsultingPage.collectConsultingPageFromForm(consultingPageData);
+            window.consultingPageData = consultingPageData;
+        };
         let aboutData = { ...defaultAboutData };
         let contactsData = { ...defaultContactsData };
         let educationData; // assigned after defaultEducationData is declared (~line 1570)
@@ -122,6 +134,7 @@
             const keys = [
                 'crzrt_main_page_data',
                 'crzrt_ecp_page_data',
+                'crzrt_consulting_page_data',
                 'crzrt_about_data', 
                 'crzrt_contacts', 
                 'crzrt_education_data', 
@@ -143,13 +156,18 @@
                                 window.ecpPageData = ecpPageData;
                                 localStorage.setItem(key, JSON.stringify(ecpPageData));
                             }
+                            else if (key === 'crzrt_consulting_page_data' && typeof AdminConsultingPage !== 'undefined') {
+                                consultingPageData = AdminConsultingPage.migrateConsultingPageData(data);
+                                window.consultingPageData = consultingPageData;
+                                localStorage.setItem(key, JSON.stringify(consultingPageData));
+                            }
                             else if (key === 'crzrt_about_data') aboutData = { ...defaultAboutData, ...data };
                             else if (key === 'crzrt_contacts') contactsData = { ...defaultContactsData, ...data };
                             else if (key === 'crzrt_education_data') educationData = { ...educationData, ...data };
                             else if (key === 'crzrt_consulting_data') consultingData = { ...consultingData, ...data };
                             
                             // Save to local for fallback
-                            if (key !== 'crzrt_ecp_page_data') {
+                            if (key !== 'crzrt_ecp_page_data' && key !== 'crzrt_consulting_page_data') {
                                 localStorage.setItem(key, JSON.stringify(data));
                             }
                         }
@@ -158,6 +176,7 @@
                 // Refresh appropriate views
                 if (currentTarget === 'main-page') renderMainPageAdmin();
                 else if (currentTarget === 'ecp-page') renderEcpPageAdmin();
+                else if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
                 else if (currentTarget === 'about-us') renderAboutUsAdmin();
                 else if (currentTarget === 'contacts') renderContactsAdmin();
                 else if (currentTarget === 'education') renderEducationAdmin();
@@ -198,6 +217,17 @@
         const blocks = document.querySelectorAll('.admin-block');
         const permissionDenied = document.getElementById('permissionDenied');
         const navItems = document.querySelectorAll('.nav-item');
+        const blockTargetMap = {
+            'main-page': 'mainPageBlock',
+            'ecp-page': 'ecpPageBlock',
+            'consulting-page': 'consultingPageBlock',
+            'consulting': 'consultingBlock',
+            'education': 'educationBlock',
+            'users': 'usersBlock',
+            'about-us': 'aboutUsBlock',
+            'contacts': 'contactsBlock',
+            'settings': 'settingsBlock'
+        };
         let currentPermissions = [];
         let currentUserEmail = null;
         let currentTarget = 'main-page';
@@ -216,6 +246,11 @@
 
         function renderEcpPageAdmin() {
             AdminEcp.renderEcpPageAdmin(ecpPageData);
+        }
+
+        function renderConsultingPageAdmin() {
+            if (typeof AdminConsultingPage === 'undefined') return;
+            AdminConsultingPage.renderConsultingPageAdmin(consultingPageData);
         }
 
         // ═══════════════════════════════════════════════
@@ -744,49 +779,34 @@
 
         function updateAccess() {
             if (currentPermissions.length === 0 && currentUserEmail === null) return;
-            let hasAccess = false;
 
             const isSuperuser = currentPermissions.includes('superuser');
+            const targetBlockId = blockTargetMap[currentTarget];
+            const targetBlock = targetBlockId ? document.getElementById(targetBlockId) : null;
 
-            blocks.forEach(block => {
-                const blockTargetMap = {
-                    'main-page': 'mainPageBlock',
-                    'ecp-page': 'ecpPageBlock',
-                    'consulting': 'consultingBlock',
-                    'education': 'educationBlock',
-                    'users': 'usersBlock',
-                    'about-us': 'aboutUsBlock',
-                    'contacts': 'contactsBlock',
-                    'settings': 'settingsBlock'
-                };
+            blocks.forEach((block) => block.classList.remove('active'));
 
-                if (block.id === blockTargetMap[currentTarget]) {
-                    const requiredTarget = block.getAttribute('data-required-role') || currentTarget;
+            if (!targetBlock) {
+                permissionDenied.style.display = 'block';
+                return;
+            }
 
-                    if (isSuperuser || currentPermissions.includes(requiredTarget)) {
-                        block.classList.add('active');
-                        hasAccess = true;
-                    } else {
-                        block.classList.remove('active');
-                    }
-                } else {
-                    block.classList.remove('active');
-                }
-            });
+            const requiredTarget = targetBlock.getAttribute('data-required-role') || currentTarget;
+            const canAccess = isSuperuser || currentPermissions.includes(requiredTarget);
 
-            if (hasAccess) {
+            if (canAccess) {
+                targetBlock.classList.add('active');
                 permissionDenied.style.display = 'none';
 
-                // Trigger specific renders based on active tab
                 if (currentTarget === 'main-page') renderMainPageAdmin();
                 if (currentTarget === 'ecp-page') renderEcpPageAdmin();
+                if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
                 if (currentTarget === 'consulting') renderConsultingAdmin();
                 if (currentTarget === 'education') renderEducationAdmin();
                 if (currentTarget === 'users') renderUsers();
                 if (currentTarget === 'about-us') renderAboutUsAdmin();
                 if (currentTarget === 'contacts') renderContactsAdmin();
 
-                // Hide global save button on users tab (it has its own modal)
                 const gBtn = document.getElementById('globalSaveBtn');
                 if (gBtn) {
                     gBtn.style.display = (currentTarget === 'users' || currentTarget === 'settings' || currentTarget === 'education') ? 'none' : 'flex';
@@ -1121,6 +1141,19 @@
                             highlight: true,
                             aspectRatio: aspect
                         };
+                    } else if (AdminConsultingPage?.isConsultingUploadId?.(uploadId)) {
+                        const aspect = AdminConsultingPage.getAspect(uploadId);
+                        cropperOpts = {
+                            viewMode: 2,
+                            dragMode: 'move',
+                            autoCropArea: 1,
+                            background: false,
+                            zoomable: true,
+                            guides: true,
+                            center: true,
+                            highlight: true,
+                            aspectRatio: aspect
+                        };
                     } else if (AdminLanding?.getCropperOptions && uploadId) {
                         cropperOpts = AdminLanding.getCropperOptions(uploadId);
                     } else {
@@ -1129,6 +1162,8 @@
                             let a = NaN;
                             if (AdminEcp?.isEcpUploadId?.(uploadId)) {
                                 a = AdminEcp.getAspect(uploadId);
+                            } else if (AdminConsultingPage?.isConsultingUploadId?.(uploadId)) {
+                                a = AdminConsultingPage.getAspect(uploadId);
                             } else if (AdminLanding) {
                                 a = AdminLanding.getAspect(uploadId);
                             }
@@ -1227,6 +1262,8 @@
                     resHeight = 400;
                 } else if (window.cropTarget && AdminEcp?.isEcpUploadId?.(window.cropTarget.uploadId)) {
                     [resWidth, resHeight] = AdminEcp.getCropSize(window.cropTarget.uploadId);
+                } else if (window.cropTarget && AdminConsultingPage?.isConsultingUploadId?.(window.cropTarget.uploadId)) {
+                    [resWidth, resHeight] = AdminConsultingPage.getCropSize(window.cropTarget.uploadId);
                 } else if (window.cropTarget && AdminLanding) {
                     [resWidth, resHeight] = AdminLanding.getCropSize(window.cropTarget.uploadId);
                 }
@@ -1234,6 +1271,13 @@
                 const uploadId = window.cropTarget?.uploadId;
                 let canvasOpts = { width: resWidth, height: resHeight };
                 if (window.cropTarget && AdminEcp?.isEcpUploadId?.(uploadId)) {
+                    canvasOpts = {
+                        width: resWidth,
+                        height: resHeight,
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high'
+                    };
+                } else if (window.cropTarget && AdminConsultingPage?.isConsultingUploadId?.(uploadId)) {
                     canvasOpts = {
                         width: resWidth,
                         height: resHeight,
@@ -1249,7 +1293,8 @@
                     uploadId
                     && (uploadId.startsWith('m_hero_bg_')
                         || uploadId === 'ecp_hero_bg'
-                        || uploadId === 'ecp_support_bg')
+                        || uploadId === 'ecp_support_bg'
+                        || uploadId === 'consulting_hero_bg')
                 );
                 const resultBase64 = isPartner
                     ? canvas.toDataURL('image/png')
@@ -1269,6 +1314,9 @@
                     window.activeAuthorIndex = null;
                 } else if (window.cropTarget && AdminEcp?.isEcpUploadId?.(window.cropTarget.uploadId)) {
                     AdminEcp.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
+                    window.cropTarget = null;
+                } else if (window.cropTarget && AdminConsultingPage?.isConsultingUploadId?.(window.cropTarget.uploadId)) {
+                    AdminConsultingPage.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
                     window.cropTarget = null;
                 } else if (window.cropTarget && AdminLanding) {
                     AdminLanding.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
@@ -1660,6 +1708,51 @@
             return data;
         }
 
+        async function replaceConsultingBase64WithUploads(data) {
+            const cache = new Map();
+            const uploadOrReuse = (src, slot, maxWidth, maxHeight) => {
+                if (!isImageDataUrl(src)) return Promise.resolve(src);
+                const key = `${slot}:${src.slice(0, 64)}:${src.length}`;
+                if (!cache.has(key)) {
+                    cache.set(key, uploadDataUrlImage(src, slot, maxWidth, maxHeight));
+                }
+                return cache.get(key);
+            };
+
+            if (data.hero) {
+                data.hero.background = await uploadOrReuse(data.hero.background, 'consulting_hero_bg', 1520, 420);
+                data.hero.graphic = await uploadOrReuse(data.hero.graphic, 'consulting_hero_graphic', 420, 420);
+            }
+
+            if (data.whyUs?.photo) {
+                data.whyUs.photo.image = await uploadOrReuse(
+                    data.whyUs.photo.image,
+                    'consulting_why_photo',
+                    494,
+                    329
+                );
+            }
+
+            if (data.whyUs?.side) {
+                data.whyUs.side.image = await uploadOrReuse(
+                    data.whyUs.side.image,
+                    'consulting_why_side_image',
+                    280,
+                    280
+                );
+            }
+
+            if (Array.isArray(data.competencies)) {
+                for (let i = 0; i < data.competencies.length; i++) {
+                    const item = data.competencies[i];
+                    if (!item) continue;
+                    item.icon = await uploadOrReuse(item.icon, `consulting_comp_icon_${i}`, 109, 110);
+                }
+            }
+
+            return data;
+        }
+
         document.getElementById('globalSaveBtn').addEventListener('click', async () => {
             const btn = document.getElementById('globalSaveBtn');
             const originalText = btn.innerText;
@@ -1680,6 +1773,10 @@
                     saveEcpPageStateToMemory();
                     keyToSave = 'crzrt_ecp_page_data';
                     dataToSave = ecpPageData;
+                } else if (currentTarget === 'consulting-page') {
+                    saveConsultingPageStateToMemory();
+                    keyToSave = 'crzrt_consulting_page_data';
+                    dataToSave = consultingPageData;
                 } else if (currentTarget === 'about-us') {
                     saveAboutUsStateToMemory();
                     keyToSave = 'crzrt_about_data';
@@ -1715,6 +1812,15 @@
                     ecpPageData = dataToSave;
                     window.ecpPageData = ecpPageData;
                     renderEcpPageAdmin();
+                }
+
+                if (currentTarget === 'consulting-page') {
+                    btn.innerText = 'Загрузка медиа...';
+                    const snapshot = JSON.parse(JSON.stringify(dataToSave));
+                    dataToSave = await replaceConsultingBase64WithUploads(snapshot);
+                    consultingPageData = dataToSave;
+                    window.consultingPageData = consultingPageData;
+                    renderConsultingPageAdmin();
                 }
 
                 btn.innerText = 'Сохраняется...';
