@@ -3,8 +3,10 @@ let heroCurrent = 0;
 
 function isStandaloneHeroPage() {
   return (
+    document.body.dataset.page === 'consulting' ||
     document.body.classList.contains('theme-blue') ||
     document.body.classList.contains('theme-purple') ||
+    Boolean(document.querySelector('.consulting-hero')) ||
     Boolean(document.querySelector('.hero-slider--single'))
   );
 }

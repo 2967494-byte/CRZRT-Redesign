@@ -232,44 +232,32 @@
   }
 
   function renderHero(hero) {
-    const slider = document.querySelector('.hero-slider');
-    const contentEl = document.querySelector('.hero-slide__content');
+    const banner = document.querySelector('.consulting-hero');
+    const contentEl = document.querySelector('.consulting-hero__content');
     const titleEl = document.querySelector('.consulting-hero-title');
     const subtitleEl = document.querySelector('.consulting-hero-subtitle');
     const graphicEl = document.querySelector('.consulting-banner__graphic');
-    const dotsWrap = document.querySelector('.hero-slide__dots');
-    const arrowsWrap = document.querySelector('.hero-slide__arrows');
     const background = (hero?.background || '').trim();
     const hasCustomBanner = Boolean(background);
 
     if (titleEl) titleEl.innerHTML = multilineHtml(hero?.title);
     if (subtitleEl) subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
 
-    if (slider) {
+    if (banner) {
       if (hasCustomBanner) {
-        slider.style.backgroundImage = `url('${background.replace(/'/g, "\\'")}')`;
-        slider.classList.add('hero-slider--custom-bg');
+        banner.style.backgroundImage = `url('${background.replace(/'/g, "\\'")}')`;
+        banner.classList.add('consulting-hero--custom-bg');
       } else {
-        slider.style.backgroundImage = '';
-        slider.classList.remove('hero-slider--custom-bg');
+        banner.style.backgroundImage = '';
+        banner.classList.remove('consulting-hero--custom-bg');
       }
     }
 
     window.__heroSlides = [];
     window.__heroCurrent = 0;
-    delete slider?.dataset.slides;
 
     if (contentEl) contentEl.classList.remove('is-hidden');
     if (graphicEl) graphicEl.classList.toggle('is-hidden', hasCustomBanner);
-
-    if (dotsWrap) {
-      dotsWrap.innerHTML = '';
-      dotsWrap.classList.add('is-hidden');
-    }
-    if (arrowsWrap) {
-      arrowsWrap.innerHTML = '';
-      arrowsWrap.classList.add('is-hidden');
-    }
 
     document.dispatchEvent(new CustomEvent('heroSlidesUpdated', { detail: { count: 1 } }));
   }
