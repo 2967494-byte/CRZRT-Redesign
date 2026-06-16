@@ -657,20 +657,19 @@ body[data-page="support"] .support-customers-section {
 
 body[data-page="support"] .support-customers-section__inner {
   max-width: 1520px;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 body[data-page="support"] .support-customers-section__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 48px;
+  position: relative;
+  min-height: 60px;
+  margin-bottom: 60px;
 }
 
 body[data-page="support"] .support-customers-section__title {
   margin: 0;
   max-width: 369px;
-  flex-shrink: 0;
   font-family: 'Google Sans', sans-serif;
   font-weight: 500;
   font-style: normal;
@@ -681,10 +680,13 @@ body[data-page="support"] .support-customers-section__title {
 }
 
 body[data-page="support"] .support-law-toggle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-shrink: 0;
   width: 335px;
   height: 60px;
 }
@@ -745,6 +747,233 @@ body[data-page="support"] .support-customers-section__body {
   min-height: 0;
 }
 
+body[data-page="support"] .support-service-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 489px);
+  justify-content: start;
+  gap: 27px;
+}
+
+body[data-page="support"] .support-service-card {
+  position: relative;
+  box-sizing: border-box;
+  width: 489px;
+  height: 400px;
+  padding: 0;
+  border-radius: 20px;
+  background: #FFFFFF;
+  box-shadow: 0 39px 25px -25px #ADB8C6;
+}
+
+body[data-page="support"] .support-service-card__title {
+  position: absolute;
+  top: 30px;
+  left: 27px;
+  width: 328px;
+  height: 99px;
+  margin: 0;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 30px;
+  line-height: 110%;
+  letter-spacing: 0;
+  color: #FF5512;
+}
+
+body[data-page="support"] .support-service-card__price {
+  position: absolute;
+  top: 153px;
+  left: 27px;
+  width: 342px;
+  margin: 0;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 50px;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #575B6D;
+  white-space: nowrap;
+}
+
+body[data-page="support"] .support-service-card__btn {
+  position: absolute;
+  top: 238px;
+  left: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 443px;
+  height: 90px;
+  margin: 0;
+  border-radius: 20px;
+  background: #FF5512;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 30px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+body[data-page="support"] .support-service-card__btn:hover {
+  background: #E64A10;
+}
+
+body[data-page="support"] .support-service-card__more {
+  position: absolute;
+  right: 27px;
+  bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 20px;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: #ADB8C6;
+  text-decoration: none;
+}
+
+body[data-page="support"] .support-service-card__more-arrow {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+body[data-page="support"] .support-service-card__more:hover {
+  color: #8A96A8;
+}
+
+/* Чек-лист */
+body[data-page="support"] .support-checklist {
+  margin-top: 114px;
+}
+
+body[data-page="support"] .support-checklist__title {
+  margin: 0 0 52px;
+  max-width: 383px;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 30px;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #575B6D;
+}
+
+body[data-page="support"] .support-checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 489px);
+  justify-content: start;
+  column-gap: 27px;
+  row-gap: 56px;
+}
+
+body[data-page="support"] .support-checklist-item {
+  padding-top: 51px;
+}
+
+body[data-page="support"] .support-checklist-card {
+  position: relative;
+  box-sizing: border-box;
+  width: 489px;
+  height: 185px;
+  border-radius: 20px;
+  background: radial-gradient(77.13% 155.15% at 86.32% 119.38%, #C6DBFF 0.98%, #516496 100%);
+  overflow: visible;
+}
+
+body[data-page="support"] .support-checklist-card__icon {
+  position: absolute;
+  top: -51px;
+  left: 36px;
+  z-index: 1;
+  width: 93px;
+  height: 93px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+body[data-page="support"] .support-checklist-card__icon-bg {
+  display: block;
+  width: 93px;
+  height: 93px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+
+body[data-page="support"] .support-checklist-card__icon-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 75.45px;
+  height: 76.39px;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  object-position: center center;
+  pointer-events: none;
+}
+
+body[data-page="support"] .support-checklist-card__text {
+  position: absolute;
+  top: 64px;
+  left: 38px;
+  width: 345px;
+  margin: 0;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 28px;
+  line-height: 110%;
+  letter-spacing: 0;
+  color: #FFFFFF;
+}
+
+body[data-page="support"] .support-checklist-card__text-line {
+  display: block;
+  white-space: nowrap;
+}
+
+body[data-page="support"] .support-checklist-card__text--bottom {
+  top: auto;
+  bottom: 29px;
+}
+
+body[data-page="support"] .support-checklist-card__download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+  max-width: 489px;
+  height: 20px;
+  margin-top: 13px;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: -0.03em;
+  color: #575B6D;
+  text-decoration: none;
+}
+
+body[data-page="support"] .support-checklist-card__download:hover {
+  color: #354557;
+}
+
+body[data-page="support"] .support-checklist-card__download-arrow {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
 @media (max-width: 900px) {
   body[data-page="support"] .support-customers-section {
     min-height: 0;
@@ -752,21 +981,70 @@ body[data-page="support"] .support-customers-section__body {
     padding: 48px 0 56px;
   }
 
+  body[data-page="support"] .support-customers-section__inner {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
   body[data-page="support"] .support-customers-section__head {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
+    min-height: auto;
+    padding-top: 72px;
     margin-bottom: 32px;
+  }
+
+  body[data-page="support"] .support-law-toggle {
+    position: static;
+    transform: none;
+    margin: 0 auto;
   }
 
   body[data-page="support"] .support-customers-section__title {
     font-size: 36px;
     max-width: none;
+    margin-bottom: 20px;
   }
 
-  body[data-page="support"] .support-law-toggle {
+  body[data-page="support"] .support-service-cards {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+    gap: 20px;
+  }
+
+  body[data-page="support"] .support-service-card {
     width: 100%;
-    max-width: 335px;
+    max-width: 489px;
+    margin: 0 auto;
+  }
+
+  body[data-page="support"] .support-service-card__btn {
+    left: 23px;
+    right: 23px;
+    width: auto;
+  }
+
+  body[data-page="support"] .support-checklist {
+    margin-top: 56px;
+  }
+
+  body[data-page="support"] .support-checklist__title {
+    font-size: 24px;
+    margin-bottom: 32px;
+  }
+
+  body[data-page="support"] .support-checklist-grid {
+    grid-template-columns: 1fr;
+    row-gap: 40px;
+  }
+
+  body[data-page="support"] .support-checklist-card {
+    width: 100%;
+    max-width: 489px;
+    margin: 0 auto;
+  }
+
+  body[data-page="support"] .support-checklist-item {
+    max-width: 489px;
+    margin: 0 auto;
   }
 
   body[data-page="support"] .support-nav-cards.ecp-cards-grid {
