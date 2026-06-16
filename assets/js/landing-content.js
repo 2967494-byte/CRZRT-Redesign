@@ -30,7 +30,7 @@
       {
         title: 'Сопровождение',
         desc: 'Комплексная помощь экспертов на всех этапах закупок',
-        link: 'consulting.html',
+        link: 'support.html',
         variant: 'peach',
         icon: 'assets/img/sopr.png'
       },
@@ -264,6 +264,7 @@
   function shouldSkipLandingHero() {
     return (
       document.body.dataset.page === 'consulting' ||
+      document.body.dataset.page === 'support' ||
       document.body.classList.contains('theme-blue') ||
       document.body.classList.contains('theme-purple') ||
       Boolean(document.querySelector('.consulting-hero')) ||

@@ -189,6 +189,8 @@
 
   document.addEventListener('landingContentReady', prepareAllInternalLinks);
   document.addEventListener('ecpContentReady', prepareAllInternalLinks);
+  document.addEventListener('consultingContentReady', prepareAllInternalLinks);
+  document.addEventListener('supportContentReady', prepareAllInternalLinks);
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', prepareAllInternalLinks);

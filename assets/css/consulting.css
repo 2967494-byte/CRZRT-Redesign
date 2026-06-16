@@ -1,12 +1,16 @@
 /* Стили страницы Юридический консалтинг (consulting.html) */
 
 html.consulting-content-pending .ecp-dynamic,
-html.consulting-content-pending .consulting-dynamic {
+html.consulting-content-pending .consulting-dynamic,
+html.support-content-pending .ecp-dynamic,
+html.support-content-pending .consulting-dynamic {
   visibility: hidden;
 }
 
 html.consulting-content-ready .ecp-dynamic,
-html.consulting-content-ready .consulting-dynamic {
+html.consulting-content-ready .consulting-dynamic,
+html.support-content-ready .ecp-dynamic,
+html.support-content-ready .consulting-dynamic {
   visibility: visible;
 }
 
@@ -578,16 +582,19 @@ body.theme-purple .consulting-competencies-section.section {
   text-align: left;
 }
 
-/* Partners on consulting */
-body[data-page="consulting"] .partners-section {
+/* Partners on consulting / support */
+body[data-page="consulting"] .partners-section,
+body[data-page="support"] .partners-section {
   padding-top: 99px;
 }
 
-body[data-page="consulting"] .reviews-section .section-title {
+body[data-page="consulting"] .reviews-section .section-title,
+body[data-page="support"] .reviews-section .section-title {
   color: #575B6D;
 }
 
-body[data-page="consulting"] .consultation-card__title {
+body[data-page="consulting"] .consultation-card__title,
+body[data-page="support"] .consultation-card__title {
   color: #354557;
 }
 

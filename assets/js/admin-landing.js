@@ -36,7 +36,7 @@
     ],
     serviceCards: [
       { title: 'Обучение', desc: 'Как зарабатывать на госзакупках и тендерах', link: 'obuchenie.html', variant: 'green', icon: 'assets/img/obuch.png' },
-      { title: 'Сопровождение', desc: 'Комплексная помощь экспертов на всех этапах закупок', link: 'consulting.html', variant: 'peach', icon: 'assets/img/sopr.png' },
+      { title: 'Сопровождение', desc: 'Комплексная помощь экспертов на всех этапах закупок', link: 'support.html', variant: 'peach', icon: 'assets/img/sopr.png' },
       { title: 'Юридический консалтинг', desc: 'Профессиональные консультационные услуги по правовым вопросам', link: 'consulting.html', variant: 'purple', icon: 'assets/img/u_k.png' },
       { title: 'ЭТП', desc: 'Электронная торговая площадка', link: 'ecp.html', variant: 'blue', icon: 'assets/img/etp.png', external: false }
     ],
