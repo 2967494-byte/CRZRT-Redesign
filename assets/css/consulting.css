@@ -42,7 +42,7 @@ body.theme-purple .header__actions .btn--green:hover {
 }
 
 body.theme-purple .third-screen {
-  background: #E8DFF5;
+  background: #EEE7EE;
 }
 
 body.theme-purple .review-card {
@@ -606,6 +606,37 @@ body[data-page="consulting"] .social-banner,
 body[data-page="consulting"] .consultation-card {
   width: 100%;
   max-width: 100%;
+}
+
+body[data-page="consulting"] .reviews-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 49px;
+  justify-content: stretch;
+  justify-items: stretch;
+  width: 100%;
+}
+
+body[data-page="consulting"] .review-card {
+  max-width: none;
+  width: 100%;
+}
+
+body[data-page="consulting"] .consultation-card {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  overflow: visible;
+}
+
+body[data-page="consulting"] .social-banner {
+  overflow: visible;
+}
+
+body[data-page="consulting"] .reviews-section .section-title {
+  color: #575B6D;
+}
+
+body[data-page="consulting"] .consultation-card__title {
+  color: #354557;
 }
 
 .ecp-banner__graphic {
@@ -1802,7 +1833,7 @@ body[data-page="consulting"] .consultation-card {
 
 /* ECP Blue Theme overrides for reviews background, quotes, and submit button */
 body.theme-purple .third-screen {
-  background: #E8DFF5;
+  background: #EEE7EE;
 }
 
 body.theme-purple .consultation-section .btn--green {
@@ -1880,6 +1911,18 @@ body.theme-purple .review-card {
   body.theme-purple .review-card {
     max-width: 483px;
   }
+
+  body[data-page="consulting"] .reviews-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 30px 24px;
+    justify-content: stretch;
+    justify-items: stretch;
+  }
+
+  body[data-page="consulting"] .review-card {
+    max-width: none;
+    width: 100%;
+  }
 }
 
 @media (max-width: 992px) {
@@ -1888,6 +1931,10 @@ body.theme-purple .review-card {
     gap: 20px;
     justify-content: stretch;
     justify-items: center;
+  }
+
+  body[data-page="consulting"] .reviews-grid {
+    justify-items: stretch;
   }
 }
 
