@@ -263,6 +263,103 @@ body {
             border-radius: 8px;
         }
 
+        /* Компетенции консалтинга: карточки в ряд */
+        .consulting-comp-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        @media (max-width: 1500px) {
+            .consulting-comp-admin-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .consulting-comp-admin-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .consulting-comp-admin-card {
+            position: relative;
+            min-width: 0;
+            padding: 10px;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .consulting-comp-admin-card__head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+
+        .consulting-comp-admin-card__remove {
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            line-height: 1;
+            font-size: 1rem;
+        }
+
+        .consulting-comp-admin-card .form-group {
+            margin-bottom: 8px;
+        }
+
+        .consulting-comp-admin-card .form-group label {
+            font-size: 0.72rem;
+            margin-bottom: 4px;
+        }
+
+        .consulting-comp-admin-card .form-control {
+            padding: 6px 8px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .consulting-comp-admin-card__text textarea.form-control {
+            min-height: 52px;
+            resize: vertical;
+        }
+
+        .consulting-comp-admin-card__link {
+            margin-bottom: 0;
+        }
+
+        .consulting-comp-admin-card__icon-preview {
+            max-width: 56px;
+            max-height: 56px;
+            object-fit: contain;
+            border-radius: 8px;
+            display: none;
+            margin-bottom: 6px;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .consulting-comp-admin-card__icon-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .consulting-comp-admin-card__icon-actions .btn-save {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+        }
+
+        .consulting-comp-admin-card__icon-clear {
+            width: 26px;
+            height: 26px;
+            padding: 0;
+            line-height: 1;
+            font-size: 1rem;
+        }
+
         .partner-upload-group {
             margin-bottom: 0 !important;
         }

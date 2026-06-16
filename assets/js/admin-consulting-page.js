@@ -75,6 +75,21 @@
       </div>`;
   }
 
+  function compactCompIconUploadHtml(id) {
+    return `
+      <div class="form-group consulting-comp-admin-card__icon">
+        <label>Иконка</label>
+        <div class="image-upload-mini" data-upload-id="${id}">
+          <img id="${id}_preview" class="consulting-comp-admin-card__icon-preview" src="" alt="">
+          <div class="consulting-comp-admin-card__icon-actions">
+            <button type="button" class="btn-save" onclick="AdminConsultingPage.pickImage('${id}')">Загрузить</button>
+            <button type="button" class="btn-delete consulting-comp-admin-card__icon-clear" style="display:none;" id="${id}_clear" onclick="AdminConsultingPage.clearImage('${id}')">×</button>
+          </div>
+          <input type="hidden" id="${id}_val" value="">
+        </div>
+      </div>`;
+  }
+
   function getMigratedData(data) {
     return migrateConsultingPageData(data || {});
   }
@@ -108,22 +123,22 @@
         <label>Заголовок секции</label>
         <input type="text" class="form-control" id="consulting_competencies_title" value="${escapeAttr(migrated.competenciesTitle)}">
       </div>
-      <div id="consultingCompetenciesList">
+      <div id="consultingCompetenciesList" class="consulting-comp-admin-grid">
         ${items
           .map(
             (item, i) => `
-          <div class="admin-card" style="margin-bottom:16px;padding:16px;background:rgba(255,255,255,0.03);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-              <strong>Карточка ${i + 1}</strong>
-              <button type="button" class="btn-delete" style="padding:6px 12px;font-size:0.8rem;" onclick="AdminConsultingPage.removeCompetency(${i})">Удалить</button>
+          <div class="consulting-comp-admin-card">
+            <div class="consulting-comp-admin-card__head">
+              <strong>№${i + 1}</strong>
+              <button type="button" class="btn-delete consulting-comp-admin-card__remove" onclick="AdminConsultingPage.removeCompetency(${i})" aria-label="Удалить">×</button>
             </div>
-            ${imageUploadHtml(`consulting_comp_icon_${i}`, 'Иконка (~109×110)', '')}
-            <div class="form-group" style="margin-top:12px;">
-              <label>Надпись (Enter — перенос строки)</label>
+            ${compactCompIconUploadHtml(`consulting_comp_icon_${i}`)}
+            <div class="form-group consulting-comp-admin-card__text">
+              <label>Надпись</label>
               <textarea class="form-control" id="consulting_comp_text_${i}" rows="2">${escapeAttr(item.title)}</textarea>
             </div>
-            <div class="form-group">
-              <label>Ссылка (необязательно)</label>
+            <div class="form-group consulting-comp-admin-card__link">
+              <label>Ссылка</label>
               <input type="text" class="form-control" id="consulting_comp_link_${i}" value="${escapeAttr(item.link || '#competencies')}" placeholder="#competencies">
             </div>
           </div>`
