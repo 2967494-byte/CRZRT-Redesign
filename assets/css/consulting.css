@@ -346,7 +346,7 @@ body.theme-purple .hero-slider.hero-slider--custom-bg .consulting-banner__graphi
 /* Компетенции — 6 карточек в сетке 2×3 (ширина = .container, как шапка) */
 body.theme-purple .consulting-competencies-section.section {
   padding-top: 80px;
-  padding-bottom: 0;
+  padding-bottom: 40px;
 }
 
 .consulting-competencies__title {
@@ -576,6 +576,17 @@ body.theme-purple .consulting-competencies-section.section {
   letter-spacing: -0.02em;
   color: #575B6D;
   text-align: center;
+}
+
+/* Partners on consulting: keep inner gutters like header */
+body[data-page="consulting"] .partners-section > .container {
+  max-width: 1520px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+body[data-page="consulting"] .partners-slider {
+  max-width: 100%;
 }
 
 .ecp-banner__graphic {
