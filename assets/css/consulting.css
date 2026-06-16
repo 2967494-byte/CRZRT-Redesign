@@ -579,56 +579,9 @@ body.theme-purple .consulting-competencies-section.section {
   text-align: center;
 }
 
-/* Partners on consulting: keep inner gutters like header */
-body[data-page="consulting"] .partners-section > .container {
-  max-width: 1520px;
-  padding-left: 24px;
-  padding-right: 24px;
-}
-
-body[data-page="consulting"] .partners-slider {
-  max-width: 100%;
-}
-
+/* Partners on consulting */
 body[data-page="consulting"] .partners-section {
   padding-top: 99px;
-}
-
-body[data-page="consulting"] .reviews-section > .container,
-body[data-page="consulting"] .social-section > .container,
-body[data-page="consulting"] .consultation-section > .container {
-  max-width: 1520px;
-  padding-left: 24px;
-  padding-right: 24px;
-}
-
-body[data-page="consulting"] .social-banner,
-body[data-page="consulting"] .consultation-card {
-  width: 100%;
-  max-width: 100%;
-}
-
-body[data-page="consulting"] .reviews-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 49px;
-  justify-content: stretch;
-  justify-items: stretch;
-  width: 100%;
-}
-
-body[data-page="consulting"] .review-card {
-  max-width: none;
-  width: 100%;
-}
-
-body[data-page="consulting"] .consultation-card {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  overflow: visible;
-}
-
-body[data-page="consulting"] .social-banner {
-  overflow: visible;
 }
 
 body[data-page="consulting"] .reviews-section .section-title {
@@ -1859,7 +1812,7 @@ body.theme-purple .review-card__quote img {
 }
 
 body.theme-purple .review-card__quote {
-  background-image: url("data:image/svg+xml,%3Csvg width='179' height='182' viewBox='0 0 179 182' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M179 1.65462L174.575 34.9183C163.312 34.1168 154.865 36.2542 149.234 41.3306C143.602 46.407 139.982 53.3536 138.373 62.1705C133.764 70.9874 136.496 80.7394 137.569 91.4266L179 91.4266L179 182L100.16 182L100.16 79.4035C100.16 51.3498 107.132 30.2427 121.076 16.0822C134.753 1.92179 154.061 -2.88741 179 1.65462ZM78.8405 1.65461L74.4157 34.9183C63.1528 34.1168 54.7056 36.2542 49.0741 41.3306C43.4427 46.407 39.8225 53.3536 38.2135 62.1705C36.6045 70.9874 36.3363 80.7394 37.409 91.4266L78.8404 91.4266L78.8404 182L-1.52588e-05 182L-6.28952e-06 79.4035C-3.83699e-06 51.3498 6.97226 30.2427 20.9168 16.0822C34.5932 1.92179 53.9011 -2.88742 78.8405 1.65461Z' fill='%23CDEFFF'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='179' height='182' viewBox='0 0 179 182' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M179 1.65462L174.575 34.9183C163.312 34.1168 154.865 36.2542 149.234 41.3306C143.602 46.407 139.982 53.3536 138.373 62.1705C133.764 70.9874 136.496 80.7394 137.569 91.4266L179 91.4266L179 182L100.16 182L100.16 79.4035C100.16 51.3498 107.132 30.2427 121.076 16.0822C134.753 1.92179 154.061 -2.88741 179 1.65462ZM78.8405 1.65461L74.4157 34.9183C63.1528 34.1168 54.7056 36.2542 49.0741 41.3306C43.4427 46.407 39.8225 53.3536 38.2135 62.1705C36.6045 70.9874 36.3363 80.7394 37.409 91.4266L78.8404 91.4266L78.8404 182L-1.52588e-05 182L-6.28952e-06 79.4035C-3.83699e-06 51.3498 6.97226 30.2427 20.9168 16.0822C34.5932 1.92179 53.9011 -2.88742 78.8405 1.65461Z' fill='%23EEE7EE'/%3E%3C/svg%3E");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -1911,18 +1864,6 @@ body.theme-purple .review-card {
   body.theme-purple .review-card {
     max-width: 483px;
   }
-
-  body[data-page="consulting"] .reviews-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 30px 24px;
-    justify-content: stretch;
-    justify-items: stretch;
-  }
-
-  body[data-page="consulting"] .review-card {
-    max-width: none;
-    width: 100%;
-  }
 }
 
 @media (max-width: 992px) {
@@ -1931,10 +1872,6 @@ body.theme-purple .review-card {
     gap: 20px;
     justify-content: stretch;
     justify-items: center;
-  }
-
-  body[data-page="consulting"] .reviews-grid {
-    justify-items: stretch;
   }
 }
 
