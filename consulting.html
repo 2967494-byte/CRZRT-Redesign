@@ -11,9 +11,9 @@
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" as="style" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
   <link rel="preload" href="assets/css/landing.css?v=9" as="style">
-  <link rel="preload" href="assets/css/consulting.css?v=1" as="style">
+  <link rel="preload" href="assets/css/consulting.css?v=3" as="style">
   <link rel="stylesheet" href="assets/css/landing.css?v=9">
-  <link rel="stylesheet" href="assets/css/consulting.css?v=1">
+  <link rel="stylesheet" href="assets/css/consulting.css?v=3">
   <script>document.documentElement.classList.add('landing-content-pending', 'consulting-content-pending');</script>
 </head>
 <body class="theme-purple">
@@ -67,77 +67,64 @@
 
 <div class="first-screen">
   <main>
-    <!-- HERO SLIDER BANNER -->
-    <section class="section">
+    <!-- HERO BANNER -->
+    <section class="section consulting-hero-section consulting-page-section">
       <div class="container">
-        <div class="hero-slider">
+        <div class="hero-slider hero-slider--single">
           <div class="hero-slide active">
-
-            <div class="hero-slide__content ecp-dynamic">
-              <h1 class="hero-slide__title ecp-hero-title">Защищаем<br>ваши интересы</h1>
-              <p class="hero-slide__subtitle ecp-hero-subtitle">Профессиональная юридическая поддержка в сфере закупок: сопровождение сделок, представительство в спорах, консультации для заказчиков и поставщиков на всех этапах.</p>
-            </div>
-            
-            <div class="ecp-banner__graphic ecp-dynamic" aria-hidden="true">
-              <img src="assets/img/ecp/banner-monitor.png?v=1" alt="" class="ecp-banner__image ecp-hero-monitor" width="561" height="482" decoding="async">
+            <div class="hero-slide__content consulting-dynamic">
+              <h1 class="hero-slide__title consulting-hero-title">Защищаем<br>ваши интересы</h1>
+              <p class="hero-slide__subtitle consulting-hero-subtitle">Профессиональная юридическая поддержка в сфере закупок: сопровождение сделок, представительство в спорах, консультации для заказчиков и поставщиков на всех этапах.</p>
             </div>
 
-            <!-- Arrows -->
-            <div class="hero-slide__arrows">
-              <button class="arrow-btn" id="hero-prev" aria-label="Предыдущий слайд">
-                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><polyline points="10.5 3.5 5.5 8 10.5 12.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-              <button class="arrow-btn" id="hero-next" aria-label="Следующий слайд">
-                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><polyline points="5.5 3.5 10.5 8 5.5 12.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
+            <div class="consulting-banner__graphic consulting-dynamic" aria-hidden="true">
+              <img src="assets/img/consulting/banner-gavel.png" alt="" class="consulting-banner__image consulting-hero-gavel" width="420" height="420" decoding="async">
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FIVE CARDS GRID -->
-    <section class="section">
+    <!-- COMPETENCIES -->
+    <section class="section consulting-competencies-section consulting-page-section" id="competencies">
       <div class="container">
-        <div class="ecp-cards-grid">
-          <!-- Card 1: Тарифы -->
-          <a href="#tariffs" class="ecp-card">
-            <div class="ecp-card__icon-wrap">
-              <img src="assets/img/ecp/icon-tariffs.png?v=2" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+        <h2 class="consulting-competencies__title consulting-dynamic">Компетенции</h2>
+        <div class="consulting-competencies-grid consulting-dynamic">
+          <a href="#competencies" class="consulting-competency-card">
+            <div class="consulting-competency-card__icon-circle">
+              <img src="assets/img/consulting/icon-business.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
             </div>
-            <div class="ecp-card__label">Тарифы</div>
+            <span class="consulting-competency-card__title">Решения<br>для бизнеса</span>
           </a>
-
-          <!-- Card 2: Бланки и шаблоны -->
-          <a href="#blanks" class="ecp-card">
-            <div class="ecp-card__icon-wrap">
-              <img src="assets/img/ecp/icon-forms.png?v=2" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+          <a href="#competencies" class="consulting-competency-card">
+            <div class="consulting-competency-card__icon-circle">
+              <img src="assets/img/consulting/icon-disputes.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
             </div>
-            <div class="ecp-card__label">Бланки<br>и шаблоны</div>
+            <span class="consulting-competency-card__title">Сложные<br>судебные споры</span>
           </a>
-
-          <!-- Card 3: Руководство пользователя -->
-          <a href="#manual" class="ecp-card">
-            <div class="ecp-card__icon-wrap">
-              <img src="assets/img/ecp/icon-manual.png?v=2" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+          <a href="#competencies" class="consulting-competency-card">
+            <div class="consulting-competency-card__icon-circle">
+              <img src="assets/img/consulting/icon-deals.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
             </div>
-            <div class="ecp-card__label">Руководство<br>пользователя</div>
+            <span class="consulting-competency-card__title">Сопровождение<br>сделок</span>
           </a>
-
-          <!-- Card 4: Видеоинструкции -->
-          <a href="#videos" class="ecp-card">
-            <div class="ecp-card__icon-wrap">
-              <img src="assets/img/ecp/icon-video.png?v=2" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+          <a href="#competencies" class="consulting-competency-card">
+            <div class="consulting-competency-card__icon-circle">
+              <img src="assets/img/consulting/icon-public.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
             </div>
-            <div class="ecp-card__label">Видеоинструкции</div>
+            <span class="consulting-competency-card__title">Поддержка<br>госзаказчиков</span>
           </a>
-
-          <!-- Card 5: Помощь -->
-          <a href="#help" class="ecp-card">
-            <div class="ecp-card__icon-wrap">
-              <img src="assets/img/ecp/icon-help.png?v=2" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+          <a href="#competencies" class="consulting-competency-card">
+            <div class="consulting-competency-card__icon-circle">
+              <img src="assets/img/consulting/icon-competitor.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
             </div>
-            <div class="ecp-card__label">Помощь</div>
+            <span class="consulting-competency-card__title">Конкурентный<br>консалтинг</span>
+          </a>
+          <a href="#competencies" class="consulting-competency-card">
+            <div class="consulting-competency-card__icon-circle">
+              <img src="assets/img/consulting/icon-corporate.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
+            </div>
+            <span class="consulting-competency-card__title">Корпоративное<br>право</span>
           </a>
         </div>
       </div>
@@ -415,8 +402,8 @@
   </div>
 </footer>
 
-<script src="assets/js/landing-content.js?v=6" defer></script>
-<script src="assets/js/consulting-content.js?v=1" defer></script>
-<script src="assets/js/landing.js?v=4" defer></script>
+<script src="assets/js/landing-content.js?v=7" defer></script>
+<script src="assets/js/consulting-content.js?v=3" defer></script>
+<script src="assets/js/landing.js?v=5" defer></script>
 </body>
 </html>

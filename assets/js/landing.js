@@ -1,6 +1,14 @@
 // Hero slider (контент и фоны — из landing-content.js)
 let heroCurrent = 0;
 
+function isStandaloneHeroPage() {
+  return (
+    document.body.classList.contains('theme-blue') ||
+    document.body.classList.contains('theme-purple') ||
+    Boolean(document.querySelector('.hero-slider--single'))
+  );
+}
+
 function heroSlideCount() {
   return window.__heroSlides?.length || document.querySelectorAll('.hero-slide__dots .dot').length || 1;
 }
@@ -18,12 +26,12 @@ function setHeroDot(i) {
 }
 
 document.getElementById('hero-prev')?.addEventListener('click', () => {
-  if (document.body.classList.contains('theme-blue')) return;
+  if (isStandaloneHeroPage()) return;
   setHeroDot((heroCurrent - 1 + heroSlideCount()) % heroSlideCount());
 });
 
 document.getElementById('hero-next')?.addEventListener('click', () => {
-  if (document.body.classList.contains('theme-blue')) return;
+  if (isStandaloneHeroPage()) return;
   setHeroDot((heroCurrent + 1) % heroSlideCount());
 });
 
@@ -65,7 +73,7 @@ partnersNext?.addEventListener('click', () => {
 
 // Auto-advance hero
 setInterval(() => {
-  if (document.body.classList.contains('theme-blue')) return;
+  if (isStandaloneHeroPage()) return;
   if (heroSlideCount() > 1) {
     setHeroDot((heroCurrent + 1) % heroSlideCount());
   }

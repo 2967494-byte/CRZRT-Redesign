@@ -234,9 +234,9 @@
   function renderHero(hero) {
     const slider = document.querySelector('.hero-slider');
     const contentEl = document.querySelector('.hero-slide__content');
-    const titleEl = document.querySelector('.ecp-hero-title');
-    const subtitleEl = document.querySelector('.ecp-hero-subtitle');
-    const graphicEl = document.querySelector('.ecp-banner__graphic');
+    const titleEl = document.querySelector('.consulting-hero-title');
+    const subtitleEl = document.querySelector('.consulting-hero-subtitle');
+    const graphicEl = document.querySelector('.consulting-banner__graphic');
     const dotsWrap = document.querySelector('.hero-slide__dots');
     const arrowsWrap = document.querySelector('.hero-slide__arrows');
     const background = (hero?.background || '').trim();
@@ -255,6 +255,10 @@
       }
     }
 
+    window.__heroSlides = [];
+    window.__heroCurrent = 0;
+    delete slider?.dataset.slides;
+
     if (contentEl) contentEl.classList.remove('is-hidden');
     if (graphicEl) graphicEl.classList.toggle('is-hidden', hasCustomBanner);
 
@@ -263,8 +267,11 @@
       dotsWrap.classList.add('is-hidden');
     }
     if (arrowsWrap) {
+      arrowsWrap.innerHTML = '';
       arrowsWrap.classList.add('is-hidden');
     }
+
+    document.dispatchEvent(new CustomEvent('heroSlidesUpdated', { detail: { count: 1 } }));
   }
 
   function renderTariffs(tariffs) {

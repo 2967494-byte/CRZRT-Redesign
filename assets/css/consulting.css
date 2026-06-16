@@ -1,10 +1,12 @@
 /* Стили страницы Юридический консалтинг (consulting.html) */
 
-html.consulting-content-pending .ecp-dynamic {
+html.consulting-content-pending .ecp-dynamic,
+html.consulting-content-pending .consulting-dynamic {
   visibility: hidden;
 }
 
-html.consulting-content-ready .ecp-dynamic {
+html.consulting-content-ready .ecp-dynamic,
+html.consulting-content-ready .consulting-dynamic {
   visibility: visible;
 }
 
@@ -23,12 +25,20 @@ body.theme-orange {
 }
 
 body.theme-purple {
-  --green: #8B5CF6;
-  --green-dark: #7C3AED;
+  --green: #8D5A8D;
+  --green-dark: #7A4E7A;
   --green-light: #F3EEFF;
   --color-heading: #1E2D3D;
   --color-section-title: #575B6D;
   background: #FFFFFF;
+}
+
+body.theme-purple .header__actions .btn--green {
+  background: #8D5A8D;
+}
+
+body.theme-purple .header__actions .btn--green:hover {
+  background: #7A4E7A;
 }
 
 body.theme-purple .third-screen {
@@ -52,6 +62,7 @@ body.theme-purple .first-screen {
 
 /* 1. ECP HERO BANNER SLIDER — координаты Figma (макет 1520×420, 1 в 1 как на главной) */
 body.theme-purple .hero-slider {
+  width: 100%;
   height: 420px;
   background-color: #C4B5FD;
   background-image: radial-gradient(43.42% 74.44% at 71.22% 54%, #FFFFFF 0%, #C4B5FD 100%);
@@ -134,7 +145,7 @@ body.theme-purple .hero-slide__title {
   font-size: 54px;
   font-weight: 700;
   font-style: normal;
-  color: #7C3AED;
+  color: #FFFFFF;
   line-height: 110%;
   letter-spacing: -0.01em;
   margin: 0;
@@ -204,8 +215,135 @@ body.theme-purple .hero-slide__arrows .arrow-btn svg polyline {
 }
 
 body.theme-purple .hero-slide__arrows.is-hidden,
-body.theme-purple .hero-slide__dots.is-hidden {
+body.theme-purple .hero-slide__dots.is-hidden,
+body.theme-purple .hero-slider.hero-slider--single .hero-slide__arrows {
   display: none;
+}
+
+.consulting-banner__graphic {
+  position: absolute;
+  right: 68px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 420px;
+  height: 420px;
+  max-width: calc(46% - 16px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.consulting-banner__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: right center;
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+
+body.theme-purple .hero-slider.hero-slider--custom-bg .consulting-banner__graphic.is-hidden {
+  display: none;
+}
+
+/* Контейнер консалтинга — ширина как у баннера (1520px) */
+.consulting-page-section .container {
+  max-width: 1520px;
+  width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1568px) {
+  .consulting-page-section .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* Компетенции — 6 карточек 745×200 в сетке 2×3 */
+.consulting-competencies-section {
+  padding-top: 0;
+}
+
+.consulting-competencies__title {
+  margin: 30px 0 30px;
+  width: 324px;
+  max-width: 100%;
+  height: 50px;
+  font-family: 'Google Sans', var(--font-heading);
+  font-weight: 500;
+  font-style: normal;
+  font-size: 50px;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #354557;
+}
+
+.consulting-competencies-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+  width: 100%;
+  margin-top: 0;
+}
+
+.consulting-competency-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 200px;
+  border-radius: 20px;
+  background: #EEEEFB;
+  box-sizing: border-box;
+  padding-left: 43px;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  box-shadow: none;
+}
+
+.consulting-competency-card:hover {
+  box-shadow: 0px 30px 23.6px -24px #7A7B98B2;
+  transform: translateY(-2px);
+}
+
+.consulting-competency-card__icon-circle {
+  flex-shrink: 0;
+  width: 145px;
+  height: 145px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.consulting-competency-card__icon {
+  width: 109px;
+  height: 110px;
+  object-fit: contain;
+  display: block;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.consulting-competency-card__title {
+  margin-left: 35px;
+  width: 220px;
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  font-family: 'Google Sans', var(--font-heading);
+  font-size: 24px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 110%;
+  letter-spacing: -0.03em;
+  color: #354557;
 }
 
 .ecp-banner__graphic {
@@ -520,6 +658,33 @@ body.theme-purple .hero-slide__dots.is-hidden {
     font-size: 24px;
     margin-top: 30px;
     margin-bottom: 20px;
+  }
+}
+
+/* RESPONSIVE DESIGN FOR CONSULTING PAGE */
+@media (max-width: 820px) {
+  .consulting-competencies__title {
+    font-size: 36px;
+    height: auto;
+  }
+
+  .consulting-competencies-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .consulting-competency-card {
+    max-width: 100%;
+    height: auto;
+    min-height: 200px;
+    padding: 24px 20px;
+  }
+
+  .consulting-banner__graphic {
+    right: 24px;
+    width: min(280px, 42vw);
+    height: auto;
+    aspect-ratio: 1;
   }
 }
 
@@ -1292,11 +1457,11 @@ body.theme-purple .third-screen {
 }
 
 body.theme-purple .consultation-section .btn--green {
-  background: #8B5CF6;
+  background: #8D5A8D;
 }
 
 body.theme-purple .consultation-section .btn--green:hover {
-  background: #7C3AED;
+  background: #7A4E7A;
 }
 
 /* Отзывы на ETP-лендинге: синяя тень по макету */
