@@ -589,6 +589,20 @@ body[data-page="consulting"] .partners-slider {
   max-width: 100%;
 }
 
+body[data-page="consulting"] .reviews-section > .container,
+body[data-page="consulting"] .social-section > .container,
+body[data-page="consulting"] .consultation-section > .container {
+  max-width: 1520px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+body[data-page="consulting"] .social-banner,
+body[data-page="consulting"] .consultation-card {
+  width: 100%;
+  max-width: 100%;
+}
+
 .ecp-banner__graphic {
   position: absolute;
   right: 68px;
