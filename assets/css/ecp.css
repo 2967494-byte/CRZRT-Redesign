@@ -60,8 +60,6 @@ body.theme-blue .hero-slider {
 
 body.theme-blue .hero-slider.hero-slider--custom-bg {
   background-color: #83D8FF;
-  --ecp-hero-design-w: 1520;
-  --ecp-hero-design-h: 661;
 }
 
 body.theme-blue .hero-slider.hero-slider--custom-bg .ecp-banner__graphic.is-hidden {
@@ -69,31 +67,29 @@ body.theme-blue .hero-slider.hero-slider--custom-bg .ecp-banner__graphic.is-hidd
 }
 
 body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__title {
-  left: calc(268 / var(--ecp-hero-design-w) * 100%);
-  top: calc(241 / var(--ecp-hero-design-h) * 100%);
-  width: calc(552 / var(--ecp-hero-design-w) * 100%);
-  max-width: 552px;
-  height: auto;
-  min-height: calc(120 / var(--ecp-hero-design-h) * 100%);
+  left: 68px;
+  top: 108px;
+  width: 552px;
+  height: 120px;
   font-family: 'Google Sans', var(--font-heading);
   font-weight: 700;
-  font-size: clamp(32px, calc(60 / var(--ecp-hero-design-w) * 100vw), 60px);
+  font-style: normal;
+  font-size: 60px;
   line-height: 100%;
   letter-spacing: 0;
   color: #2C84E6;
 }
 
 body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__subtitle {
-  left: calc(260 / var(--ecp-hero-design-w) * 100%);
-  top: calc(482 / var(--ecp-hero-design-h) * 100%);
-  bottom: auto;
-  width: calc(629 / var(--ecp-hero-design-w) * 100%);
-  max-width: 629px;
-  height: auto;
-  min-height: calc(120 / var(--ecp-hero-design-h) * 100%);
+  left: 60px;
+  bottom: 40px;
+  top: auto;
+  width: 629px;
+  height: 120px;
   font-family: 'Google Sans', var(--font);
   font-weight: 500;
-  font-size: clamp(14px, calc(20 / var(--ecp-hero-design-w) * 100vw), 20px);
+  font-style: normal;
+  font-size: 20px;
   line-height: 120%;
   letter-spacing: -0.03em;
   color: #FFFFFF;
@@ -1483,11 +1479,6 @@ body.theme-blue .review-card {
   justify-content: flex-start;
 }
 
-.ecp-support-banner--custom-bg {
-  padding: 0;
-}
-
-.ecp-support-banner--custom-bg .ecp-support-banner__content.is-hidden,
 .ecp-support-banner--custom-bg .ecp-support-banner__graphic.is-hidden {
   display: none;
 }
@@ -1499,6 +1490,8 @@ body.theme-blue .review-card {
 }
 
 .ecp-support-banner__title {
+  width: 599px;
+  height: 50px;
   font-family: 'Google Sans', sans-serif;
   font-weight: 500;
   font-size: 50px;
@@ -1509,6 +1502,8 @@ body.theme-blue .review-card {
 }
 
 .ecp-support-banner__list {
+  width: 964px;
+  min-height: 132px;
   list-style: none;
   padding: 0;
   margin-bottom: 56px;
@@ -1539,6 +1534,7 @@ body.theme-blue .review-card {
 .ecp-support-banner__btn {
   width: 314px;
   height: 82px;
+  padding: 32px 58px 31px 59px;
   border-radius: 20px;
   background-color: #FFFFFF;
   box-shadow: 0px 12px 14.2px 0px #3545574D;

@@ -8,7 +8,13 @@
     blanks: { patternImage: '', items: [] },
     manual: { bookImage: '', items: [] },
     videos: [],
-    support: { background: '' }
+    support: {
+      background: '',
+      title: '',
+      items: [],
+      buttonText: '',
+      buttonLink: '#contacts'
+    }
   };
 
   function escapeAttr(s) {
@@ -210,11 +216,30 @@
     const el = document.getElementById('ecpSupportAdmin');
     if (!el) return;
     const support = data.support || {};
-    el.innerHTML = heroBgUploadShell(
-      'ecp_support_bg',
-      'Готовый баннер «Оперативная поддержка»',
-      '1520×435'
-    );
+    const items = Array.isArray(support.items) ? support.items : [];
+    el.innerHTML = `
+      ${heroBgUploadShell(
+        'ecp_support_bg',
+        'Фон баннера (~1520×435 px, весь баннер целиком)',
+        '1520×435'
+      )}
+      <div class="form-group" style="margin-top:20px;">
+        <label>Заголовок</label>
+        <input type="text" class="form-control" id="ecp_support_title" value="${escapeAttr(support.title)}">
+      </div>
+      <div class="form-group">
+        <label>Пункты списка (по одному на строку)</label>
+        <textarea class="form-control" id="ecp_support_items" rows="5">${escapeAttr(items.join('\n'))}</textarea>
+      </div>
+      <div class="form-group">
+        <label>Текст кнопки</label>
+        <input type="text" class="form-control" id="ecp_support_btn_text" value="${escapeAttr(support.buttonText)}">
+      </div>
+      <div class="form-group">
+        <label>Ссылка кнопки «Узнать подробнее»</label>
+        <input type="text" class="form-control" id="ecp_support_btn_link" value="${escapeAttr(support.buttonLink)}" placeholder="#contacts или https://...">
+      </div>
+    `;
     setImageUploadState('ecp_support_bg', support.background);
   }
 
@@ -283,8 +308,13 @@
       });
     }
 
+    const supportItemsRaw = document.getElementById('ecp_support_items')?.value || '';
     data.support = {
-      background: readImageVal('ecp_support_bg')
+      background: readImageVal('ecp_support_bg'),
+      title: document.getElementById('ecp_support_title')?.value || '',
+      items: supportItemsRaw.split('\n').map((s) => s.trim()).filter(Boolean),
+      buttonText: document.getElementById('ecp_support_btn_text')?.value || '',
+      buttonLink: document.getElementById('ecp_support_btn_link')?.value || '#contacts'
     };
 
     return data;

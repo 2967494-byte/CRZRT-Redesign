@@ -56,7 +56,16 @@
       { url: '', title: 'Инструкция по прикреплению/обновлению ЭП.', thumbnail: '' }
     ],
     support: {
-      background: ''
+      background: '',
+      title: 'Оперативная поддержка',
+      items: [
+        'Информационно-техническая поддержка',
+        'Персональный менеджер 24/7',
+        'Автоматическая рассылка приглашений к участию в закупке',
+        'Аналитические отчеты (как стандартные, так и по запросу)'
+      ],
+      buttonText: 'Узнать подробнее',
+      buttonLink: '#contacts'
     }
   };
 
@@ -112,12 +121,23 @@
             : [...ECP_DEFAULTS.manual.items]
       },
       videos: Array.isArray(raw?.videos) && raw.videos.length ? raw.videos : [...ECP_DEFAULTS.videos],
-      support: {
-        background: raw?.support?.background || ''
-      }
+      support: migrateSupportData(raw?.support)
     };
 
     return data;
+  }
+
+  function migrateSupportData(rawSupport) {
+    const raw = rawSupport && typeof rawSupport === 'object' ? rawSupport : {};
+    const items = Array.isArray(raw.items) && raw.items.length ? raw.items : [...ECP_DEFAULTS.support.items];
+
+    return {
+      background: raw.background || raw.image || '',
+      title: raw.title || ECP_DEFAULTS.support.title,
+      items,
+      buttonText: raw.buttonText || ECP_DEFAULTS.support.buttonText,
+      buttonLink: raw.buttonLink || ECP_DEFAULTS.support.buttonLink
+    };
   }
 
   function markEcpContentReady() {
@@ -328,12 +348,42 @@
     if (window.__reinitReveal) window.__reinitReveal('.ecp-video-card');
   }
 
+  function bindSupportButton(support) {
+    const btn = document.querySelector('.ecp-support-banner__btn');
+    if (!btn) return;
+    const link = (support?.buttonLink || '#contacts').trim();
+    btn.textContent = support?.buttonText || ECP_DEFAULTS.support.buttonText;
+
+    btn.type = 'button';
+    btn.onclick = function () {
+      if (link.startsWith('#')) {
+        const target = document.querySelector(link);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      if (/^https?:\/\//i.test(link)) {
+        window.open(link, '_blank', 'noopener,noreferrer');
+      } else if (link && link !== '#') {
+        window.location.href = link;
+      }
+    };
+  }
+
   function renderSupport(support) {
     const banner = document.querySelector('.ecp-support-banner');
-    const contentEl = document.querySelector('.ecp-support-banner__content');
+    const titleEl = document.querySelector('.ecp-support-banner__title');
+    const listEl = document.querySelector('.ecp-support-banner__list');
     const graphicEl = document.querySelector('.ecp-support-banner__graphic');
-    const background = (support?.background || '').trim();
+    const data = migrateSupportData(support);
+    const background = (data.background || '').trim();
     const hasCustomBanner = Boolean(background);
+
+    if (titleEl) titleEl.textContent = data.title;
+    if (listEl) {
+      listEl.innerHTML = data.items
+        .map((item) => `<li class="ecp-support-banner__item">${escapeHtml(item)}</li>`)
+        .join('');
+    }
 
     if (banner) {
       if (hasCustomBanner) {
@@ -345,8 +395,8 @@
       }
     }
 
-    if (contentEl) contentEl.classList.toggle('is-hidden', hasCustomBanner);
     if (graphicEl) graphicEl.classList.toggle('is-hidden', hasCustomBanner);
+    bindSupportButton(data);
   }
 
   function renderEcpPage(data) {
