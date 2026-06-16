@@ -188,6 +188,9 @@
       if (title === 'ЭТП' && /etpzakupki/i.test(link)) {
         return { ...card, link: 'ecp.html', external: false };
       }
+      if (title === 'Сопровождение') {
+        return { ...card, link: 'support.html', external: false };
+      }
       return card;
     });
 
