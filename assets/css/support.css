@@ -645,6 +645,49 @@ body[data-page="support"] .support-nav-cards .ecp-card__label {
   white-space: normal;
 }
 
+/* Единая ширина контента = внутренняя область шапки (.container с padding 24px) */
+body[data-page="support"] {
+  --support-page-gutter: 24px;
+  --support-page-content-width: calc(var(--landing-content-width) - 2 * var(--support-page-gutter));
+  --support-card-gap: 27px;
+  --support-card-width: calc((var(--support-page-content-width) - 2 * var(--support-card-gap)) / 3);
+}
+
+body[data-page="support"] .support-customers-section__inner,
+body[data-page="support"] .partners-section > .container,
+body[data-page="support"] .reviews-section > .container,
+body[data-page="support"] .social-section > .container,
+body[data-page="support"] .consultation-section > .container,
+body[data-page="support"] .footer .footer__inner,
+body[data-page="support"] .footer .footer__bottom-inner {
+  max-width: var(--landing-content-width);
+  padding-left: var(--support-page-gutter);
+  padding-right: var(--support-page-gutter);
+}
+
+body[data-page="support"] .footer .footer__inner {
+  padding-top: 80px;
+  padding-bottom: 48px;
+}
+
+body[data-page="support"] .footer .footer__bottom-inner {
+  padding-bottom: 40px;
+}
+
+body[data-page="support"] .partners-slider {
+  max-width: 100%;
+}
+
+body[data-page="support"] .social-banner,
+body[data-page="support"] .consultation-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+body[data-page="support"] .consultation-card {
+  grid-template-columns: repeat(2, calc((100% - 24px) / 2));
+}
+
 /* Блок «Для заказчиков» */
 body[data-page="support"] .support-customers-section {
   width: 100%;
@@ -656,9 +699,9 @@ body[data-page="support"] .support-customers-section {
 }
 
 body[data-page="support"] .support-customers-section__inner {
-  max-width: 1520px;
-  padding-left: 0;
-  padding-right: 0;
+  max-width: var(--landing-content-width);
+  padding-left: var(--support-page-gutter);
+  padding-right: var(--support-page-gutter);
 }
 
 body[data-page="support"] .support-customers-section__head {
@@ -749,15 +792,16 @@ body[data-page="support"] .support-customers-section__body {
 
 body[data-page="support"] .support-service-cards {
   display: grid;
-  grid-template-columns: repeat(3, 489px);
+  grid-template-columns: repeat(3, var(--support-card-width));
   justify-content: start;
-  gap: 27px;
+  gap: var(--support-card-gap);
+  width: 100%;
 }
 
 body[data-page="support"] .support-service-card {
   position: relative;
   box-sizing: border-box;
-  width: 489px;
+  width: var(--support-card-width);
   height: 400px;
   padding: 0;
   border-radius: 20px;
@@ -869,10 +913,11 @@ body[data-page="support"] .support-checklist__title {
 
 body[data-page="support"] .support-checklist-grid {
   display: grid;
-  grid-template-columns: repeat(3, 489px);
+  grid-template-columns: repeat(3, var(--support-card-width));
   justify-content: start;
-  column-gap: 27px;
+  column-gap: var(--support-card-gap);
   row-gap: 56px;
+  width: 100%;
 }
 
 body[data-page="support"] .support-checklist-item {
@@ -882,7 +927,7 @@ body[data-page="support"] .support-checklist-item {
 body[data-page="support"] .support-checklist-card {
   position: relative;
   box-sizing: border-box;
-  width: 489px;
+  width: var(--support-card-width);
   height: 185px;
   border-radius: 20px;
   background: radial-gradient(77.13% 155.15% at 86.32% 119.38%, #C6DBFF 0.98%, #516496 100%);
@@ -952,7 +997,7 @@ body[data-page="support"] .support-checklist-card__download {
   justify-content: flex-end;
   gap: 8px;
   width: 100%;
-  max-width: 489px;
+  max-width: var(--support-card-width);
   height: 20px;
   margin-top: 13px;
   font-family: 'Google Sans', sans-serif;
@@ -1012,7 +1057,7 @@ body[data-page="support"] .support-checklist-card__download-arrow {
 
   body[data-page="support"] .support-service-card {
     width: 100%;
-    max-width: 489px;
+    max-width: var(--support-card-width);
     margin: 0 auto;
   }
 
@@ -1038,12 +1083,12 @@ body[data-page="support"] .support-checklist-card__download-arrow {
 
   body[data-page="support"] .support-checklist-card {
     width: 100%;
-    max-width: 489px;
+    max-width: var(--support-card-width);
     margin: 0 auto;
   }
 
   body[data-page="support"] .support-checklist-item {
-    max-width: 489px;
+    max-width: var(--support-card-width);
     margin: 0 auto;
   }
 
@@ -2305,6 +2350,25 @@ body.theme-purple .reviews-grid {
 body.theme-purple .review-card {
   max-width: none;
   width: 100%;
+}
+
+body[data-page="support"] .reviews-grid {
+  width: 100%;
+  --support-review-gap: 49px;
+  grid-template-columns: repeat(3, calc((100% - 2 * var(--support-review-gap)) / 3));
+  gap: var(--support-review-gap);
+}
+
+@media (max-width: 1540px) {
+  body[data-page="support"] .support-customers-section__inner,
+  body[data-page="support"] .partners-section > .container,
+  body[data-page="support"] .reviews-section > .container,
+  body[data-page="support"] .social-section > .container,
+  body[data-page="support"] .consultation-section > .container,
+  body[data-page="support"] .footer .footer__inner,
+  body[data-page="support"] .footer .footer__bottom-inner {
+    max-width: none;
+  }
 }
 
 @media (max-width: 1540px) {
