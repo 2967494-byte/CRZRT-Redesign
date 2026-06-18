@@ -14,12 +14,127 @@
   const VIDEO_PLAY_SVG =
     '<svg class="ecp-video-card__play" width="134" height="134" viewBox="0 0 134 134" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="67" cy="67" r="63" stroke="white" stroke-width="6"/><path d="M90 67L54 87.5V46.5L90 67Z" fill="white"/></svg>';
 
+  const MORE_ARROW_SVG =
+    '<span class="support-service-card__more-arrow" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#FF5512" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+
+  const CHECKLIST_ICON_SRC = 'assets/img/support/checklist-icon-inner.png';
+
+  const DEFAULT_NAV_CARDS = [
+    {
+      label: 'Для\nзаказчиков',
+      href: '#for-customers',
+      icon: 'assets/img/support/icon-customers.png?v=2'
+    },
+    {
+      label: 'Для\nпоставщиков',
+      href: '#for-suppliers',
+      icon: 'assets/img/support/icon-suppliers.png?v=2'
+    },
+    {
+      label: 'Консультация\nспециалиста',
+      href: '#consultation',
+      icon: 'assets/img/support/icon-consultation.png?v=2'
+    }
+  ];
+
+  const DEFAULT_CUSTOMER_SERVICES = [
+    {
+      title: 'Разработка\nположения о закупках',
+      price: 'от 10 000 руб.',
+      btnText: 'Оставить заявку',
+      btnLink: '#contacts',
+      moreLink: '#'
+    },
+    {
+      title: 'Подготовка\nзакупочной документации',
+      price: 'от 10 000 руб.',
+      btnText: 'Оставить заявку',
+      btnLink: '#contacts',
+      moreLink: '#'
+    },
+    {
+      title: 'Комплексное\nсопровождение',
+      price: 'от 10 000 руб.',
+      btnText: 'Оставить заявку',
+      btnLink: '#contacts',
+      moreLink: '#'
+    }
+  ];
+
+  const DEFAULT_CUSTOMER_CHECKLIST = {
+    title: 'Чек-лист подготовки\nзакупочной документации',
+    items: [
+      { lines: ['Контрольный', 'список заказчика', 'при проведении закупки'], file: '' },
+      { lines: ['Чек-лист', 'соблюдения требований', 'законодательства'], file: '' },
+      { lines: ['Контроль', 'процедур закупочной', 'деятельности'], file: '' },
+      { lines: ['Чек-лист проверки', 'обоснования закупки'], file: '' },
+      { lines: ['Чек-лист формирования', 'технического задания'], file: '' }
+    ]
+  };
+
+  const DEFAULT_SUPPLIER_SERVICES = [
+    {
+      title: 'Подбор\nтендеров',
+      price: 'от 10 000 руб.',
+      btnText: 'Оставить заявку',
+      btnLink: '#contacts',
+      moreLink: '#'
+    },
+    {
+      title: 'Помощь участия\nв торгах',
+      price: 'от 10 000 руб.',
+      btnText: 'Оставить заявку',
+      btnLink: '#contacts',
+      moreLink: '#'
+    },
+    {
+      title: 'Защита интересов\nв ФАС и в судах',
+      price: 'от 10 000 руб.',
+      btnText: 'Оставить заявку',
+      btnLink: '#contacts',
+      moreLink: '#'
+    }
+  ];
+
+  const DEFAULT_SUPPLIER_CHECKLIST = {
+    title: 'Чек-лист: как подать заявку\nбез ошибок',
+    items: [
+      { lines: ['Готова ли ваша заявка?', 'Быстрый чек-лист'], file: '' },
+      { lines: ['Чек-лист участника:', 'от поиска до победы'], file: '' },
+      { lines: ['Проверка заявки', 'за 10 минут'], file: '' },
+      { lines: ['Чек-лист перед подачей', 'на тендер'], file: '' },
+      { lines: ['Чек-лист участия в закупке', '«под ключ»'], file: '' }
+    ]
+  };
+
   const SUPPORT_DEFAULTS = {
     hero: {
       background: '',
       title: 'Надежное тендерное\nсопровождение',
       subtitle:
         'Комплексная помощь экспертов на всех этапах закупок: от подготовки документации до заключения контракта и исполнения обязательств.'
+    },
+    navCards: DEFAULT_NAV_CARDS.map((card) => ({ ...card })),
+    customers: {
+      title: 'Для заказчиков',
+      services: DEFAULT_CUSTOMER_SERVICES.map((item) => ({ ...item })),
+      checklist: {
+        title: DEFAULT_CUSTOMER_CHECKLIST.title,
+        items: DEFAULT_CUSTOMER_CHECKLIST.items.map((item) => ({ lines: [...item.lines], file: item.file }))
+      }
+    },
+    calculator: {
+      title:
+        'Расчет начальной (максимальной) цены контракта методом сопоставимых рыночных цен (анализа рынка)',
+      image: ''
+    },
+    suppliers: {
+      title: 'Для поставщиков',
+      services: DEFAULT_SUPPLIER_SERVICES.map((item) => ({ ...item })),
+      checklist: {
+        title: DEFAULT_SUPPLIER_CHECKLIST.title,
+        items: DEFAULT_SUPPLIER_CHECKLIST.items.map((item) => ({ lines: [...item.lines], file: item.file }))
+      }
     },
     tariffs: [
       { text: 'Тарифы торговых\nпроцедур', file: '' },
@@ -95,6 +210,43 @@
       .join('<br>');
   }
 
+  function migrateAudienceSection(rawSection, defaults) {
+    const raw = rawSection && typeof rawSection === 'object' ? rawSection : {};
+    const services =
+      Array.isArray(raw.services) && raw.services.length
+        ? raw.services.map((item) => ({
+            title: item?.title || '',
+            price: item?.price || '',
+            btnText: item?.btnText || 'Оставить заявку',
+            btnLink: item?.btnLink || '#contacts',
+            moreLink: item?.moreLink || '#'
+          }))
+        : defaults.services.map((item) => ({ ...item }));
+
+    const rawChecklist = raw.checklist && typeof raw.checklist === 'object' ? raw.checklist : {};
+    const checklistItems =
+      Array.isArray(rawChecklist.items) && rawChecklist.items.length
+        ? rawChecklist.items.map((item) => ({
+            lines: Array.isArray(item?.lines)
+              ? item.lines.map((line) => String(line || '').trim()).filter(Boolean)
+              : String(item?.text || '')
+                  .split('\n')
+                  .map((line) => line.trim())
+                  .filter(Boolean),
+            file: item?.file || ''
+          }))
+        : defaults.checklist.items.map((item) => ({ lines: [...item.lines], file: item.file || '' }));
+
+    return {
+      title: raw.title || defaults.title,
+      services,
+      checklist: {
+        title: rawChecklist.title || defaults.checklist.title,
+        items: checklistItems
+      }
+    };
+  }
+
   function migrateSupportPageData(raw) {
     const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
     const hero = {
@@ -103,8 +255,30 @@
       subtitle: rawHero.subtitle || SUPPORT_DEFAULTS.hero.subtitle
     };
 
+    const navCards =
+      Array.isArray(raw?.navCards) && raw.navCards.length
+        ? raw.navCards.map((card, i) => ({
+            label: card?.label || DEFAULT_NAV_CARDS[i]?.label || '',
+            href: card?.href || DEFAULT_NAV_CARDS[i]?.href || '#',
+            icon: card?.icon || DEFAULT_NAV_CARDS[i]?.icon || ''
+          }))
+        : DEFAULT_NAV_CARDS.map((card) => ({ ...card }));
+
+    const customers = migrateAudienceSection(raw?.customers, SUPPORT_DEFAULTS.customers);
+    const suppliers = migrateAudienceSection(raw?.suppliers, SUPPORT_DEFAULTS.suppliers);
+
+    const rawCalc = raw?.calculator && typeof raw.calculator === 'object' ? raw.calculator : {};
+    const calculator = {
+      title: rawCalc.title || SUPPORT_DEFAULTS.calculator.title,
+      image: rawCalc.image || ''
+    };
+
     const data = {
       hero,
+      navCards,
+      customers,
+      calculator,
+      suppliers,
       tariffs: Array.isArray(raw?.tariffs) && raw.tariffs.length ? raw.tariffs : [...SUPPORT_DEFAULTS.tariffs],
       blanks: {
         patternImage: raw?.blanks?.patternImage || SUPPORT_DEFAULTS.blanks.patternImage,
@@ -262,6 +436,110 @@
     document.dispatchEvent(new CustomEvent('heroSlidesUpdated', { detail: { count: 1 } }));
   }
 
+  function renderNavCards(navCards) {
+    const grid = document.querySelector('.support-nav-cards');
+    if (!grid) return;
+    const list = navCards?.length ? navCards : SUPPORT_DEFAULTS.navCards;
+    grid.innerHTML = list
+      .map((card) => {
+        const href = escapeHtml((card.href || '#').trim() || '#');
+        const icon = escapeAttr((card.icon || '').trim() || 'assets/img/support/icon-customers.png');
+        return `<a href="${href}" class="ecp-card">
+          <div class="ecp-card__icon-wrap">
+            <img src="${icon}" alt="" class="ecp-card__icon" width="122" height="154" decoding="async">
+          </div>
+          <div class="ecp-card__label">${multilineHtml(card.label)}</div>
+        </a>`;
+      })
+      .join('');
+  }
+
+  function renderServiceCards(container, services) {
+    if (!container) return;
+    const list = services?.length ? services : [];
+    container.innerHTML = list
+      .map((item) => {
+        const btnHref = escapeHtml((item.btnLink || '#contacts').trim() || '#contacts');
+        const moreHref = escapeHtml((item.moreLink || '#').trim() || '#');
+        const price = escapeHtml(item.price || '');
+        return `<article class="support-service-card">
+          <h3 class="support-service-card__title">${multilineHtml(item.title)}</h3>
+          <p class="support-service-card__price">${price.replace(/ /g, '&nbsp;')}</p>
+          <a href="${btnHref}" class="support-service-card__btn">${escapeHtml(item.btnText || 'Оставить заявку')}</a>
+          <a href="${moreHref}" class="support-service-card__more">
+            подробнее
+            ${MORE_ARROW_SVG}
+          </a>
+        </article>`;
+      })
+      .join('');
+  }
+
+  function renderChecklistBlock(checklistEl, checklist) {
+    if (!checklistEl) return;
+    const data = checklist || { title: '', items: [] };
+    const titleEl = checklistEl.querySelector('.support-checklist__title');
+    const gridEl = checklistEl.querySelector('.support-checklist-grid');
+    if (titleEl) titleEl.innerHTML = multilineHtml(data.title);
+    if (!gridEl) return;
+
+    const items = data.items?.length ? data.items : [];
+    gridEl.innerHTML = items
+      .map((item) => {
+        const lines = Array.isArray(item.lines) ? item.lines : [];
+        const textClass =
+          lines.length <= 2
+            ? 'support-checklist-card__text support-checklist-card__text--bottom'
+            : 'support-checklist-card__text';
+        const linesHtml = lines
+          .map((line) => `<span class="support-checklist-card__text-line">${escapeHtml(line)}</span>`)
+          .join('');
+        const link = fileLinkAttrs(item.file);
+        return `<div class="support-checklist-item">
+          <div class="support-checklist-card">
+            <div class="support-checklist-card__icon" aria-hidden="true">
+              <span class="support-checklist-card__icon-bg"></span>
+              <img src="${CHECKLIST_ICON_SRC}" alt="" class="support-checklist-card__icon-inner" width="75" height="76" decoding="async">
+            </div>
+            <p class="${textClass}">${linesHtml}</p>
+          </div>
+          <a href="${link.href}" class="support-checklist-card__download"${link.target}${link.download}>
+            скачать
+            ${MORE_ARROW_SVG.replace('support-service-card__more-arrow', 'support-checklist-card__download-arrow')}
+          </a>
+        </div>`;
+      })
+      .join('');
+  }
+
+  function renderAudienceSection(sectionId, titleSelector, section) {
+    const root = document.getElementById(sectionId);
+    if (!root) return;
+    const titleEl = root.querySelector(titleSelector);
+    if (titleEl) titleEl.textContent = section?.title || '';
+    renderServiceCards(root.querySelector('.support-service-cards'), section?.services);
+    renderChecklistBlock(root.querySelector('.support-checklist'), section?.checklist);
+  }
+
+  function renderCalculator(calculator) {
+    const data = calculator || SUPPORT_DEFAULTS.calculator;
+    const titleEl = document.querySelector('.support-calculator__title');
+    const infoEl = document.querySelector('.support-calculator__info');
+    if (titleEl) titleEl.textContent = data.title || SUPPORT_DEFAULTS.calculator.title;
+    if (!infoEl) return;
+    const image = (data.image || '').trim();
+    const gradient = 'linear-gradient(135deg, #FF5512 0%, #FF8A4C 55%, #FFC9A8 100%)';
+    if (image) {
+      infoEl.style.backgroundImage = `url('${image.replace(/'/g, "\\'")}'), ${gradient}`;
+      infoEl.style.backgroundSize = 'cover, auto';
+      infoEl.style.backgroundPosition = 'center, center';
+    } else {
+      infoEl.style.backgroundImage = gradient;
+      infoEl.style.backgroundSize = '';
+      infoEl.style.backgroundPosition = '';
+    }
+  }
+
   function renderTariffs(tariffs) {
     const grid = document.querySelector('.ecp-tariffs__grid');
     if (!grid) return;
@@ -406,6 +684,10 @@
 
   function renderSupportPage(data) {
     renderHero(data.hero);
+    renderNavCards(data.navCards);
+    renderAudienceSection('for-customers', '.support-customers-section__title', data.customers);
+    renderCalculator(data.calculator);
+    renderAudienceSection('for-suppliers', '.support-suppliers-section__title', data.suppliers);
     renderTariffs(data.tariffs);
     renderBlanks(data.blanks);
     renderManual(data.manual);
