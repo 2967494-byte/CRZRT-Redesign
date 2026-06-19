@@ -287,10 +287,21 @@
           <div class="support-calculator__form">
             <div class="support-calculator__prices" id="support-calc-prices">
               <div class="support-calculator__price-field" data-price-index="1">
-                <label class="support-calculator__label" for="support-calc-price-1">Цена 1</label>
+                <div class="support-calculator__price-head">
+                  <label class="support-calculator__label" for="support-calc-price-1">Цена 1</label>
+                  <button type="button" class="support-calculator__price-remove" aria-label="Очистить поле" title="Очистить поле">×</button>
+                </div>
                 <div class="support-calculator__price-row">
                   <input type="text" class="support-calculator__input" id="support-calc-price-1" placeholder="Введите сумму" inputmode="decimal" autocomplete="off">
-                  <button type="button" class="support-calculator__price-remove" aria-label="Удалить цену" hidden>×</button>
+                </div>
+              </div>
+              <div class="support-calculator__price-field" data-price-index="2">
+                <div class="support-calculator__price-head">
+                  <label class="support-calculator__label" for="support-calc-price-2">Цена 2</label>
+                  <button type="button" class="support-calculator__price-remove" aria-label="Очистить поле" title="Очистить поле">×</button>
+                </div>
+                <div class="support-calculator__price-row">
+                  <input type="text" class="support-calculator__input" id="support-calc-price-2" placeholder="Введите сумму" inputmode="decimal" autocomplete="off">
                 </div>
               </div>
             </div>
@@ -609,7 +620,7 @@
 
 <script src="assets/js/landing-content.js?v=8" defer></script>
 <script src="assets/js/support-content.js?v=3" defer></script>
-<script src="assets/js/support-calculator.js?v=4" defer></script>
+<script src="assets/js/support-calculator.js?v=7" defer></script>
 <script src="assets/js/landing.js?v=6" defer></script>
 </body>
 </html>

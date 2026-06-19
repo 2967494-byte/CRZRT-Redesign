@@ -26,6 +26,44 @@
     maximumFractionDigits: 2,
   });
 
+  const PRICE_INPUT_ALLOWED = /[^\d\s.,]/g;
+
+  function sanitizePriceInputValue(value) {
+    return String(value ?? '').replace(PRICE_INPUT_ALLOWED, '');
+  }
+
+  function bindPriceInput(input) {
+    if (!input || input.dataset.priceBound === '1') return;
+    input.dataset.priceBound = '1';
+
+    input.addEventListener('input', () => {
+      const sanitized = sanitizePriceInputValue(input.value);
+      if (sanitized !== input.value) {
+        const pos = input.selectionStart;
+        input.value = sanitized;
+        if (typeof pos === 'number') {
+          input.setSelectionRange(pos, pos);
+        }
+      }
+    });
+
+    input.addEventListener('paste', (event) => {
+      event.preventDefault();
+      const pasted = sanitizePriceInputValue(event.clipboardData?.getData('text') || '');
+      if (!pasted) return;
+      const start = input.selectionStart ?? input.value.length;
+      const end = input.selectionEnd ?? input.value.length;
+      input.value = input.value.slice(0, start) + pasted + input.value.slice(end);
+      const caret = start + pasted.length;
+      input.setSelectionRange(caret, caret);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  }
+
+  function bindAllPriceInputs(root = pricesContainer) {
+    root.querySelectorAll('.support-calculator__input').forEach(bindPriceInput);
+  }
+
   function getPriceFields() {
     return pricesContainer.querySelectorAll('.support-calculator__price-field');
   }
@@ -160,7 +198,7 @@
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'support-calculator__price-remove';
-    btn.setAttribute('aria-label', 'Удалить цену');
+    btn.setAttribute('aria-label', 'Очистить поле');
     btn.textContent = '×';
     return btn;
   }
@@ -175,6 +213,10 @@
     label.htmlFor = `support-calc-price-${index}`;
     label.textContent = `Цена ${index}`;
 
+    const head = document.createElement('div');
+    head.className = 'support-calculator__price-head';
+    head.append(label, createRemoveButton());
+
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'support-calculator__input';
@@ -182,12 +224,13 @@
     input.placeholder = 'Введите сумму';
     input.inputMode = 'decimal';
     input.autocomplete = 'off';
+    bindPriceInput(input);
 
     const row = document.createElement('div');
     row.className = 'support-calculator__price-row';
-    row.append(input, createRemoveButton());
+    row.append(input);
 
-    field.append(label, row);
+    field.append(head, row);
     return field;
   }
 
@@ -208,10 +251,15 @@
   }
 
   function updateRemoveButtons() {
-    const show = getPriceFields().length > 1;
+    const canRemoveField = getPriceFields().length > MIN_PRICES;
+    const label = canRemoveField ? 'Удалить цену' : 'Очистить поле';
+
     getPriceFields().forEach((field) => {
       const btn = field.querySelector('.support-calculator__price-remove');
-      if (btn) btn.hidden = !show;
+      if (!btn) return;
+      btn.hidden = false;
+      btn.setAttribute('aria-label', label);
+      btn.title = label;
     });
   }
 
@@ -240,15 +288,24 @@
 
   pricesContainer.addEventListener('click', (event) => {
     const btn = event.target.closest('.support-calculator__price-remove');
-    if (!btn || btn.hidden) return;
+    if (!btn) return;
 
     const field = btn.closest('.support-calculator__price-field');
-    if (!field || getPriceFields().length <= 1) return;
+    if (!field) return;
 
-    field.remove();
-    renumberFields();
-    updateAddButton();
-    updateRemoveButtons();
+    if (getPriceFields().length > MIN_PRICES) {
+      field.remove();
+      renumberFields();
+      updateAddButton();
+      updateRemoveButtons();
+      return;
+    }
+
+    const input = field.querySelector('.support-calculator__input');
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
   });
 
   addBtn.addEventListener('click', () => {
@@ -277,14 +334,24 @@
     renderResultNote(result);
   });
 
+  function ensureInitialPriceFields() {
+    while (getPriceFields().length < MIN_PRICES) {
+      pricesContainer.appendChild(createPriceField(getPriceFields().length + 1));
+    }
+  }
+
   resetBtn?.addEventListener('click', () => {
     pricesContainer.innerHTML = '';
     pricesContainer.appendChild(createPriceField(1));
+    pricesContainer.appendChild(createPriceField(2));
+    bindAllPriceInputs();
     updateAddButton();
     updateRemoveButtons();
     resetResults();
   });
 
+  ensureInitialPriceFields();
+  bindAllPriceInputs();
   updateAddButton();
   updateRemoveButtons();
 })();
