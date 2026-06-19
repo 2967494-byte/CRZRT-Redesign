@@ -13,9 +13,9 @@
   <link rel="preload" href="https://fonts.gstatic.com/s/googlesans/v69/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrw2IJllpyk.woff2" as="font" type="font/woff2" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
   <link rel="preload" href="assets/css/landing.css?v=9" as="style">
-  <link rel="preload" href="assets/css/obuchenie.css?v=1" as="style">
+  <link rel="preload" href="assets/css/obuchenie.css?v=7" as="style">
   <link rel="stylesheet" href="assets/css/landing.css?v=9">
-  <link rel="stylesheet" href="assets/css/obuchenie.css?v=1">
+  <link rel="stylesheet" href="assets/css/obuchenie.css?v=7">
   <script>document.documentElement.classList.add('landing-content-pending', 'obuchenie-content-pending');</script>
 </head>
 <body class="theme-purple" data-page="obuchenie">
@@ -72,14 +72,14 @@
     <!-- HERO BANNER -->
     <section class="section consulting-hero-section consulting-page-section">
       <div class="container">
-        <div class="consulting-hero consulting-dynamic">
+        <div class="consulting-hero consulting-dynamic obuchenie-dynamic">
           <div class="consulting-hero__inner">
-            <div class="consulting-hero__content consulting-dynamic">
+            <div class="consulting-hero__content consulting-dynamic obuchenie-dynamic">
               <h1 class="consulting-hero__title consulting-hero-title">Обучение<br>госзакупкам</h1>
               <p class="consulting-hero__subtitle consulting-hero-subtitle">Как зарабатывать на госзакупках и тендерах: практические курсы и программы для заказчиков и поставщиков.</p>
             </div>
 
-            <div class="consulting-banner__graphic consulting-dynamic" aria-hidden="true">
+            <div class="consulting-banner__graphic consulting-dynamic obuchenie-dynamic" aria-hidden="true">
               <img src="assets/img/consulting/banner-gavel.png" alt="" class="consulting-banner__image consulting-hero-gavel" width="420" height="420" decoding="async">
             </div>
           </div>
@@ -87,73 +87,46 @@
       </div>
     </section>
 
-    <!-- COMPETENCIES -->
-    <section class="section consulting-competencies-section consulting-page-section" id="competencies">
+    <!-- НАВИГАЦИОННЫЕ КАРТОЧКИ -->
+    <section class="section obuchenie-nav-cards-section">
       <div class="container">
-        <h2 class="consulting-competencies__title consulting-dynamic">Компетенции</h2>
-        <div class="consulting-competencies-grid consulting-dynamic">
-          <a href="#competencies" class="consulting-competency-card">
-            <div class="consulting-competency-card__icon-circle">
-              <img src="assets/img/consulting/icon-business.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
+        <div class="ecp-cards-grid obuchenie-nav-cards obuchenie-dynamic">
+          <a href="#courses" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/obuchenie/icon-programs.png?v=1" alt="" class="ecp-card__icon" width="118" height="149" decoding="async">
             </div>
-            <span class="consulting-competency-card__title">Решения<br>для бизнеса</span>
+            <div class="ecp-card__label">Популярные<br>программы обучения</div>
           </a>
-          <a href="#competencies" class="consulting-competency-card">
-            <div class="consulting-competency-card__icon-circle">
-              <img src="assets/img/consulting/icon-disputes.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
+          <a href="#suppliers" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/obuchenie/icon-distance.png?v=1" alt="" class="ecp-card__icon" width="118" height="149" decoding="async">
             </div>
-            <span class="consulting-competency-card__title">Сложные<br>судебные споры</span>
+            <div class="ecp-card__label">Для<br>поставщиков</div>
           </a>
-          <a href="#competencies" class="consulting-competency-card">
-            <div class="consulting-competency-card__icon-circle">
-              <img src="assets/img/consulting/icon-deals.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
+          <a href="#customers" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/obuchenie/icon-corporate.png?v=1" alt="" class="ecp-card__icon" width="118" height="149" decoding="async">
             </div>
-            <span class="consulting-competency-card__title">Сопровождение<br>сделок</span>
+            <div class="ecp-card__label">Для<br>заказчиков</div>
           </a>
-          <a href="#competencies" class="consulting-competency-card">
-            <div class="consulting-competency-card__icon-circle">
-              <img src="assets/img/consulting/icon-public.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
+          <a href="#schedule" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/obuchenie/icon-schedule.png?v=1" alt="" class="ecp-card__icon" width="118" height="149" decoding="async">
             </div>
-            <span class="consulting-competency-card__title">Поддержка<br>госзаказчиков</span>
+            <div class="ecp-card__label">Календарь<br>курсов</div>
           </a>
-          <a href="#competencies" class="consulting-competency-card">
-            <div class="consulting-competency-card__icon-circle">
-              <img src="assets/img/consulting/icon-competitor.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
+          <a href="#testing" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/obuchenie/icon-certificates.png?v=1" alt="" class="ecp-card__icon" width="118" height="149" decoding="async">
             </div>
-            <span class="consulting-competency-card__title">Конкурентный<br>консалтинг</span>
+            <div class="ecp-card__label">Тестирование</div>
           </a>
-          <a href="#competencies" class="consulting-competency-card">
-            <div class="consulting-competency-card__icon-circle">
-              <img src="assets/img/consulting/icon-corporate.png" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
+          <a href="#help" class="ecp-card">
+            <div class="ecp-card__icon-wrap">
+              <img src="assets/img/obuchenie/icon-faq.png?v=1" alt="" class="ecp-card__icon" width="118" height="149" decoding="async">
             </div>
-            <span class="consulting-competency-card__title">Корпоративное<br>право</span>
+            <div class="ecp-card__label">Помощь<br>с выбором</div>
           </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ПОЧЕМУ МЫ -->
-    <section class="consulting-why-section" id="why-us">
-      <div class="container">
-        <h2 class="consulting-why__title consulting-dynamic">Почему мы?</h2>
-        <div class="consulting-why-mosaic consulting-dynamic">
-          <div class="consulting-why-card consulting-why-card--lead">
-            <p class="consulting-why-card__lead-text">Исключаем, сопровождаем, решаем, помогаем, проводим, начинаем, заканчиваем</p>
-          </div>
-
-          <div class="consulting-why-card consulting-why-card--photo">
-            <img src="assets/img/consulting/why-meeting.png" alt="" class="consulting-why-card__photo" width="494" height="329" decoding="async">
-            <p class="consulting-why-card__photo-caption">Проводим индивидуальные консультации</p>
-          </div>
-
-          <div class="consulting-why-card consulting-why-card--support">
-            <p class="consulting-why-card__support-text">Помогаем<br>на протяжении<br>всего пути</p>
-          </div>
-
-          <div class="consulting-why-card consulting-why-card--side">
-            <p class="consulting-why-card__side-text">Решения для бизнеса, сопровождение сделок, поддержка на каждом этапе</p>
-            <img src="assets/img/consulting/icon-disputes.png" alt="" class="consulting-why-card__scales" width="280" height="280" decoding="async">
-          </div>
         </div>
       </div>
     </section>
@@ -182,14 +155,6 @@
 </section>
 
 <div class="third-screen">
-  <!-- REVIEWS -->
-  <section class="section reviews-section landing-dynamic" id="reviews">
-    <div class="container">
-      <h2 class="section-title">Отзывы клиентов</h2>
-      <div class="reviews-grid"></div>
-    </div>
-  </section>
-
   <!-- SOCIAL NETWORKS BANNER -->
   <section class="section social-section landing-dynamic">
     <div class="container">
