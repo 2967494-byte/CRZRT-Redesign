@@ -583,14 +583,105 @@ body.theme-purple .consulting-competencies-section.section {
 /* Partners on obuchenie */
 body[data-page="obuchenie"] .partners-section {
   padding-top: 99px;
+  padding-bottom: 0;
 }
 
-body[data-page="obuchenie"] .third-screen .social-section {
-  padding-top: 80px;
+body[data-page="obuchenie"] .partners-section > .container {
+  max-width: var(--landing-content-width);
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Нижняя зелёная зона — отступы по Figma (1920px макет) */
+body[data-page="obuchenie"] .third-screen {
+  padding: 0;
+  background: transparent;
+}
+
+body[data-page="obuchenie"] .social-section {
+  margin-top: 0;
+  padding-top: 129px;
+  padding-bottom: 100px;
+  background: #0FAA4B1A;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+body[data-page="obuchenie"] .consultation-section {
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 96px;
+  background: #0FAA4B1A;
+}
+
+body[data-page="obuchenie"] .social-section > .container,
+body[data-page="obuchenie"] .consultation-section > .container {
+  max-width: 1519px;
+  width: 100%;
+  margin-inline: auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+body[data-page="obuchenie"] .social-banner,
+body[data-page="obuchenie"] .consultation-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+body[data-page="obuchenie"] .social-banner {
+  height: 132px;
+  min-height: 132px;
+}
+
+body[data-page="obuchenie"] .consultation-card {
+  grid-template-columns: repeat(2, calc((100% - 24px) / 2));
+  min-height: 570px;
+}
+
+body[data-page="obuchenie"] .consultation-card__left {
+  height: 570px;
+}
+
+html:has(body[data-page="obuchenie"]) {
+  background-color: #1E334C;
+}
+
+body[data-page="obuchenie"] {
+  --obuchenie-card-max-w: 230px;
+  --obuchenie-card-ratio: 238 / 266;
+  --obuchenie-card-gap: 18px;
+  --obuchenie-cards-offset: 52px;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh / var(--crzrt-zoom, 1));
+  background-color: #FFFFFF;
+}
+
+body[data-page="obuchenie"] .footer {
+  margin-top: auto;
+  border-radius: 20px 20px 0 0;
 }
 
 body[data-page="obuchenie"] .consultation-card__title {
   color: #354557;
+}
+
+@media (max-width: 992px) {
+  body[data-page="obuchenie"] .social-section {
+    padding-top: 72px;
+    padding-bottom: 48px;
+  }
+
+  body[data-page="obuchenie"] .consultation-section {
+    padding-bottom: 64px;
+  }
+
+  body[data-page="obuchenie"] .social-section > .container,
+  body[data-page="obuchenie"] .consultation-section > .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
 }
 
 /* Green hero + phone button */
@@ -616,13 +707,6 @@ body[data-page="obuchenie"] .consulting-banner__graphic {
   display: none;
 }
 
-body[data-page="obuchenie"] {
-  --obuchenie-card-max-w: 230px;
-  --obuchenie-card-ratio: 238 / 266;
-  --obuchenie-card-gap: 18px;
-  --obuchenie-cards-offset: 52px;
-}
-
 body[data-page="obuchenie"] .consulting-hero-section.section {
   padding-bottom: 0;
 }
@@ -630,7 +714,7 @@ body[data-page="obuchenie"] .consulting-hero-section.section {
 /* 6 навигационных карточек под баннером — один ряд, ширина = баннеру */
 body[data-page="obuchenie"] .obuchenie-nav-cards-section {
   padding-top: var(--obuchenie-cards-offset);
-  padding-bottom: 72px;
+  padding-bottom: 84px;
 }
 
 body[data-page="obuchenie"] .consulting-hero-section > .container,
@@ -704,20 +788,547 @@ body[data-page="obuchenie"] .obuchenie-nav-cards .ecp-card__label {
   white-space: normal;
 }
 
-body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consulting-hero__title {
+/* Поиск курсов */
+body[data-page="obuchenie"] .obuchenie-course-search-section {
+  padding-top: 0;
+  padding-bottom: 72px;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-section > .container {
+  max-width: var(--landing-content-width);
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search__title {
+  margin-bottom: 39px;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-panel {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 246px;
+  border-radius: 20px;
+  background: radial-gradient(77.13% 155.15% at 86.32% 119.38%, #C6DBFF 0.98%, #516496 100%);
+  padding: 41px 48px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-panel__filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 310px)) minmax(0, 1fr);
+  gap: 61px;
+  width: 100%;
+}
+
+/* ======= Custom Dropdown (csr-dropdown) ======= */
+body[data-page="obuchenie"] .csr-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+body[data-page="obuchenie"] .csr-dropdown__trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  height: 77px;
+  padding: 0 20px 0 24px;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  background: #FFFFFF;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: -0.03em;
+  color: #ADB8C6;
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.18s ease;
+}
+
+body[data-page="obuchenie"] .csr-dropdown__trigger:hover {
+  border-color: rgba(141, 90, 141, 0.35);
+  box-shadow: 0 4px 16px rgba(141, 90, 141, 0.12);
+}
+
+body[data-page="obuchenie"] .csr-dropdown.is-open .csr-dropdown__trigger {
+  border-color: rgba(141, 90, 141, 0.55);
+  box-shadow: 0 4px 20px rgba(141, 90, 141, 0.18);
+  background: #FDFCFF;
+  border-radius: 20px 20px 0 0;
+}
+
+body[data-page="obuchenie"] .csr-dropdown.has-value .csr-dropdown__trigger {
+  color: #354557;
+}
+
+body[data-page="obuchenie"] .csr-dropdown__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body[data-page="obuchenie"] .csr-dropdown__chevron {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: #8D5A8D;
+  transition: transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+body[data-page="obuchenie"] .csr-dropdown.is-open .csr-dropdown__chevron {
+  transform: rotate(180deg);
+}
+
+/* Panel */
+body[data-page="obuchenie"] .csr-dropdown__panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: #FFFFFF;
+  border: 2px solid rgba(141, 90, 141, 0.55);
+  border-top: none;
+  border-radius: 0 0 20px 20px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(141, 90, 141, 0.18), 0 4px 12px rgba(0,0,0,0.06);
+  /* closed state */
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+body[data-page="obuchenie"] .csr-dropdown.is-open .csr-dropdown__panel {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Options */
+body[data-page="obuchenie"] .csr-dropdown__option {
+  display: block;
+  width: 100%;
+  padding: 14px 24px;
+  border: none;
+  background: transparent;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 130%;
+  letter-spacing: -0.02em;
+  color: #354557;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, padding-left 0.15s ease;
+}
+
+body[data-page="obuchenie"] .csr-dropdown__option:not(:last-child) {
+  border-bottom: 1px solid rgba(141, 90, 141, 0.08);
+}
+
+body[data-page="obuchenie"] .csr-dropdown__option:hover {
+  background: rgba(141, 90, 141, 0.07);
+  color: #8D5A8D;
+  padding-left: 30px;
+}
+
+body[data-page="obuchenie"] .csr-dropdown__option.is-selected {
+  background: rgba(141, 90, 141, 0.1);
+  color: #7A4E7A;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-panel__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-panel__cta {
+  margin: 0;
+  max-width: 429px;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #FFFFFF;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-panel__phone {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 273px;
+  height: 61px;
+  border-radius: 20px;
+  background: #00AE4D;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 25px;
+  line-height: 100%;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-panel__phone:hover {
+  background: #009341;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-tags {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-tags__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-tags__row--last {
+  align-items: center;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-tag {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  background: #EEEEFB;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 100%;
+  color: #575B6D;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-tag:hover {
+  background: #E4E4F5;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-tag--more {
+  margin-left: auto;
+  min-width: 160px;
+  min-height: 44px;
+  border-radius: 12px;
+  background: #00AE4D;
+  color: #FFFFFF;
+}
+
+body[data-page="obuchenie"] .obuchenie-course-search-tag--more:hover {
+  background: #009341;
+  color: #FFFFFF;
+}
+
+@media (max-width: 1320px) {
+  body[data-page="obuchenie"] .obuchenie-course-search-panel__filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  body[data-page="obuchenie"] .obuchenie-course-search-panel {
+    padding: 28px 24px;
+    gap: 28px;
+    min-height: 0;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-course-search-panel__filters {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-course-search-panel__field {
+    height: 64px;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-course-search-panel__footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-course-search-panel__cta {
+    font-size: 24px;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-course-search-panel__phone {
+    width: 100%;
+    max-width: 273px;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-course-search-tag--more {
+    margin-left: 0;
+  }
+}
+
+/* Календарь курсов */
+body[data-page="obuchenie"] .obuchenie-calendar-section {
+  background: #EEEEFB;
+  padding-top: 102px;
+  padding-bottom: 80px;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-section > .container {
+  max-width: var(--landing-content-width);
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-section__title {
+  margin-bottom: 66px;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-top {
+  display: grid;
+  grid-template-columns: minmax(0, 904fr) minmax(0, 596fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-block {
+  box-sizing: border-box;
+  min-height: 758px;
+  border-radius: 20px;
+  background: #CFEEDB;
+  padding: 48px 48px 40px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-block__nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+  margin-bottom: 37px;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-block__month {
+  margin: 0;
+  flex: 0 1 auto;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 50px;
+  line-height: 100%;
+  letter-spacing: 0;
   color: #00AE4D;
 }
 
-body[data-page="obuchenie"] .third-screen {
-  background: #0FAA4B1A;
+body[data-page="obuchenie"] .obuchenie-calendar-block__arrow {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: #00AE4D;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
 }
 
-body[data-page="obuchenie"] .consultation-section .btn--green {
+body[data-page="obuchenie"] .obuchenie-calendar-block__arrow:hover {
+  opacity: 0.7;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-block__arrow:focus-visible {
+  outline: 2px solid #00AE4D;
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-block__arrow-svg {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-block__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-block__weekdays span {
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 100%;
+  text-align: center;
+  color: #575B6D;
+  text-transform: lowercase;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-block__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 16px 12px;
+  flex: 1;
+  align-content: start;
+  padding: 0;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-day {
+  box-sizing: border-box;
+  width: 94px;
+  height: 93px;
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #FFFFFF;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  color: #575B6D;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-day--empty {
+  background: transparent;
+  pointer-events: none;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-day--active {
   background: #00AE4D;
+  color: #FFFFFF;
+  box-shadow: 0 8px 18px rgba(0, 174, 77, 0.28);
 }
 
-body[data-page="obuchenie"] .consultation-section .btn--green:hover {
-  background: #009341;
+body[data-page="obuchenie"] .obuchenie-calendar-block__all {
+  margin-top: auto;
+  align-self: flex-end;
+  font-size: 18px;
+  color: #575B6D;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-promo {
+  box-sizing: border-box;
+  min-height: 758px;
+  border-radius: 20px;
+  background: radial-gradient(100.17% 108.13% at 68.96% 78.27%, #FFFFFF 0%, #C6DBFF 37.57%, #516496 100%);
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-promo__title {
+  position: absolute;
+  top: 48px;
+  left: 48px;
+  margin: 0;
+  max-width: calc(100% - 96px);
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 110%;
+  letter-spacing: 0;
+  color: #FFFFFF;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-promo__image {
+  width: min(72%, 320px);
+  height: auto;
+  max-height: 58%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+}
+
+body[data-page="obuchenie"] .obuchenie-calendar-promo__ad {
+  position: absolute;
+  left: 48px;
+  bottom: 40px;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 100%;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+@media (max-width: 1100px) {
+  body[data-page="obuchenie"] .obuchenie-calendar-top {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-calendar-block,
+  body[data-page="obuchenie"] .obuchenie-calendar-promo {
+    min-height: 0;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-calendar-block {
+    padding: 32px 24px 28px;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-calendar-block__month {
+    font-size: 36px;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-calendar-day {
+    width: min(94px, 100%);
+    height: auto;
+    aspect-ratio: 94 / 93;
+    font-size: 22px;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-calendar-promo {
+    min-height: 420px;
+    padding: 32px 24px;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-calendar-promo__title {
+    top: 32px;
+    left: 24px;
+    font-size: 24px;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-calendar-promo__ad {
+    left: 24px;
+    bottom: 24px;
+  }
+}
+
+body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consulting-hero__title {
+  color: #00AE4D;
 }
 
 body[data-page="obuchenie"] .review-card {
@@ -1938,9 +2549,8 @@ body.theme-purple .third-screen {
   background: #EEE7EE;
 }
 
-body[data-page="obuchenie"].theme-purple .third-screen,
-body[data-page="obuchenie"] .third-screen {
-  background: #0FAA4B1A;
+body[data-page="obuchenie"].theme-purple .third-screen {
+  background: transparent;
 }
 
 body.theme-purple .consultation-section .btn--green {
@@ -1949,6 +2559,14 @@ body.theme-purple .consultation-section .btn--green {
 
 body.theme-purple .consultation-section .btn--green:hover {
   background: #7A4E7A;
+}
+
+body[data-page="obuchenie"] .consultation-section .btn--green {
+  background: #00AE4D;
+}
+
+body[data-page="obuchenie"] .consultation-section .btn--green:hover {
+  background: #009341;
 }
 
 /* Отзывы на ETP-лендинге: синяя тень по макету */

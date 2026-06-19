@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="assets/js/page-zoom-sync.js?v=2"></script>
+  <script src="assets/js/page-zoom-sync.js?v=3"></script>
   <title>Обучение. Центр развития закупок Республики Татарстан</title>
   <meta name="description" content="Обучение госзакупкам и тендерам: курсы и программы для заказчиков и поставщиков.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,9 +13,9 @@
   <link rel="preload" href="https://fonts.gstatic.com/s/googlesans/v69/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrw2IJllpyk.woff2" as="font" type="font/woff2" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
   <link rel="preload" href="assets/css/landing.css?v=9" as="style">
-  <link rel="preload" href="assets/css/obuchenie.css?v=7" as="style">
+  <link rel="preload" href="assets/css/obuchenie.css?v=17" as="style">
   <link rel="stylesheet" href="assets/css/landing.css?v=9">
-  <link rel="stylesheet" href="assets/css/obuchenie.css?v=7">
+  <link rel="stylesheet" href="assets/css/obuchenie.css?v=17">
   <script>document.documentElement.classList.add('landing-content-pending', 'obuchenie-content-pending');</script>
 </head>
 <body class="theme-purple" data-page="obuchenie">
@@ -131,8 +131,149 @@
       </div>
     </section>
 
+    <!-- ПОИСК КУРСОВ -->
+    <section class="section obuchenie-course-search-section" id="courses">
+      <div class="container">
+        <h2 class="section-title obuchenie-course-search__title">Поиск курсов</h2>
+
+        <div class="obuchenie-course-search-panel">
+          <div class="obuchenie-course-search-panel__filters">
+
+            <!-- Dropdown: заказчик/поставщик -->
+            <div class="csr-dropdown" data-value="" aria-label="Заказчик или поставщик">
+              <button type="button" class="csr-dropdown__trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="csr-dropdown__label">заказчик/поставщик</span>
+                <svg class="csr-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="csr-dropdown__panel" role="listbox">
+                <button type="button" class="csr-dropdown__option" data-value="customer" role="option">Заказчик</button>
+                <button type="button" class="csr-dropdown__option" data-value="supplier" role="option">Поставщик</button>
+              </div>
+            </div>
+
+            <!-- Dropdown: 44-ФЗ / 223-ФЗ -->
+            <div class="csr-dropdown" data-value="" aria-label="Закон о закупках">
+              <button type="button" class="csr-dropdown__trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="csr-dropdown__label">44-ФЗ / 223-ФЗ</span>
+                <svg class="csr-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="csr-dropdown__panel" role="listbox">
+                <button type="button" class="csr-dropdown__option" data-value="44" role="option">44-ФЗ</button>
+                <button type="button" class="csr-dropdown__option" data-value="223" role="option">223-ФЗ</button>
+              </div>
+            </div>
+
+            <!-- Dropdown: очно / дистанционно -->
+            <div class="csr-dropdown" data-value="" aria-label="Формат обучения">
+              <button type="button" class="csr-dropdown__trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="csr-dropdown__label">очно / дистанционно</span>
+                <svg class="csr-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="csr-dropdown__panel" role="listbox">
+                <button type="button" class="csr-dropdown__option" data-value="offline" role="option">Очно</button>
+                <button type="button" class="csr-dropdown__option" data-value="online" role="option">Дистанционно</button>
+              </div>
+            </div>
+
+            <!-- Dropdown: тип курса -->
+            <div class="csr-dropdown csr-dropdown--wide" data-value="" aria-label="Тип курса">
+              <button type="button" class="csr-dropdown__trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="csr-dropdown__label">Курсы повышения квалификации</span>
+                <svg class="csr-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="csr-dropdown__panel" role="listbox">
+                <button type="button" class="csr-dropdown__option" data-value="qualification" role="option">Курсы повышения квалификации</button>
+                <button type="button" class="csr-dropdown__option" data-value="retraining" role="option">Курсы профессиональной переподготовки</button>
+              </div>
+            </div>
+
+          </div>
+          <div class="obuchenie-course-search-panel__footer">
+            <p class="obuchenie-course-search-panel__cta">Оставьте заявку, мы поможем</p>
+            <a href="tel:88001017892" class="obuchenie-course-search-panel__phone">8 800 101-78-92</a>
+          </div>
+        </div>
+
+        <div class="obuchenie-course-search-tags" aria-label="Популярные категории">
+          <div class="obuchenie-course-search-tags__row">
+            <button type="button" class="obuchenie-course-search-tag">Онлайн-курсы</button>
+            <button type="button" class="obuchenie-course-search-tag">Онлайн-курсы</button>
+            <button type="button" class="obuchenie-course-search-tag">Онлайн-курсы</button>
+            <button type="button" class="obuchenie-course-search-tag">Онлайн-курсы</button>
+            <button type="button" class="obuchenie-course-search-tag">Онлайн-курсы</button>
+            <button type="button" class="obuchenie-course-search-tag">Онлайн-курсы</button>
+            <button type="button" class="obuchenie-course-search-tag">Онлайн-курсы</button>
+          </div>
+          <div class="obuchenie-course-search-tags__row">
+            <button type="button" class="obuchenie-course-search-tag">Программирование</button>
+            <button type="button" class="obuchenie-course-search-tag">Программирование</button>
+            <button type="button" class="obuchenie-course-search-tag">Программирование</button>
+            <button type="button" class="obuchenie-course-search-tag">Программирование</button>
+            <button type="button" class="obuchenie-course-search-tag">Программирование</button>
+            <button type="button" class="obuchenie-course-search-tag">Программирование</button>
+            <button type="button" class="obuchenie-course-search-tag">Программирование</button>
+          </div>
+          <div class="obuchenie-course-search-tags__row obuchenie-course-search-tags__row--last">
+            <button type="button" class="obuchenie-course-search-tag">Дизайн</button>
+            <button type="button" class="obuchenie-course-search-tag">Дизайн</button>
+            <button type="button" class="obuchenie-course-search-tag">Дизайн</button>
+            <button type="button" class="obuchenie-course-search-tag">Дизайн</button>
+            <button type="button" class="obuchenie-course-search-tag">Дизайн</button>
+            <button type="button" class="obuchenie-course-search-tag">Дизайн</button>
+            <button type="button" class="obuchenie-course-search-tag obuchenie-course-search-tag--more">Показать все</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 </div>
+
+<!-- КАЛЕНДАРЬ КУРСОВ -->
+<section class="section obuchenie-calendar-section" id="schedule">
+  <div class="container">
+    <h2 class="section-title obuchenie-calendar-section__title">Календарь курсов</h2>
+
+    <div class="obuchenie-calendar-top">
+      <div class="obuchenie-calendar-block" id="obuchenieCourseCalendar">
+        <div class="obuchenie-calendar-block__nav">
+          <button type="button" class="obuchenie-calendar-block__arrow obuchenie-calendar-block__arrow--prev" data-calendar-prev aria-label="Предыдущий месяц">
+            <svg class="obuchenie-calendar-block__arrow-svg" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true" focusable="false">
+              <polyline points="15 6 9 12 15 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <h3 class="obuchenie-calendar-block__month" data-calendar-month-label></h3>
+          <button type="button" class="obuchenie-calendar-block__arrow obuchenie-calendar-block__arrow--next" data-calendar-next aria-label="Следующий месяц">
+            <svg class="obuchenie-calendar-block__arrow-svg" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true" focusable="false">
+              <polyline points="9 6 15 12 9 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="obuchenie-calendar-block__weekdays" aria-hidden="true">
+          <span>пн</span><span>вт</span><span>ср</span><span>чт</span><span>пт</span><span>сб</span><span>вс</span>
+        </div>
+
+        <div class="obuchenie-calendar-block__grid" data-calendar-grid role="grid"></div>
+
+        <a href="#courses" class="obuchenie-calendar-block__all all-link">
+          все курсы
+          <span class="arrow-down-right">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M1 1L11 11M11 11V3M11 11H3" stroke="#00AE4D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+
+      <aside class="obuchenie-calendar-promo" aria-label="Реклама">
+        <p class="obuchenie-calendar-promo__title">Защищаем ваши интересы</p>
+        <img src="assets/img/img1_processed.png" alt="" class="obuchenie-calendar-promo__image" width="320" height="320" decoding="async">
+        <span class="obuchenie-calendar-promo__ad">реклама</span>
+      </aside>
+    </div>
+  </div>
+</section>
 
 <!-- TRUSTED BY (Partners logos) -->
 <section class="section partners-section reveal-init landing-dynamic">
@@ -260,5 +401,7 @@
 <script src="assets/js/landing-content.js?v=9" defer></script>
 <script src="assets/js/obuchenie-content.js?v=1" defer></script>
 <script src="assets/js/landing.js?v=6" defer></script>
+<script src="assets/js/obuchenie-calendar.js?v=1" defer></script>
+<script src="assets/js/csr-dropdown.js" defer></script>
 </body>
 </html>

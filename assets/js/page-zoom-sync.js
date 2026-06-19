@@ -69,6 +69,7 @@
   function applyCssZoom(cssZoom) {
     var zoom = clampZoom(cssZoom);
     document.documentElement.style.zoom = String(zoom);
+    document.documentElement.style.setProperty('--crzrt-zoom', String(zoom));
     document.documentElement.dataset.crzrtZoom = String(zoom);
     return zoom;
   }
