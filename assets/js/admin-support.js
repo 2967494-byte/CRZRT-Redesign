@@ -129,29 +129,29 @@
     setImageUploadState('support_hero_bg', hero.background);
   }
 
+  function navCardAdminHtml(card, i) {
+    return `
+      <div class="consulting-comp-admin-card">
+        <div class="consulting-comp-admin-card__head">
+          <strong>Карточка ${i + 1}</strong>
+        </div>
+        ${navIconUploadHtml(`support_nav_icon_${i}`)}
+        <div class="form-group consulting-comp-admin-card__text">
+          <label>Надпись (Enter — перенос)</label>
+          <textarea class="form-control" id="support_nav_label_${i}" rows="2">${escapeAttr(card.label)}</textarea>
+        </div>
+        <div class="form-group consulting-comp-admin-card__link">
+          <label>Ссылка (якорь или URL)</label>
+          <input type="text" class="form-control" id="support_nav_href_${i}" value="${escapeAttr(card.href)}">
+        </div>
+      </div>`;
+  }
+
   function renderNavCardsAdmin(data) {
     const el = document.getElementById('supportNavCardsAdmin');
     if (!el) return;
     const cards = getMigratedData(data).navCards || [];
-    el.innerHTML = cards
-      .map(
-        (card, i) => `
-      <div class="admin-subcard" style="margin-bottom:16px;padding:16px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <strong>Карточка ${i + 1}</strong>
-        </div>
-        ${navIconUploadHtml(`support_nav_icon_${i}`)}
-        <div class="form-group">
-          <label>Надпись (Enter — перенос)</label>
-          <textarea class="form-control" id="support_nav_label_${i}" rows="2">${escapeAttr(card.label)}</textarea>
-        </div>
-        <div class="form-group">
-          <label>Ссылка (якорь или URL)</label>
-          <input type="text" class="form-control" id="support_nav_href_${i}" value="${escapeAttr(card.href)}">
-        </div>
-      </div>`
-      )
-      .join('');
+    el.innerHTML = `<div class="admin-nav-cards-grid admin-nav-cards-grid--3">${cards.map((card, i) => navCardAdminHtml(card, i)).join('')}</div>`;
     cards.forEach((card, i) => setImageUploadState(`support_nav_icon_${i}`, card.icon));
   }
 

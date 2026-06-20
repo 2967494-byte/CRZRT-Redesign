@@ -104,7 +104,8 @@
       showAllLabel: 'Показать все'
     },
     calendar: {
-      promoTitle: 'Защищаем ваши интересы',
+      promoTitle: 'Защищаем\nваши интересы',
+      promoTitleColor: '#FFFFFF',
       promoImage: 'assets/img/img1_processed.png',
       allCoursesLink: '#courses',
       courseDaysByMonth: {
@@ -206,6 +207,7 @@
       },
       calendar: {
         promoTitle: rawCalendar.promoTitle || OBUCHENIE_DEFAULTS.calendar.promoTitle,
+        promoTitleColor: rawCalendar.promoTitleColor || OBUCHENIE_DEFAULTS.calendar.promoTitleColor,
         promoImage: rawCalendar.promoImage || OBUCHENIE_DEFAULTS.calendar.promoImage,
         allCoursesLink: rawCalendar.allCoursesLink || OBUCHENIE_DEFAULTS.calendar.allCoursesLink,
         courseDaysByMonth: normalizeCourseDays(rawCalendar.courseDaysByMonth)
@@ -362,13 +364,21 @@
 
   function renderCalendar(calendar) {
     const data = calendar || OBUCHENIE_DEFAULTS.calendar;
+    const promoEl = document.querySelector('.obuchenie-calendar-promo');
     const titleEl = document.querySelector('.obuchenie-calendar-promo__title');
     const imageEl = document.querySelector('.obuchenie-calendar-promo__image');
     const allLinkEl = document.querySelector('.obuchenie-calendar-block__all');
+    const promoImage = (data.promoImage || OBUCHENIE_DEFAULTS.calendar.promoImage || '').trim();
 
-    if (titleEl) titleEl.textContent = data.promoTitle || OBUCHENIE_DEFAULTS.calendar.promoTitle;
-    if (imageEl && data.promoImage) {
-      imageEl.src = data.promoImage;
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(data.promoTitle || OBUCHENIE_DEFAULTS.calendar.promoTitle);
+      titleEl.style.color = data.promoTitleColor || OBUCHENIE_DEFAULTS.calendar.promoTitleColor;
+    }
+    if (imageEl && promoImage) {
+      imageEl.src = promoImage;
+    }
+    if (promoEl) {
+      promoEl.classList.toggle('obuchenie-calendar-promo--has-image', Boolean(promoImage));
     }
     if (allLinkEl) {
       allLinkEl.href = (data.allCoursesLink || '#courses').trim() || '#courses';

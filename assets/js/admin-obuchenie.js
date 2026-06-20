@@ -6,7 +6,7 @@
     hero: { background: '', title: '', subtitle: '', gavelImage: '' },
     navCards: [],
     courseSearch: { title: '', cta: '', phone: '', phoneDisplay: '', tags: [], showAllLabel: '' },
-    calendar: { promoTitle: '', promoImage: '', allCoursesLink: '', courseDaysByMonth: {} },
+    calendar: { promoTitle: '', promoTitleColor: '', promoImage: '', allCoursesLink: '', courseDaysByMonth: {} },
     courseCards: [],
     testingBanner: { title: '', btnText: '', btnLink: '', image: '' }
   };
@@ -124,29 +124,29 @@
     setImageUploadState('obuchenie_hero_gavel', hero.gavelImage);
   }
 
+  function navCardAdminHtml(prefix, card, i) {
+    return `
+      <div class="consulting-comp-admin-card">
+        <div class="consulting-comp-admin-card__head">
+          <strong>Карточка ${i + 1}</strong>
+        </div>
+        ${navIconUploadHtml(`${prefix}_nav_icon_${i}`)}
+        <div class="form-group consulting-comp-admin-card__text">
+          <label>Надпись (Enter — перенос)</label>
+          <textarea class="form-control" id="${prefix}_nav_label_${i}" rows="2">${escapeAttr(card.label)}</textarea>
+        </div>
+        <div class="form-group consulting-comp-admin-card__link">
+          <label>Ссылка (якорь или URL)</label>
+          <input type="text" class="form-control" id="${prefix}_nav_href_${i}" value="${escapeAttr(card.href)}">
+        </div>
+      </div>`;
+  }
+
   function renderNavCardsAdmin(data) {
     const el = document.getElementById('obuchenieNavCardsAdmin');
     if (!el) return;
     const cards = getMigratedData(data).navCards || [];
-    el.innerHTML = cards
-      .map(
-        (card, i) => `
-      <div class="admin-subcard" style="margin-bottom:16px;padding:16px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <strong>Карточка ${i + 1}</strong>
-        </div>
-        ${navIconUploadHtml(`obuchenie_nav_icon_${i}`)}
-        <div class="form-group">
-          <label>Надпись (Enter — перенос)</label>
-          <textarea class="form-control" id="obuchenie_nav_label_${i}" rows="2">${escapeAttr(card.label)}</textarea>
-        </div>
-        <div class="form-group">
-          <label>Ссылка (якорь или URL)</label>
-          <input type="text" class="form-control" id="obuchenie_nav_href_${i}" value="${escapeAttr(card.href)}">
-        </div>
-      </div>`
-      )
-      .join('');
+    el.innerHTML = `<div class="admin-nav-cards-grid">${cards.map((card, i) => navCardAdminHtml('obuchenie', card, i)).join('')}</div>`;
     cards.forEach((card, i) => setImageUploadState(`obuchenie_nav_icon_${i}`, card.icon));
   }
 
@@ -223,10 +223,11 @@
     const entries = courseDaysToEntries(calendar.courseDaysByMonth);
     el.innerHTML = `
       <div class="form-group">
-        <label>Заголовок промо-блока</label>
-        <input type="text" class="form-control" id="obuchenie_cal_promo_title" value="${escapeAttr(calendar.promoTitle)}">
+        <label>Заголовок промо-блока (Enter — перенос строки)</label>
+        <textarea class="form-control" id="obuchenie_cal_promo_title" rows="2">${escapeAttr(calendar.promoTitle)}</textarea>
       </div>
-      ${imageUploadHtml('obuchenie_cal_promo_image', 'Изображение промо-блока', 'Рекомендуемый размер ~320×320 px.')}
+      ${colorFieldHtml('obuchenie_cal_promo_title_color', 'Цвет заголовка', calendar.promoTitleColor || '#FFFFFF')}
+      ${imageUploadHtml('obuchenie_cal_promo_image', 'Изображение промо-блока', 'Рекомендуемый размер ~596×881 px — заливает весь блок.')}
       <div class="form-group">
         <label>Ссылка «все курсы»</label>
         <input type="text" class="form-control" id="obuchenie_cal_all_link" value="${escapeAttr(calendar.allCoursesLink)}">
@@ -402,6 +403,7 @@
 
     data.calendar = {
       promoTitle: document.getElementById('obuchenie_cal_promo_title')?.value ?? data.calendar?.promoTitle ?? '',
+      promoTitleColor: readColorVal('obuchenie_cal_promo_title_color', data.calendar?.promoTitleColor || '#FFFFFF'),
       promoImage: readImageVal('obuchenie_cal_promo_image') || data.calendar?.promoImage || '',
       allCoursesLink: document.getElementById('obuchenie_cal_all_link')?.value ?? data.calendar?.allCoursesLink ?? '#courses',
       courseDaysByMonth: collectCourseDaysFromForm()
@@ -454,7 +456,7 @@
   function getAspect(uploadId) {
     if (uploadId === 'obuchenie_hero_bg') return 1520 / 420;
     if (uploadId === 'obuchenie_hero_gavel') return 1;
-    if (uploadId === 'obuchenie_cal_promo_image') return 1;
+    if (uploadId === 'obuchenie_cal_promo_image') return 596 / 881;
     if (uploadId === 'obuchenie_testing_image') return 4 / 3;
     if (uploadId.startsWith('obuchenie_nav_icon_')) return 118 / 149;
     return 16 / 9;
@@ -463,7 +465,7 @@
   function getCropSize(uploadId) {
     if (uploadId === 'obuchenie_hero_bg') return [1520, 420];
     if (uploadId === 'obuchenie_hero_gavel') return [420, 420];
-    if (uploadId === 'obuchenie_cal_promo_image') return [320, 320];
+    if (uploadId === 'obuchenie_cal_promo_image') return [596, 881];
     if (uploadId === 'obuchenie_testing_image') return [600, 450];
     if (uploadId.startsWith('obuchenie_nav_icon_')) return [118, 149];
     return [1200, 675];

@@ -282,6 +282,34 @@ body {
             }
         }
 
+        /* Навигационные карточки (Обучение / Сопровождение) */
+        .admin-nav-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .admin-nav-cards-grid--3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        @media (max-width: 1500px) {
+            .admin-nav-cards-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .admin-nav-cards-grid--3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .admin-nav-cards-grid,
+            .admin-nav-cards-grid--3 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
         .consulting-comp-admin-card {
             position: relative;
             min-width: 0;

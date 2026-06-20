@@ -1911,7 +1911,7 @@
             }
 
             if (data.calendar) {
-                data.calendar.promoImage = await uploadOrReuse(data.calendar.promoImage, 'obuchenie_cal_promo_image', 320, 320);
+                data.calendar.promoImage = await uploadOrReuse(data.calendar.promoImage, 'obuchenie_cal_promo_image', 596, 881);
             }
 
             if (data.testingBanner) {
