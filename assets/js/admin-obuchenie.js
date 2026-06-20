@@ -90,6 +90,18 @@
       </div>`;
   }
 
+  function colorFieldHtml(id, label, value) {
+    const color = /^#[0-9A-Fa-f]{6}$/.test(value || '') ? value : '#00AE4D';
+    return `
+      <div class="form-group">
+        <label>${label}</label>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <input type="color" id="${id}_picker" value="${escapeAttr(color)}" style="width:48px;height:40px;padding:2px;border:1px solid rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;background:transparent;" oninput="AdminObuchenie.syncColorField('${id}', this.value)">
+          <input type="text" class="form-control" id="${id}" value="${escapeAttr(color)}" placeholder="#00AE4D" style="max-width:140px;font-family:monospace;" oninput="AdminObuchenie.syncColorField('${id}', this.value, true)">
+        </div>
+      </div>`;
+  }
+
   function renderHeroAdmin(data) {
     const el = document.getElementById('obuchenieHeroAdmin');
     if (!el) return;
@@ -100,10 +112,12 @@
         <label>Заголовок (Enter — перенос строки)</label>
         <textarea class="form-control" id="obuchenie_hero_title" rows="2">${escapeAttr(hero.title)}</textarea>
       </div>
+      ${colorFieldHtml('obuchenie_hero_title_color', 'Цвет заголовка', hero.titleColor || '#00AE4D')}
       <div class="form-group">
         <label>Подзаголовок</label>
         <textarea class="form-control" id="obuchenie_hero_subtitle" rows="3">${escapeAttr(hero.subtitle)}</textarea>
       </div>
+      ${colorFieldHtml('obuchenie_hero_subtitle_color', 'Цвет подзаголовка', hero.subtitleColor || '#FFFFFF')}
       ${imageUploadHtml('obuchenie_hero_gavel', 'Изображение молотка (если нет готового баннера)', 'Показывается справа на стандартном баннере.')}
     `;
     setImageUploadState('obuchenie_hero_bg', hero.background);
@@ -314,6 +328,27 @@
     return document.getElementById(`${id}_val`)?.value || '';
   }
 
+  function readColorVal(id, fallback) {
+    const raw = document.getElementById(id)?.value?.trim() || '';
+    if (/^#[0-9A-Fa-f]{6}$/.test(raw)) return raw.toUpperCase();
+    if (/^[0-9A-Fa-f]{6}$/.test(raw)) return `#${raw.toUpperCase()}`;
+    return fallback;
+  }
+
+  function syncColorField(id, value, fromText) {
+    const textEl = document.getElementById(id);
+    const pickerEl = document.getElementById(`${id}_picker`);
+    if (!textEl || !pickerEl) return;
+    let normalized = String(value || '').trim();
+    if (/^[0-9A-Fa-f]{6}$/.test(normalized)) normalized = `#${normalized}`;
+    if (!/^#[0-9A-Fa-f]{6}$/.test(normalized)) {
+      if (fromText) return;
+      normalized = '#000000';
+    }
+    textEl.value = normalized.toUpperCase();
+    pickerEl.value = normalized.toLowerCase();
+  }
+
   function collectCourseDaysFromForm() {
     const result = {};
     const count = document.querySelectorAll('[id^="obuchenie_cal_year_"]').length;
@@ -340,7 +375,9 @@
       background: readImageVal('obuchenie_hero_bg') || data.hero?.background || '',
       title: document.getElementById('obuchenie_hero_title')?.value ?? data.hero?.title ?? '',
       subtitle: document.getElementById('obuchenie_hero_subtitle')?.value ?? data.hero?.subtitle ?? '',
-      gavelImage: readImageVal('obuchenie_hero_gavel') || data.hero?.gavelImage || ''
+      gavelImage: readImageVal('obuchenie_hero_gavel') || data.hero?.gavelImage || '',
+      titleColor: readColorVal('obuchenie_hero_title_color', data.hero?.titleColor || '#00AE4D'),
+      subtitleColor: readColorVal('obuchenie_hero_subtitle_color', data.hero?.subtitleColor || '#FFFFFF')
     };
 
     data.navCards = [];
@@ -448,6 +485,7 @@
     getAspect,
     getCropSize,
     isObuchenieUploadId,
+    syncColorField,
     addCourseCard() {
       window.saveObucheniePageStateToMemory?.();
       window.obucheniePageData.courseCards.push({

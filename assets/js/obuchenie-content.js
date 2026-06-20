@@ -90,7 +90,9 @@
       title: 'Обучение\nгосзакупкам',
       subtitle:
         'Как зарабатывать на госзакупках и тендерах: практические курсы и программы для заказчиков и поставщиков.',
-      gavelImage: 'assets/img/consulting/banner-gavel.png'
+      gavelImage: 'assets/img/consulting/banner-gavel.png',
+      titleColor: '#00AE4D',
+      subtitleColor: '#FFFFFF'
     },
     navCards: DEFAULT_NAV_CARDS.map((card) => ({ ...card })),
     courseSearch: {
@@ -189,7 +191,9 @@
         background: rawHero.background || '',
         title: rawHero.title || OBUCHENIE_DEFAULTS.hero.title,
         subtitle: rawHero.subtitle || OBUCHENIE_DEFAULTS.hero.subtitle,
-        gavelImage: rawHero.gavelImage || OBUCHENIE_DEFAULTS.hero.gavelImage
+        gavelImage: rawHero.gavelImage || OBUCHENIE_DEFAULTS.hero.gavelImage,
+        titleColor: rawHero.titleColor || OBUCHENIE_DEFAULTS.hero.titleColor,
+        subtitleColor: rawHero.subtitleColor || OBUCHENIE_DEFAULTS.hero.subtitleColor
       },
       navCards,
       courseSearch: {
@@ -268,8 +272,14 @@
     const background = (hero?.background || '').trim();
     const hasCustomBanner = Boolean(background);
 
-    if (titleEl) titleEl.innerHTML = multilineHtml(hero?.title);
-    if (subtitleEl) subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(hero?.title);
+      titleEl.style.color = hero?.titleColor || OBUCHENIE_DEFAULTS.hero.titleColor;
+    }
+    if (subtitleEl) {
+      subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
+      subtitleEl.style.color = hero?.subtitleColor || OBUCHENIE_DEFAULTS.hero.subtitleColor;
+    }
     if (gavelEl && hero?.gavelImage) gavelEl.src = hero.gavelImage;
 
     if (banner) {

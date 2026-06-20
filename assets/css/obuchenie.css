@@ -734,8 +734,80 @@ body[data-page="obuchenie"] .consulting-hero {
   box-shadow: 0 10px 30px rgba(0, 174, 77, 0.08);
 }
 
+body[data-page="obuchenie"] .consulting-hero__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+body[data-page="obuchenie"] .consulting-hero__content {
+  display: block;
+  position: static;
+}
+
+body[data-page="obuchenie"] .consulting-hero__title {
+  position: absolute;
+  z-index: 2;
+  left: 60px;
+  top: 68px;
+  width: 745px;
+  max-width: calc(100% - 120px);
+  height: auto;
+  margin: 0;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 60px;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #00AE4D;
+}
+
+body[data-page="obuchenie"] .consulting-hero__subtitle {
+  position: absolute;
+  z-index: 2;
+  left: 60px;
+  top: auto;
+  bottom: 40px;
+  width: 602px;
+  max-width: calc(100% - 120px);
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 120%;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+}
+
 body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg {
   background-color: #B8FDC6;
+}
+
+body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consulting-hero__title {
+  left: 60px;
+  top: 68px;
+  width: 745px;
+  height: auto;
+  font-size: 60px;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #00AE4D;
+}
+
+body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consulting-hero__subtitle {
+  left: 60px;
+  top: auto;
+  bottom: 40px;
+  width: 602px;
+  height: auto;
+  font-size: 20px;
+  line-height: 120%;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
 }
 
 body[data-page="obuchenie"] .consulting-banner__graphic {
@@ -1364,6 +1436,42 @@ body[data-page="obuchenie"] .obuchenie-calendar-promo__ad {
 
 body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consulting-hero__title {
   color: #00AE4D;
+}
+
+@media (max-width: 1200px) {
+  body[data-page="obuchenie"] .consulting-hero {
+    height: auto;
+    min-height: 420px;
+  }
+
+  body[data-page="obuchenie"] .consulting-hero__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 68px 40px 48px 60px;
+    min-height: 420px;
+    box-sizing: border-box;
+  }
+
+  body[data-page="obuchenie"] .consulting-hero__title,
+  body[data-page="obuchenie"] .consulting-hero__subtitle {
+    position: static;
+    left: auto;
+    top: auto;
+    width: 100%;
+    max-width: 745px;
+    height: auto;
+  }
+
+  body[data-page="obuchenie"] .consulting-hero__title {
+    font-size: clamp(36px, 5vw, 60px);
+    margin-bottom: 24px;
+  }
+
+  body[data-page="obuchenie"] .consulting-hero__subtitle {
+    font-size: clamp(16px, 2vw, 20px);
+    max-width: 602px;
+  }
 }
 
 body[data-page="obuchenie"] .review-card {
