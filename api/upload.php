@@ -23,7 +23,9 @@ $slot = preg_replace('/[^a-z0-9_-]+/i', '_', (string)($data['slot'] ?? 'image'))
 $maxWidth = (int)($data['maxWidth'] ?? 1920);
 $maxHeight = (int)($data['maxHeight'] ?? 1080);
 $targetMaxBytes = 300 * 1024;
-if (strpos($slot, 'obuchenie_cal_promo') !== false || strpos($slot, 'obuchenie_testing') !== false) {
+if (strpos($slot, 'obuchenie_cal_promo') !== false
+    || strpos($slot, 'obuchenie_testing') !== false
+    || strpos($slot, 'consulting_why_side') !== false) {
     $targetMaxBytes = 700 * 1024;
 }
 

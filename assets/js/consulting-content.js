@@ -219,6 +219,7 @@
 
     const photoSrc = escapeAttr(data.photo.image);
     const sideSrc = escapeAttr(data.side.image);
+    const sideImage = (data.side.image || '').trim();
 
     mosaic.innerHTML = `
       <div class="consulting-why-card consulting-why-card--lead">
@@ -231,9 +232,9 @@
       <div class="consulting-why-card consulting-why-card--support">
         <p class="consulting-why-card__support-text">${multilineHtml(data.support.text)}</p>
       </div>
-      <div class="consulting-why-card consulting-why-card--side">
+      <div class="consulting-why-card consulting-why-card--side${sideImage ? ' consulting-why-card--has-image' : ''}">
+        ${sideImage ? `<img src="${sideSrc}" alt="" class="consulting-why-card__side-image" decoding="async">` : ''}
         <p class="consulting-why-card__side-text">${multilineHtml(data.side.text)}</p>
-        <img src="${sideSrc}" alt="" class="consulting-why-card__scales" width="280" height="280" decoding="async">
       </div>`;
   }
 

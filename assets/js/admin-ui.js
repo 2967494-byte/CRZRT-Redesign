@@ -1411,7 +1411,8 @@
                         || uploadId === 'obuchenie_hero_bg')
                 );
                 const isPromoCover = uploadId === 'obuchenie_cal_promo_image'
-                    || uploadId === 'obuchenie_testing_image';
+                    || uploadId === 'obuchenie_testing_image'
+                    || uploadId === 'consulting_why_side_image';
                 const resultBase64 = isPartner
                     ? canvas.toDataURL('image/png')
                     : isPromoCover
@@ -1861,8 +1862,8 @@
                 data.whyUs.side.image = await uploadOrReuse(
                     data.whyUs.side.image,
                     'consulting_why_side_image',
-                    280,
-                    280
+                    978,
+                    1526
                 );
             }
 

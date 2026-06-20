@@ -189,12 +189,12 @@
       </div>
 
       <div class="admin-card" style="margin:16px 0;padding:16px;background:rgba(255,255,255,0.03);">
-        <strong style="display:block;margin-bottom:12px;">Блок 4 — боковая карточка с иконкой</strong>
+        <strong style="display:block;margin-bottom:12px;">Блок 4 — боковая карточка</strong>
         <div class="form-group">
           <label>Текст</label>
           <textarea class="form-control" id="consulting_why_side_text" rows="3">${escapeAttr(side.text)}</textarea>
         </div>
-        ${imageUploadHtml('consulting_why_side_image', 'Иконка / изображение (~280×280)', '')}
+        ${imageUploadHtml('consulting_why_side_image', 'Фоновое изображение блока', 'Рекомендуемый размер ~489×763 px (2× Retina: 978×1526) — заливает весь блок.')}
       </div>`;
 
     setImageUploadState('consulting_why_photo', photo.image);
@@ -278,7 +278,7 @@
     if (uploadId === 'consulting_hero_bg') return 1520 / 420;
     if (uploadId === 'consulting_hero_graphic') return 1;
     if (uploadId === 'consulting_why_photo') return 494 / 329;
-    if (uploadId === 'consulting_why_side_image') return 1;
+    if (uploadId === 'consulting_why_side_image') return 489 / 763;
     if (uploadId.startsWith('consulting_comp_icon_')) return 109 / 110;
     return 16 / 9;
   }
@@ -287,7 +287,7 @@
     if (uploadId === 'consulting_hero_bg') return [1520, 420];
     if (uploadId === 'consulting_hero_graphic') return [420, 420];
     if (uploadId === 'consulting_why_photo') return [494, 329];
-    if (uploadId === 'consulting_why_side_image') return [280, 280];
+    if (uploadId === 'consulting_why_side_image') return [978, 1526];
     if (uploadId.startsWith('consulting_comp_icon_')) return [109, 110];
     return [1200, 675];
   }
