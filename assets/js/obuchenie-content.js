@@ -428,9 +428,11 @@
 
   function renderTestingBanner(testingBanner) {
     const data = testingBanner || OBUCHENIE_DEFAULTS.testingBanner;
+    const bannerEl = document.querySelector('.obuchenie-testing-banner');
     const titleEl = document.querySelector('.obuchenie-testing-banner__title');
     const btnEl = document.querySelector('.obuchenie-testing-banner__btn');
-    const graphicEl = document.querySelector('.obuchenie-testing-banner__graphic');
+    const imageEl = document.querySelector('.obuchenie-testing-banner__image');
+    const image = (data.image || '').trim();
 
     if (titleEl) titleEl.innerHTML = multilineHtml(data.title);
     if (btnEl) {
@@ -438,13 +440,17 @@
       btnEl.href = (data.btnLink || '#contacts').trim() || '#contacts';
     }
 
-    if (graphicEl) {
-      const image = (data.image || '').trim();
+    if (imageEl) {
       if (image) {
-        graphicEl.innerHTML = `<img src="${escapeAttr(image)}" alt="" class="obuchenie-testing-banner__image" decoding="async">`;
+        imageEl.src = image;
+        imageEl.hidden = false;
       } else {
-        graphicEl.innerHTML = '';
+        imageEl.removeAttribute('src');
+        imageEl.hidden = true;
       }
+    }
+    if (bannerEl) {
+      bannerEl.classList.toggle('obuchenie-testing-banner--has-image', Boolean(image));
     }
   }
 

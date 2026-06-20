@@ -227,7 +227,7 @@
         <textarea class="form-control" id="obuchenie_cal_promo_title" rows="2">${escapeAttr(calendar.promoTitle)}</textarea>
       </div>
       ${colorFieldHtml('obuchenie_cal_promo_title_color', 'Цвет заголовка', calendar.promoTitleColor || '#FFFFFF')}
-      ${imageUploadHtml('obuchenie_cal_promo_image', 'Изображение промо-блока', 'Рекомендуемый размер ~596×881 px — заливает весь блок.')}
+      ${imageUploadHtml('obuchenie_cal_promo_image', 'Изображение промо-блока', 'Рекомендуемый размер ~1200×1760 px — заливает весь блок (2× для Retina).')}
       <div class="form-group">
         <label>Ссылка «все курсы»</label>
         <input type="text" class="form-control" id="obuchenie_cal_all_link" value="${escapeAttr(calendar.allCoursesLink)}">
@@ -310,7 +310,7 @@
         <label>Ссылка кнопки</label>
         <input type="text" class="form-control" id="obuchenie_testing_btn_link" value="${escapeAttr(banner.btnLink)}">
       </div>
-      ${imageUploadHtml('obuchenie_testing_image', 'Изображение справа (необязательно)', '')}
+      ${imageUploadHtml('obuchenie_testing_image', 'Фоновое изображение баннера', 'Рекомендуемый размер ~1520×435 px — заливает весь блок.')}
     `;
     setImageUploadState('obuchenie_testing_image', banner.image);
   }
@@ -457,7 +457,7 @@
     if (uploadId === 'obuchenie_hero_bg') return 1520 / 420;
     if (uploadId === 'obuchenie_hero_gavel') return 1;
     if (uploadId === 'obuchenie_cal_promo_image') return 596 / 881;
-    if (uploadId === 'obuchenie_testing_image') return 4 / 3;
+    if (uploadId === 'obuchenie_testing_image') return 1520 / 435;
     if (uploadId.startsWith('obuchenie_nav_icon_')) return 118 / 149;
     return 16 / 9;
   }
@@ -465,8 +465,8 @@
   function getCropSize(uploadId) {
     if (uploadId === 'obuchenie_hero_bg') return [1520, 420];
     if (uploadId === 'obuchenie_hero_gavel') return [420, 420];
-    if (uploadId === 'obuchenie_cal_promo_image') return [596, 881];
-    if (uploadId === 'obuchenie_testing_image') return [600, 450];
+    if (uploadId === 'obuchenie_cal_promo_image') return [1192, 1762];
+    if (uploadId === 'obuchenie_testing_image') return [3040, 870];
     if (uploadId.startsWith('obuchenie_nav_icon_')) return [118, 149];
     return [1200, 675];
   }

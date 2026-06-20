@@ -1270,6 +1270,7 @@
         }
 
         const HERO_MAX_BASE64_BYTES = 420 * 1024;
+        const PROMO_COVER_MAX_BASE64_BYTES = 600 * 1024;
 
         function dataUrlBytes(dataUrl) {
             const commaIdx = dataUrl?.indexOf(',');
@@ -1292,13 +1293,13 @@
             return next;
         }
 
-        function makeHeroDataUrlWithinLimit(canvas) {
-            let quality = 0.76;
+        function makeDataUrlWithinLimit(canvas, maxBytes, startQuality = 0.76) {
+            let quality = startQuality;
             let workingCanvas = canvas;
             let result = workingCanvas.toDataURL('image/jpeg', quality);
             let tries = 0;
 
-            while (dataUrlBytes(result) > HERO_MAX_BASE64_BYTES && tries < 8) {
+            while (dataUrlBytes(result) > maxBytes && tries < 10) {
                 tries += 1;
                 if (quality > 0.52) {
                     quality = Math.max(0.52, quality - 0.08);
@@ -1309,6 +1310,14 @@
             }
 
             return result;
+        }
+
+        function makeHeroDataUrlWithinLimit(canvas) {
+            return makeDataUrlWithinLimit(canvas, HERO_MAX_BASE64_BYTES, 0.76);
+        }
+
+        function makePromoCoverDataUrlWithinLimit(canvas) {
+            return makeDataUrlWithinLimit(canvas, PROMO_COVER_MAX_BASE64_BYTES, 0.88);
         }
 
         btnZoomIn.addEventListener('click', () => {
@@ -1401,11 +1410,15 @@
                         || uploadId === 'support_hero_bg'
                         || uploadId === 'obuchenie_hero_bg')
                 );
+                const isPromoCover = uploadId === 'obuchenie_cal_promo_image'
+                    || uploadId === 'obuchenie_testing_image';
                 const resultBase64 = isPartner
                     ? canvas.toDataURL('image/png')
-                    : isHeroSlide
-                        ? makeHeroDataUrlWithinLimit(canvas)
-                        : canvas.toDataURL('image/jpeg', 0.7);
+                    : isPromoCover
+                        ? makePromoCoverDataUrlWithinLimit(canvas)
+                        : isHeroSlide
+                            ? makeHeroDataUrlWithinLimit(canvas)
+                            : canvas.toDataURL('image/jpeg', 0.7);
 
                 if (window.activeAuthorIndex !== null) {
                     const idx = window.activeAuthorIndex;
@@ -1911,11 +1924,11 @@
             }
 
             if (data.calendar) {
-                data.calendar.promoImage = await uploadOrReuse(data.calendar.promoImage, 'obuchenie_cal_promo_image', 596, 881);
+                data.calendar.promoImage = await uploadOrReuse(data.calendar.promoImage, 'obuchenie_cal_promo_image', 1192, 1762);
             }
 
             if (data.testingBanner) {
-                data.testingBanner.image = await uploadOrReuse(data.testingBanner.image, 'obuchenie_testing_image', 600, 450);
+                data.testingBanner.image = await uploadOrReuse(data.testingBanner.image, 'obuchenie_testing_image', 3040, 870);
             }
 
             if (Array.isArray(data.navCards)) {
