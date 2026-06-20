@@ -1102,6 +1102,16 @@ body[data-page="obuchenie"] .obuchenie-calendar-section__title {
 }
 
 body[data-page="obuchenie"] .obuchenie-calendar-top {
+  --occ-calendar-day-h: 93px;
+  --occ-calendar-row-gap: 16px;
+  --occ-calendar-weeks: 6;
+  /* шапка + дни недели + 6 строк сетки + «все курсы» + отступы */
+  --occ-calendar-block-h: calc(
+    48px + 87px + 32px +
+    var(--occ-calendar-weeks) * var(--occ-calendar-day-h) +
+    (var(--occ-calendar-weeks) - 1) * var(--occ-calendar-row-gap) +
+    36px + 40px
+  );
   display: grid;
   grid-template-columns: minmax(0, 904fr) minmax(0, 596fr);
   gap: 20px;
@@ -1109,18 +1119,16 @@ body[data-page="obuchenie"] .obuchenie-calendar-top {
 }
 
 body[data-page="obuchenie"] .obuchenie-calendar-block {
-  --occ-calendar-day-h: 93px;
-  --occ-calendar-row-gap: 16px;
-  --occ-calendar-weeks: 6;
   box-sizing: border-box;
-  height: 758px;
-  min-height: 758px;
+  height: var(--occ-calendar-block-h);
+  min-height: var(--occ-calendar-block-h);
   border-radius: 20px;
   background: #CFEEDB;
   padding: 48px 48px 40px;
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
 }
 
 body[data-page="obuchenie"] .obuchenie-calendar-block__nav {
@@ -1248,7 +1256,8 @@ body[data-page="obuchenie"] .obuchenie-calendar-block__all {
 
 body[data-page="obuchenie"] .obuchenie-calendar-promo {
   box-sizing: border-box;
-  min-height: 758px;
+  height: var(--occ-calendar-block-h);
+  min-height: var(--occ-calendar-block-h);
   border-radius: 20px;
   background: radial-gradient(100.17% 108.13% at 68.96% 78.27%, #FFFFFF 0%, #C6DBFF 37.57%, #516496 100%);
   padding: 48px;
@@ -1301,12 +1310,11 @@ body[data-page="obuchenie"] .obuchenie-calendar-promo__ad {
 
   body[data-page="obuchenie"] .obuchenie-calendar-block,
   body[data-page="obuchenie"] .obuchenie-calendar-promo {
+    height: auto;
     min-height: 0;
   }
 
   body[data-page="obuchenie"] .obuchenie-calendar-block {
-    height: auto;
-    min-height: 0;
     padding: 32px 24px 28px;
     --occ-calendar-day-h: min(93px, 11.5vw);
   }
