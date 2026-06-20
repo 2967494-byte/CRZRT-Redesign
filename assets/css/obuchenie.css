@@ -682,6 +682,22 @@ body[data-page="obuchenie"] .footer {
   border-radius: 20px 20px 0 0;
 }
 
+body[data-page="obuchenie"] .footer__col--contacts .footer-phone {
+  color: #4FAD50;
+}
+
+body[data-page="obuchenie"] .footer__col--contacts .footer-phone:hover {
+  color: #3D9440;
+}
+
+body[data-page="obuchenie"] .footer__bottom-link {
+  color: #4FAD50 !important;
+}
+
+body[data-page="obuchenie"] .footer__bottom-link:hover {
+  color: #3D9440 !important;
+}
+
 body[data-page="obuchenie"] .consultation-card__title {
   color: #354557;
 }
