@@ -137,6 +137,18 @@
             supportPageData = AdminSupport.collectSupportPageFromForm(supportPageData);
             window.supportPageData = supportPageData;
         };
+        let obucheniePageData = {};
+        if (typeof AdminObuchenie !== 'undefined') {
+            obucheniePageData = AdminObuchenie.migrateObucheniePageData(
+                JSON.parse(localStorage.getItem('crzrt_obuchenie_page_data') || 'null')
+            );
+        }
+        window.obucheniePageData = obucheniePageData;
+        window.saveObucheniePageStateToMemory = function () {
+            if (typeof AdminObuchenie === 'undefined') return;
+            obucheniePageData = AdminObuchenie.collectObucheniePageFromForm(obucheniePageData);
+            window.obucheniePageData = obucheniePageData;
+        };
         let aboutData = { ...defaultAboutData };
         let contactsData = { ...defaultContactsData };
         let educationData; // assigned after defaultEducationData is declared (~line 1570)
@@ -148,6 +160,7 @@
                 'crzrt_ecp_page_data',
                 'crzrt_consulting_page_data',
                 'crzrt_support_page_data',
+                'crzrt_obuchenie_page_data',
                 'crzrt_about_data', 
                 'crzrt_contacts', 
                 'crzrt_education_data', 
@@ -179,13 +192,18 @@
                                 window.supportPageData = supportPageData;
                                 localStorage.setItem(key, JSON.stringify(supportPageData));
                             }
+                            else if (key === 'crzrt_obuchenie_page_data' && typeof AdminObuchenie !== 'undefined') {
+                                obucheniePageData = AdminObuchenie.migrateObucheniePageData(data);
+                                window.obucheniePageData = obucheniePageData;
+                                localStorage.setItem(key, JSON.stringify(obucheniePageData));
+                            }
                             else if (key === 'crzrt_about_data') aboutData = { ...defaultAboutData, ...data };
                             else if (key === 'crzrt_contacts') contactsData = { ...defaultContactsData, ...data };
                             else if (key === 'crzrt_education_data') educationData = { ...educationData, ...data };
                             else if (key === 'crzrt_consulting_data') consultingData = { ...consultingData, ...data };
                             
                             // Save to local for fallback
-                            if (key !== 'crzrt_ecp_page_data' && key !== 'crzrt_consulting_page_data' && key !== 'crzrt_support_page_data') {
+                            if (key !== 'crzrt_ecp_page_data' && key !== 'crzrt_consulting_page_data' && key !== 'crzrt_support_page_data' && key !== 'crzrt_obuchenie_page_data') {
                                 localStorage.setItem(key, JSON.stringify(data));
                             }
                         }
@@ -196,6 +214,7 @@
                 else if (currentTarget === 'ecp-page') renderEcpPageAdmin();
                 else if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
                 else if (currentTarget === 'support-page') renderSupportPageAdmin();
+                else if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
                 else if (currentTarget === 'about-us') renderAboutUsAdmin();
                 else if (currentTarget === 'contacts') renderContactsAdmin();
                 else if (currentTarget === 'education') renderEducationAdmin();
@@ -241,6 +260,7 @@
             'ecp-page': 'ecpPageBlock',
             'consulting-page': 'consultingPageBlock',
             'support-page': 'supportPageBlock',
+            'obuchenie-page': 'obucheniePageBlock',
             'consulting': 'consultingBlock',
             'education': 'educationBlock',
             'users': 'usersBlock',
@@ -276,6 +296,11 @@
         function renderSupportPageAdmin() {
             if (typeof AdminSupport === 'undefined') return;
             AdminSupport.renderSupportPageAdmin(supportPageData);
+        }
+
+        function renderObucheniePageAdmin() {
+            if (typeof AdminObuchenie === 'undefined') return;
+            AdminObuchenie.renderObucheniePageAdmin(obucheniePageData);
         }
 
         // ═══════════════════════════════════════════════
@@ -827,6 +852,7 @@
                 if (currentTarget === 'ecp-page') renderEcpPageAdmin();
                 if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
                 if (currentTarget === 'support-page') renderSupportPageAdmin();
+                if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
                 if (currentTarget === 'consulting') renderConsultingAdmin();
                 if (currentTarget === 'education') renderEducationAdmin();
                 if (currentTarget === 'users') renderUsers();
@@ -1196,6 +1222,19 @@
                             highlight: true,
                             aspectRatio: aspect
                         };
+                    } else if (AdminObuchenie?.isObuchenieUploadId?.(uploadId)) {
+                        const aspect = AdminObuchenie.getAspect(uploadId);
+                        cropperOpts = {
+                            viewMode: 2,
+                            dragMode: 'move',
+                            autoCropArea: 1,
+                            background: false,
+                            zoomable: true,
+                            guides: true,
+                            center: true,
+                            highlight: true,
+                            aspectRatio: aspect
+                        };
                     } else if (AdminLanding?.getCropperOptions && uploadId) {
                         cropperOpts = AdminLanding.getCropperOptions(uploadId);
                     } else {
@@ -1208,6 +1247,8 @@
                                 a = AdminConsultingPage.getAspect(uploadId);
                             } else if (AdminSupport?.isSupportUploadId?.(uploadId)) {
                                 a = AdminSupport.getAspect(uploadId);
+                            } else if (AdminObuchenie?.isObuchenieUploadId?.(uploadId)) {
+                                a = AdminObuchenie.getAspect(uploadId);
                             } else if (AdminLanding) {
                                 a = AdminLanding.getAspect(uploadId);
                             }
@@ -1310,6 +1351,8 @@
                     [resWidth, resHeight] = AdminConsultingPage.getCropSize(window.cropTarget.uploadId);
                 } else if (window.cropTarget && AdminSupport?.isSupportUploadId?.(window.cropTarget.uploadId)) {
                     [resWidth, resHeight] = AdminSupport.getCropSize(window.cropTarget.uploadId);
+                } else if (window.cropTarget && AdminObuchenie?.isObuchenieUploadId?.(window.cropTarget.uploadId)) {
+                    [resWidth, resHeight] = AdminObuchenie.getCropSize(window.cropTarget.uploadId);
                 } else if (window.cropTarget && AdminLanding) {
                     [resWidth, resHeight] = AdminLanding.getCropSize(window.cropTarget.uploadId);
                 }
@@ -1337,6 +1380,13 @@
                         imageSmoothingEnabled: true,
                         imageSmoothingQuality: 'high'
                     };
+                } else if (window.cropTarget && AdminObuchenie?.isObuchenieUploadId?.(uploadId)) {
+                    canvasOpts = {
+                        width: resWidth,
+                        height: resHeight,
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high'
+                    };
                 } else if (window.cropTarget && AdminLanding?.getCroppedCanvasOptions) {
                     canvasOpts = AdminLanding.getCroppedCanvasOptions(uploadId);
                 }
@@ -1348,7 +1398,8 @@
                         || uploadId === 'ecp_hero_bg'
                         || uploadId === 'ecp_support_bg'
                         || uploadId === 'consulting_hero_bg'
-                        || uploadId === 'support_hero_bg')
+                        || uploadId === 'support_hero_bg'
+                        || uploadId === 'obuchenie_hero_bg')
                 );
                 const resultBase64 = isPartner
                     ? canvas.toDataURL('image/png')
@@ -1374,6 +1425,9 @@
                     window.cropTarget = null;
                 } else if (window.cropTarget && AdminSupport?.isSupportUploadId?.(window.cropTarget.uploadId)) {
                     AdminSupport.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
+                    window.cropTarget = null;
+                } else if (window.cropTarget && AdminObuchenie?.isObuchenieUploadId?.(window.cropTarget.uploadId)) {
+                    AdminObuchenie.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
                     window.cropTarget = null;
                 } else if (window.cropTarget && AdminLanding) {
                     AdminLanding.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
@@ -1840,6 +1894,41 @@
             return data;
         }
 
+        async function replaceObuchenieBase64WithUploads(data) {
+            const cache = new Map();
+            const uploadOrReuse = (src, slot, maxWidth, maxHeight) => {
+                if (!isImageDataUrl(src)) return Promise.resolve(src);
+                const key = `${slot}:${src.slice(0, 64)}:${src.length}`;
+                if (!cache.has(key)) {
+                    cache.set(key, uploadDataUrlImage(src, slot, maxWidth, maxHeight));
+                }
+                return cache.get(key);
+            };
+
+            if (data.hero) {
+                data.hero.background = await uploadOrReuse(data.hero.background, 'obuchenie_hero_bg', 1520, 420);
+                data.hero.gavelImage = await uploadOrReuse(data.hero.gavelImage, 'obuchenie_hero_gavel', 420, 420);
+            }
+
+            if (data.calendar) {
+                data.calendar.promoImage = await uploadOrReuse(data.calendar.promoImage, 'obuchenie_cal_promo_image', 320, 320);
+            }
+
+            if (data.testingBanner) {
+                data.testingBanner.image = await uploadOrReuse(data.testingBanner.image, 'obuchenie_testing_image', 600, 450);
+            }
+
+            if (Array.isArray(data.navCards)) {
+                for (let i = 0; i < data.navCards.length; i++) {
+                    const card = data.navCards[i];
+                    if (!card) continue;
+                    card.icon = await uploadOrReuse(card.icon, `obuchenie_nav_icon_${i}`, 118, 149);
+                }
+            }
+
+            return data;
+        }
+
         document.getElementById('globalSaveBtn').addEventListener('click', async () => {
             const btn = document.getElementById('globalSaveBtn');
             const originalText = btn.innerText;
@@ -1868,6 +1957,10 @@
                     saveSupportPageStateToMemory();
                     keyToSave = 'crzrt_support_page_data';
                     dataToSave = supportPageData;
+                } else if (currentTarget === 'obuchenie-page') {
+                    saveObucheniePageStateToMemory();
+                    keyToSave = 'crzrt_obuchenie_page_data';
+                    dataToSave = obucheniePageData;
                 } else if (currentTarget === 'about-us') {
                     saveAboutUsStateToMemory();
                     keyToSave = 'crzrt_about_data';
@@ -1921,6 +2014,15 @@
                     supportPageData = dataToSave;
                     window.supportPageData = supportPageData;
                     renderSupportPageAdmin();
+                }
+
+                if (currentTarget === 'obuchenie-page') {
+                    btn.innerText = 'Загрузка медиа...';
+                    const snapshot = JSON.parse(JSON.stringify(dataToSave));
+                    dataToSave = await replaceObuchenieBase64WithUploads(snapshot);
+                    obucheniePageData = dataToSave;
+                    window.obucheniePageData = obucheniePageData;
+                    renderObucheniePageAdmin();
                 }
 
                 btn.innerText = 'Сохраняется...';

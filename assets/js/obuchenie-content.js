@@ -6,66 +6,116 @@
   const CONTENT_PENDING_CLASS = 'obuchenie-content-pending';
   const CONTENT_READY_CLASS = 'obuchenie-content-ready';
 
-  const DOWNLOAD_ARROW_SVG =
-    '<span class="arrow-down-right"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+  const MORE_ARROW_SVG =
+    '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#0FAA4B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-  const MANUAL_PDF_ICON_SRC = 'assets/img/ecp/icon-pdf.png';
+  const DEFAULT_NAV_CARDS = [
+    {
+      label: 'Популярные\nпрограммы обучения',
+      href: '#courses',
+      icon: 'assets/img/obuchenie/icon-programs.png?v=2'
+    },
+    {
+      label: 'Для\nпоставщиков',
+      href: '#suppliers',
+      icon: 'assets/img/obuchenie/icon-distance.png?v=2'
+    },
+    {
+      label: 'Для\nзаказчиков',
+      href: '#customers',
+      icon: 'assets/img/obuchenie/icon-corporate.png?v=2'
+    },
+    {
+      label: 'Календарь\nкурсов',
+      href: '#schedule',
+      icon: 'assets/img/obuchenie/icon-schedule.png?v=2'
+    },
+    {
+      label: 'Тестирование',
+      href: '#testing',
+      icon: 'assets/img/obuchenie/icon-certificates.png?v=2'
+    },
+    {
+      label: 'Помощь\nс выбором',
+      href: '#help',
+      icon: 'assets/img/obuchenie/icon-faq.png?v=2'
+    }
+  ];
 
-  const VIDEO_PLAY_SVG =
-    '<svg class="ecp-video-card__play" width="134" height="134" viewBox="0 0 134 134" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="67" cy="67" r="63" stroke="white" stroke-width="6"/><path d="M90 67L54 87.5V46.5L90 67Z" fill="white"/></svg>';
+  const DEFAULT_COURSE_CARDS = [
+    {
+      title: 'Очный курс повышения квалификации',
+      price: 'от 7 830 руб.',
+      durationNum: '1,5',
+      durationUnit: 'месяца',
+      scheduleNum: '2',
+      scheduleUnit: 'раза в неделю',
+      btnText: 'Записаться',
+      btnLink: '#contacts',
+      moreLink: '#courses'
+    },
+    {
+      title: 'Дистанционный курс повышения квалификации',
+      price: 'от 10 890 руб.',
+      durationNum: '1,5',
+      durationUnit: 'месяца',
+      scheduleNum: '2',
+      scheduleUnit: 'раза в неделю',
+      btnText: 'Записаться',
+      btnLink: '#contacts',
+      moreLink: '#courses'
+    },
+    {
+      title: 'Очный курс для поставщиков',
+      price: 'от 20 256 руб.',
+      durationNum: '1,5',
+      durationUnit: 'месяца',
+      scheduleNum: '2',
+      scheduleUnit: 'раза в неделю',
+      btnText: 'Записаться',
+      btnLink: '#contacts',
+      moreLink: '#courses'
+    }
+  ];
+
+  const DEFAULT_TAGS = [
+    'Онлайн-курсы', 'Онлайн-курсы', 'Онлайн-курсы', 'Онлайн-курсы', 'Онлайн-курсы', 'Онлайн-курсы', 'Онлайн-курсы',
+    'Программирование', 'Программирование', 'Программирование', 'Программирование', 'Программирование', 'Программирование', 'Программирование',
+    'Дизайн', 'Дизайн', 'Дизайн', 'Дизайн', 'Дизайн', 'Дизайн'
+  ];
 
   const OBUCHENIE_DEFAULTS = {
     hero: {
       background: '',
       title: 'Обучение\nгосзакупкам',
       subtitle:
-        'Как зарабатывать на госзакупках и тендерах: практические курсы и программы для заказчиков и поставщиков.'
+        'Как зарабатывать на госзакупках и тендерах: практические курсы и программы для заказчиков и поставщиков.',
+      gavelImage: 'assets/img/consulting/banner-gavel.png'
     },
-    tariffs: [
-      { text: 'Тарифы торговых\nпроцедур', file: '' },
-      { text: 'Тарифы АО\n«Татспиртпром»', file: '' },
-      { text: 'Индивидуальные тарифы', file: '' },
-      { text: 'Тарифы АНО ВО\n«Университет Иннополис»', file: '' }
-    ],
-    blanks: {
-      patternImage: 'uploads/d4cfd570b4a2548242759c7e47ea853918a2254c.png',
-      items: [
-        { text: 'Бланк доверенности\nна Представителя, включаемого\nв личный кабинет;', file: '' },
-        { text: 'Бланк заявления\nна запрос логина Представителя;', file: '' },
-        { text: 'Бланк заявления на включение\nПредставителя в личный кабинет;', file: '' },
-        { text: 'Бланк перечня используемых\nЗаказчиком способов закупок\nи протоколов.', file: '' }
-      ]
+    navCards: DEFAULT_NAV_CARDS.map((card) => ({ ...card })),
+    courseSearch: {
+      title: 'Поиск курсов',
+      cta: 'Оставьте заявку, мы поможем',
+      phone: '88001017892',
+      phoneDisplay: '8 800 101-78-92',
+      tags: [...DEFAULT_TAGS],
+      showAllLabel: 'Показать все'
     },
-    manual: {
-      bookImage: 'uploads/etp-book.png',
-      items: [
-        { title: 'Регламент пользования АИС ЭТП ЦРЗ РТ;', file: '' },
-        { title: 'Инструкция по настройке АРМ;', file: '' },
-        { title: 'Инструкция по работе Заказчика;', file: '' },
-        { title: 'Инструкция по работе участника.', file: '' }
-      ]
+    calendar: {
+      promoTitle: 'Защищаем ваши интересы',
+      promoImage: 'assets/img/img1_processed.png',
+      allCoursesLink: '#courses',
+      courseDaysByMonth: {
+        '2026-5': [5, 8, 15, 20],
+        '2026-6': [3, 10, 17, 24]
+      }
     },
-    videos: [
-      { url: '', title: 'Инструкция по созданию и наполнению плана закупок;', thumbnail: '' },
-      { url: '', title: 'Инструкция по созданию закупки через Мастер создания закупки по плану;', thumbnail: '' },
-      { url: '', title: 'Инструкция по созданию коммерческих закупок;', thumbnail: '' },
-      { url: '', title: 'Инструкция по формированию ответа на запрос разъяснений;', thumbnail: '' },
-      { url: '', title: 'Инструкция по рассмотрению заявок и размещению протокола;', thumbnail: '' },
-      { url: '', title: 'Инструкция по отправке договора на подписание участнику;', thumbnail: '' },
-      { url: '', title: 'Инструкция по подписанию договора;', thumbnail: '' },
-      { url: '', title: 'Инструкция по прикреплению/обновлению ЭП.', thumbnail: '' }
-    ],
-    support: {
-      background: '',
-      title: 'Оперативная поддержка',
-      items: [
-        'Информационно-техническая поддержка',
-        'Персональный менеджер 24/7',
-        'Автоматическая рассылка приглашений к участию в закупке',
-        'Аналитические отчеты (как стандартные, так и по запросу)'
-      ],
-      buttonText: 'Узнать подробнее',
-      buttonLink: '#contacts'
+    courseCards: DEFAULT_COURSE_CARDS.map((card) => ({ ...card })),
+    testingBanner: {
+      title: 'Проверь себя\nв госзакупках',
+      btnText: 'Пройти тест',
+      btnLink: '#contacts',
+      image: ''
     }
   };
 
@@ -95,58 +145,87 @@
       .join('<br>');
   }
 
-  function migrateObucheniePageData(raw) {
-    const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
-    const hero = {
-      background: rawHero.background || '',
-      title: rawHero.title || OBUCHENIE_DEFAULTS.hero.title,
-      subtitle: rawHero.subtitle || OBUCHENIE_DEFAULTS.hero.subtitle
-    };
+  function normalizeCourseDays(raw) {
+    const result = {};
+    if (!raw || typeof raw !== 'object') return { ...OBUCHENIE_DEFAULTS.calendar.courseDaysByMonth };
 
-    const data = {
-      hero,
-      tariffs: Array.isArray(raw?.tariffs) && raw.tariffs.length ? raw.tariffs : [...OBUCHENIE_DEFAULTS.tariffs],
-      blanks: {
-        patternImage: raw?.blanks?.patternImage || OBUCHENIE_DEFAULTS.blanks.patternImage,
-        items:
-          Array.isArray(raw?.blanks?.items) && raw.blanks.items.length
-            ? raw.blanks.items
-            : [...OBUCHENIE_DEFAULTS.blanks.items]
-      },
-      manual: {
-        bookImage: raw?.manual?.bookImage || OBUCHENIE_DEFAULTS.manual.bookImage,
-        items:
-          Array.isArray(raw?.manual?.items) && raw.manual.items.length
-            ? raw.manual.items
-            : [...OBUCHENIE_DEFAULTS.manual.items]
-      },
-      videos: Array.isArray(raw?.videos) && raw.videos.length ? raw.videos : [...OBUCHENIE_DEFAULTS.videos],
-      support: migrateSupportData(raw?.support)
-    };
+    Object.keys(raw).forEach((key) => {
+      const days = raw[key];
+      if (!Array.isArray(days)) return;
+      const normalized = days
+        .map((day) => parseInt(day, 10))
+        .filter((day) => Number.isFinite(day) && day >= 1 && day <= 31);
+      if (normalized.length) result[key] = normalized;
+    });
 
-    return data;
+    return Object.keys(result).length ? result : { ...OBUCHENIE_DEFAULTS.calendar.courseDaysByMonth };
   }
 
-  function migrateSupportData(rawSupport) {
-    const raw = rawSupport && typeof rawSupport === 'object' ? rawSupport : {};
-    let items = [];
+  function migrateObucheniePageData(raw) {
+    const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
 
-    if (Array.isArray(raw.items)) {
-      items = raw.items.map((item) => String(item || '').trim()).filter(Boolean);
-    } else if (typeof raw.items === 'string') {
-      items = raw.items.split('\n').map((item) => item.trim()).filter(Boolean);
-    }
+    const navCards =
+      Array.isArray(raw?.navCards) && raw.navCards.length
+        ? raw.navCards.map((card, i) => ({
+            label: card?.label || OBUCHENIE_DEFAULTS.navCards[i]?.label || '',
+            href: card?.href || OBUCHENIE_DEFAULTS.navCards[i]?.href || '#',
+            icon: card?.icon || OBUCHENIE_DEFAULTS.navCards[i]?.icon || ''
+          }))
+        : OBUCHENIE_DEFAULTS.navCards.map((card) => ({ ...card }));
 
-    if (!items.length) {
-      items = [...OBUCHENIE_DEFAULTS.support.items];
+    const rawSearch = raw?.courseSearch && typeof raw.courseSearch === 'object' ? raw.courseSearch : {};
+    let tags = [];
+    if (Array.isArray(rawSearch.tags)) {
+      tags = rawSearch.tags.map((tag) => String(tag || '').trim()).filter(Boolean);
+    } else if (typeof rawSearch.tags === 'string') {
+      tags = rawSearch.tags.split('\n').map((tag) => tag.trim()).filter(Boolean);
     }
+    if (!tags.length) tags = [...OBUCHENIE_DEFAULTS.courseSearch.tags];
+
+    const rawCalendar = raw?.calendar && typeof raw.calendar === 'object' ? raw.calendar : {};
 
     return {
-      background: raw.background || raw.image || '',
-      title: raw.title || OBUCHENIE_DEFAULTS.support.title,
-      items,
-      buttonText: raw.buttonText || OBUCHENIE_DEFAULTS.support.buttonText,
-      buttonLink: raw.buttonLink || OBUCHENIE_DEFAULTS.support.buttonLink
+      hero: {
+        background: rawHero.background || '',
+        title: rawHero.title || OBUCHENIE_DEFAULTS.hero.title,
+        subtitle: rawHero.subtitle || OBUCHENIE_DEFAULTS.hero.subtitle,
+        gavelImage: rawHero.gavelImage || OBUCHENIE_DEFAULTS.hero.gavelImage
+      },
+      navCards,
+      courseSearch: {
+        title: rawSearch.title || OBUCHENIE_DEFAULTS.courseSearch.title,
+        cta: rawSearch.cta || OBUCHENIE_DEFAULTS.courseSearch.cta,
+        phone: rawSearch.phone || OBUCHENIE_DEFAULTS.courseSearch.phone,
+        phoneDisplay: rawSearch.phoneDisplay || OBUCHENIE_DEFAULTS.courseSearch.phoneDisplay,
+        tags,
+        showAllLabel: rawSearch.showAllLabel || OBUCHENIE_DEFAULTS.courseSearch.showAllLabel
+      },
+      calendar: {
+        promoTitle: rawCalendar.promoTitle || OBUCHENIE_DEFAULTS.calendar.promoTitle,
+        promoImage: rawCalendar.promoImage || OBUCHENIE_DEFAULTS.calendar.promoImage,
+        allCoursesLink: rawCalendar.allCoursesLink || OBUCHENIE_DEFAULTS.calendar.allCoursesLink,
+        courseDaysByMonth: normalizeCourseDays(rawCalendar.courseDaysByMonth)
+      },
+      courseCards:
+        Array.isArray(raw?.courseCards) && raw.courseCards.length
+          ? raw.courseCards.map((card, i) => ({
+              title: card?.title || OBUCHENIE_DEFAULTS.courseCards[i]?.title || '',
+              price: card?.price || OBUCHENIE_DEFAULTS.courseCards[i]?.price || '',
+              durationNum: card?.durationNum || OBUCHENIE_DEFAULTS.courseCards[i]?.durationNum || '',
+              durationUnit: card?.durationUnit || OBUCHENIE_DEFAULTS.courseCards[i]?.durationUnit || '',
+              scheduleNum: card?.scheduleNum || OBUCHENIE_DEFAULTS.courseCards[i]?.scheduleNum || '',
+              scheduleUnit: card?.scheduleUnit || OBUCHENIE_DEFAULTS.courseCards[i]?.scheduleUnit || '',
+              btnText: card?.btnText || OBUCHENIE_DEFAULTS.courseCards[i]?.btnText || 'Записаться',
+              btnLink: card?.btnLink || OBUCHENIE_DEFAULTS.courseCards[i]?.btnLink || '#contacts',
+              moreLink: card?.moreLink || OBUCHENIE_DEFAULTS.courseCards[i]?.moreLink || '#courses'
+            }))
+          : OBUCHENIE_DEFAULTS.courseCards.map((card) => ({ ...card })),
+      testingBanner: {
+        title: raw?.testingBanner?.title || OBUCHENIE_DEFAULTS.testingBanner.title,
+        btnText: raw?.testingBanner?.btnText || OBUCHENIE_DEFAULTS.testingBanner.btnText,
+        btnLink: raw?.testingBanner?.btnLink || OBUCHENIE_DEFAULTS.testingBanner.btnLink,
+        image: raw?.testingBanner?.image || OBUCHENIE_DEFAULTS.testingBanner.image
+      }
     };
   }
 
@@ -180,68 +259,18 @@
     return null;
   }
 
-  function fileLinkAttrs(file) {
-    const href = (file || '').trim() || '#';
-    const isDownload = href !== '#' && !/^https?:\/\//i.test(href);
-    const download = isDownload ? ' download' : '';
-    const target = /^https?:\/\//i.test(href) ? ' target="_blank" rel="noopener noreferrer"' : '';
-    return { href: escapeHtml(href), download, target };
-  }
-
-  function youtubeVideoId(url) {
-    const match = String(url || '').match(
-      /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-    );
-    return match ? match[1] : '';
-  }
-
-  function rutubeVideoId(url) {
-    const match = String(url || '').match(/rutube\.ru\/video\/([a-f0-9]+)/i);
-    return match ? match[1] : '';
-  }
-
-  function vkVideoId(url) {
-    const str = String(url || '');
-    const patterns = [
-      /(?:vk\.com|vkvideo\.ru|vk\.ru|m\.vk\.com)\/video(-?\d+)_(\d+)/i,
-      /[?&]z=video(-?\d+)_(\d+)/i,
-      /[?&]vid=(-?\d+)_(\d+)/i
-    ];
-    for (const pattern of patterns) {
-      const match = str.match(pattern);
-      if (match) return `${match[1]}_${match[2]}`;
-    }
-    const oidMatch = str.match(/[?&]oid=(-?\d+)/i);
-    const idMatch = str.match(/[?&]id=(\d+)/i);
-    if (oidMatch && idMatch) return `${oidMatch[1]}_${idMatch[1]}`;
-    return '';
-  }
-
-  function vkVideoThumbProxyUrl(url) {
-    if (!vkVideoId(url)) return '';
-    return `api/video-thumb.php?url=${encodeURIComponent(url)}&proxy=1`;
-  }
-
-  function resolveVideoThumbnail(video) {
-    if (video?.thumbnail) return video.thumbnail;
-    const youtubeId = youtubeVideoId(video?.url);
-    if (youtubeId) return `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
-    const rutubeId = rutubeVideoId(video?.url);
-    if (rutubeId) return `https://pic.rutube.ru/video/${rutubeId}.jpg`;
-    return vkVideoThumbProxyUrl(video?.url);
-  }
-
   function renderHero(hero) {
     const banner = document.querySelector('.consulting-hero');
-    const contentEl = document.querySelector('.consulting-hero__content');
     const titleEl = document.querySelector('.consulting-hero-title');
     const subtitleEl = document.querySelector('.consulting-hero-subtitle');
     const graphicEl = document.querySelector('.consulting-banner__graphic');
+    const gavelEl = document.querySelector('.consulting-hero-gavel');
     const background = (hero?.background || '').trim();
     const hasCustomBanner = Boolean(background);
 
     if (titleEl) titleEl.innerHTML = multilineHtml(hero?.title);
     if (subtitleEl) subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
+    if (gavelEl && hero?.gavelImage) gavelEl.src = hero.gavelImage;
 
     if (banner) {
       if (hasCustomBanner) {
@@ -256,161 +285,156 @@
     window.__heroSlides = [];
     window.__heroCurrent = 0;
 
+    const contentEl = document.querySelector('.consulting-hero__content');
     if (contentEl) contentEl.classList.remove('is-hidden');
     if (graphicEl) graphicEl.classList.toggle('is-hidden', hasCustomBanner);
 
     document.dispatchEvent(new CustomEvent('heroSlidesUpdated', { detail: { count: 1 } }));
   }
 
-  function renderTariffs(tariffs) {
-    const grid = document.querySelector('.ecp-tariffs__grid');
+  function renderNavCards(navCards) {
+    const grid = document.querySelector('.obuchenie-nav-cards');
     if (!grid) return;
-    const list = tariffs && tariffs.length ? tariffs : OBUCHENIE_DEFAULTS.tariffs;
+    const list = navCards?.length ? navCards : OBUCHENIE_DEFAULTS.navCards;
     grid.innerHTML = list
-      .map((item) => {
-        const link = fileLinkAttrs(item.file);
-        return `<a href="${link.href}" class="ecp-tariff-card"${link.target}${link.download}>
-          <div class="ecp-tariff-card__icon-circle">
-            <img src="assets/img/ecp/icon-tariff.png" alt="" class="ecp-tariff-card__icon" width="103" height="103" decoding="async">
+      .map((card) => {
+        const href = escapeHtml((card.href || '#').trim() || '#');
+        const icon = escapeAttr((card.icon || '').trim() || 'assets/img/obuchenie/icon-programs.png?v=2');
+        return `<a href="${href}" class="ecp-card">
+          <div class="ecp-card__icon-wrap">
+            <img src="${icon}" alt="" class="ecp-card__icon" width="118" height="149" decoding="async">
           </div>
-          <span class="ecp-tariff-card__text">${multilineHtml(item.text)}</span>
-          <div class="ecp-tariff-card__download">скачать ${DOWNLOAD_ARROW_SVG}</div>
+          <div class="ecp-card__label">${multilineHtml(card.label)}</div>
         </a>`;
       })
       .join('');
   }
 
-  function renderBlanks(blanks) {
-    const patternImage = document.getElementById('image_blank');
-    if (patternImage && blanks?.patternImage) {
-      patternImage.setAttribute('href', blanks.patternImage);
+  function renderCourseSearch(courseSearch) {
+    const data = courseSearch || OBUCHENIE_DEFAULTS.courseSearch;
+    const titleEl = document.querySelector('.obuchenie-course-search__title');
+    const ctaEl = document.querySelector('.obuchenie-course-search-panel__cta');
+    const phoneEl = document.querySelector('.obuchenie-course-search-panel__phone');
+    const tagsEl = document.querySelector('.obuchenie-course-search-tags');
+
+    if (titleEl) titleEl.textContent = data.title || OBUCHENIE_DEFAULTS.courseSearch.title;
+    if (ctaEl) ctaEl.textContent = data.cta || OBUCHENIE_DEFAULTS.courseSearch.cta;
+    if (phoneEl) {
+      const phone = (data.phone || OBUCHENIE_DEFAULTS.courseSearch.phone).replace(/\D/g, '');
+      phoneEl.href = phone ? `tel:${phone}` : '#';
+      phoneEl.textContent = data.phoneDisplay || OBUCHENIE_DEFAULTS.courseSearch.phoneDisplay;
     }
 
-    const grid = document.querySelector('.ecp-blanks__grid');
-    if (!grid) return;
-    const list = blanks?.items?.length ? blanks.items : OBUCHENIE_DEFAULTS.blanks.items;
-    grid.innerHTML = list
-      .map((item) => {
-        const link = fileLinkAttrs(item.file);
-        return `<a href="${link.href}" class="ecp-blank-card"${link.target}${link.download}>
-          <div class="ecp-blank-card__content">
-            <span class="ecp-blank-card__text">${multilineHtml(item.text)}</span>
-            <div class="ecp-blank-card__download">скачать ${DOWNLOAD_ARROW_SVG}</div>
-          </div>
-          <div class="ecp-blank-card__icon">
-            <svg width="90" height="107" viewBox="0 0 90 107">
-              <rect width="90" height="107" fill="url(#pattern_blank)"/>
-            </svg>
-          </div>
-        </a>`;
-      })
-      .join('');
-  }
+    if (!tagsEl) return;
 
-  function renderManual(manual) {
-    const listEl = document.querySelector('.ecp-manual__list');
-    const bookEl = document.querySelector('.ecp-manual__image');
-    const items = manual?.items?.length ? manual.items : OBUCHENIE_DEFAULTS.manual.items;
-
-    if (listEl) {
-      listEl.innerHTML = items
-        .map((item) => {
-          const link = fileLinkAttrs(item.file);
-          return `<li class="ecp-manual__item">
-            <img src="${MANUAL_PDF_ICON_SRC}" alt="" class="ecp-manual__icon" width="45" height="51" decoding="async">
-            <a href="${link.href}" class="ecp-manual__link"${link.target}${link.download}>${escapeHtml(item.title)}</a>
-          </li>`;
-        })
-        .join('');
+    const tags = data.tags?.length ? data.tags : OBUCHENIE_DEFAULTS.courseSearch.tags;
+    const showAll = data.showAllLabel || OBUCHENIE_DEFAULTS.courseSearch.showAllLabel;
+    const rows = [];
+    for (let i = 0; i < tags.length; i += 7) {
+      rows.push(tags.slice(i, i + 7));
     }
+    if (!rows.length) rows.push([]);
 
-    if (bookEl && manual?.bookImage) {
-      bookEl.src = manual.bookImage;
-    }
-  }
-
-  function renderVideos(videos) {
-    const grid = document.querySelector('.ecp-videos__grid');
-    if (!grid) return;
-    const list = videos && videos.length ? videos : OBUCHENIE_DEFAULTS.videos;
-    grid.innerHTML = list
-      .map((video) => {
-        const href = (video.url || '').trim() || '#';
-        const thumb = resolveVideoThumbnail(video);
-        const thumbStyle = thumb
-          ? ` style="background-image:url('${escapeAttr(thumb)}');background-size:cover;background-position:center;"`
+    tagsEl.innerHTML = rows
+      .map((row, index) => {
+        const isLast = index === rows.length - 1;
+        const rowClass = isLast ? ' obuchenie-course-search-tags__row--last' : '';
+        const cells = row
+          .map((tag) => `<button type="button" class="obuchenie-course-search-tag">${escapeHtml(tag)}</button>`)
+          .join('');
+        const moreBtn = isLast
+          ? `<button type="button" class="obuchenie-course-search-tag obuchenie-course-search-tag--more">${escapeHtml(showAll)}</button>`
           : '';
-        const target = href.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : '';
-        return `<a href="${escapeHtml(href)}" class="ecp-video-card"${target}>
-          <div class="ecp-video-card__thumbnail"${thumbStyle}>
-            ${VIDEO_PLAY_SVG}
-          </div>
-          <div class="ecp-video-card__label">${escapeHtml(video.title)}</div>
-        </a>`;
+        return `<div class="obuchenie-course-search-tags__row${rowClass}">${cells}${moreBtn}</div>`;
       })
       .join('');
-
-    if (window.__reinitReveal) window.__reinitReveal('.ecp-video-card');
   }
 
-  function bindSupportButton(support) {
-    const btn = document.querySelector('.ecp-support-banner__btn');
-    if (!btn) return;
-    const link = (support?.buttonLink || '#contacts').trim();
-    btn.textContent = support?.buttonText || OBUCHENIE_DEFAULTS.support.buttonText;
+  function renderCalendar(calendar) {
+    const data = calendar || OBUCHENIE_DEFAULTS.calendar;
+    const titleEl = document.querySelector('.obuchenie-calendar-promo__title');
+    const imageEl = document.querySelector('.obuchenie-calendar-promo__image');
+    const allLinkEl = document.querySelector('.obuchenie-calendar-block__all');
 
-    btn.type = 'button';
-    btn.onclick = function () {
-      if (link.startsWith('#')) {
-        const target = document.querySelector(link);
-        if (target) target.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
-      if (/^https?:\/\//i.test(link)) {
-        window.open(link, '_blank', 'noopener,noreferrer');
-      } else if (link && link !== '#') {
-        window.location.href = link;
-      }
-    };
-  }
-
-  function renderSupport(support) {
-    const banner = document.querySelector('.ecp-support-banner');
-    const titleEl = document.querySelector('.ecp-support-banner__title');
-    const listEl = document.querySelector('.ecp-support-banner__list');
-    const graphicEl = document.querySelector('.ecp-support-banner__graphic');
-    const data = migrateSupportData(support);
-    const background = (data.background || '').trim();
-    const hasCustomBanner = Boolean(background);
-
-    if (titleEl) titleEl.textContent = data.title;
-    if (listEl) {
-      listEl.innerHTML = data.items
-        .map((item) => `<li class="ecp-support-banner__item">${escapeHtml(item)}</li>`)
-        .join('');
+    if (titleEl) titleEl.textContent = data.promoTitle || OBUCHENIE_DEFAULTS.calendar.promoTitle;
+    if (imageEl && data.promoImage) {
+      imageEl.src = data.promoImage;
+    }
+    if (allLinkEl) {
+      allLinkEl.href = (data.allCoursesLink || '#courses').trim() || '#courses';
     }
 
-    if (banner) {
-      if (hasCustomBanner) {
-        banner.style.backgroundImage = `url('${background.replace(/'/g, "\\'")}')`;
-        banner.classList.add('ecp-support-banner--custom-bg');
+    if (window.ObuchenieCalendar?.setCourseDays) {
+      window.ObuchenieCalendar.setCourseDays(data.courseDaysByMonth);
+    }
+  }
+
+  function renderCourseCards(courseCards) {
+    const grid = document.querySelector('.obuchenie-course-cards');
+    if (!grid) return;
+    const list = courseCards?.length ? courseCards : OBUCHENIE_DEFAULTS.courseCards;
+
+    grid.innerHTML = list
+      .map((card) => {
+        const btnHref = escapeHtml((card.btnLink || '#contacts').trim() || '#contacts');
+        const moreHref = escapeHtml((card.moreLink || '#courses').trim() || '#courses');
+        const price = escapeHtml(card.price || '');
+        return `<article class="occ-card">
+          <h3 class="occ-card__title">${escapeHtml(card.title)}</h3>
+          <p class="occ-card__price">${price.replace(/ /g, '&nbsp;')}</p>
+          <div class="occ-card__stats">
+            <div class="occ-card__stat">
+              <span class="occ-card__stat-label">длительность</span>
+              <div class="occ-card__stat-value">
+                <span class="occ-card__stat-num">${escapeHtml(card.durationNum)}</span>
+                <span class="occ-card__stat-unit">${escapeHtml(card.durationUnit)}</span>
+              </div>
+            </div>
+            <div class="occ-card__stat-divider"></div>
+            <div class="occ-card__stat">
+              <span class="occ-card__stat-label">график занятий</span>
+              <div class="occ-card__stat-value">
+                <span class="occ-card__stat-num">${escapeHtml(card.scheduleNum)}</span>
+                <span class="occ-card__stat-unit">${escapeHtml(card.scheduleUnit)}</span>
+              </div>
+            </div>
+          </div>
+          <a href="${btnHref}" class="occ-card__btn">${escapeHtml(card.btnText || 'Записаться')}</a>
+          <a href="${moreHref}" class="occ-card__more">подробнее ${MORE_ARROW_SVG}</a>
+        </article>`;
+      })
+      .join('');
+  }
+
+  function renderTestingBanner(testingBanner) {
+    const data = testingBanner || OBUCHENIE_DEFAULTS.testingBanner;
+    const titleEl = document.querySelector('.obuchenie-testing-banner__title');
+    const btnEl = document.querySelector('.obuchenie-testing-banner__btn');
+    const graphicEl = document.querySelector('.obuchenie-testing-banner__graphic');
+
+    if (titleEl) titleEl.innerHTML = multilineHtml(data.title);
+    if (btnEl) {
+      btnEl.textContent = data.btnText || OBUCHENIE_DEFAULTS.testingBanner.btnText;
+      btnEl.href = (data.btnLink || '#contacts').trim() || '#contacts';
+    }
+
+    if (graphicEl) {
+      const image = (data.image || '').trim();
+      if (image) {
+        graphicEl.innerHTML = `<img src="${escapeAttr(image)}" alt="" class="obuchenie-testing-banner__image" decoding="async">`;
       } else {
-        banner.style.backgroundImage = '';
-        banner.classList.remove('ecp-support-banner--custom-bg');
+        graphicEl.innerHTML = '';
       }
     }
-
-    if (graphicEl) graphicEl.classList.toggle('is-hidden', hasCustomBanner);
-    bindSupportButton(data);
   }
 
   function renderObucheniePage(data) {
     renderHero(data.hero);
-    renderTariffs(data.tariffs);
-    renderBlanks(data.blanks);
-    renderManual(data.manual);
-    renderVideos(data.videos);
-    renderSupport(data.support);
+    renderNavCards(data.navCards);
+    renderCourseSearch(data.courseSearch);
+    renderCalendar(data.calendar);
+    renderCourseCards(data.courseCards);
+    renderTestingBanner(data.testingBanner);
     document.dispatchEvent(new CustomEvent('obuchenieContentReady', { detail: data }));
   }
 
@@ -440,12 +464,9 @@
     STORAGE_KEY,
     OBUCHENIE_DEFAULTS,
     migrateObucheniePageData,
-    migrateSupportData,
     loadObuchenieDataFromApi,
     loadObuchenieDataFromLocal,
-    resolveVideoThumbnail,
-    vkVideoId,
-    vkVideoThumbProxyUrl
+    renderObucheniePage
   };
 
   if (document.readyState === 'loading') {

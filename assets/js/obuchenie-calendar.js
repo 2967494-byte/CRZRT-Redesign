@@ -10,6 +10,20 @@
     '2026-6': [3, 10, 17, 24]
   };
 
+  function setCourseDays(map) {
+    if (!map || typeof map !== 'object') return;
+    COURSE_DAYS_BY_MONTH = {};
+    Object.keys(map).forEach(function (key) {
+      var days = map[key];
+      if (!Array.isArray(days)) return;
+      var normalized = days
+        .map(function (day) { return parseInt(day, 10); })
+        .filter(function (day) { return day >= 1 && day <= 31; });
+      if (normalized.length) COURSE_DAYS_BY_MONTH[key] = normalized;
+    });
+    render();
+  }
+
   var root = document.getElementById('obuchenieCourseCalendar');
   if (!root) return;
 
@@ -76,7 +90,7 @@
       cellIndex += 1;
     }
 
-    while (cellIndex % 7 !== 0) {
+    while (cellIndex < 42) {
       var trailing = document.createElement('span');
       trailing.className = 'obuchenie-calendar-day obuchenie-calendar-day--empty';
       trailing.setAttribute('aria-hidden', 'true');
@@ -96,4 +110,11 @@
   });
 
   render();
+
+  document.addEventListener('obuchenieContentReady', function (ev) {
+    var days = ev.detail && ev.detail.calendar && ev.detail.calendar.courseDaysByMonth;
+    if (days) setCourseDays(days);
+  });
+
+  window.ObuchenieCalendar = { setCourseDays: setCourseDays };
 })();

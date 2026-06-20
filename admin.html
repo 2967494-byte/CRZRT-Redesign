@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
     <title>Админ-панель | Центр Развития Закупок РТ</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
@@ -67,6 +68,13 @@
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
                     Страница Сопровождение
+                </div>
+                <div class="nav-item" data-target="obuchenie-page">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                    </svg>
+                    Страница Обучение
                 </div>
                 <div class="nav-item" data-target="consulting">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -313,6 +321,41 @@
                         </div>
                     </div>
                     <div id="supportSuppliersAdmin"></div>
+                </div>
+            </div>
+
+            <div id="obucheniePageBlock" class="admin-block" data-required-role="main-page">
+                <div class="admin-card">
+                    <div class="card-header"><span>Верхний баннер</span></div>
+                    <div id="obuchenieHeroAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header"><span>Навигационные карточки</span></div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">Шесть карточек под баннером: иконка, надпись и ссылка.</p>
+                    <div id="obuchenieNavCardsAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header"><span>Поиск курсов</span></div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">Заголовок, телефон и теги. Фильтры dropdown не редактируются.</p>
+                    <div id="obuchenieCourseSearchAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Календарь курсов</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminObuchenie.addCourseMonth()">+ Месяц</button>
+                    </div>
+                    <div id="obuchenieCalendarAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Карточки курсов</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminObuchenie.addCourseCard()">+ Курс</button>
+                    </div>
+                    <div id="obuchenieCourseCardsAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header"><span>Баннер тестирования</span></div>
+                    <div id="obuchenieTestingAdmin"></div>
                 </div>
             </div>
 
@@ -674,10 +717,12 @@
     <script src="assets/js/ecp-content.js?v=10"></script>
     <script src="assets/js/consulting-content.js?v=5"></script>
     <script src="assets/js/support-content.js?v=3"></script>
+    <script src="assets/js/obuchenie-content.js?v=3"></script>
     <script src="assets/js/admin-landing.js"></script>
     <script src="assets/js/admin-ecp.js?v=4"></script>
     <script src="assets/js/admin-consulting-page.js?v=2"></script>
     <script src="assets/js/admin-support.js?v=1"></script>
-    <script src="assets/js/admin-ui.js?v=6"></script>
+    <script src="assets/js/admin-obuchenie.js?v=1"></script>
+    <script src="assets/js/admin-ui.js?v=7"></script>
 </body>
 </html>
