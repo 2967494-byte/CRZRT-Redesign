@@ -3,7 +3,7 @@
  */
 (function () {
   const DEFAULT_OBUCHENIE_PAGE = window.ObuchenieContent?.OBUCHENIE_DEFAULTS || {
-    hero: { background: '', title: '', subtitle: '', gavelImage: '' },
+    hero: { background: '', title: '', subtitle: '', gavelImage: '', titleColor: '#00AE4D', subtitleColor: '#FFFFFF', titleTop: 68, titleLeft: 60, subtitleBottom: 40, subtitleLeft: 60 },
     navCards: [],
     courseSearch: { title: '', cta: '', phone: '', phoneDisplay: '', tags: [], showAllLabel: '' },
     calendar: { promoTitle: '', promoTitleColor: '', promoImage: '', allCoursesLink: '', courseDaysByMonth: {} },
@@ -43,20 +43,25 @@
       frame.classList.toggle('hero-slide-frame--empty', !v);
     }
     if (clr) clr.style.display = v ? 'inline-flex' : 'none';
+    if (id === 'obuchenie_hero_bg') {
+      setTimeout(() => window.AdminObuchenie?.updateLivePreview?.(), 0);
+    }
   }
 
   function heroBgUploadShell(id, label, sizeLabel = '1520×420') {
     return `
       <div class="form-group hero-slide-upload-group" style="margin-bottom:0;">
-        <label>${label}</label>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <label style="margin-bottom:0;">${label}</label>
+          <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}" style="display:flex; gap:8px;">
+            <button type="button" class="btn-save" style="padding:6px 12px;font-size:0.8rem;" onclick="AdminObuchenie.pickImage('${id}')">Загрузить</button>
+            <button type="button" class="btn-delete" style="padding:6px 12px;font-size:0.8rem;display:none;margin-left:0 !important;" id="${id}_clear" onclick="AdminObuchenie.clearImage('${id}')">Удалить</button>
+            <input type="hidden" id="${id}_val" value="">
+          </div>
+        </div>
         <div class="hero-slide-frame hero-slide-frame--empty" data-upload-frame-for="${id}">
           <span class="hero-slide-frame__empty">${sizeLabel}</span>
           <img id="${id}_preview" class="hero-slide-frame__img" src="" alt="">
-        </div>
-        <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}">
-          <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="AdminObuchenie.pickImage('${id}')">Загрузить</button>
-          <button type="button" class="btn-delete" style="padding:8px 14px;font-size:0.85rem;display:none;" id="${id}_clear" onclick="AdminObuchenie.clearImage('${id}')">Удалить</button>
-          <input type="hidden" id="${id}_val" value="">
         </div>
       </div>`;
   }
@@ -120,9 +125,17 @@
     const hero = getMigratedData(data).hero || {};
     el.innerHTML = `
       <div class="obuchenie-hero-grid">
-        <!-- Left: Banner upload -->
+        <!-- Left: Banner upload & Preview -->
         <div class="obuchenie-hero-banner-col">
           ${heroBgUploadShell('obuchenie_hero_bg', 'Готовый баннер (~1520×420 px)')}
+          
+          <div style="margin-top:20px;">
+            <label style="font-weight:600; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">Предпросмотр готового баннера с наложенным текстом</label>
+            <div class="obuchenie-live-banner-preview" id="obuchenie_live_banner_preview">
+              <div class="obuchenie-live-banner-title" id="obuchenie_live_banner_title"></div>
+              <div class="obuchenie-live-banner-subtitle" id="obuchenie_live_banner_subtitle"></div>
+            </div>
+          </div>
         </div>
         
         <!-- Right: Fields -->
@@ -131,7 +144,17 @@
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
             ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'obuchenie_hero_title_color', hero.titleColor || '#00AE4D')}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
-              <textarea class="form-control" id="obuchenie_hero_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)">${escapeAttr(hero.title)}</textarea>
+              <textarea class="form-control" id="obuchenie_hero_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)" oninput="AdminObuchenie.updateLivePreview()">${escapeAttr(hero.title)}</textarea>
+            </div>
+            <div style="display:flex; gap:16px; margin-top:12px;">
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ сверху (px)</label>
+                <input type="number" class="form-control" id="obuchenie_hero_title_top" value="${hero.titleTop !== undefined ? hero.titleTop : 68}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateLivePreview()">
+              </div>
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
+                <input type="number" class="form-control" id="obuchenie_hero_title_left" value="${hero.titleLeft !== undefined ? hero.titleLeft : 60}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateLivePreview()">
+              </div>
             </div>
           </div>
           
@@ -139,13 +162,24 @@
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
             ${blockHeaderWithColorHtml('Текст', 'obuchenie_hero_subtitle_color', hero.subtitleColor || '#FFFFFF')}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
-              <textarea class="form-control" id="obuchenie_hero_subtitle" rows="3" placeholder="Описание/текст под заголовком">${escapeAttr(hero.subtitle)}</textarea>
+              <textarea class="form-control" id="obuchenie_hero_subtitle" rows="3" placeholder="Описание/текст под заголовком" oninput="AdminObuchenie.updateLivePreview()">${escapeAttr(hero.subtitle)}</textarea>
+            </div>
+            <div style="display:flex; gap:16px; margin-top:12px;">
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ снизу (px)</label>
+                <input type="number" class="form-control" id="obuchenie_hero_subtitle_bottom" value="${hero.subtitleBottom !== undefined ? hero.subtitleBottom : 40}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateLivePreview()">
+              </div>
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
+                <input type="number" class="form-control" id="obuchenie_hero_subtitle_left" value="${hero.subtitleLeft !== undefined ? hero.subtitleLeft : 60}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateLivePreview()">
+              </div>
             </div>
           </div>
         </div>
       </div>
     `;
     setImageUploadState('obuchenie_hero_bg', hero.background);
+    setTimeout(() => AdminObuchenie.updateLivePreview(), 50);
   }
 
   function navCardAdminHtml(prefix, card, i) {
@@ -372,6 +406,7 @@
     }
     textEl.value = normalized.toUpperCase();
     pickerEl.value = normalized.toLowerCase();
+    setTimeout(() => window.AdminObuchenie?.updateLivePreview?.(), 0);
   }
 
   function collectCourseDaysFromForm() {
@@ -402,7 +437,11 @@
       subtitle: document.getElementById('obuchenie_hero_subtitle')?.value ?? data.hero?.subtitle ?? '',
       gavelImage: readImageVal('obuchenie_hero_gavel') || data.hero?.gavelImage || '',
       titleColor: readColorVal('obuchenie_hero_title_color', data.hero?.titleColor || '#00AE4D'),
-      subtitleColor: readColorVal('obuchenie_hero_subtitle_color', data.hero?.subtitleColor || '#FFFFFF')
+      subtitleColor: readColorVal('obuchenie_hero_subtitle_color', data.hero?.subtitleColor || '#FFFFFF'),
+      titleTop: parseInt(document.getElementById('obuchenie_hero_title_top')?.value, 10) || 68,
+      titleLeft: parseInt(document.getElementById('obuchenie_hero_title_left')?.value, 10) || 60,
+      subtitleBottom: parseInt(document.getElementById('obuchenie_hero_subtitle_bottom')?.value, 10) || 40,
+      subtitleLeft: parseInt(document.getElementById('obuchenie_hero_subtitle_left')?.value, 10) || 60
     };
 
     data.navCards = [];
@@ -512,6 +551,41 @@
     getCropSize,
     isObuchenieUploadId,
     syncColorField,
+    updateLivePreview() {
+      const titleEl = document.getElementById('obuchenie_live_banner_title');
+      const subtitleEl = document.getElementById('obuchenie_live_banner_subtitle');
+      const previewEl = document.getElementById('obuchenie_live_banner_preview');
+      if (!titleEl || !subtitleEl || !previewEl) return;
+
+      const titleText = document.getElementById('obuchenie_hero_title')?.value || '';
+      const subtitleText = document.getElementById('obuchenie_hero_subtitle')?.value || '';
+      const titleColor = document.getElementById('obuchenie_hero_title_color')?.value || '#00AE4D';
+      const subtitleColor = document.getElementById('obuchenie_hero_subtitle_color')?.value || '#FFFFFF';
+      const bgImage = document.getElementById('obuchenie_hero_bg_val')?.value || '';
+
+      const titleTop = parseFloat(document.getElementById('obuchenie_hero_title_top')?.value) || 68;
+      const titleLeft = parseFloat(document.getElementById('obuchenie_hero_title_left')?.value) || 60;
+      const subtitleBottom = parseFloat(document.getElementById('obuchenie_hero_subtitle_bottom')?.value) || 40;
+      const subtitleLeft = parseFloat(document.getElementById('obuchenie_hero_subtitle_left')?.value) || 60;
+
+      if (bgImage) {
+        previewEl.style.backgroundImage = `url(${bgImage})`;
+      } else {
+        previewEl.style.backgroundImage = '';
+      }
+
+      titleEl.textContent = titleText;
+      titleEl.style.color = titleColor;
+      titleEl.style.top = `calc((${titleTop} / 420) * 100%)`;
+      titleEl.style.left = `calc((${titleLeft} / 1520) * 100%)`;
+      titleEl.style.maxWidth = `calc(100% - ((${titleLeft} / 1520) * 100%) - 10px)`;
+
+      subtitleEl.textContent = subtitleText;
+      subtitleEl.style.color = subtitleColor;
+      subtitleEl.style.bottom = `calc((${subtitleBottom} / 420) * 100%)`;
+      subtitleEl.style.left = `calc((${subtitleLeft} / 1520) * 100%)`;
+      subtitleEl.style.maxWidth = `calc(100% - ((${subtitleLeft} / 1520) * 100%) - 10px)`;
+    },
     addCourseCard() {
       window.saveObucheniePageStateToMemory?.();
       window.obucheniePageData.courseCards.push({

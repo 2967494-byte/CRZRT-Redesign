@@ -92,7 +92,11 @@
         'Как зарабатывать на госзакупках и тендерах: практические курсы и программы для заказчиков и поставщиков.',
       gavelImage: 'assets/img/consulting/banner-gavel.png',
       titleColor: '#00AE4D',
-      subtitleColor: '#FFFFFF'
+      subtitleColor: '#FFFFFF',
+      titleTop: 68,
+      titleLeft: 60,
+      subtitleBottom: 40,
+      subtitleLeft: 60
     },
     navCards: DEFAULT_NAV_CARDS.map((card) => ({ ...card })),
     courseSearch: {
@@ -194,7 +198,11 @@
         subtitle: rawHero.subtitle || OBUCHENIE_DEFAULTS.hero.subtitle,
         gavelImage: rawHero.gavelImage || OBUCHENIE_DEFAULTS.hero.gavelImage,
         titleColor: rawHero.titleColor || OBUCHENIE_DEFAULTS.hero.titleColor,
-        subtitleColor: rawHero.subtitleColor || OBUCHENIE_DEFAULTS.hero.subtitleColor
+        subtitleColor: rawHero.subtitleColor || OBUCHENIE_DEFAULTS.hero.subtitleColor,
+        titleTop: rawHero.titleTop !== undefined ? parseInt(rawHero.titleTop, 10) : OBUCHENIE_DEFAULTS.hero.titleTop,
+        titleLeft: rawHero.titleLeft !== undefined ? parseInt(rawHero.titleLeft, 10) : OBUCHENIE_DEFAULTS.hero.titleLeft,
+        subtitleBottom: rawHero.subtitleBottom !== undefined ? parseInt(rawHero.subtitleBottom, 10) : OBUCHENIE_DEFAULTS.hero.subtitleBottom,
+        subtitleLeft: rawHero.subtitleLeft !== undefined ? parseInt(rawHero.subtitleLeft, 10) : OBUCHENIE_DEFAULTS.hero.subtitleLeft
       },
       navCards,
       courseSearch: {
@@ -277,10 +285,14 @@
     if (titleEl) {
       titleEl.innerHTML = multilineHtml(hero?.title);
       titleEl.style.color = hero?.titleColor || OBUCHENIE_DEFAULTS.hero.titleColor;
+      if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
+      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
     }
     if (subtitleEl) {
       subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
       subtitleEl.style.color = hero?.subtitleColor || OBUCHENIE_DEFAULTS.hero.subtitleColor;
+      if (hero?.subtitleBottom !== undefined) subtitleEl.style.bottom = `${hero.subtitleBottom}px`;
+      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
     }
     if (gavelEl && hero?.gavelImage) gavelEl.src = hero.gavelImage;
 

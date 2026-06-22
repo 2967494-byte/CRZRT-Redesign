@@ -1226,3 +1226,38 @@ body {
         .obuchenie-block-header {
             margin-bottom: 8px;
         }
+
+        .obuchenie-live-banner-preview {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1520 / 420;
+            border-radius: 12px;
+            background-color: #B8FDC6;
+            background-image: radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #B8FDC6 100%);
+            background-size: cover;
+            background-position: center;
+            border: 1px solid var(--card-border);
+            container-type: inline-size;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 174, 77, 0.1);
+        }
+
+        .obuchenie-live-banner-title {
+            position: absolute;
+            font-family: var(--font-main), 'Google Sans', sans-serif;
+            font-weight: 700;
+            line-height: 100%;
+            font-size: calc((60 / 1520) * 100cqw);
+            white-space: pre-line;
+            transition: all 0.15s ease-out;
+        }
+
+        .obuchenie-live-banner-subtitle {
+            position: absolute;
+            font-family: var(--font-main), 'Google Sans', sans-serif;
+            font-weight: 500;
+            line-height: 120%;
+            font-size: calc((20 / 1520) * 100cqw);
+            white-space: pre-line;
+            transition: all 0.15s ease-out;
+        }
