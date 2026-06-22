@@ -252,24 +252,13 @@
 
     if (titleEl) {
       titleEl.innerHTML = multilineHtml(hero?.title);
-      titleEl.style.color = hero?.titleColor || '';
-      if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
-      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
-      if (hero?.titleTop !== undefined || hero?.titleLeft !== undefined) {
-         titleEl.style.position = 'absolute';
-         titleEl.style.margin = '0';
-      }
+      if (hero?.titleColor) titleEl.style.color = hero.titleColor;
+      else titleEl.style.removeProperty('color');
     }
     if (subtitleEl) {
       subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
-      subtitleEl.style.color = hero?.subtitleColor || '';
-      if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
-      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
-      if (hero?.subtitleTop !== undefined || hero?.subtitleLeft !== undefined) {
-         subtitleEl.style.position = 'absolute';
-         subtitleEl.style.margin = '0';
-         subtitleEl.style.maxWidth = 'none';
-      }
+      if (hero?.subtitleColor) subtitleEl.style.color = hero.subtitleColor;
+      else subtitleEl.style.removeProperty('color');
     }
 
     if (slider) {

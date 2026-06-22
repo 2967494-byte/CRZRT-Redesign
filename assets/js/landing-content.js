@@ -316,24 +316,13 @@
     const subEl = slideEl.querySelector('.hero-slide__subtitle');
     if (titleEl) {
       titleEl.innerHTML = multilineHtml(first.title);
-      titleEl.style.color = first.titleColor || '';
-      if (first.titleTop !== undefined) titleEl.style.top = `${first.titleTop}px`;
-      if (first.titleLeft !== undefined) titleEl.style.left = `${first.titleLeft}px`;
-      if (first.titleTop !== undefined || first.titleLeft !== undefined) {
-         titleEl.style.position = 'absolute';
-         titleEl.style.margin = '0';
-      }
+      if (first.titleColor) titleEl.style.color = first.titleColor;
+      else titleEl.style.removeProperty('color');
     }
     if (subEl) {
       subEl.innerHTML = multilineHtml(first.subtitle);
-      subEl.style.color = first.subtitleColor || '';
-      if (first.subtitleTop !== undefined) subEl.style.top = `${first.subtitleTop}px`;
-      if (first.subtitleLeft !== undefined) subEl.style.left = `${first.subtitleLeft}px`;
-      if (first.subtitleTop !== undefined || first.subtitleLeft !== undefined) {
-         subEl.style.position = 'absolute';
-         subEl.style.margin = '0';
-         subEl.style.maxWidth = 'none';
-      }
+      if (first.subtitleColor) subEl.style.color = first.subtitleColor;
+      else subEl.style.removeProperty('color');
     }
 
     const dotsWrap = slideEl.querySelector('.hero-slide__dots');
@@ -371,24 +360,13 @@
     if (slider && slide.background) slider.style.backgroundImage = `url('${slide.background}')`;
     if (titleEl) {
       titleEl.innerHTML = multilineHtml(slide.title);
-      titleEl.style.color = slide.titleColor || '';
-      if (slide.titleTop !== undefined) titleEl.style.top = `${slide.titleTop}px`;
-      if (slide.titleLeft !== undefined) titleEl.style.left = `${slide.titleLeft}px`;
-      if (slide.titleTop !== undefined || slide.titleLeft !== undefined) {
-         titleEl.style.position = 'absolute';
-         titleEl.style.margin = '0';
-      }
+      if (slide.titleColor) titleEl.style.color = slide.titleColor;
+      else titleEl.style.removeProperty('color');
     }
     if (subEl) {
       subEl.innerHTML = multilineHtml(slide.subtitle);
-      subEl.style.color = slide.subtitleColor || '';
-      if (slide.subtitleTop !== undefined) subEl.style.top = `${slide.subtitleTop}px`;
-      if (slide.subtitleLeft !== undefined) subEl.style.left = `${slide.subtitleLeft}px`;
-      if (slide.subtitleTop !== undefined || slide.subtitleLeft !== undefined) {
-         subEl.style.position = 'absolute';
-         subEl.style.margin = '0';
-         subEl.style.maxWidth = 'none';
-      }
+      if (slide.subtitleColor) subEl.style.color = slide.subtitleColor;
+      else subEl.style.removeProperty('color');
     }
     document.querySelectorAll('.hero-slide__dots .dot').forEach((dot, idx) => {
       dot.classList.toggle('active', idx === i);
