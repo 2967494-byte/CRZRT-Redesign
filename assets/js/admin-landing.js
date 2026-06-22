@@ -199,6 +199,19 @@
       </div>`;
   }
 
+  function blockHeaderWithColorHtml(title, colorId, colorValue, defaultColor) {
+    const isEnabled = colorValue && colorValue !== defaultColor && colorValue !== '#000000' && colorValue !== '#333333';
+    return `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <span style="font-weight:600; font-size:0.95rem;">${title}</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="${colorId}_enable" ${isEnabled ? 'checked' : ''} onchange="document.getElementById('${colorId}').disabled = !this.checked">
+          <input type="color" id="${colorId}" value="${colorValue || defaultColor}" ${isEnabled ? '' : 'disabled'} style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer;">
+        </div>
+      </div>
+    `;
+  }
+
   function renderHeroSlides(container, slides) {
     container.innerHTML = '';
     slides.forEach((slide, i) => {
@@ -207,39 +220,57 @@
         `<div class="admin-subcard" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;margin-bottom:20px;">
           <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;z-index:2;" onclick="AdminLanding.removeHeroSlide(${i})">×</button>
           
-          <div class="hero-editor-grid">
-            <div class="hero-editor-preview-col">
-              <div class="obuchenie-block-header"><strong>Предпросмотр слайда ${i + 1}</strong></div>
-              <div class="landing-live-banner-preview" id="m_hero_live_preview_${i}">
-                <div class="live-banner-title" id="m_hero_live_title_${i}">${escapeAttr(slide.title)}</div>
-                <div class="live-banner-subtitle" id="m_hero_live_subtitle_${i}">${escapeAttr(slide.subtitle)}</div>
+          <div class="obuchenie-block-header"><strong>Слайд ${i + 1}</strong></div>
+          <div class="obuchenie-hero-grid" style="margin-top: 15px;">
+            <!-- Left: Banner upload & Preview -->
+            <div class="obuchenie-hero-banner-col">
+              ${heroBgUploadShell(`m_hero_bg_${i}`, 'Фон слайда (как hero_section.png, ~1520×420)')}
+              
+              <div style="margin-top:20px;">
+                <label style="font-weight:600; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">Предпросмотр готового баннера с наложенным текстом</label>
+                <div class="landing-live-banner-preview" id="m_hero_live_preview_${i}">
+                  <div class="live-banner-title" id="m_hero_live_title_${i}">${escapeAttr(slide.title)}</div>
+                  <div class="live-banner-subtitle" id="m_hero_live_subtitle_${i}">${escapeAttr(slide.subtitle)}</div>
+                </div>
               </div>
             </div>
-            <div class="hero-editor-controls-col">
-              ${heroBgUploadShell(`m_hero_bg_${i}`, 'Фон слайда (как hero_section.png, ~1520×420)')}
-              <div class="form-group" style="margin-top:20px;">
-                <label>Заголовок (перенос — Enter)</label>
-                <textarea class="form-control" id="m_hero_title_${i}" rows="2">${escapeAttr(slide.title)}</textarea>
+            
+            <!-- Right: Fields -->
+            <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
+              <!-- Block "Заголовок" -->
+              <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', `m_hero_title_color_${i}`, slide.titleColor, '#ffffff')}
+                <div class="form-group" style="margin-bottom:0; margin-top:8px;">
+                  <textarea class="form-control" id="m_hero_title_${i}" rows="2" placeholder="Заголовок баннера">${escapeAttr(slide.title)}</textarea>
+                </div>
+                <div style="display:flex; gap:16px; margin-top:12px;">
+                  <div style="flex:1; margin-bottom:0;" class="form-group">
+                    <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ сверху (px)</label>
+                    <input type="number" class="form-control" id="m_hero_title_top_${i}" value="${slide.titleTop !== undefined ? slide.titleTop : 122}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
+                  </div>
+                  <div style="flex:1; margin-bottom:0;" class="form-group">
+                    <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
+                    <input type="number" class="form-control" id="m_hero_title_left_${i}" value="${slide.titleLeft !== undefined ? slide.titleLeft : 70}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
+                  </div>
+                </div>
               </div>
-              <div class="form-group" style="display:flex; gap:10px; align-items:center;">
-                 <label>Цвет заголовка:</label>
-                 <input type="color" id="m_hero_title_color_${i}" value="${slide.titleColor || '#ffffff'}">
-              </div>
-              <div class="form-group" style="display:flex; gap:10px;">
-                 <div style="flex:1;"><label>Отступ заголовка сверху (px):</label><input type="number" class="form-control" id="m_hero_title_top_${i}" value="${slide.titleTop !== undefined ? slide.titleTop : 122}"></div>
-                 <div style="flex:1;"><label>Отступ заголовка слева (px):</label><input type="number" class="form-control" id="m_hero_title_left_${i}" value="${slide.titleLeft !== undefined ? slide.titleLeft : 70}"></div>
-              </div>
-              <div class="form-group" style="margin-top:15px;">
-                <label>Подзаголовок</label>
-                <textarea class="form-control" id="m_hero_subtitle_${i}" rows="2">${escapeAttr(slide.subtitle)}</textarea>
-              </div>
-              <div class="form-group" style="display:flex; gap:10px; align-items:center;">
-                 <label>Цвет подзаголовка:</label>
-                 <input type="color" id="m_hero_subtitle_color_${i}" value="${slide.subtitleColor || '#ffffff'}">
-              </div>
-              <div class="form-group" style="display:flex; gap:10px;">
-                 <div style="flex:1;"><label>Отступ подзаголовка сверху (px):</label><input type="number" class="form-control" id="m_hero_subtitle_top_${i}" value="${slide.subtitleTop !== undefined ? slide.subtitleTop : 213}"></div>
-                 <div style="flex:1;"><label>Отступ подзаголовка слева (px):</label><input type="number" class="form-control" id="m_hero_subtitle_left_${i}" value="${slide.subtitleLeft !== undefined ? slide.subtitleLeft : 70}"></div>
+              
+              <!-- Block "Текст" -->
+              <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
+                ${blockHeaderWithColorHtml('Текст', `m_hero_subtitle_color_${i}`, slide.subtitleColor, '#ffffff')}
+                <div class="form-group" style="margin-bottom:0; margin-top:8px;">
+                  <textarea class="form-control" id="m_hero_subtitle_${i}" rows="3" placeholder="Описание/текст под заголовком">${escapeAttr(slide.subtitle)}</textarea>
+                </div>
+                <div style="display:flex; gap:16px; margin-top:12px;">
+                  <div style="flex:1; margin-bottom:0;" class="form-group">
+                    <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ сверху (px)</label>
+                    <input type="number" class="form-control" id="m_hero_subtitle_top_${i}" value="${slide.subtitleTop !== undefined ? slide.subtitleTop : 213}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
+                  </div>
+                  <div style="flex:1; margin-bottom:0;" class="form-group">
+                    <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
+                    <input type="number" class="form-control" id="m_hero_subtitle_left_${i}" value="${slide.subtitleLeft !== undefined ? slide.subtitleLeft : 70}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -250,12 +281,18 @@
         ['title', 'subtitle'].forEach(field => {
             const input = document.getElementById(`m_hero_${field}_${i}`);
             const color = document.getElementById(`m_hero_${field}_color_${i}`);
+            const colorEnable = document.getElementById(`m_hero_${field}_color_${i}_enable`);
             const top = document.getElementById(`m_hero_${field}_top_${i}`);
             const left = document.getElementById(`m_hero_${field}_left_${i}`);
             const live = document.getElementById(`m_hero_live_${field}_${i}`);
 
             if(input && live) input.addEventListener('input', e => live.innerText = e.target.value);
             if(color && live) color.addEventListener('input', e => live.style.color = e.target.value);
+            if(colorEnable && live && color) {
+                colorEnable.addEventListener('change', e => {
+                    live.style.color = e.target.checked ? color.value : '';
+                });
+            }
             if(top && live) top.addEventListener('input', e => live.style.top = `${(e.target.value / 420) * 100}%`);
             if(left && live) left.addEventListener('input', e => live.style.left = `${(e.target.value / 1520) * 100}%`);
         });
@@ -501,13 +538,15 @@
     const heroSlides = [];
     const heroCount = document.querySelectorAll('[id^="m_hero_bg_"][type="hidden"]').length;
     for (let i = 0; i < heroCount; i++) {
+      const titleColorEnable = document.getElementById(`m_hero_title_color_${i}_enable`);
+      const subtitleColorEnable = document.getElementById(`m_hero_subtitle_color_${i}_enable`);
       heroSlides.push({
         title: document.getElementById(`m_hero_title_${i}`)?.value || '',
-        titleColor: document.getElementById(`m_hero_title_color_${i}`)?.value || '#ffffff',
+        titleColor: (titleColorEnable && titleColorEnable.checked) ? (document.getElementById(`m_hero_title_color_${i}`)?.value || '#ffffff') : '',
         titleTop: parseInt(document.getElementById(`m_hero_title_top_${i}`)?.value || 122, 10),
         titleLeft: parseInt(document.getElementById(`m_hero_title_left_${i}`)?.value || 70, 10),
         subtitle: document.getElementById(`m_hero_subtitle_${i}`)?.value || '',
-        subtitleColor: document.getElementById(`m_hero_subtitle_color_${i}`)?.value || '#ffffff',
+        subtitleColor: (subtitleColorEnable && subtitleColorEnable.checked) ? (document.getElementById(`m_hero_subtitle_color_${i}`)?.value || '#ffffff') : '',
         subtitleTop: parseInt(document.getElementById(`m_hero_subtitle_top_${i}`)?.value || 213, 10),
         subtitleLeft: parseInt(document.getElementById(`m_hero_subtitle_left_${i}`)?.value || 70, 10),
         background: readImageVal(`m_hero_bg_${i}`)
