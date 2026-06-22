@@ -356,21 +356,63 @@
     if (!el) return;
     const banner = getMigratedData(data).testingBanner || {};
     el.innerHTML = `
-      <div class="form-group">
-        <label>Заголовок (Enter — перенос)</label>
-        <textarea class="form-control" id="obuchenie_testing_title" rows="2">${escapeAttr(banner.title)}</textarea>
+      <div class="obuchenie-hero-grid">
+        <!-- Left: Banner upload & Preview -->
+        <div class="obuchenie-hero-banner-col">
+          ${heroBgUploadShell('obuchenie_testing_image', 'Фоновое изображение баннера (~1520×435 px)')}
+          
+          <div style="margin-top:20px;">
+            <label style="font-weight:600; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">Предпросмотр готового баннера с наложенным текстом</label>
+            <div class="ecp-live-banner-preview" id="obuchenie_testing_live_preview" style="height:120px; position:relative; background-size:cover; background-position:center; border-radius:12px; overflow:hidden;">
+              <div class="live-banner-title" id="obuchenie_testing_live_title" style="top:25%; left:60px; position:absolute; font-size:16px;">${escapeAttr(banner.title)}</div>
+              <div class="hero-btn" id="obuchenie_testing_live_btn" style="position:absolute; bottom:20%; left:60px; padding:6px 14px; background:#fff; color:#000; border-radius:8px; font-size:11px; pointer-events:none;">${escapeAttr(banner.btnText || 'Пройти тест')}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right: Fields -->
+        <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
+          <!-- Block "Заголовок" -->
+          <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
+            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'obuchenie_testing_title_color', banner.titleColor || '#ffffff')}
+            <div class="form-group" style="margin-bottom:0; margin-top:8px;">
+              <textarea class="form-control" id="obuchenie_testing_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)" oninput="AdminObuchenie.updateTestingLivePreview()">${escapeAttr(banner.title)}</textarea>
+            </div>
+            <div style="display:flex; gap:16px; margin-top:12px;">
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ сверху (px)</label>
+                <input type="number" class="form-control" id="obuchenie_testing_title_top" value="${banner.titleTop !== undefined ? banner.titleTop : 68}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateTestingLivePreview()">
+              </div>
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
+                <input type="number" class="form-control" id="obuchenie_testing_title_left" value="${banner.titleLeft !== undefined ? banner.titleLeft : 60}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateTestingLivePreview()">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Block "Кнопка" -->
+          <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
+            <div style="font-weight:600; font-size:0.95rem; margin-bottom:12px;">Кнопка</div>
+            <div class="form-group" style="margin-bottom:12px;">
+              <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Текст кнопки</label>
+              <input type="text" class="form-control" id="obuchenie_testing_btn_text" value="${escapeAttr(banner.btnText)}" placeholder="Например: Пройти тест" oninput="AdminObuchenie.updateTestingLivePreview()">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Ссылка кнопки</label>
+              <input type="text" class="form-control" id="obuchenie_testing_btn_link" value="${escapeAttr(banner.btnLink)}" placeholder="URL или #anchor">
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Текст кнопки</label>
-        <input type="text" class="form-control" id="obuchenie_testing_btn_text" value="${escapeAttr(banner.btnText)}">
-      </div>
-      <div class="form-group">
-        <label>Ссылка кнопки</label>
-        <input type="text" class="form-control" id="obuchenie_testing_btn_link" value="${escapeAttr(banner.btnLink)}">
-      </div>
-      ${imageUploadHtml('obuchenie_testing_image', 'Фоновое изображение баннера', 'Рекомендуемый размер ~1520×435 px — заливает весь блок.')}
     `;
     setImageUploadState('obuchenie_testing_image', banner.image);
+    setTimeout(() => {
+      AdminObuchenie.updateTestingLivePreview();
+      const colorEnable = document.getElementById('obuchenie_testing_title_color_enable');
+      const colorInput = document.getElementById('obuchenie_testing_title_color');
+      if (colorEnable) colorEnable.addEventListener('change', AdminObuchenie.updateTestingLivePreview);
+      if (colorInput) colorInput.addEventListener('input', AdminObuchenie.updateTestingLivePreview);
+    }, 50);
   }
 
   function renderObucheniePageAdmin(data) {
@@ -488,8 +530,12 @@
       });
     }
 
+    const testingTitleEnable = document.getElementById('obuchenie_testing_title_color_enable');
     data.testingBanner = {
       title: document.getElementById('obuchenie_testing_title')?.value ?? data.testingBanner?.title ?? '',
+      titleColor: (testingTitleEnable && testingTitleEnable.checked) ? (document.getElementById('obuchenie_testing_title_color')?.value || '#ffffff') : '',
+      titleTop: parseFloat(document.getElementById('obuchenie_testing_title_top')?.value) || 68,
+      titleLeft: parseFloat(document.getElementById('obuchenie_testing_title_left')?.value) || 60,
       btnText: document.getElementById('obuchenie_testing_btn_text')?.value ?? data.testingBanner?.btnText ?? '',
       btnLink: document.getElementById('obuchenie_testing_btn_link')?.value ?? data.testingBanner?.btnLink ?? '#contacts',
       image: readImageVal('obuchenie_testing_image') || data.testingBanner?.image || ''
@@ -551,6 +597,35 @@
     getCropSize,
     isObuchenieUploadId,
     syncColorField,
+    updateTestingLivePreview() {
+      const titleEl = document.getElementById('obuchenie_testing_live_title');
+      const btnEl = document.getElementById('obuchenie_testing_live_btn');
+      const previewEl = document.getElementById('obuchenie_testing_live_preview');
+      if (!titleEl || !btnEl || !previewEl) return;
+
+      const titleText = document.getElementById('obuchenie_testing_title')?.value || '';
+      const btnText = document.getElementById('obuchenie_testing_btn_text')?.value || 'Пройти тест';
+      
+      const titleEnable = document.getElementById('obuchenie_testing_title_color_enable');
+      const titleColor = (titleEnable && titleEnable.checked) ? document.getElementById('obuchenie_testing_title_color')?.value : '#ffffff';
+      
+      const bgImage = document.getElementById('obuchenie_testing_image_val')?.value || '';
+      const titleTop = parseFloat(document.getElementById('obuchenie_testing_title_top')?.value) || 68;
+      const titleLeft = parseFloat(document.getElementById('obuchenie_testing_title_left')?.value) || 60;
+
+      if (bgImage) {
+        previewEl.style.backgroundImage = `url(${bgImage})`;
+      } else {
+        previewEl.style.backgroundImage = '';
+      }
+
+      titleEl.textContent = titleText;
+      titleEl.style.color = titleColor || '#ffffff';
+      titleEl.style.top = `calc((${titleTop} / 435) * 100%)`;
+      titleEl.style.left = `calc((${titleLeft} / 1520) * 100%)`;
+
+      btnEl.textContent = btnText;
+    },
     updateLivePreview() {
       const titleEl = document.getElementById('obuchenie_live_banner_title');
       const subtitleEl = document.getElementById('obuchenie_live_banner_subtitle');

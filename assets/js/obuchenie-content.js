@@ -446,10 +446,39 @@
     const imageEl = document.querySelector('.obuchenie-testing-banner__image');
     const image = (data.image || '').trim();
 
-    if (titleEl) titleEl.innerHTML = multilineHtml(data.title);
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(data.title);
+      if (data.titleColor) {
+        titleEl.style.color = data.titleColor;
+      } else {
+        titleEl.style.color = '';
+      }
+      if (data.titleTop !== undefined || data.titleLeft !== undefined) {
+        titleEl.style.position = 'absolute';
+        titleEl.style.margin = '0';
+        if (data.titleTop !== undefined) titleEl.style.top = `${data.titleTop}px`;
+        if (data.titleLeft !== undefined) titleEl.style.left = `${data.titleLeft}px`;
+      } else {
+        titleEl.style.position = '';
+        titleEl.style.top = '';
+        titleEl.style.left = '';
+      }
+    }
+    
     if (btnEl) {
       btnEl.textContent = data.btnText || OBUCHENIE_DEFAULTS.testingBanner.btnText;
       btnEl.href = (data.btnLink || '#contacts').trim() || '#contacts';
+      
+      if (data.titleTop !== undefined || data.titleLeft !== undefined) {
+         // position the button absolute as well, roughly matching the preview
+         btnEl.style.position = 'absolute';
+         btnEl.style.bottom = '15%'; 
+         if (data.titleLeft !== undefined) btnEl.style.left = `${data.titleLeft}px`;
+      } else {
+         btnEl.style.position = '';
+         btnEl.style.bottom = '';
+         btnEl.style.left = '';
+      }
     }
 
     if (imageEl) {
