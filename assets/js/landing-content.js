@@ -14,8 +14,11 @@
   const LANDING_DEFAULTS = {
     heroSlides: [
       {
+      {
         title: 'Надежное тендерное\nсопровождение',
+        titleColor: '#000000', titleTop: 122, titleLeft: 70,
         subtitle: 'Поиск выгодных закупок\nи оценка целесообразности участия',
+        subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70,
         background: 'assets/img/hero_section.png'
       }
     ],
@@ -159,11 +162,29 @@
       const bg = raw?.heroBgImage || LANDING_DEFAULTS.heroSlides[0].background;
       data.heroSlides = [
         {
-          title: raw?.heroTitle || LANDING_DEFAULTS.heroSlides[0].title,
-          subtitle: raw?.heroSubtitle || LANDING_DEFAULTS.heroSlides[0].subtitle,
+          title: raw?.heroTitle !== undefined ? raw.heroTitle : LANDING_DEFAULTS.heroSlides[0].title,
+          titleColor: raw?.heroTitleColor || LANDING_DEFAULTS.heroSlides[0].titleColor,
+          titleTop: raw?.heroTitleTop !== undefined ? raw.heroTitleTop : LANDING_DEFAULTS.heroSlides[0].titleTop,
+          titleLeft: raw?.heroTitleLeft !== undefined ? raw.heroTitleLeft : LANDING_DEFAULTS.heroSlides[0].titleLeft,
+          subtitle: raw?.heroSubtitle !== undefined ? raw.heroSubtitle : LANDING_DEFAULTS.heroSlides[0].subtitle,
+          subtitleColor: raw?.heroSubtitleColor || LANDING_DEFAULTS.heroSlides[0].subtitleColor,
+          subtitleTop: raw?.heroSubtitleTop !== undefined ? raw.heroSubtitleTop : LANDING_DEFAULTS.heroSlides[0].subtitleTop,
+          subtitleLeft: raw?.heroSubtitleLeft !== undefined ? raw.heroSubtitleLeft : LANDING_DEFAULTS.heroSlides[0].subtitleLeft,
           background: bg
         }
       ];
+    } else {
+      data.heroSlides = data.heroSlides.map(s => ({
+          ...s,
+          title: s.title !== undefined ? s.title : LANDING_DEFAULTS.heroSlides[0].title,
+          titleColor: s.titleColor || LANDING_DEFAULTS.heroSlides[0].titleColor,
+          titleTop: s.titleTop !== undefined ? s.titleTop : LANDING_DEFAULTS.heroSlides[0].titleTop,
+          titleLeft: s.titleLeft !== undefined ? s.titleLeft : LANDING_DEFAULTS.heroSlides[0].titleLeft,
+          subtitle: s.subtitle !== undefined ? s.subtitle : LANDING_DEFAULTS.heroSlides[0].subtitle,
+          subtitleColor: s.subtitleColor || LANDING_DEFAULTS.heroSlides[0].subtitleColor,
+          subtitleTop: s.subtitleTop !== undefined ? s.subtitleTop : LANDING_DEFAULTS.heroSlides[0].subtitleTop,
+          subtitleLeft: s.subtitleLeft !== undefined ? s.subtitleLeft : LANDING_DEFAULTS.heroSlides[0].subtitleLeft,
+      }));
     }
 
     if (!Array.isArray(data.serviceCards) || !data.serviceCards.length) {
@@ -294,8 +315,27 @@
 
     const titleEl = slideEl.querySelector('.hero-slide__title');
     const subEl = slideEl.querySelector('.hero-slide__subtitle');
-    if (titleEl) titleEl.innerHTML = multilineHtml(first.title);
-    if (subEl) subEl.innerHTML = multilineHtml(first.subtitle);
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(first.title);
+      titleEl.style.color = first.titleColor || '';
+      if (first.titleTop !== undefined) titleEl.style.top = `${first.titleTop}px`;
+      if (first.titleLeft !== undefined) titleEl.style.left = `${first.titleLeft}px`;
+      if (first.titleTop !== undefined || first.titleLeft !== undefined) {
+         titleEl.style.position = 'absolute';
+         titleEl.style.margin = '0';
+      }
+    }
+    if (subEl) {
+      subEl.innerHTML = multilineHtml(first.subtitle);
+      subEl.style.color = first.subtitleColor || '';
+      if (first.subtitleTop !== undefined) subEl.style.top = `${first.subtitleTop}px`;
+      if (first.subtitleLeft !== undefined) subEl.style.left = `${first.subtitleLeft}px`;
+      if (first.subtitleTop !== undefined || first.subtitleLeft !== undefined) {
+         subEl.style.position = 'absolute';
+         subEl.style.margin = '0';
+         subEl.style.maxWidth = 'none';
+      }
+    }
 
     const dotsWrap = slideEl.querySelector('.hero-slide__dots');
     const arrowsWrap = slideEl.querySelector('.hero-slide__arrows');
@@ -330,8 +370,27 @@
     const titleEl = document.querySelector('.hero-slide__title');
     const subEl = document.querySelector('.hero-slide__subtitle');
     if (slider && slide.background) slider.style.backgroundImage = `url('${slide.background}')`;
-    if (titleEl) titleEl.innerHTML = multilineHtml(slide.title);
-    if (subEl) subEl.innerHTML = multilineHtml(slide.subtitle);
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(slide.title);
+      titleEl.style.color = slide.titleColor || '';
+      if (slide.titleTop !== undefined) titleEl.style.top = `${slide.titleTop}px`;
+      if (slide.titleLeft !== undefined) titleEl.style.left = `${slide.titleLeft}px`;
+      if (slide.titleTop !== undefined || slide.titleLeft !== undefined) {
+         titleEl.style.position = 'absolute';
+         titleEl.style.margin = '0';
+      }
+    }
+    if (subEl) {
+      subEl.innerHTML = multilineHtml(slide.subtitle);
+      subEl.style.color = slide.subtitleColor || '';
+      if (slide.subtitleTop !== undefined) subEl.style.top = `${slide.subtitleTop}px`;
+      if (slide.subtitleLeft !== undefined) subEl.style.left = `${slide.subtitleLeft}px`;
+      if (slide.subtitleTop !== undefined || slide.subtitleLeft !== undefined) {
+         subEl.style.position = 'absolute';
+         subEl.style.margin = '0';
+         subEl.style.maxWidth = 'none';
+      }
+    }
     document.querySelectorAll('.hero-slide__dots .dot').forEach((dot, idx) => {
       dot.classList.toggle('active', idx === i);
     });

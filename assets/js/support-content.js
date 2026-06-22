@@ -111,8 +111,10 @@
     hero: {
       background: '',
       title: 'Надежное тендерное\nсопровождение',
+      titleColor: '#000000', titleTop: 122, titleLeft: 70,
       subtitle:
-        'Комплексная помощь экспертов на всех этапах закупок: от подготовки документации до заключения контракта и исполнения обязательств.'
+        'Комплексная помощь экспертов на всех этапах закупок: от подготовки документации до заключения контракта и исполнения обязательств.',
+      subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70
     },
     navCards: DEFAULT_NAV_CARDS.map((card) => ({ ...card })),
     customers: {
@@ -251,8 +253,14 @@
     const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
     const hero = {
       background: rawHero.background || '',
-      title: rawHero.title || SUPPORT_DEFAULTS.hero.title,
-      subtitle: rawHero.subtitle || SUPPORT_DEFAULTS.hero.subtitle
+      title: rawHero.title !== undefined ? rawHero.title : SUPPORT_DEFAULTS.hero.title,
+      titleColor: rawHero.titleColor || SUPPORT_DEFAULTS.hero.titleColor,
+      titleTop: rawHero.titleTop !== undefined ? rawHero.titleTop : SUPPORT_DEFAULTS.hero.titleTop,
+      titleLeft: rawHero.titleLeft !== undefined ? rawHero.titleLeft : SUPPORT_DEFAULTS.hero.titleLeft,
+      subtitle: rawHero.subtitle !== undefined ? rawHero.subtitle : SUPPORT_DEFAULTS.hero.subtitle,
+      subtitleColor: rawHero.subtitleColor || SUPPORT_DEFAULTS.hero.subtitleColor,
+      subtitleTop: rawHero.subtitleTop !== undefined ? rawHero.subtitleTop : SUPPORT_DEFAULTS.hero.subtitleTop,
+      subtitleLeft: rawHero.subtitleLeft !== undefined ? rawHero.subtitleLeft : SUPPORT_DEFAULTS.hero.subtitleLeft
     };
 
     const navCards =
@@ -414,8 +422,27 @@
     const background = (hero?.background || '').trim();
     const hasCustomBanner = Boolean(background);
 
-    if (titleEl) titleEl.innerHTML = multilineHtml(hero?.title);
-    if (subtitleEl) subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(hero?.title);
+      titleEl.style.color = hero?.titleColor || '';
+      if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
+      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
+      if (hero?.titleTop !== undefined || hero?.titleLeft !== undefined) {
+         titleEl.style.position = 'absolute';
+         titleEl.style.margin = '0';
+      }
+    }
+    if (subtitleEl) {
+      subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
+      subtitleEl.style.color = hero?.subtitleColor || '';
+      if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
+      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
+      if (hero?.subtitleTop !== undefined || hero?.subtitleLeft !== undefined) {
+         subtitleEl.style.position = 'absolute';
+         subtitleEl.style.margin = '0';
+         subtitleEl.style.maxWidth = 'none';
+      }
+    }
 
     if (banner) {
       if (hasCustomBanner) {

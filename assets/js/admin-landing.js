@@ -30,7 +30,9 @@
     heroSlides: [
       {
         title: 'Надежное тендерное\nсопровождение',
+        titleColor: '#000000', titleTop: 122, titleLeft: 70,
         subtitle: 'Поиск выгодных закупок\nи оценка целесообразности участия',
+        subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70,
         background: 'assets/img/hero_section.png'
       }
     ],
@@ -108,6 +110,18 @@
       frame.classList.toggle('hero-slide-frame--empty', !v);
     }
     if (clr) clr.style.display = v ? 'inline-flex' : 'none';
+
+    if (id.startsWith('m_hero_bg_')) {
+        const idx = id.split('_').pop();
+        const livePreview = document.getElementById(`m_hero_live_preview_${idx}`);
+        if (livePreview) {
+            if (v) {
+                livePreview.style.backgroundImage = `url('${v}')`;
+            } else {
+                livePreview.style.backgroundImage = 'radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #B8FDC6 100%)';
+            }
+        }
+    }
   }
 
   function consultPhotoUploadShell(id, label, index) {
@@ -190,16 +204,77 @@
     slides.forEach((slide, i) => {
       container.insertAdjacentHTML(
         'beforeend',
-        `<div class="admin-subcard" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;">
-          <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;" onclick="AdminLanding.removeHeroSlide(${i})">×</button>
-          <div class="form-group"><label>Заголовок (перенос — Enter)</label>
-            <textarea class="form-control" id="m_hero_title_${i}" rows="2">${escapeAttr(slide.title)}</textarea></div>
-          <div class="form-group"><label>Подзаголовок</label>
-            <textarea class="form-control" id="m_hero_subtitle_${i}" rows="2">${escapeAttr(slide.subtitle)}</textarea></div>
-          ${heroBgUploadShell(`m_hero_bg_${i}`, 'Фон слайда (как hero_section.png, ~1520×420)')}
+        `<div class="admin-subcard" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;margin-bottom:20px;">
+          <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;z-index:2;" onclick="AdminLanding.removeHeroSlide(${i})">×</button>
+          
+          <div class="hero-editor-grid">
+            <div class="hero-editor-preview-col">
+              <div class="obuchenie-block-header"><strong>Предпросмотр слайда ${i + 1}</strong></div>
+              <div class="landing-live-banner-preview" id="m_hero_live_preview_${i}">
+                <div class="live-banner-title" id="m_hero_live_title_${i}">${escapeAttr(slide.title)}</div>
+                <div class="live-banner-subtitle" id="m_hero_live_subtitle_${i}">${escapeAttr(slide.subtitle)}</div>
+              </div>
+            </div>
+            <div class="hero-editor-controls-col">
+              ${heroBgUploadShell(`m_hero_bg_${i}`, 'Фон слайда (как hero_section.png, ~1520×420)')}
+              <div class="form-group" style="margin-top:20px;">
+                <label>Заголовок (перенос — Enter)</label>
+                <textarea class="form-control" id="m_hero_title_${i}" rows="2">${escapeAttr(slide.title)}</textarea>
+              </div>
+              <div class="form-group" style="display:flex; gap:10px; align-items:center;">
+                 <label>Цвет заголовка:</label>
+                 <input type="color" id="m_hero_title_color_${i}" value="${slide.titleColor || '#000000'}">
+              </div>
+              <div class="form-group" style="display:flex; gap:10px;">
+                 <div style="flex:1;"><label>Отступ заголовка сверху (px):</label><input type="number" class="form-control" id="m_hero_title_top_${i}" value="${slide.titleTop !== undefined ? slide.titleTop : 122}"></div>
+                 <div style="flex:1;"><label>Отступ заголовка слева (px):</label><input type="number" class="form-control" id="m_hero_title_left_${i}" value="${slide.titleLeft !== undefined ? slide.titleLeft : 70}"></div>
+              </div>
+              <div class="form-group" style="margin-top:15px;">
+                <label>Подзаголовок</label>
+                <textarea class="form-control" id="m_hero_subtitle_${i}" rows="2">${escapeAttr(slide.subtitle)}</textarea>
+              </div>
+              <div class="form-group" style="display:flex; gap:10px; align-items:center;">
+                 <label>Цвет подзаголовка:</label>
+                 <input type="color" id="m_hero_subtitle_color_${i}" value="${slide.subtitleColor || '#333333'}">
+              </div>
+              <div class="form-group" style="display:flex; gap:10px;">
+                 <div style="flex:1;"><label>Отступ подзаголовка сверху (px):</label><input type="number" class="form-control" id="m_hero_subtitle_top_${i}" value="${slide.subtitleTop !== undefined ? slide.subtitleTop : 213}"></div>
+                 <div style="flex:1;"><label>Отступ подзаголовка слева (px):</label><input type="number" class="form-control" id="m_hero_subtitle_left_${i}" value="${slide.subtitleLeft !== undefined ? slide.subtitleLeft : 70}"></div>
+              </div>
+            </div>
+          </div>
         </div>`
       );
-      setImageUploadState(`m_hero_bg_${i}`, slide.background);
+      
+      setTimeout(() => {
+        ['title', 'subtitle'].forEach(field => {
+            const input = document.getElementById(`m_hero_${field}_${i}`);
+            const color = document.getElementById(`m_hero_${field}_color_${i}`);
+            const top = document.getElementById(`m_hero_${field}_top_${i}`);
+            const left = document.getElementById(`m_hero_${field}_left_${i}`);
+            const live = document.getElementById(`m_hero_live_${field}_${i}`);
+
+            if(input && live) input.addEventListener('input', e => live.innerText = e.target.value);
+            if(color && live) color.addEventListener('input', e => live.style.color = e.target.value);
+            if(top && live) top.addEventListener('input', e => live.style.top = `${(e.target.value / 420) * 100}%`);
+            if(left && live) left.addEventListener('input', e => live.style.left = `${(e.target.value / 1520) * 100}%`);
+        });
+
+        setImageUploadState(`m_hero_bg_${i}`, slide.background);
+        
+        const liveTitle = document.getElementById(`m_hero_live_title_${i}`);
+        if(liveTitle) {
+          liveTitle.style.color = slide.titleColor || '#000000';
+          liveTitle.style.top = `${((slide.titleTop !== undefined ? slide.titleTop : 122) / 420) * 100}%`;
+          liveTitle.style.left = `${((slide.titleLeft !== undefined ? slide.titleLeft : 70) / 1520) * 100}%`;
+        }
+        const liveSubtitle = document.getElementById(`m_hero_live_subtitle_${i}`);
+        if(liveSubtitle) {
+          liveSubtitle.style.color = slide.subtitleColor || '#333333';
+          liveSubtitle.style.top = `${((slide.subtitleTop !== undefined ? slide.subtitleTop : 213) / 420) * 100}%`;
+          liveSubtitle.style.left = `${((slide.subtitleLeft !== undefined ? slide.subtitleLeft : 70) / 1520) * 100}%`;
+        }
+      }, 0);
     });
   }
 
@@ -424,11 +499,17 @@
 
   function collectMainPageFromForm(mainPageData) {
     const heroSlides = [];
-    const heroCount = document.querySelectorAll('[id^="m_hero_title_"]').length;
+    const heroCount = document.querySelectorAll('[id^="m_hero_bg_"][type="hidden"]').length;
     for (let i = 0; i < heroCount; i++) {
       heroSlides.push({
         title: document.getElementById(`m_hero_title_${i}`)?.value || '',
+        titleColor: document.getElementById(`m_hero_title_color_${i}`)?.value || '#000000',
+        titleTop: parseInt(document.getElementById(`m_hero_title_top_${i}`)?.value || 122, 10),
+        titleLeft: parseInt(document.getElementById(`m_hero_title_left_${i}`)?.value || 70, 10),
         subtitle: document.getElementById(`m_hero_subtitle_${i}`)?.value || '',
+        subtitleColor: document.getElementById(`m_hero_subtitle_color_${i}`)?.value || '#333333',
+        subtitleTop: parseInt(document.getElementById(`m_hero_subtitle_top_${i}`)?.value || 213, 10),
+        subtitleLeft: parseInt(document.getElementById(`m_hero_subtitle_left_${i}`)?.value || 70, 10),
         background: readImageVal(`m_hero_bg_${i}`)
       });
     }

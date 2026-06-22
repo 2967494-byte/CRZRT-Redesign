@@ -20,8 +20,10 @@
       background: '',
       graphic: 'assets/img/consulting/banner-gavel.png',
       title: 'Защищаем\nваши интересы',
+      titleColor: '#000000', titleTop: 122, titleLeft: 70,
       subtitle:
-        'Профессиональная юридическая поддержка в сфере закупок: сопровождение сделок, представительство в спорах, консультации для заказчиков и поставщиков на всех этапах.'
+        'Профессиональная юридическая поддержка в сфере закупок: сопровождение сделок, представительство в спорах, консультации для заказчиков и поставщиков на всех этапах.',
+      subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70
     },
     competenciesTitle: 'Компетенции',
     competencies: [...DEFAULT_COMPETENCIES],
@@ -97,8 +99,14 @@
     const hero = {
       background: rawHero.background || '',
       graphic: rawHero.graphic || CONSULTING_DEFAULTS.hero.graphic,
-      title: rawHero.title || CONSULTING_DEFAULTS.hero.title,
-      subtitle: rawHero.subtitle || CONSULTING_DEFAULTS.hero.subtitle
+      title: rawHero.title !== undefined ? rawHero.title : CONSULTING_DEFAULTS.hero.title,
+      titleColor: rawHero.titleColor || CONSULTING_DEFAULTS.hero.titleColor,
+      titleTop: rawHero.titleTop !== undefined ? rawHero.titleTop : CONSULTING_DEFAULTS.hero.titleTop,
+      titleLeft: rawHero.titleLeft !== undefined ? rawHero.titleLeft : CONSULTING_DEFAULTS.hero.titleLeft,
+      subtitle: rawHero.subtitle !== undefined ? rawHero.subtitle : CONSULTING_DEFAULTS.hero.subtitle,
+      subtitleColor: rawHero.subtitleColor || CONSULTING_DEFAULTS.hero.subtitleColor,
+      subtitleTop: rawHero.subtitleTop !== undefined ? rawHero.subtitleTop : CONSULTING_DEFAULTS.hero.subtitleTop,
+      subtitleLeft: rawHero.subtitleLeft !== undefined ? rawHero.subtitleLeft : CONSULTING_DEFAULTS.hero.subtitleLeft
     };
 
     const competencies =
@@ -159,8 +167,27 @@
     const hasCustomBanner = Boolean(background);
     const graphic = (hero?.graphic || CONSULTING_DEFAULTS.hero.graphic || '').trim();
 
-    if (titleEl) titleEl.innerHTML = multilineHtml(hero?.title);
-    if (subtitleEl) subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(hero?.title);
+      titleEl.style.color = hero?.titleColor || '';
+      if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
+      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
+      if (hero?.titleTop !== undefined || hero?.titleLeft !== undefined) {
+         titleEl.style.position = 'absolute';
+         titleEl.style.margin = '0';
+      }
+    }
+    if (subtitleEl) {
+      subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
+      subtitleEl.style.color = hero?.subtitleColor || '';
+      if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
+      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
+      if (hero?.subtitleTop !== undefined || hero?.subtitleLeft !== undefined) {
+         subtitleEl.style.position = 'absolute';
+         subtitleEl.style.margin = '0';
+         subtitleEl.style.maxWidth = 'none';
+      }
+    }
 
     if (banner) {
       if (hasCustomBanner) {

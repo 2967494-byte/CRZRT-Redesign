@@ -3,7 +3,11 @@
  */
 (function () {
   const DEFAULT_CONSULTING_PAGE = window.ConsultingContent?.CONSULTING_DEFAULTS || {
-    hero: { background: '', graphic: '', title: '', subtitle: '' },
+    hero: { 
+      background: '', graphic: '', title: '', 
+      titleColor: '#000000', titleTop: 122, titleLeft: 70,
+      subtitle: '', subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70
+    },
     competenciesTitle: 'Компетенции',
     competencies: [],
     whyUs: {
@@ -44,6 +48,17 @@
       frame.classList.toggle('cover-upload-frame--empty', !v);
     }
     if (clr) clr.style.display = v ? 'inline-flex' : 'none';
+
+    if (id === 'consulting_hero_bg') {
+        const livePreview = document.getElementById('consulting_hero_live_preview');
+        if (livePreview) {
+            if (v) {
+                livePreview.style.backgroundImage = `url('${v}')`;
+            } else {
+                livePreview.style.backgroundImage = 'radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #B8FDC6 100%)';
+            }
+        }
+    }
   }
 
   function coverUploadShell(id, label, hint, width, height) {
@@ -118,18 +133,72 @@
     if (!el) return;
     const hero = getMigratedData(data).hero || {};
     el.innerHTML = `
-      ${heroBgUploadShell('consulting_hero_bg', 'Готовый баннер (~1520×420 px)')}
-      ${imageUploadHtml('consulting_hero_graphic', 'Декоративное изображение справа (~420×420)', 'Показывается, если баннер не загружен.')}
-      <div class="form-group" style="margin-top:20px;">
-        <label>Заголовок (Enter — перенос строки)</label>
-        <textarea class="form-control" id="consulting_hero_title" rows="2">${escapeAttr(hero.title)}</textarea>
-      </div>
-      <div class="form-group">
-        <label>Подзаголовок</label>
-        <textarea class="form-control" id="consulting_hero_subtitle" rows="3">${escapeAttr(hero.subtitle)}</textarea>
+      <div class="hero-editor-grid">
+        <div class="hero-editor-preview-col">
+          <div class="obuchenie-block-header"><strong>Предпросмотр баннера</strong></div>
+          <div class="consulting-live-banner-preview" id="consulting_hero_live_preview">
+            <div class="live-banner-title" id="consulting_hero_live_title">${escapeAttr(hero.title)}</div>
+            <div class="live-banner-subtitle" id="consulting_hero_live_subtitle">${escapeAttr(hero.subtitle)}</div>
+          </div>
+        </div>
+        <div class="hero-editor-controls-col">
+          ${heroBgUploadShell('consulting_hero_bg', 'Готовый баннер (~1520×420 px)')}
+          ${imageUploadHtml('consulting_hero_graphic', 'Декоративное изображение справа (~420×420)', 'Показывается, если баннер не загружен.')}
+          <div class="form-group" style="margin-top:20px;">
+            <label>Заголовок (Enter — перенос строки)</label>
+            <textarea class="form-control" id="consulting_hero_title" rows="2">${escapeAttr(hero.title)}</textarea>
+          </div>
+          <div class="form-group" style="display:flex; gap:10px; align-items:center;">
+             <label>Цвет заголовка:</label>
+             <input type="color" id="consulting_hero_title_color" value="${hero.titleColor || '#000000'}">
+          </div>
+          <div class="form-group" style="display:flex; gap:10px;">
+             <div style="flex:1;"><label>Отступ заголовка сверху (px):</label><input type="number" class="form-control" id="consulting_hero_title_top" value="${hero.titleTop !== undefined ? hero.titleTop : 122}"></div>
+             <div style="flex:1;"><label>Отступ заголовка слева (px):</label><input type="number" class="form-control" id="consulting_hero_title_left" value="${hero.titleLeft !== undefined ? hero.titleLeft : 70}"></div>
+          </div>
+          <div class="form-group" style="margin-top:15px;">
+            <label>Подзаголовок</label>
+            <textarea class="form-control" id="consulting_hero_subtitle" rows="3">${escapeAttr(hero.subtitle)}</textarea>
+          </div>
+          <div class="form-group" style="display:flex; gap:10px; align-items:center;">
+             <label>Цвет подзаголовка:</label>
+             <input type="color" id="consulting_hero_subtitle_color" value="${hero.subtitleColor || '#333333'}">
+          </div>
+          <div class="form-group" style="display:flex; gap:10px;">
+             <div style="flex:1;"><label>Отступ подзаголовка сверху (px):</label><input type="number" class="form-control" id="consulting_hero_subtitle_top" value="${hero.subtitleTop !== undefined ? hero.subtitleTop : 213}"></div>
+             <div style="flex:1;"><label>Отступ подзаголовка слева (px):</label><input type="number" class="form-control" id="consulting_hero_subtitle_left" value="${hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70}"></div>
+          </div>
+        </div>
       </div>`;
+
+    ['title', 'subtitle'].forEach(field => {
+        const input = document.getElementById(`consulting_hero_${field}`);
+        const color = document.getElementById(`consulting_hero_${field}_color`);
+        const top = document.getElementById(`consulting_hero_${field}_top`);
+        const left = document.getElementById(`consulting_hero_${field}_left`);
+        const live = document.getElementById(`consulting_hero_live_${field}`);
+
+        if(input && live) input.addEventListener('input', e => live.innerText = e.target.value);
+        if(color && live) color.addEventListener('input', e => live.style.color = e.target.value);
+        if(top && live) top.addEventListener('input', e => live.style.top = `${(e.target.value / 420) * 100}%`);
+        if(left && live) left.addEventListener('input', e => live.style.left = `${(e.target.value / 1520) * 100}%`);
+    });
+
     setImageUploadState('consulting_hero_bg', hero.background);
     setImageUploadState('consulting_hero_graphic', hero.graphic);
+    
+    const liveTitle = document.getElementById('consulting_hero_live_title');
+    if(liveTitle) {
+      liveTitle.style.color = hero.titleColor || '#000000';
+      liveTitle.style.top = `${((hero.titleTop !== undefined ? hero.titleTop : 122) / 420) * 100}%`;
+      liveTitle.style.left = `${((hero.titleLeft !== undefined ? hero.titleLeft : 70) / 1520) * 100}%`;
+    }
+    const liveSubtitle = document.getElementById('consulting_hero_live_subtitle');
+    if(liveSubtitle) {
+      liveSubtitle.style.color = hero.subtitleColor || '#333333';
+      liveSubtitle.style.top = `${((hero.subtitleTop !== undefined ? hero.subtitleTop : 213) / 420) * 100}%`;
+      liveSubtitle.style.left = `${((hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70) / 1520) * 100}%`;
+    }
   }
 
   function renderCompetenciesAdmin(data) {
@@ -243,7 +312,13 @@
       background: readImageVal('consulting_hero_bg') || data.hero?.background || '',
       graphic: readImageVal('consulting_hero_graphic') || data.hero?.graphic || '',
       title: document.getElementById('consulting_hero_title')?.value ?? data.hero?.title ?? '',
-      subtitle: document.getElementById('consulting_hero_subtitle')?.value ?? data.hero?.subtitle ?? ''
+      titleColor: document.getElementById('consulting_hero_title_color')?.value ?? data.hero?.titleColor ?? '#000000',
+      titleTop: parseInt(document.getElementById('consulting_hero_title_top')?.value || 122, 10),
+      titleLeft: parseInt(document.getElementById('consulting_hero_title_left')?.value || 70, 10),
+      subtitle: document.getElementById('consulting_hero_subtitle')?.value ?? data.hero?.subtitle ?? '',
+      subtitleColor: document.getElementById('consulting_hero_subtitle_color')?.value ?? data.hero?.subtitleColor ?? '#333333',
+      subtitleTop: parseInt(document.getElementById('consulting_hero_subtitle_top')?.value || 213, 10),
+      subtitleLeft: parseInt(document.getElementById('consulting_hero_subtitle_left')?.value || 70, 10)
     };
 
     data.competenciesTitle =

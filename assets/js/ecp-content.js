@@ -18,8 +18,10 @@
     hero: {
       background: '',
       title: 'Выгодные тарифы\nпоставщикам',
+      titleColor: '#000000', titleTop: 122, titleLeft: 70,
       subtitle:
-        'Порядок осуществления процедур закупок представляет собой строго регламентированный жизненный цикл, который включает в себя шесть основных этапов: планирование, объявление закупки, подача и рассмотрение заявок, определение победителя, заключение контракта и его последующее исполнение.'
+        'Порядок осуществления процедур закупок представляет собой строго регламентированный жизненный цикл, который включает в себя шесть основных этапов: планирование, объявление закупки, подача и рассмотрение заявок, определение победителя, заключение контракта и его последующее исполнение.',
+      subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70
     },
     tariffs: [
       { text: 'Тарифы торговых\nпроцедур', file: '' },
@@ -99,8 +101,14 @@
     const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
     const hero = {
       background: rawHero.background || '',
-      title: rawHero.title || ECP_DEFAULTS.hero.title,
-      subtitle: rawHero.subtitle || ECP_DEFAULTS.hero.subtitle
+      title: rawHero.title !== undefined ? rawHero.title : ECP_DEFAULTS.hero.title,
+      titleColor: rawHero.titleColor || ECP_DEFAULTS.hero.titleColor,
+      titleTop: rawHero.titleTop !== undefined ? rawHero.titleTop : ECP_DEFAULTS.hero.titleTop,
+      titleLeft: rawHero.titleLeft !== undefined ? rawHero.titleLeft : ECP_DEFAULTS.hero.titleLeft,
+      subtitle: rawHero.subtitle !== undefined ? rawHero.subtitle : ECP_DEFAULTS.hero.subtitle,
+      subtitleColor: rawHero.subtitleColor || ECP_DEFAULTS.hero.subtitleColor,
+      subtitleTop: rawHero.subtitleTop !== undefined ? rawHero.subtitleTop : ECP_DEFAULTS.hero.subtitleTop,
+      subtitleLeft: rawHero.subtitleLeft !== undefined ? rawHero.subtitleLeft : ECP_DEFAULTS.hero.subtitleLeft
     };
 
     const data = {
@@ -242,8 +250,27 @@
     const background = (hero?.background || '').trim();
     const hasCustomBanner = Boolean(background);
 
-    if (titleEl) titleEl.innerHTML = multilineHtml(hero?.title);
-    if (subtitleEl) subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(hero?.title);
+      titleEl.style.color = hero?.titleColor || '';
+      if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
+      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
+      if (hero?.titleTop !== undefined || hero?.titleLeft !== undefined) {
+         titleEl.style.position = 'absolute';
+         titleEl.style.margin = '0';
+      }
+    }
+    if (subtitleEl) {
+      subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
+      subtitleEl.style.color = hero?.subtitleColor || '';
+      if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
+      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
+      if (hero?.subtitleTop !== undefined || hero?.subtitleLeft !== undefined) {
+         subtitleEl.style.position = 'absolute';
+         subtitleEl.style.margin = '0';
+         subtitleEl.style.maxWidth = 'none';
+      }
+    }
 
     if (slider) {
       if (hasCustomBanner) {
