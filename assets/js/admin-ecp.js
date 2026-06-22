@@ -65,15 +65,29 @@
   function heroBgUploadShell(id, label, sizeLabel = '1520×420') {
     return `
       <div class="form-group hero-slide-upload-group" style="margin-bottom:0;">
-        <label>${label}</label>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <label style="margin-bottom:0;">${label}</label>
+          <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}" style="display:flex; gap:8px;">
+            <button type="button" class="btn-save" style="padding:6px 12px;font-size:0.8rem;" onclick="AdminEcp.pickImage('${id}')">Загрузить</button>
+            <button type="button" class="btn-delete" style="padding:6px 12px;font-size:0.8rem;display:none;margin-left:0 !important;" id="${id}_clear" onclick="AdminEcp.clearImage('${id}')">Удалить</button>
+            <input type="hidden" id="${id}_val" value="">
+          </div>
+        </div>
         <div class="hero-slide-frame hero-slide-frame--empty" data-upload-frame-for="${id}">
           <span class="hero-slide-frame__empty">${sizeLabel}</span>
           <img id="${id}_preview" class="hero-slide-frame__img" src="" alt="">
         </div>
-        <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}">
-          <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="AdminEcp.pickImage('${id}')">Загрузить</button>
-          <button type="button" class="btn-delete" style="padding:8px 14px;font-size:0.85rem;display:none;" id="${id}_clear" onclick="AdminEcp.clearImage('${id}')">Удалить</button>
-          <input type="hidden" id="${id}_val" value="">
+      </div>`;
+  }
+
+  function blockHeaderWithColorHtml(title, colorId, value, defaultColor = '#000000') {
+    const color = /^#[0-9A-Fa-f]{6}$/.test(value || '') ? value : defaultColor;
+    return `
+      <div class="obuchenie-block-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span style="font-weight:600; font-size:0.95rem; color:var(--text-secondary);">${title}</span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="color" id="${colorId}_picker" value="${escapeAttr(color)}" style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer; background:transparent;">
+          <input type="text" class="form-control" id="${colorId}" value="${escapeAttr(color)}" placeholder="${defaultColor}" style="max-width:90px; padding:4px 8px; font-size:0.85rem; font-family:monospace; margin-bottom:0;">
         </div>
       </div>`;
   }
@@ -127,39 +141,56 @@
     if (!el) return;
     const hero = getMigratedEcpData(data).hero || {};
     el.innerHTML = `
-      <div class="hero-editor-grid">
-        <div class="hero-editor-preview-col">
-          <div class="obuchenie-block-header"><strong>Предпросмотр баннера</strong></div>
-          <div class="ecp-live-banner-preview" id="ecp_hero_live_preview">
-            <div class="live-banner-title" id="ecp_hero_live_title">${escapeAttr(hero.title)}</div>
-            <div class="live-banner-subtitle" id="ecp_hero_live_subtitle">${escapeAttr(hero.subtitle)}</div>
+      <div class="obuchenie-hero-grid">
+        <!-- Left: Banner upload & Preview -->
+        <div class="obuchenie-hero-banner-col">
+          ${heroBgUploadShell('ecp_hero_bg', 'Готовый баннер (~1520×420 px)')}
+          
+          <div style="margin-top:20px;">
+            <label style="font-weight:600; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">Предпросмотр готового баннера с наложенным текстом</label>
+            <div class="ecp-live-banner-preview" id="ecp_hero_live_preview">
+              <div class="live-banner-title" id="ecp_hero_live_title">${escapeAttr(hero.title)}</div>
+              <div class="live-banner-subtitle" id="ecp_hero_live_subtitle">${escapeAttr(hero.subtitle)}</div>
+            </div>
           </div>
         </div>
-        <div class="hero-editor-controls-col">
-          ${heroBgUploadShell('ecp_hero_bg', 'Готовый баннер (~1520×420 px, как на главной)')}
-          <div class="form-group" style="margin-top:20px;">
-            <label>Заголовок (Enter — перенос строки)</label>
-            <textarea class="form-control" id="ecp_hero_title" rows="2">${escapeAttr(hero.title)}</textarea>
+        
+        <!-- Right: Fields -->
+        <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
+          <!-- Block "Заголовок" -->
+          <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
+            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'ecp_hero_title_color', hero.titleColor, '#000000')}
+            <div class="form-group" style="margin-bottom:0; margin-top:8px;">
+              <textarea class="form-control" id="ecp_hero_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)">${escapeAttr(hero.title)}</textarea>
+            </div>
+            <div style="display:flex; gap:16px; margin-top:12px;">
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ сверху (px)</label>
+                <input type="number" class="form-control" id="ecp_hero_title_top" value="${hero.titleTop !== undefined ? hero.titleTop : 122}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
+              </div>
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
+                <input type="number" class="form-control" id="ecp_hero_title_left" value="${hero.titleLeft !== undefined ? hero.titleLeft : 70}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
+              </div>
+            </div>
           </div>
-          <div class="form-group" style="display:flex; gap:10px; align-items:center;">
-             <label>Цвет заголовка:</label>
-             <input type="color" id="ecp_hero_title_color" value="${hero.titleColor || '#000000'}">
-          </div>
-          <div class="form-group" style="display:flex; gap:10px;">
-             <div style="flex:1;"><label>Отступ заголовка сверху (px):</label><input type="number" class="form-control" id="ecp_hero_title_top" value="${hero.titleTop !== undefined ? hero.titleTop : 122}"></div>
-             <div style="flex:1;"><label>Отступ заголовка слева (px):</label><input type="number" class="form-control" id="ecp_hero_title_left" value="${hero.titleLeft !== undefined ? hero.titleLeft : 70}"></div>
-          </div>
-          <div class="form-group" style="margin-top:15px;">
-            <label>Текст под заголовком</label>
-            <textarea class="form-control" id="ecp_hero_subtitle" rows="4">${escapeAttr(hero.subtitle)}</textarea>
-          </div>
-          <div class="form-group" style="display:flex; gap:10px; align-items:center;">
-             <label>Цвет подзаголовка:</label>
-             <input type="color" id="ecp_hero_subtitle_color" value="${hero.subtitleColor || '#333333'}">
-          </div>
-          <div class="form-group" style="display:flex; gap:10px;">
-             <div style="flex:1;"><label>Отступ подзаголовка сверху (px):</label><input type="number" class="form-control" id="ecp_hero_subtitle_top" value="${hero.subtitleTop !== undefined ? hero.subtitleTop : 213}"></div>
-             <div style="flex:1;"><label>Отступ подзаголовка слева (px):</label><input type="number" class="form-control" id="ecp_hero_subtitle_left" value="${hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70}"></div>
+          
+          <!-- Block "Текст" -->
+          <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
+            ${blockHeaderWithColorHtml('Текст', 'ecp_hero_subtitle_color', hero.subtitleColor, '#333333')}
+            <div class="form-group" style="margin-bottom:0; margin-top:8px;">
+              <textarea class="form-control" id="ecp_hero_subtitle" rows="3" placeholder="Описание/текст под заголовком">${escapeAttr(hero.subtitle)}</textarea>
+            </div>
+            <div style="display:flex; gap:16px; margin-top:12px;">
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ сверху (px)</label>
+                <input type="number" class="form-control" id="ecp_hero_subtitle_top" value="${hero.subtitleTop !== undefined ? hero.subtitleTop : 213}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
+              </div>
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
+                <input type="number" class="form-control" id="ecp_hero_subtitle_left" value="${hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -168,12 +199,14 @@
     ['title', 'subtitle'].forEach(field => {
         const input = document.getElementById(`ecp_hero_${field}`);
         const color = document.getElementById(`ecp_hero_${field}_color`);
+        const colorPicker = document.getElementById(`ecp_hero_${field}_color_picker`);
         const top = document.getElementById(`ecp_hero_${field}_top`);
         const left = document.getElementById(`ecp_hero_${field}_left`);
         const live = document.getElementById(`ecp_hero_live_${field}`);
 
         if(input && live) input.addEventListener('input', e => live.innerText = e.target.value);
-        if(color && live) color.addEventListener('input', e => live.style.color = e.target.value);
+        if(color && live) color.addEventListener('input', e => { live.style.color = e.target.value; if(colorPicker) colorPicker.value = e.target.value; });
+        if(colorPicker && live) colorPicker.addEventListener('input', e => { live.style.color = e.target.value; if(color) color.value = e.target.value; });
         if(top && live) top.addEventListener('input', e => live.style.top = `${(e.target.value / 420) * 100}%`);
         if(left && live) left.addEventListener('input', e => live.style.left = `${(e.target.value / 1520) * 100}%`);
     });
