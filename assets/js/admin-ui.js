@@ -908,10 +908,12 @@
 
             const permNames = {
                 'superuser': '<span style="color:var(--accent-color);font-weight:bold;">Полный доступ</span>',
-                'main-page': 'Ред. главной',
-                'consulting': 'Консалтинг',
+                'main-page': 'Главная страница',
+                'ecp-page': 'ЭТП',
+                'consulting-page': 'Консалтинг',
+                'support-page': 'Сопровождение',
+                'obuchenie-page': 'Обучение',
                 'users': 'Упр. пользователями',
-                'about-us': 'О нас',
                 'contacts': 'Реквизиты',
                 'settings': 'Настройки'
             };
