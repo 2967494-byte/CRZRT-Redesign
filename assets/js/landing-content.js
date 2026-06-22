@@ -14,7 +14,6 @@
   const LANDING_DEFAULTS = {
     heroSlides: [
       {
-      {
         title: 'Надежное тендерное\nсопровождение',
         titleColor: '#000000', titleTop: 122, titleLeft: 70,
         subtitle: 'Поиск выгодных закупок\nи оценка целесообразности участия',
