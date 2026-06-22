@@ -163,7 +163,6 @@
         
         <!-- Right: Fields -->
         <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
-          ${imageUploadHtml('consulting_hero_graphic', 'Декоративное изображение справа (~420×420)', 'Показывается, если баннер не загружен.')}
           <!-- Block "Заголовок" -->
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
             ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'consulting_hero_title_color', hero.titleColor, '#ffffff')}
