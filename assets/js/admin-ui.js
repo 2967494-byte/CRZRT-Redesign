@@ -1159,6 +1159,42 @@
             });
         }
 
+        function getCropAspectForUpload(uploadId) {
+            if (window.cropTarget?.uploadId === uploadId) {
+                const forced = Number(window.cropTarget?.aspect);
+                if (Number.isFinite(forced) && forced > 0) return forced;
+            }
+            if (uploadId === 'consulting_why_side_image') return 489 / 763;
+            if (AdminEcp?.isEcpUploadId?.(uploadId)) return AdminEcp.getAspect(uploadId);
+            if (AdminConsultingPage?.isConsultingUploadId?.(uploadId)) return AdminConsultingPage.getAspect(uploadId);
+            if (AdminSupport?.isSupportUploadId?.(uploadId)) return AdminSupport.getAspect(uploadId);
+            if (AdminObuchenie?.isObuchenieUploadId?.(uploadId)) return AdminObuchenie.getAspect(uploadId);
+            if (AdminLanding?.getAspect) return AdminLanding.getAspect(uploadId);
+            return window.activeAuthorIndex !== null ? 1 : 16 / 9;
+        }
+
+        function setCropperWrapperLayout(aspect) {
+            if (!cropperWrapper) return;
+            cropperWrapper.classList.toggle(
+                'cropper-wrapper--tall-portrait',
+                Number.isFinite(aspect) && aspect > 0 && aspect < 0.85
+            );
+        }
+
+        function buildStandardCropperOptions(aspect) {
+            return {
+                viewMode: 2,
+                dragMode: 'move',
+                autoCropArea: 1,
+                background: false,
+                zoomable: true,
+                guides: true,
+                center: true,
+                highlight: true,
+                aspectRatio: aspect
+            };
+        }
+
         function handleFiles(files) {
             if (files && files.length > 0) {
                 const reader = new FileReader();
@@ -1183,85 +1219,28 @@
                     }
 
                     let cropperOpts;
-                    if (AdminEcp?.isEcpUploadId?.(uploadId)) {
-                        const aspect = AdminEcp.getAspect(uploadId);
-                        cropperOpts = {
-                            viewMode: 2,
-                            dragMode: 'move',
-                            autoCropArea: 1,
-                            background: false,
-                            zoomable: true,
-                            guides: true,
-                            center: true,
-                            highlight: true,
-                            aspectRatio: aspect
-                        };
-                    } else if (AdminConsultingPage?.isConsultingUploadId?.(uploadId)) {
-                        const aspect = AdminConsultingPage.getAspect(uploadId);
-                        cropperOpts = {
-                            viewMode: 2,
-                            dragMode: 'move',
-                            autoCropArea: 1,
-                            background: false,
-                            zoomable: true,
-                            guides: true,
-                            center: true,
-                            highlight: true,
-                            aspectRatio: aspect
-                        };
-                    } else if (AdminSupport?.isSupportUploadId?.(uploadId)) {
-                        const aspect = AdminSupport.getAspect(uploadId);
-                        cropperOpts = {
-                            viewMode: 2,
-                            dragMode: 'move',
-                            autoCropArea: 1,
-                            background: false,
-                            zoomable: true,
-                            guides: true,
-                            center: true,
-                            highlight: true,
-                            aspectRatio: aspect
-                        };
-                    } else if (AdminObuchenie?.isObuchenieUploadId?.(uploadId)) {
-                        const aspect = AdminObuchenie.getAspect(uploadId);
-                        cropperOpts = {
-                            viewMode: 2,
-                            dragMode: 'move',
-                            autoCropArea: 1,
-                            background: false,
-                            zoomable: true,
-                            guides: true,
-                            center: true,
-                            highlight: true,
-                            aspectRatio: aspect
-                        };
-                    } else if (AdminLanding?.getCropperOptions && uploadId) {
+                    if (isPartner && AdminLanding?.getCropperOptions) {
                         cropperOpts = AdminLanding.getCropperOptions(uploadId);
+                        setCropperWrapperLayout(NaN);
+                    } else if (
+                        uploadId && (
+                            AdminEcp?.isEcpUploadId?.(uploadId) ||
+                            AdminConsultingPage?.isConsultingUploadId?.(uploadId) ||
+                            AdminSupport?.isSupportUploadId?.(uploadId) ||
+                            AdminObuchenie?.isObuchenieUploadId?.(uploadId) ||
+                            window.activeAuthorIndex !== null
+                        )
+                    ) {
+                        const aspect = getCropAspectForUpload(uploadId);
+                        cropperOpts = buildStandardCropperOptions(aspect);
+                        setCropperWrapperLayout(aspect);
+                    } else if (uploadId && AdminLanding?.getCropperOptions) {
+                        cropperOpts = AdminLanding.getCropperOptions(uploadId);
+                        setCropperWrapperLayout(NaN);
                     } else {
-                        let currentAspect = window.activeAuthorIndex !== null ? 1 : 16 / 9;
-                        if (window.cropTarget) {
-                            let a = NaN;
-                            if (AdminEcp?.isEcpUploadId?.(uploadId)) {
-                                a = AdminEcp.getAspect(uploadId);
-                            } else if (AdminConsultingPage?.isConsultingUploadId?.(uploadId)) {
-                                a = AdminConsultingPage.getAspect(uploadId);
-                            } else if (AdminSupport?.isSupportUploadId?.(uploadId)) {
-                                a = AdminSupport.getAspect(uploadId);
-                            } else if (AdminObuchenie?.isObuchenieUploadId?.(uploadId)) {
-                                a = AdminObuchenie.getAspect(uploadId);
-                            } else if (AdminLanding) {
-                                a = AdminLanding.getAspect(uploadId);
-                            }
-                            currentAspect = Number.isNaN(a) ? NaN : a;
-                        }
-                        cropperOpts = {
-                            viewMode: 2,
-                            dragMode: 'move',
-                            autoCropArea: 1,
-                            background: false,
-                            zoomable: true
-                        };
-                        if (!Number.isNaN(currentAspect)) cropperOpts.aspectRatio = currentAspect;
+                        const aspect = getCropAspectForUpload(uploadId);
+                        cropperOpts = buildStandardCropperOptions(aspect);
+                        setCropperWrapperLayout(aspect);
                     }
                     cropper = new Cropper(imageToCrop, cropperOpts);
                 };
@@ -1466,6 +1445,7 @@
 
                 cropper.destroy();
                 cropper = null;
+                setCropperWrapperLayout(NaN);
                 if (AdminLanding?.unmountPartnerCropGuides) AdminLanding.unmountPartnerCropGuides();
                 if (AdminLanding?.setPartnerCropperMode) AdminLanding.setPartnerCropperMode(false, cropperWrapper);
             }
@@ -1476,6 +1456,7 @@
                 cropper.destroy();
                 cropper = null;
             }
+            setCropperWrapperLayout(NaN);
             if (AdminLanding?.unmountPartnerCropGuides) AdminLanding.unmountPartnerCropGuides();
             if (AdminLanding?.setPartnerCropperMode) AdminLanding.setPartnerCropperMode(false, cropperWrapper);
             document.getElementById('cropperGlobalContainer').style.display = 'none';

@@ -41,8 +41,27 @@
     const frame = document.querySelector(`[data-upload-frame-for="${id}"]`);
     if (frame) {
       frame.classList.toggle('hero-slide-frame--empty', !v);
+      frame.classList.toggle('cover-upload-frame--empty', !v);
     }
     if (clr) clr.style.display = v ? 'inline-flex' : 'none';
+  }
+
+  function coverUploadShell(id, label, hint, width, height) {
+    const sizeLabel = `${width}×${height}`;
+    return `
+      <div class="form-group cover-upload-group" style="margin-bottom:0;">
+        <label>${label}</label>
+        ${hint ? `<p style="color:var(--text-secondary);font-size:0.85rem;margin:-4px 0 8px;">${hint}</p>` : ''}
+        <div class="cover-upload-frame cover-upload-frame--empty" data-upload-frame-for="${id}" style="--cover-aspect: ${width} / ${height};">
+          <span class="cover-upload-frame__empty">${sizeLabel}</span>
+          <img id="${id}_preview" class="cover-upload-frame__img" src="" alt="">
+        </div>
+        <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}">
+          <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="AdminConsultingPage.pickImage('${id}')">Загрузить</button>
+          <button type="button" class="btn-delete" style="padding:8px 14px;font-size:0.85rem;display:none;" id="${id}_clear" onclick="AdminConsultingPage.clearImage('${id}')">Удалить</button>
+          <input type="hidden" id="${id}_val" value="">
+        </div>
+      </div>`;
   }
 
   function heroBgUploadShell(id, label, sizeLabel = '1520×420') {
@@ -194,7 +213,13 @@
           <label>Текст</label>
           <textarea class="form-control" id="consulting_why_side_text" rows="3">${escapeAttr(side.text)}</textarea>
         </div>
-        ${imageUploadHtml('consulting_why_side_image', 'Фоновое изображение блока', 'Рекомендуемый размер ~489×763 px (2× Retina: 978×1526) — заливает весь блок.')}
+        ${coverUploadShell(
+          'consulting_why_side_image',
+          'Фоновое изображение блока',
+          'Заливает весь боковой блок. Рекомендуемый размер ~489×763 px (2× Retina: 978×1526).',
+          489,
+          763
+        )}
       </div>`;
 
     setImageUploadState('consulting_why_photo', photo.image);
@@ -274,11 +299,13 @@
     }
   }
 
+  const CONSULTING_WHY_SIDE_ASPECT = 489 / 763;
+
   function getAspect(uploadId) {
     if (uploadId === 'consulting_hero_bg') return 1520 / 420;
     if (uploadId === 'consulting_hero_graphic') return 1;
     if (uploadId === 'consulting_why_photo') return 494 / 329;
-    if (uploadId === 'consulting_why_side_image') return 489 / 763;
+    if (uploadId === 'consulting_why_side_image') return CONSULTING_WHY_SIDE_ASPECT;
     if (uploadId.startsWith('consulting_comp_icon_')) return 109 / 110;
     return 16 / 9;
   }
@@ -298,6 +325,7 @@
 
   window.AdminConsultingPage = {
     DEFAULT_CONSULTING_PAGE,
+    CONSULTING_WHY_SIDE_ASPECT,
     migrateConsultingPageData,
     renderConsultingPageAdmin,
     collectConsultingPageFromForm,
