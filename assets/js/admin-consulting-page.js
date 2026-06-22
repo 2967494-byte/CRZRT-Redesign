@@ -5,8 +5,8 @@
   const DEFAULT_CONSULTING_PAGE = window.ConsultingContent?.CONSULTING_DEFAULTS || {
     hero: { 
       background: '', graphic: '', title: '', 
-      titleColor: '#000000', titleTop: 122, titleLeft: 70,
-      subtitle: '', subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70
+      titleColor: '#ffffff', titleTop: 122, titleLeft: 70,
+      subtitle: '', subtitleColor: '#ffffff', subtitleTop: 213, subtitleLeft: 70
     },
     competenciesTitle: 'Компетенции',
     competencies: [],
@@ -97,7 +97,7 @@
       </div>`;
   }
 
-  function blockHeaderWithColorHtml(title, colorId, value, defaultColor = '#000000') {
+  function blockHeaderWithColorHtml(title, colorId, value, defaultColor = '#ffffff') {
     const color = /^#[0-9A-Fa-f]{6}$/.test(value || '') ? value : defaultColor;
     return `
       <div class="obuchenie-block-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -166,7 +166,7 @@
           ${imageUploadHtml('consulting_hero_graphic', 'Декоративное изображение справа (~420×420)', 'Показывается, если баннер не загружен.')}
           <!-- Block "Заголовок" -->
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'consulting_hero_title_color', hero.titleColor, '#000000')}
+            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'consulting_hero_title_color', hero.titleColor, '#ffffff')}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
               <textarea class="form-control" id="consulting_hero_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)">${escapeAttr(hero.title)}</textarea>
             </div>
@@ -184,7 +184,7 @@
           
           <!-- Block "Текст" -->
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Текст', 'consulting_hero_subtitle_color', hero.subtitleColor, '#333333')}
+            ${blockHeaderWithColorHtml('Текст', 'consulting_hero_subtitle_color', hero.subtitleColor, '#ffffff')}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
               <textarea class="form-control" id="consulting_hero_subtitle" rows="3" placeholder="Описание/текст под заголовком">${escapeAttr(hero.subtitle)}</textarea>
             </div>
@@ -222,13 +222,13 @@
     
     const liveTitle = document.getElementById('consulting_hero_live_title');
     if(liveTitle) {
-      liveTitle.style.color = hero.titleColor || '#000000';
+      liveTitle.style.color = hero.titleColor || '#ffffff';
       liveTitle.style.top = `${((hero.titleTop !== undefined ? hero.titleTop : 122) / 420) * 100}%`;
       liveTitle.style.left = `${((hero.titleLeft !== undefined ? hero.titleLeft : 70) / 1520) * 100}%`;
     }
     const liveSubtitle = document.getElementById('consulting_hero_live_subtitle');
     if(liveSubtitle) {
-      liveSubtitle.style.color = hero.subtitleColor || '#333333';
+      liveSubtitle.style.color = hero.subtitleColor || '#ffffff';
       liveSubtitle.style.top = `${((hero.subtitleTop !== undefined ? hero.subtitleTop : 213) / 420) * 100}%`;
       liveSubtitle.style.left = `${((hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70) / 1520) * 100}%`;
     }
@@ -345,11 +345,11 @@
       background: readImageVal('consulting_hero_bg') || data.hero?.background || '',
       graphic: readImageVal('consulting_hero_graphic') || data.hero?.graphic || '',
       title: document.getElementById('consulting_hero_title')?.value ?? data.hero?.title ?? '',
-      titleColor: document.getElementById('consulting_hero_title_color')?.value ?? data.hero?.titleColor ?? '#000000',
+      titleColor: document.getElementById('consulting_hero_title_color')?.value ?? data.hero?.titleColor ?? '#ffffff',
       titleTop: parseInt(document.getElementById('consulting_hero_title_top')?.value || 122, 10),
       titleLeft: parseInt(document.getElementById('consulting_hero_title_left')?.value || 70, 10),
-      subtitle: document.getElementById('consulting_hero_subtitle')?.value ?? data.hero?.subtitle ?? '',
-      subtitleColor: document.getElementById('consulting_hero_subtitle_color')?.value ?? data.hero?.subtitleColor ?? '#333333',
+      subtitle: document.getElementById('consulting_hero_subtitle')?.value ?? data.hero?.subtitle ?? CONSULTING_DEFAULTS.hero.subtitle,
+      subtitleColor: document.getElementById('consulting_hero_subtitle_color')?.value ?? data.hero?.subtitleColor ?? '#ffffff',
       subtitleTop: parseInt(document.getElementById('consulting_hero_subtitle_top')?.value || 213, 10),
       subtitleLeft: parseInt(document.getElementById('consulting_hero_subtitle_left')?.value || 70, 10)
     };

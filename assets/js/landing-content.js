@@ -15,9 +15,9 @@
     heroSlides: [
       {
         title: 'Надежное тендерное\nсопровождение',
-        titleColor: '#000000', titleTop: 122, titleLeft: 70,
+        titleColor: '#ffffff', titleTop: 122, titleLeft: 70,
         subtitle: 'Поиск выгодных закупок\nи оценка целесообразности участия',
-        subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70,
+        subtitleColor: '#ffffff', subtitleTop: 213, subtitleLeft: 70,
         background: 'assets/img/hero_section.png'
       }
     ],
@@ -316,12 +316,12 @@
     const subEl = slideEl.querySelector('.hero-slide__subtitle');
     if (titleEl) {
       titleEl.innerHTML = multilineHtml(first.title);
-      if (first.titleColor) titleEl.style.color = first.titleColor;
+      if (first.titleColor && first.titleColor !== '#000000') titleEl.style.color = first.titleColor;
       else titleEl.style.removeProperty('color');
     }
     if (subEl) {
       subEl.innerHTML = multilineHtml(first.subtitle);
-      if (first.subtitleColor) subEl.style.color = first.subtitleColor;
+      if (first.subtitleColor && first.subtitleColor !== '#333333') subEl.style.color = first.subtitleColor;
       else subEl.style.removeProperty('color');
     }
 
@@ -360,12 +360,12 @@
     if (slider && slide.background) slider.style.backgroundImage = `url('${slide.background}')`;
     if (titleEl) {
       titleEl.innerHTML = multilineHtml(slide.title);
-      if (slide.titleColor) titleEl.style.color = slide.titleColor;
+      if (slide.titleColor && slide.titleColor !== '#000000') titleEl.style.color = slide.titleColor;
       else titleEl.style.removeProperty('color');
     }
     if (subEl) {
       subEl.innerHTML = multilineHtml(slide.subtitle);
-      if (slide.subtitleColor) subEl.style.color = slide.subtitleColor;
+      if (slide.subtitleColor && slide.subtitleColor !== '#333333') subEl.style.color = slide.subtitleColor;
       else subEl.style.removeProperty('color');
     }
     document.querySelectorAll('.hero-slide__dots .dot').forEach((dot, idx) => {

@@ -5,8 +5,8 @@
   const DEFAULT_ECP_PAGE = window.EcpContent?.ECP_DEFAULTS || {
     hero: { 
       background: '', title: '', subtitle: '',
-      titleColor: '#000000', titleTop: 122, titleLeft: 70,
-      subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70
+      titleColor: '#ffffff', titleTop: 122, titleLeft: 70,
+      subtitleColor: '#ffffff', subtitleTop: 213, subtitleLeft: 70
     },
     tariffs: [],
     blanks: { patternImage: '', items: [] },
@@ -80,7 +80,7 @@
       </div>`;
   }
 
-  function blockHeaderWithColorHtml(title, colorId, value, defaultColor = '#000000') {
+  function blockHeaderWithColorHtml(title, colorId, value, defaultColor = '#ffffff') {
     const color = /^#[0-9A-Fa-f]{6}$/.test(value || '') ? value : defaultColor;
     return `
       <div class="obuchenie-block-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -159,7 +159,7 @@
         <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
           <!-- Block "Заголовок" -->
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'ecp_hero_title_color', hero.titleColor, '#000000')}
+            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'ecp_hero_title_color', hero.titleColor, '#ffffff')}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
               <textarea class="form-control" id="ecp_hero_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)">${escapeAttr(hero.title)}</textarea>
             </div>
@@ -177,7 +177,7 @@
           
           <!-- Block "Текст" -->
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Текст', 'ecp_hero_subtitle_color', hero.subtitleColor, '#333333')}
+            ${blockHeaderWithColorHtml('Текст', 'ecp_hero_subtitle_color', hero.subtitleColor, '#ffffff')}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
               <textarea class="form-control" id="ecp_hero_subtitle" rows="3" placeholder="Описание/текст под заголовком">${escapeAttr(hero.subtitle)}</textarea>
             </div>
@@ -215,13 +215,13 @@
     
     const liveTitle = document.getElementById('ecp_hero_live_title');
     if(liveTitle) {
-      liveTitle.style.color = hero.titleColor || '#000000';
+      liveTitle.style.color = hero.titleColor || '#ffffff';
       liveTitle.style.top = `${((hero.titleTop !== undefined ? hero.titleTop : 122) / 420) * 100}%`;
       liveTitle.style.left = `${((hero.titleLeft !== undefined ? hero.titleLeft : 70) / 1520) * 100}%`;
     }
     const liveSubtitle = document.getElementById('ecp_hero_live_subtitle');
     if(liveSubtitle) {
-      liveSubtitle.style.color = hero.subtitleColor || '#333333';
+      liveSubtitle.style.color = hero.subtitleColor || '#ffffff';
       liveSubtitle.style.top = `${((hero.subtitleTop !== undefined ? hero.subtitleTop : 213) / 420) * 100}%`;
       liveSubtitle.style.left = `${((hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70) / 1520) * 100}%`;
     }
@@ -372,11 +372,11 @@
     data.hero = {
       background: readImageVal('ecp_hero_bg') || data.hero?.background || '',
       title: document.getElementById('ecp_hero_title')?.value ?? data.hero?.title ?? '',
-      titleColor: document.getElementById('ecp_hero_title_color')?.value ?? data.hero?.titleColor ?? '#000000',
+      titleColor: document.getElementById('ecp_hero_title_color')?.value ?? data.hero?.titleColor ?? '#ffffff',
       titleTop: parseInt(document.getElementById('ecp_hero_title_top')?.value || 122, 10),
       titleLeft: parseInt(document.getElementById('ecp_hero_title_left')?.value || 70, 10),
-      subtitle: document.getElementById('ecp_hero_subtitle')?.value ?? data.hero?.subtitle ?? '',
-      subtitleColor: document.getElementById('ecp_hero_subtitle_color')?.value ?? data.hero?.subtitleColor ?? '#333333',
+      subtitle: document.getElementById('ecp_hero_subtitle')?.value ?? data.hero?.subtitle ?? ECP_DEFAULTS.hero.subtitle,
+      subtitleColor: document.getElementById('ecp_hero_subtitle_color')?.value ?? data.hero?.subtitleColor ?? '#ffffff',
       subtitleTop: parseInt(document.getElementById('ecp_hero_subtitle_top')?.value || 213, 10),
       subtitleLeft: parseInt(document.getElementById('ecp_hero_subtitle_left')?.value || 70, 10)
     };

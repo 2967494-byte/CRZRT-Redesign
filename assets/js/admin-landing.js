@@ -30,9 +30,9 @@
     heroSlides: [
       {
         title: 'Надежное тендерное\nсопровождение',
-        titleColor: '#000000', titleTop: 122, titleLeft: 70,
-        subtitle: 'Поиск выгодных закупок\nи оценка целесообразности участия',
-        subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70,
+        titleColor: '#ffffff', titleTop: 122, titleLeft: 70,
+        subtitle: '',
+        subtitleColor: '#ffffff', subtitleTop: 213, subtitleLeft: 70,
         background: 'assets/img/hero_section.png'
       }
     ],
@@ -223,7 +223,7 @@
               </div>
               <div class="form-group" style="display:flex; gap:10px; align-items:center;">
                  <label>Цвет заголовка:</label>
-                 <input type="color" id="m_hero_title_color_${i}" value="${slide.titleColor || '#000000'}">
+                 <input type="color" id="m_hero_title_color_${i}" value="${slide.titleColor || '#ffffff'}">
               </div>
               <div class="form-group" style="display:flex; gap:10px;">
                  <div style="flex:1;"><label>Отступ заголовка сверху (px):</label><input type="number" class="form-control" id="m_hero_title_top_${i}" value="${slide.titleTop !== undefined ? slide.titleTop : 122}"></div>
@@ -235,7 +235,7 @@
               </div>
               <div class="form-group" style="display:flex; gap:10px; align-items:center;">
                  <label>Цвет подзаголовка:</label>
-                 <input type="color" id="m_hero_subtitle_color_${i}" value="${slide.subtitleColor || '#333333'}">
+                 <input type="color" id="m_hero_subtitle_color_${i}" value="${slide.subtitleColor || '#ffffff'}">
               </div>
               <div class="form-group" style="display:flex; gap:10px;">
                  <div style="flex:1;"><label>Отступ подзаголовка сверху (px):</label><input type="number" class="form-control" id="m_hero_subtitle_top_${i}" value="${slide.subtitleTop !== undefined ? slide.subtitleTop : 213}"></div>
@@ -264,13 +264,13 @@
         
         const liveTitle = document.getElementById(`m_hero_live_title_${i}`);
         if(liveTitle) {
-          liveTitle.style.color = slide.titleColor || '#000000';
+          liveTitle.style.color = slide.titleColor || '#ffffff';
           liveTitle.style.top = `${((slide.titleTop !== undefined ? slide.titleTop : 122) / 420) * 100}%`;
           liveTitle.style.left = `${((slide.titleLeft !== undefined ? slide.titleLeft : 70) / 1520) * 100}%`;
         }
         const liveSubtitle = document.getElementById(`m_hero_live_subtitle_${i}`);
         if(liveSubtitle) {
-          liveSubtitle.style.color = slide.subtitleColor || '#333333';
+          liveSubtitle.style.color = slide.subtitleColor || '#ffffff';
           liveSubtitle.style.top = `${((slide.subtitleTop !== undefined ? slide.subtitleTop : 213) / 420) * 100}%`;
           liveSubtitle.style.left = `${((slide.subtitleLeft !== undefined ? slide.subtitleLeft : 70) / 1520) * 100}%`;
         }
@@ -503,11 +503,11 @@
     for (let i = 0; i < heroCount; i++) {
       heroSlides.push({
         title: document.getElementById(`m_hero_title_${i}`)?.value || '',
-        titleColor: document.getElementById(`m_hero_title_color_${i}`)?.value || '#000000',
+        titleColor: document.getElementById(`m_hero_title_color_${i}`)?.value || '#ffffff',
         titleTop: parseInt(document.getElementById(`m_hero_title_top_${i}`)?.value || 122, 10),
         titleLeft: parseInt(document.getElementById(`m_hero_title_left_${i}`)?.value || 70, 10),
         subtitle: document.getElementById(`m_hero_subtitle_${i}`)?.value || '',
-        subtitleColor: document.getElementById(`m_hero_subtitle_color_${i}`)?.value || '#333333',
+        subtitleColor: document.getElementById(`m_hero_subtitle_color_${i}`)?.value || '#ffffff',
         subtitleTop: parseInt(document.getElementById(`m_hero_subtitle_top_${i}`)?.value || 213, 10),
         subtitleLeft: parseInt(document.getElementById(`m_hero_subtitle_left_${i}`)?.value || 70, 10),
         background: readImageVal(`m_hero_bg_${i}`)

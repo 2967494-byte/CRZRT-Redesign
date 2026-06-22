@@ -20,10 +20,10 @@
       background: '',
       graphic: 'assets/img/consulting/banner-gavel.png',
       title: 'Защищаем\nваши интересы',
-      titleColor: '#000000', titleTop: 122, titleLeft: 70,
+      titleColor: '#ffffff', titleTop: 122, titleLeft: 70,
       subtitle:
         'Профессиональная юридическая поддержка в сфере закупок: сопровождение сделок, представительство в спорах, консультации для заказчиков и поставщиков на всех этапах.',
-      subtitleColor: '#333333', subtitleTop: 213, subtitleLeft: 70
+      subtitleColor: '#ffffff', subtitleTop: 213, subtitleLeft: 70
     },
     competenciesTitle: 'Компетенции',
     competencies: [...DEFAULT_COMPETENCIES],
@@ -169,12 +169,12 @@
 
     if (titleEl) {
       titleEl.innerHTML = multilineHtml(hero?.title);
-      if (hero?.titleColor) titleEl.style.color = hero.titleColor;
+      if (hero?.titleColor && hero.titleColor !== '#000000') titleEl.style.color = hero.titleColor;
       else titleEl.style.removeProperty('color');
     }
     if (subtitleEl) {
       subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
-      if (hero?.subtitleColor) subtitleEl.style.color = hero.subtitleColor;
+      if (hero?.subtitleColor && hero.subtitleColor !== '#333333') subtitleEl.style.color = hero.subtitleColor;
       else subtitleEl.style.removeProperty('color');
     }
 
