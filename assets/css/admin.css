@@ -1202,3 +1202,27 @@ body {
         [data-theme="light"] .permissions-grid {
             background: rgba(0, 0, 0, 0.02);
         }
+
+        /* Redesigned hero section grid for Training page editor */
+        .obuchenie-hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 2fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .obuchenie-hero-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        .obuchenie-hero-grid .hero-slide-frame {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        .obuchenie-block-header {
+            margin-bottom: 8px;
+        }

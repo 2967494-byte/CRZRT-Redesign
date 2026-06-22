@@ -102,26 +102,50 @@
       </div>`;
   }
 
+  function blockHeaderWithColorHtml(title, colorId, value) {
+    const color = /^#[0-9A-Fa-f]{6}$/.test(value || '') ? value : '#00AE4D';
+    return `
+      <div class="obuchenie-block-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span style="font-weight:600; font-size:0.95rem; color:var(--text-secondary);">${title}</span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="color" id="${colorId}_picker" value="${escapeAttr(color)}" style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer; background:transparent;" oninput="AdminObuchenie.syncColorField('${colorId}', this.value)">
+          <input type="text" class="form-control" id="${colorId}" value="${escapeAttr(color)}" placeholder="#00AE4D" style="max-width:90px; padding:4px 8px; font-size:0.85rem; font-family:monospace; margin-bottom:0;" oninput="AdminObuchenie.syncColorField('${colorId}', this.value, true)">
+        </div>
+      </div>`;
+  }
+
   function renderHeroAdmin(data) {
     const el = document.getElementById('obuchenieHeroAdmin');
     if (!el) return;
     const hero = getMigratedData(data).hero || {};
     el.innerHTML = `
-      ${heroBgUploadShell('obuchenie_hero_bg', 'Готовый баннер (~1520×420 px)')}
-      <div class="form-group" style="margin-top:20px;">
-        <label>Заголовок (Enter — перенос строки)</label>
-        <textarea class="form-control" id="obuchenie_hero_title" rows="2">${escapeAttr(hero.title)}</textarea>
+      <div class="obuchenie-hero-grid">
+        <!-- Left: Banner upload -->
+        <div class="obuchenie-hero-banner-col">
+          ${heroBgUploadShell('obuchenie_hero_bg', 'Готовый баннер (~1520×420 px)')}
+        </div>
+        
+        <!-- Right: Fields -->
+        <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
+          <!-- Block "Заголовок" -->
+          <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
+            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'obuchenie_hero_title_color', hero.titleColor || '#00AE4D')}
+            <div class="form-group" style="margin-bottom:0; margin-top:8px;">
+              <textarea class="form-control" id="obuchenie_hero_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)">${escapeAttr(hero.title)}</textarea>
+            </div>
+          </div>
+          
+          <!-- Block "Текст" -->
+          <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
+            ${blockHeaderWithColorHtml('Текст', 'obuchenie_hero_subtitle_color', hero.subtitleColor || '#FFFFFF')}
+            <div class="form-group" style="margin-bottom:0; margin-top:8px;">
+              <textarea class="form-control" id="obuchenie_hero_subtitle" rows="3" placeholder="Описание/текст под заголовком">${escapeAttr(hero.subtitle)}</textarea>
+            </div>
+          </div>
+        </div>
       </div>
-      ${colorFieldHtml('obuchenie_hero_title_color', 'Цвет заголовка', hero.titleColor || '#00AE4D')}
-      <div class="form-group">
-        <label>Подзаголовок</label>
-        <textarea class="form-control" id="obuchenie_hero_subtitle" rows="3">${escapeAttr(hero.subtitle)}</textarea>
-      </div>
-      ${colorFieldHtml('obuchenie_hero_subtitle_color', 'Цвет подзаголовка', hero.subtitleColor || '#FFFFFF')}
-      ${imageUploadHtml('obuchenie_hero_gavel', 'Изображение молотка (если нет готового баннера)', 'Показывается справа на стандартном баннере.')}
     `;
     setImageUploadState('obuchenie_hero_bg', hero.background);
-    setImageUploadState('obuchenie_hero_gavel', hero.gavelImage);
   }
 
   function navCardAdminHtml(prefix, card, i) {
