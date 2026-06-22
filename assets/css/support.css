@@ -177,6 +177,9 @@ body.theme-purple .hero-slider.hero-slider--custom-bg .ecp-banner__graphic.is-hi
 }
 
 body.theme-purple .hero-slider.hero-slider--custom-bg .hero-slide__title {
+  position: absolute;
+  margin: 0;
+  z-index: 2;
   left: 68px;
   top: 108px;
   width: 552px;
@@ -191,6 +194,9 @@ body.theme-purple .hero-slider.hero-slider--custom-bg .hero-slide__title {
 }
 
 body.theme-purple .hero-slider.hero-slider--custom-bg .hero-slide__subtitle {
+  position: absolute;
+  margin: 0;
+  z-index: 2;
   left: 60px;
   bottom: 40px;
   top: auto;

@@ -71,6 +71,9 @@ body.theme-blue .hero-slider.hero-slider--custom-bg .ecp-banner__graphic.is-hidd
 }
 
 body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__title {
+  position: absolute;
+  margin: 0;
+  z-index: 2;
   left: 68px;
   top: 108px;
   width: 552px;
@@ -85,6 +88,9 @@ body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__title {
 }
 
 body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__subtitle {
+  position: absolute;
+  margin: 0;
+  z-index: 2;
   left: 60px;
   bottom: 40px;
   top: auto;
@@ -97,6 +103,13 @@ body.theme-blue .hero-slider.hero-slider--custom-bg .hero-slide__subtitle {
   line-height: 120%;
   letter-spacing: -0.03em;
   color: #FFFFFF;
+}
+
+body.theme-blue .hero-slider.hero-slider--custom-bg .hero-btn {
+  position: absolute;
+  z-index: 2;
+  bottom: 40px;
+  left: 70px;
 }
 
 body.theme-blue .hero-slide {

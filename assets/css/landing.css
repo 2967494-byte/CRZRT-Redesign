@@ -398,6 +398,30 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   letter-spacing: 0;
 }
 
+.hero-slider--custom-bg .hero-slide__title {
+  position: absolute;
+  margin: 0;
+  z-index: 2;
+  left: 70px;
+  top: 122px;
+}
+
+.hero-slider--custom-bg .hero-slide__subtitle {
+  position: absolute;
+  margin: 0;
+  z-index: 2;
+  left: 70px;
+  bottom: auto;
+  top: 213px;
+}
+
+.hero-slider--custom-bg .hero-btn {
+  position: absolute;
+  z-index: 2;
+  bottom: 40px;
+  left: 70px;
+}
+
 .hero-slide__image {
   position: absolute;
   right: 56px;

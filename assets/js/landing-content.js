@@ -318,12 +318,19 @@
       titleEl.innerHTML = multilineHtml(first.title);
       if (first.titleColor && first.titleColor !== '#000000') titleEl.style.color = first.titleColor;
       else titleEl.style.removeProperty('color');
+      if (first.titleTop !== undefined) titleEl.style.top = `${first.titleTop}px`;
+      if (first.titleLeft !== undefined) titleEl.style.left = `${first.titleLeft}px`;
     }
     if (subEl) {
       subEl.innerHTML = multilineHtml(first.subtitle);
       if (first.subtitleColor && first.subtitleColor !== '#333333') subEl.style.color = first.subtitleColor;
       else subEl.style.removeProperty('color');
+      if (first.subtitleTop !== undefined) subEl.style.top = `${first.subtitleTop}px`;
+      if (first.subtitleLeft !== undefined) subEl.style.left = `${first.subtitleLeft}px`;
     }
+    
+    if (first.background) slider.classList.add('hero-slider--custom-bg');
+    else slider.classList.remove('hero-slider--custom-bg');
 
     const dotsWrap = slideEl.querySelector('.hero-slide__dots');
     const arrowsWrap = slideEl.querySelector('.hero-slide__arrows');
@@ -357,16 +364,28 @@
     const slider = document.querySelector('.hero-slider');
     const titleEl = document.querySelector('.hero-slide__title');
     const subEl = document.querySelector('.hero-slide__subtitle');
-    if (slider && slide.background) slider.style.backgroundImage = `url('${slide.background}')`;
+    if (slider) {
+      if (slide.background) {
+        slider.style.backgroundImage = `url('${slide.background}')`;
+        slider.classList.add('hero-slider--custom-bg');
+      } else {
+        slider.style.backgroundImage = '';
+        slider.classList.remove('hero-slider--custom-bg');
+      }
+    }
     if (titleEl) {
       titleEl.innerHTML = multilineHtml(slide.title);
       if (slide.titleColor && slide.titleColor !== '#000000') titleEl.style.color = slide.titleColor;
       else titleEl.style.removeProperty('color');
+      if (slide.titleTop !== undefined) titleEl.style.top = `${slide.titleTop}px`;
+      if (slide.titleLeft !== undefined) titleEl.style.left = `${slide.titleLeft}px`;
     }
     if (subEl) {
       subEl.innerHTML = multilineHtml(slide.subtitle);
       if (slide.subtitleColor && slide.subtitleColor !== '#333333') subEl.style.color = slide.subtitleColor;
       else subEl.style.removeProperty('color');
+      if (slide.subtitleTop !== undefined) subEl.style.top = `${slide.subtitleTop}px`;
+      if (slide.subtitleLeft !== undefined) subEl.style.left = `${slide.subtitleLeft}px`;
     }
     document.querySelectorAll('.hero-slide__dots .dot').forEach((dot, idx) => {
       dot.classList.toggle('active', idx === i);

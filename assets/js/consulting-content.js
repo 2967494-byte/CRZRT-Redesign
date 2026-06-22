@@ -171,11 +171,15 @@
       titleEl.innerHTML = multilineHtml(hero?.title);
       if (hero?.titleColor && hero.titleColor !== '#000000') titleEl.style.color = hero.titleColor;
       else titleEl.style.removeProperty('color');
+      if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
+      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
     }
     if (subtitleEl) {
       subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
       if (hero?.subtitleColor && hero.subtitleColor !== '#333333') subtitleEl.style.color = hero.subtitleColor;
       else subtitleEl.style.removeProperty('color');
+      if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
+      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
     }
 
     if (banner) {
