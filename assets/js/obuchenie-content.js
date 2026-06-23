@@ -592,34 +592,8 @@
     // Filter active courses
     const activeCourses = (courseRegistry || []).filter(c => c && c.active !== false);
 
-    // Map and calculate dates for sorting
-    const today = new Date();
-    const todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-    const mapped = activeCourses.map(course => {
-      const start = parseIsoDate(course.dateFrom);
-      return {
-        course,
-        startDate: start || new Date(2099, 11, 31) // Fallback for sorting if date is invalid
-      };
-    });
-
-    // Split into upcoming and past
-    const upcoming = mapped.filter(item => item.startDate >= todayZero);
-    const past = mapped.filter(item => item.startDate < todayZero);
-
-    // Sort upcoming ascending (closest first)
-    upcoming.sort((a, b) => a.startDate - b.startDate);
-
-    // Sort past descending (most recent first)
-    past.sort((a, b) => b.startDate - a.startDate);
-
-    // Combine and take top 3
-    const combined = [...upcoming, ...past];
-    const top3 = combined.slice(0, 3);
-
-    // If we have no courses in registry at all, fallback to default mock cards
-    if (top3.length === 0) {
+    // If we have no active courses in the registry at all (empty DB), fallback to default mock cards
+    if (activeCourses.length === 0) {
       const mockList = OBUCHENIE_DEFAULTS.courseCards;
       grid.innerHTML = mockList
         .map((card) => {
@@ -651,6 +625,33 @@
           </article>`;
         })
         .join('');
+      return;
+    }
+
+    // Map and calculate dates for sorting
+    const today = new Date();
+    const todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    const mapped = activeCourses.map(course => {
+      const start = parseIsoDate(course.dateFrom);
+      return {
+        course,
+        startDate: start || new Date(2099, 11, 31) // Fallback for sorting if date is invalid
+      };
+    });
+
+    // Only upcoming courses! (start date must be today or in the future)
+    const upcoming = mapped.filter(item => item.startDate >= todayZero);
+
+    // Sort upcoming ascending (closest first)
+    upcoming.sort((a, b) => a.startDate - b.startDate);
+
+    // Take top 3
+    const top3 = upcoming.slice(0, 3);
+
+    // If there are no upcoming courses (all are in the past), render empty grid
+    if (top3.length === 0) {
+      grid.innerHTML = '';
       return;
     }
 
