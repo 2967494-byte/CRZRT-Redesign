@@ -397,9 +397,19 @@
               <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Текст кнопки</label>
               <input type="text" class="form-control" id="obuchenie_testing_btn_text" value="${escapeAttr(banner.btnText)}" placeholder="Например: Пройти тест" oninput="AdminObuchenie.updateTestingLivePreview()">
             </div>
-            <div class="form-group" style="margin-bottom:0;">
+            <div class="form-group" style="margin-bottom:12px;">
               <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Ссылка кнопки</label>
               <input type="text" class="form-control" id="obuchenie_testing_btn_link" value="${escapeAttr(banner.btnLink)}" placeholder="URL или #anchor">
+            </div>
+            <div style="display:flex; gap:16px;">
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ снизу (px)</label>
+                <input type="number" class="form-control" id="obuchenie_testing_btn_bottom" value="${banner.btnBottom !== undefined ? banner.btnBottom : 65}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateTestingLivePreview()">
+              </div>
+              <div style="flex:1; margin-bottom:0;" class="form-group">
+                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
+                <input type="number" class="form-control" id="obuchenie_testing_btn_left" value="${banner.btnLeft !== undefined ? banner.btnLeft : 60}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateTestingLivePreview()">
+              </div>
             </div>
           </div>
         </div>
@@ -612,6 +622,9 @@
       const bgImage = document.getElementById('obuchenie_testing_image_val')?.value || '';
       const titleTop = parseFloat(document.getElementById('obuchenie_testing_title_top')?.value) || 68;
       const titleLeft = parseFloat(document.getElementById('obuchenie_testing_title_left')?.value) || 60;
+      
+      const btnBottom = parseFloat(document.getElementById('obuchenie_testing_btn_bottom')?.value) || 65;
+      const btnLeft = parseFloat(document.getElementById('obuchenie_testing_btn_left')?.value) || 60;
 
       if (bgImage) {
         previewEl.style.backgroundImage = `url(${bgImage})`;

@@ -118,7 +118,10 @@ const revealObserver = new IntersectionObserver(
 
 const REVEAL_SELECTORS =
   '.events-card, .news-card, .promo-banner, .partners-section, .review-card, .consultation-card__left, .consultation-card__right, .social-banner, ' +
-  '.ecp-card, .ecp-btn-large, .ecp-panel, .ecp-tariffs__title, .ecp-tariff-card, .ecp-blanks__title, .ecp-blank-card, .ecp-manual__title, .ecp-manual__item, .ecp-manual__graphic, .ecp-videos__title, .ecp-video-card, .ecp-support-banner';
+  '.ecp-card, .ecp-btn-large, .ecp-panel, .ecp-tariffs__title, .ecp-tariff-card, .ecp-blanks__title, .ecp-blank-card, .ecp-manual__title, .ecp-manual__item, .ecp-manual__graphic, .ecp-videos__title, .ecp-video-card, .ecp-support-banner, ' +
+  '.obuchenie-cal-card, .obuchenie-course-card, .obuchenie-testing-banner, .obuchenie-nav-card, ' +
+  '.consulting-comp-card, .consulting-process-step, .consulting-format-card, .consulting-experts-card, ' +
+  '.support-nav-card, .support-tariff-card, .support-feature-card, .support-case-card, .support-calc';
 
 function observeRevealElements(root = document) {
   root.querySelectorAll(REVEAL_SELECTORS).forEach((el) => {
@@ -136,8 +139,8 @@ window.__reinitReveal = (selector) => {
 
 observeRevealElements();
 
-document.addEventListener('landingContentReady', () => {
-  observeRevealElements();
+['landingContentReady', 'obuchenieContentReady', 'consultingContentReady', 'supportContentReady', 'ecpContentReady'].forEach(evt => {
+  document.addEventListener(evt, () => observeRevealElements());
 });
 
 // LOGIN POPOVER

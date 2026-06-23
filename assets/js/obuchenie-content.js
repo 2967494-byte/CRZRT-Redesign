@@ -469,13 +469,26 @@
       btnEl.textContent = data.btnText || OBUCHENIE_DEFAULTS.testingBanner.btnText;
       btnEl.href = (data.btnLink || '#contacts').trim() || '#contacts';
       
-      if (data.titleTop !== undefined || data.titleLeft !== undefined) {
+      if (data.titleTop !== undefined || data.titleLeft !== undefined || data.btnBottom !== undefined || data.btnLeft !== undefined) {
          // position the button absolute as well, roughly matching the preview
          btnEl.style.position = 'absolute';
-         btnEl.style.bottom = '15%'; 
-         if (data.titleLeft !== undefined) btnEl.style.left = `${data.titleLeft}px`;
+         btnEl.style.margin = '0';
+         if (data.btnBottom !== undefined) {
+           btnEl.style.bottom = `${data.btnBottom}px`;
+         } else {
+           btnEl.style.bottom = '65px';
+         }
+         
+         if (data.btnLeft !== undefined) {
+           btnEl.style.left = `${data.btnLeft}px`;
+         } else if (data.titleLeft !== undefined) {
+           btnEl.style.left = `${data.titleLeft}px`;
+         } else {
+           btnEl.style.left = '60px';
+         }
       } else {
          btnEl.style.position = '';
+         btnEl.style.margin = '';
          btnEl.style.bottom = '';
          btnEl.style.left = '';
       }
