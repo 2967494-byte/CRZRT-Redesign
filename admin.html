@@ -8,7 +8,7 @@
     <title>Админ-панель | Центр Развития Закупок РТ</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/admin.css?v=7">
+    <link rel="stylesheet" href="assets/css/admin.css?v=8">
 </head>
 
 <body>
@@ -318,9 +318,17 @@
                 </div>
                 <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
-                        <span>Календарь курсов</span>
-                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminObuchenie.addCourseMonth()">+ Месяц</button>
+                        <span>Учёт курсов</span>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminObuchenie.addCourseRegistryItem()">+ Курс</button>
                     </div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">Реестр курсов для календаря: формат, даты, описание, стоимость и спикеры. Дни в календаре подсвечиваются автоматически.</p>
+                    <div id="obuchenieCourseRegistryAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header">
+                        <span>Календарь курсов</span>
+                    </div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">Оформление календаря и промо-блока. Дни с курсами берутся из учёта курсов.</p>
                     <div id="obuchenieCalendarAdmin"></div>
                 </div>
                 <div class="admin-card">
@@ -689,12 +697,12 @@
     <script src="assets/js/ecp-content.js?v=11"></script>
     <script src="assets/js/consulting-content.js?v=6"></script>
     <script src="assets/js/support-content.js?v=4"></script>
-    <script src="assets/js/obuchenie-content.js?v=5"></script>
+    <script src="assets/js/obuchenie-content.js?v=6"></script>
     <script src="assets/js/admin-landing.js?v=2"></script>
     <script src="assets/js/admin-ecp.js?v=6"></script>
     <script src="assets/js/admin-consulting-page.js?v=5"></script>
     <script src="assets/js/admin-support.js?v=4"></script>
-    <script src="assets/js/admin-obuchenie.js?v=5"></script>
+    <script src="assets/js/admin-obuchenie.js?v=6"></script>
     <script src="assets/js/admin-ui.js?v=9"></script>
 </body>
 </html>

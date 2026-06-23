@@ -84,6 +84,40 @@
     'Дизайн', 'Дизайн', 'Дизайн', 'Дизайн', 'Дизайн', 'Дизайн'
   ];
 
+  const MONTH_NAMES_RU = [
+    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+  ];
+
+  const DEFAULT_COURSE_REGISTRY = [
+    {
+      id: 'demo-och-2026-06',
+      title: 'Очный курс повышения квалификации по 44-ФЗ',
+      format: 'och',
+      dateFrom: '2026-06-03',
+      dateTo: '2026-06-07',
+      description: 'Практический курс для специалистов по закупкам: разбор типовых ошибок, кейсы и шаблоны документов.',
+      price: '23 700 ₽',
+      speakers: [
+        { name: 'Иванов Иван Иванович', position: 'к.ю.н., эксперт по госзакупкам' }
+      ],
+      active: true
+    },
+    {
+      id: 'demo-dist-2026-06',
+      title: 'Дистанционный курс для поставщиков',
+      format: 'dist',
+      dateFrom: '2026-06-10',
+      dateTo: '2026-06-24',
+      description: 'Онлайн-программа с доступом к материалам и консультациями куратора.',
+      price: '10 890 ₽',
+      speakers: [
+        { name: 'Петрова Анна Сергеевна', position: 'ведущий преподаватель, опыт 12 лет' }
+      ],
+      active: true
+    }
+  ];
+
   const OBUCHENIE_DEFAULTS = {
     hero: {
       background: '',
@@ -118,6 +152,10 @@
       }
     },
     courseCards: DEFAULT_COURSE_CARDS.map((card) => ({ ...card })),
+    courseRegistry: DEFAULT_COURSE_REGISTRY.map((item) => ({
+      ...item,
+      speakers: item.speakers.map((speaker) => ({ ...speaker }))
+    })),
     testingBanner: {
       title: 'Проверь себя\nв госзакупках',
       btnText: 'Пройти тест',
@@ -150,6 +188,98 @@
       .split('\n')
       .filter((line, i, arr) => line.length || i < arr.length - 1)
       .join('<br>');
+  }
+
+  function parseIsoDate(value) {
+    if (!value || typeof value !== 'string') return null;
+    const match = value.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) return null;
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10);
+    const day = parseInt(match[3], 10);
+    const date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+    return date;
+  }
+
+  function formatIsoDate(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function createCourseId() {
+    return `course_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  function normalizeSpeaker(raw) {
+    return {
+      name: String(raw?.name || '').trim(),
+      position: String(raw?.position || '').trim()
+    };
+  }
+
+  function normalizeCourseRegistryItem(raw, index) {
+    const format = raw?.format === 'dist' ? 'dist' : 'och';
+    const dateFrom = parseIsoDate(raw?.dateFrom) ? String(raw.dateFrom).trim() : '';
+    const dateTo = parseIsoDate(raw?.dateTo) ? String(raw.dateTo).trim() : dateFrom;
+    const speakers = Array.isArray(raw?.speakers) && raw.speakers.length
+      ? raw.speakers.map(normalizeSpeaker).filter((speaker) => speaker.name || speaker.position)
+      : [{ name: '', position: '' }];
+
+    return {
+      id: String(raw?.id || createCourseId() || `course_${index}`),
+      title: String(raw?.title || '').trim(),
+      format,
+      dateFrom,
+      dateTo: dateTo || dateFrom,
+      description: String(raw?.description || '').trim(),
+      price: String(raw?.price || '').trim(),
+      speakers,
+      active: raw?.active !== false
+    };
+  }
+
+  function normalizeCourseRegistry(raw) {
+    if (!Array.isArray(raw)) return [];
+    return raw.map((item, index) => normalizeCourseRegistryItem(item, index));
+  }
+
+  function deriveCourseDaysByMonth(registry) {
+    const result = {};
+    const list = Array.isArray(registry) ? registry : [];
+
+    list.forEach((course) => {
+      if (!course || course.active === false) return;
+      const start = parseIsoDate(course.dateFrom);
+      const end = parseIsoDate(course.dateTo || course.dateFrom);
+      if (!start || !end) return;
+
+      const from = start <= end ? start : end;
+      const to = start <= end ? end : start;
+      const cursor = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+
+      while (cursor <= to) {
+        const key = `${cursor.getFullYear()}-${cursor.getMonth() + 1}`;
+        if (!result[key]) result[key] = [];
+        const day = cursor.getDate();
+        if (!result[key].includes(day)) result[key].push(day);
+        cursor.setDate(cursor.getDate() + 1);
+      }
+    });
+
+    Object.keys(result).forEach((key) => {
+      result[key].sort((a, b) => a - b);
+    });
+
+    return result;
+  }
+
+  function resolveCalendarCourseDays(calendar, courseRegistry) {
+    const derived = deriveCourseDaysByMonth(courseRegistry);
+    if (Object.keys(derived).length) return derived;
+    return normalizeCourseDays(calendar?.courseDaysByMonth);
   }
 
   function normalizeCourseDays(raw) {
@@ -190,6 +320,14 @@
     if (!tags.length) tags = [...OBUCHENIE_DEFAULTS.courseSearch.tags];
 
     const rawCalendar = raw?.calendar && typeof raw.calendar === 'object' ? raw.calendar : {};
+    const courseRegistry = Array.isArray(raw?.courseRegistry)
+      ? normalizeCourseRegistry(raw.courseRegistry)
+      : !raw
+        ? OBUCHENIE_DEFAULTS.courseRegistry.map((item) => ({
+            ...item,
+            speakers: item.speakers.map((speaker) => ({ ...speaker }))
+          }))
+        : [];
 
     return {
       hero: {
@@ -218,7 +356,7 @@
         promoTitleColor: rawCalendar.promoTitleColor || OBUCHENIE_DEFAULTS.calendar.promoTitleColor,
         promoImage: rawCalendar.promoImage || OBUCHENIE_DEFAULTS.calendar.promoImage,
         allCoursesLink: rawCalendar.allCoursesLink || OBUCHENIE_DEFAULTS.calendar.allCoursesLink,
-        courseDaysByMonth: normalizeCourseDays(rawCalendar.courseDaysByMonth)
+        courseDaysByMonth: resolveCalendarCourseDays(rawCalendar, courseRegistry)
       },
       courseCards:
         Array.isArray(raw?.courseCards) && raw.courseCards.length
@@ -234,6 +372,7 @@
               moreLink: card?.moreLink || OBUCHENIE_DEFAULTS.courseCards[i]?.moreLink || '#courses'
             }))
           : OBUCHENIE_DEFAULTS.courseCards.map((card) => ({ ...card })),
+      courseRegistry,
       testingBanner: {
         title: raw?.testingBanner?.title || OBUCHENIE_DEFAULTS.testingBanner.title,
         btnText: raw?.testingBanner?.btnText || OBUCHENIE_DEFAULTS.testingBanner.btnText,
@@ -374,8 +513,9 @@
       .join('');
   }
 
-  function renderCalendar(calendar) {
+  function renderCalendar(calendar, courseRegistry) {
     const data = calendar || OBUCHENIE_DEFAULTS.calendar;
+    const courseDaysByMonth = resolveCalendarCourseDays(data, courseRegistry);
     const promoEl = document.querySelector('.obuchenie-calendar-promo');
     const titleEl = document.querySelector('.obuchenie-calendar-promo__title');
     const imageEl = document.querySelector('.obuchenie-calendar-promo__image');
@@ -397,7 +537,7 @@
     }
 
     if (window.ObuchenieCalendar?.setCourseDays) {
-      window.ObuchenieCalendar.setCourseDays(data.courseDaysByMonth);
+      window.ObuchenieCalendar.setCourseDays(courseDaysByMonth);
     }
   }
 
@@ -512,7 +652,7 @@
     renderHero(data.hero);
     renderNavCards(data.navCards);
     renderCourseSearch(data.courseSearch);
-    renderCalendar(data.calendar);
+    renderCalendar(data.calendar, data.courseRegistry);
     renderCourseCards(data.courseCards);
     renderTestingBanner(data.testingBanner);
     document.dispatchEvent(new CustomEvent('obuchenieContentReady', { detail: data }));
@@ -543,7 +683,15 @@
   window.ObuchenieContent = {
     STORAGE_KEY,
     OBUCHENIE_DEFAULTS,
+    MONTH_NAMES_RU,
     migrateObucheniePageData,
+    normalizeCourseRegistry,
+    normalizeCourseRegistryItem,
+    deriveCourseDaysByMonth,
+    resolveCalendarCourseDays,
+    createCourseId,
+    parseIsoDate,
+    formatIsoDate,
     loadObuchenieDataFromApi,
     loadObuchenieDataFromLocal,
     renderObucheniePage
