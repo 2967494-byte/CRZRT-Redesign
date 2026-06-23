@@ -119,9 +119,9 @@ const revealObserver = new IntersectionObserver(
 const REVEAL_SELECTORS =
   '.events-card, .news-card, .promo-banner, .partners-section, .review-card, .consultation-card__left, .consultation-card__right, .social-banner, ' +
   '.ecp-card, .ecp-btn-large, .ecp-panel, .ecp-tariffs__title, .ecp-tariff-card, .ecp-blanks__title, .ecp-blank-card, .ecp-manual__title, .ecp-manual__item, .ecp-manual__graphic, .ecp-videos__title, .ecp-video-card, .ecp-support-banner, ' +
-  '.obuchenie-cal-card, .obuchenie-course-card, .obuchenie-testing-banner, .obuchenie-nav-card, ' +
-  '.consulting-comp-card, .consulting-process-step, .consulting-format-card, .consulting-experts-card, ' +
-  '.support-nav-card, .support-tariff-card, .support-feature-card, .support-case-card, .support-calc';
+  '.obuchenie-cal-card, .occ-card, .obuchenie-testing-banner, .obuchenie-calendar-section, .obuchenie-course-search-section, ' +
+  '.consulting-competency-card, .consulting-why-card, ' +
+  '.support-service-card, .support-checklist-card, .support-calc, .ecp-tariff-card, .ecp-blank-card, .ecp-video-card';
 
 function observeRevealElements(root = document) {
   root.querySelectorAll(REVEAL_SELECTORS).forEach((el) => {
