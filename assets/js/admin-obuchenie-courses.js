@@ -8,6 +8,7 @@
   let pageData = null;
   let courses = [];
   let saving = false;
+  let datePickerInstance = null;
 
   const els = {};
 
@@ -157,7 +158,13 @@
     const isEdit = Boolean(course);
     els.modalTitle.textContent = isEdit ? 'Редактировать курс' : 'Добавить курс';
     els.formId.value = course?.id || '';
-    els.formDateFrom.value = course?.dateFrom || '';
+    
+    if (datePickerInstance) {
+      datePickerInstance.setDate(course?.dateFrom || '', false);
+    } else {
+      els.formDateFrom.value = course?.dateFrom || '';
+    }
+
     els.formTitle.value = course?.title || '';
     els.formFormat.value = course?.format === 'dist' ? 'dist' : 'och';
     els.formDurationDays.value = String(course?.durationDays || 1);
@@ -170,6 +177,9 @@
   function closeModal() {
     els.modal.style.display = 'none';
     els.form.reset();
+    if (datePickerInstance) {
+      datePickerInstance.clear();
+    }
     els.formId.value = '';
   }
 
@@ -291,16 +301,40 @@
   function initThemeToggle() {
     const toggle = $('theme-toggle-admin');
     if (!toggle) return;
-    const saved = localStorage.getItem('admin-theme');
-    if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    const iconSun = document.querySelector('.icon-sun');
+    const iconMoon = document.querySelector('.icon-moon');
+
+    function updateIcons(isLight) {
+      if (iconSun && iconMoon) {
+        if (isLight) {
+          iconSun.style.display = 'none';
+          iconMoon.style.display = 'block';
+        } else {
+          iconSun.style.display = 'block';
+          iconMoon.style.display = 'none';
+        }
+      }
+    }
+
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      updateIcons(true);
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      updateIcons(false);
+    }
+
     toggle.addEventListener('click', () => {
       const isLight = document.documentElement.getAttribute('data-theme') === 'light';
       if (isLight) {
         document.documentElement.removeAttribute('data-theme');
-        localStorage.setItem('admin-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        updateIcons(false);
       } else {
         document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('admin-theme', 'light');
+        localStorage.setItem('theme', 'light');
+        updateIcons(true);
       }
     });
   }
@@ -320,6 +354,18 @@
     els.formDurationDays = $('courseFormDurationDays');
     els.formDescription = $('courseFormDescription');
     els.formPrice = $('courseFormPrice');
+
+    // Initialize flatpickr datepicker
+    if (typeof flatpickr !== 'undefined' && els.formDateFrom) {
+      datePickerInstance = flatpickr(els.formDateFrom, {
+        locale: 'ru',
+        dateFormat: 'Y-m-d',
+        altInput: true,
+        altFormat: 'd.m.Y',
+        allowInput: true,
+        disableMobile: true
+      });
+    }
 
     initThemeToggle();
     bindEvents();
