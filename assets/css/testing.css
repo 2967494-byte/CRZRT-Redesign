@@ -9,10 +9,19 @@
   --quiz-danger-border: #FCA5A5;
 }
 
+body[data-page="testing"] {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-page="testing"] .testing-main {
+  flex-grow: 1;
+}
+
 .testing-main {
-  background: #F8FAFC;
-  min-height: calc(100vh - 400px);
-  padding: 60px 0 100px 0;
+  background: #EEEEFB;
+  padding: 140px 0 100px 0;
   font-family: 'Inter', sans-serif;
   color: #334155;
 }
@@ -701,7 +710,7 @@
 
 @media (max-width: 640px) {
   .testing-main {
-    padding: 30px 0 60px 0;
+    padding: 100px 0 60px 0;
   }
   .testing-card {
     padding: 24px;
