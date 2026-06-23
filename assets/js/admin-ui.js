@@ -1285,8 +1285,8 @@
 
             while (dataUrlBytes(result) > maxBytes && tries < 10) {
                 tries += 1;
-                if (quality > 0.52) {
-                    quality = Math.max(0.52, quality - 0.08);
+                if (quality > 0.70) {
+                    quality = Math.max(0.70, quality - 0.06);
                 } else {
                     workingCanvas = scaleCanvas(workingCanvas, 0.88);
                 }
@@ -1911,7 +1911,7 @@
             }
 
             if (data.calendar) {
-                data.calendar.promoImage = await uploadOrReuse(data.calendar.promoImage, 'obuchenie_cal_promo_image', 1192, 1762);
+                data.calendar.promoImage = await uploadOrReuse(data.calendar.promoImage, 'obuchenie_cal_promo_image', 800, 1183);
             }
 
             if (data.testingBanner) {

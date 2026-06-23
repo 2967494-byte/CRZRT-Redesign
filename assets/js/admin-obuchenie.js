@@ -568,7 +568,7 @@
   function getCropSize(uploadId) {
     if (uploadId === 'obuchenie_hero_bg') return [1520, 420];
     if (uploadId === 'obuchenie_hero_gavel') return [420, 420];
-    if (uploadId === 'obuchenie_cal_promo_image') return [1192, 1762];
+    if (uploadId === 'obuchenie_cal_promo_image') return [800, 1183];
     if (uploadId === 'obuchenie_testing_image') return [3040, 870];
     if (uploadId.startsWith('obuchenie_nav_icon_')) return [118, 149];
     return [1200, 675];
