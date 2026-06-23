@@ -148,6 +148,7 @@
       promoTitleColor: '#FFFFFF',
       promoImage: 'assets/img/img1_processed.png',
       allCoursesLink: '#courses',
+      allCoursesFileName: '',
       courseDaysByMonth: {
         '2026-5': [5, 8, 15, 20],
         '2026-6': [3, 10, 17, 24]
@@ -376,6 +377,7 @@
         promoTitleColor: rawCalendar.promoTitleColor || OBUCHENIE_DEFAULTS.calendar.promoTitleColor,
         promoImage: rawCalendar.promoImage || OBUCHENIE_DEFAULTS.calendar.promoImage,
         allCoursesLink: rawCalendar.allCoursesLink || OBUCHENIE_DEFAULTS.calendar.allCoursesLink,
+        allCoursesFileName: rawCalendar.allCoursesFileName || '',
         courseDaysByMonth: resolveCalendarCourseDays(rawCalendar, courseRegistry)
       },
       courseCards:
@@ -553,7 +555,15 @@
       promoEl.classList.toggle('obuchenie-calendar-promo--has-image', Boolean(promoImage));
     }
     if (allLinkEl) {
-      allLinkEl.href = (data.allCoursesLink || '#courses').trim() || '#courses';
+      const link = (data.allCoursesLink || '#courses').trim() || '#courses';
+      allLinkEl.href = link;
+      if (link.startsWith('uploads/')) {
+        allLinkEl.setAttribute('download', '');
+        allLinkEl.setAttribute('target', '_blank');
+      } else {
+        allLinkEl.removeAttribute('download');
+        allLinkEl.removeAttribute('target');
+      }
     }
 
     if (window.ObuchenieCalendar?.setCourseDays) {

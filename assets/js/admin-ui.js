@@ -1148,6 +1148,9 @@
                     if (AdminSupport?.isSupportFileInputId?.(targetId) && AdminSupport?.setFileUploadState) {
                         AdminSupport.setFileUploadState(targetId, result.url, result.name || file.name);
                     }
+                    if (targetId.startsWith('obuchenie_') && AdminObuchenie?.setFileUploadState) {
+                        AdminObuchenie.setFileUploadState(targetId, result.url, result.name || file.name);
+                    }
                     const saveBtnHint = document.getElementById('globalSaveBtn');
                     if (saveBtnHint) {
                         saveBtnHint.style.boxShadow = '0 0 15px rgba(52, 199, 89, 0.5)';

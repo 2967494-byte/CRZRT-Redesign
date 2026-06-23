@@ -81,6 +81,19 @@
       </div>`;
   }
 
+  function fileUploadRow(id, label, value, fileName) {
+    const shownName = fileName || (value ? value.split('/').pop() : '');
+    return `
+      <div class="form-group" style="margin-bottom:0;">
+        <label>${label}</label>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:8px;">
+          <input type="text" class="form-control" id="${id}" value="${escapeAttr(value)}" placeholder="Ссылка или uploads/files/..." style="flex:1;min-width:200px;">
+          <button type="button" class="btn-save" style="padding:10px 16px;font-size:0.92rem;border-radius:8px;" onclick="AdminObuchenie.pickFile('${id}')">Загрузить файл</button>
+        </div>
+        <small id="${id}_name" style="display:${shownName ? 'inline-block' : 'none'};color:var(--text-secondary);margin-top:8px;font-size:0.85rem;">${escapeAttr(shownName)}</small>
+      </div>`;
+  }
+
   function navIconUploadHtml(id) {
     return `
       <div class="form-group consulting-comp-admin-card__icon">
@@ -245,42 +258,35 @@
     return window.ObuchenieContent || {};
   }
 
-  function renderCalendarDaysPreview(courseRegistry) {
-    const api = getRegistryApi();
-    const derived = api.deriveCourseDaysByMonth?.(courseRegistry) || {};
-    const entries = Object.keys(derived)
-      .sort()
-      .map((key) => {
-        const days = derived[key];
-        return `<li><strong>${escapeAttr(key)}</strong>: ${escapeAttr(days.join(', '))}</li>`;
-      });
-    if (!entries.length) {
-      return '<p class="course-registry-preview__empty">Пока нет курсов с датами. Добавьте их на странице <a href="admin-obuchenie-courses.html">Календарь курсов</a>.</p>';
-    }
-    return `<ul class="course-registry-preview__list">${entries.join('')}</ul>`;
-  }
-
   function renderCalendarAdmin(data) {
     const el = document.getElementById('obuchenieCalendarAdmin');
     if (!el) return;
     const migrated = getMigratedData(data);
     const calendar = migrated.calendar || {};
-    const courseRegistry = migrated.courseRegistry || [];
     el.innerHTML = `
-      <div class="form-group">
-        <label>Заголовок промо-блока (Enter — перенос строки)</label>
-        <textarea class="form-control" id="obuchenie_cal_promo_title" rows="2">${escapeAttr(calendar.promoTitle)}</textarea>
-      </div>
-      ${colorFieldHtml('obuchenie_cal_promo_title_color', 'Цвет заголовка', calendar.promoTitleColor || '#FFFFFF')}
-      ${imageUploadHtml('obuchenie_cal_promo_image', 'Изображение промо-блока', 'Рекомендуемый размер ~1200×1760 px — заливает весь блок (2× для Retina).')}
-      <div class="form-group">
-        <label>Ссылка «все курсы»</label>
-        <input type="text" class="form-control" id="obuchenie_cal_all_link" value="${escapeAttr(calendar.allCoursesLink)}">
-      </div>
-      <div class="course-registry-preview">
-        <h4 style="margin:24px 0 8px;font-size:0.95rem;">Подсветка дней в календаре</h4>
-        <p style="color:var(--text-secondary);margin:0 0 12px;font-size:0.9rem;">Дни подсвечиваются автоматически по датам из раздела «Учёт курсов».</p>
-        ${renderCalendarDaysPreview(courseRegistry)}
+      <div class="obuchenie-hero-grid">
+        <!-- Left: Promo Image -->
+        <div class="obuchenie-hero-banner-col" style="margin-bottom:0;">
+          ${imageUploadHtml('obuchenie_cal_promo_image', 'Изображение промо-блока', 'Рекомендуемый размер ~1200×1760 px')}
+        </div>
+        
+        <!-- Right: Fields -->
+        <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
+          <div style="display:grid; grid-template-columns: 1fr 160px; gap:16px; align-items:start;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Заголовок промо-блока (Enter — перенос строки)</label>
+              <textarea class="form-control" id="obuchenie_cal_promo_title" rows="2" style="height: 80px; resize: vertical; margin-top:8px;">${escapeAttr(calendar.promoTitle)}</textarea>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Цвет заголовка</label>
+              <div style="display:flex; gap:8px; align-items:center; height:44px; margin-top:8px;">
+                <input type="color" id="obuchenie_cal_promo_title_color_picker" value="${escapeAttr(calendar.promoTitleColor || '#FFFFFF')}" style="width:38px; height:38px; padding:0; border:1px solid rgba(255,255,255,0.15); border-radius:8px; cursor:pointer; background:transparent;" oninput="AdminObuchenie.syncColorField('obuchenie_cal_promo_title_color', this.value)">
+                <input type="text" class="form-control" id="obuchenie_cal_promo_title_color" value="${escapeAttr(calendar.promoTitleColor || '#FFFFFF')}" placeholder="#FFFFFF" style="width:90px; padding:6px 10px; font-family:monospace; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.syncColorField('obuchenie_cal_promo_title_color', this.value, true)">
+              </div>
+            </div>
+          </div>
+          ${fileUploadRow('obuchenie_cal_all_link', 'Файл «Все курсы» (PDF/Doc/Zip)', calendar.allCoursesLink || '', calendar.allCoursesFileName || '')}
+        </div>
       </div>`;
     setImageUploadState('obuchenie_cal_promo_image', calendar.promoImage);
   }
@@ -497,7 +503,8 @@
       promoTitle: document.getElementById('obuchenie_cal_promo_title')?.value ?? data.calendar?.promoTitle ?? '',
       promoTitleColor: readColorVal('obuchenie_cal_promo_title_color', data.calendar?.promoTitleColor || '#FFFFFF'),
       promoImage: readImageVal('obuchenie_cal_promo_image') || data.calendar?.promoImage || '',
-      allCoursesLink: document.getElementById('obuchenie_cal_all_link')?.value ?? data.calendar?.allCoursesLink ?? '#courses',
+      allCoursesLink: document.getElementById('obuchenie_cal_all_link')?.value ?? data.calendar?.allCoursesLink ?? '',
+      allCoursesFileName: document.getElementById('obuchenie_cal_all_link_name')?.textContent || '',
       courseDaysByMonth: collectCourseDaysFromForm(data.courseRegistry)
     };
 
@@ -579,6 +586,21 @@
     setImageUploadState,
     pickImage,
     clearImage,
+    pickFile(inputId) {
+      window.fileUploadTarget = inputId;
+      document.getElementById('docFileInput')?.click();
+    },
+    setFileUploadState(inputId, url, name) {
+      const input = document.getElementById(inputId);
+      if (input) {
+        input.value = url;
+      }
+      const nameEl = document.getElementById(`${inputId}_name`);
+      if (nameEl) {
+        nameEl.textContent = name || url.split('/').pop();
+        nameEl.style.display = 'inline-block';
+      }
+    },
     applyCroppedImage,
     getAspect,
     getCropSize,
