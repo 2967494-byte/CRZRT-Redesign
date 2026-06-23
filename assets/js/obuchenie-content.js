@@ -96,6 +96,7 @@
       format: 'och',
       dateFrom: '2026-06-03',
       dateTo: '2026-06-07',
+      durationDays: 5,
       description: 'Практический курс для специалистов по закупкам: разбор типовых ошибок, кейсы и шаблоны документов.',
       price: '23 700 ₽',
       speakers: [
@@ -109,6 +110,7 @@
       format: 'dist',
       dateFrom: '2026-06-10',
       dateTo: '2026-06-24',
+      durationDays: 15,
       description: 'Онлайн-программа с доступом к материалам и консультациями куратора.',
       price: '10 890 ₽',
       speakers: [
@@ -213,6 +215,23 @@
     return `course_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   }
 
+  function addDays(date, days) {
+    const next = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    next.setDate(next.getDate() + days);
+    return next;
+  }
+
+  function getCourseDateRange(course) {
+    const start = parseIsoDate(course?.dateFrom);
+    if (!start) return null;
+
+    const explicitEnd = parseIsoDate(course?.dateTo);
+    const durationDays = Math.max(1, parseInt(course?.durationDays, 10) || 1);
+    const end = explicitEnd && explicitEnd >= start ? explicitEnd : addDays(start, durationDays - 1);
+
+    return { from: start, to: end };
+  }
+
   function normalizeSpeaker(raw) {
     return {
       name: String(raw?.name || '').trim(),
@@ -223,17 +242,21 @@
   function normalizeCourseRegistryItem(raw, index) {
     const format = raw?.format === 'dist' ? 'dist' : 'och';
     const dateFrom = parseIsoDate(raw?.dateFrom) ? String(raw.dateFrom).trim() : '';
-    const dateTo = parseIsoDate(raw?.dateTo) ? String(raw.dateTo).trim() : dateFrom;
+    const durationDays = Math.max(1, parseInt(raw?.durationDays, 10) || 1);
+    const range = dateFrom
+      ? getCourseDateRange({ dateFrom, dateTo: raw?.dateTo, durationDays })
+      : null;
     const speakers = Array.isArray(raw?.speakers) && raw.speakers.length
       ? raw.speakers.map(normalizeSpeaker).filter((speaker) => speaker.name || speaker.position)
-      : [{ name: '', position: '' }];
+      : [];
 
     return {
       id: String(raw?.id || createCourseId() || `course_${index}`),
       title: String(raw?.title || '').trim(),
       format,
       dateFrom,
-      dateTo: dateTo || dateFrom,
+      dateTo: range ? formatIsoDate(range.to) : (parseIsoDate(raw?.dateTo) ? String(raw.dateTo).trim() : dateFrom),
+      durationDays,
       description: String(raw?.description || '').trim(),
       price: String(raw?.price || '').trim(),
       speakers,
@@ -252,15 +275,12 @@
 
     list.forEach((course) => {
       if (!course || course.active === false) return;
-      const start = parseIsoDate(course.dateFrom);
-      const end = parseIsoDate(course.dateTo || course.dateFrom);
-      if (!start || !end) return;
+      const range = getCourseDateRange(course);
+      if (!range) return;
 
-      const from = start <= end ? start : end;
-      const to = start <= end ? end : start;
-      const cursor = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+      const cursor = new Date(range.from.getFullYear(), range.from.getMonth(), range.from.getDate());
 
-      while (cursor <= to) {
+      while (cursor <= range.to) {
         const key = `${cursor.getFullYear()}-${cursor.getMonth() + 1}`;
         if (!result[key]) result[key] = [];
         const day = cursor.getDate();
@@ -689,6 +709,7 @@
     normalizeCourseRegistryItem,
     deriveCourseDaysByMonth,
     resolveCalendarCourseDays,
+    getCourseDateRange,
     createCourseId,
     parseIsoDate,
     formatIsoDate,

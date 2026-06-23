@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <title>Календарь курсов | Админ-панель</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/admin.css?v=10">
+</head>
+
+<body>
+    <button class="theme-toggle-admin" id="theme-toggle-admin" aria-label="Toggle Theme">
+        <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <div class="admin-courses-page" id="coursesPageRoot" hidden>
+        <header class="admin-courses-page__header">
+            <div class="admin-courses-page__header-main">
+                <a href="admin.html#obuchenie-page" class="admin-courses-page__back">← Назад в админку</a>
+                <h1 class="admin-courses-page__title">Календарь курсов</h1>
+                <p class="admin-courses-page__subtitle">Курсы из этой таблицы автоматически подсвечивают дни в календаре на странице «Обучение».</p>
+            </div>
+            <div class="admin-courses-page__status" id="coursesSaveStatus" aria-live="polite"></div>
+        </header>
+
+        <main class="admin-courses-page__main">
+            <div class="admin-card">
+                <div class="admin-courses-page__toolbar">
+                    <button type="button" class="btn-save" id="btnAddCourse">+ Добавить курс</button>
+                </div>
+                <div class="courses-table-wrap">
+                    <table class="users-table courses-table">
+                        <thead>
+                            <tr>
+                                <th>Дата начала</th>
+                                <th>Название</th>
+                                <th>Очный / заочный</th>
+                                <th>Длительность (дней)</th>
+                                <th>Описание</th>
+                                <th>Стоимость</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coursesTableBody"></tbody>
+                    </table>
+                </div>
+                <p class="courses-table-empty" id="coursesTableEmpty" hidden>Пока нет курсов. Нажмите «Добавить курс».</p>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="courseModal" style="display: none;">
+        <div class="modal-content admin-courses-modal">
+            <button type="button" class="btn-modal-close" id="courseModalClose" aria-label="Закрыть">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h2 class="modal-title admin-courses-modal__title" id="courseModalTitle">Добавить курс</h2>
+            <form id="courseForm" class="admin-courses-modal__form">
+                <input type="hidden" id="courseFormId" value="">
+                <div class="form-group">
+                    <label for="courseFormDateFrom">Дата начала</label>
+                    <input type="date" class="form-control" id="courseFormDateFrom" required>
+                </div>
+                <div class="form-group">
+                    <label for="courseFormTitle">Название</label>
+                    <input type="text" class="form-control" id="courseFormTitle" required>
+                </div>
+                <div class="admin-courses-modal__row">
+                    <div class="form-group">
+                        <label for="courseFormFormat">Формат</label>
+                        <select class="form-control" id="courseFormFormat">
+                            <option value="och">Очный</option>
+                            <option value="dist">Заочный</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="courseFormDurationDays">Длительность (дней)</label>
+                        <input type="number" class="form-control" id="courseFormDurationDays" min="1" max="365" value="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="courseFormDescription">Описание</label>
+                    <textarea class="form-control" id="courseFormDescription" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="courseFormPrice">Стоимость</label>
+                    <input type="text" class="form-control" id="courseFormPrice" placeholder="23 700 ₽">
+                </div>
+                <div class="admin-courses-modal__actions">
+                    <button type="button" class="btn-secondary" id="courseModalCancel">Отмена</button>
+                    <button type="submit" class="btn-save" id="courseModalSave">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="authModal" style="display: none;">
+        <div class="modal-content">
+            <h2 class="modal-title" style="color: #00AE4D;">Вход в систему</h2>
+            <div class="modal-error" id="authError">Неверный e-mail или пароль</div>
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="authEmail" class="form-control" placeholder="admin@crzrt.ru">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="authPassword" class="form-control" placeholder="********">
+            </div>
+            <button class="btn-save" style="width: 100%; margin-top: 10px;" id="btnAuthLogin">Войти</button>
+        </div>
+    </div>
+
+    <script src="assets/js/obuchenie-content.js?v=7"></script>
+    <script src="assets/js/admin-obuchenie-courses.js?v=1"></script>
+</body>
+
+</html>

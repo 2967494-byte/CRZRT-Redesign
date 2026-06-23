@@ -245,103 +245,6 @@
     return window.ObuchenieContent || {};
   }
 
-  function createEmptyCourse(overrides) {
-    const api = getRegistryApi();
-    const base = {
-      id: api.createCourseId?.() || `course_${Date.now()}`,
-      title: '',
-      format: 'och',
-      dateFrom: '',
-      dateTo: '',
-      description: '',
-      price: '',
-      speakers: [{ name: '', position: '' }],
-      active: true
-    };
-    return api.normalizeCourseRegistryItem
-      ? api.normalizeCourseRegistryItem({ ...base, ...(overrides || {}) })
-      : { ...base, ...(overrides || {}) };
-  }
-
-  function getRegistryFilters() {
-    if (!window.obuchenieRegistryFilters) {
-      window.obuchenieRegistryFilters = {
-        year: String(new Date().getFullYear()),
-        format: 'all',
-        search: ''
-      };
-    }
-    return window.obuchenieRegistryFilters;
-  }
-
-  function formatCourseFormatLabel(format) {
-    return format === 'dist' ? 'Дистанционное' : 'Очное';
-  }
-
-  function formatCourseDateLabel(dateFrom, dateTo) {
-    const from = dateFrom || '';
-    const to = dateTo || dateFrom || '';
-    if (!from) return 'Даты не указаны';
-    if (!to || to === from) return from;
-    return `${from} — ${to}`;
-  }
-
-  function getCourseYear(course) {
-    const api = getRegistryApi();
-    const date = api.parseIsoDate?.(course?.dateFrom);
-    return date ? String(date.getFullYear()) : '';
-  }
-
-  function courseMatchesFilters(course, filters) {
-    if (!course) return false;
-    const search = String(filters.search || '').trim().toLowerCase();
-    if (filters.format !== 'all' && course.format !== filters.format) return false;
-    if (filters.year && filters.year !== 'all') {
-      const year = getCourseYear(course);
-      if (year && year !== filters.year) return false;
-    }
-    if (!search) return true;
-    const haystack = [
-      course.title,
-      course.description,
-      course.price,
-      ...(course.speakers || []).map((speaker) => `${speaker.name} ${speaker.position}`)
-    ]
-      .join(' ')
-      .toLowerCase();
-    return haystack.includes(search);
-  }
-
-  function groupCoursesByMonth(courses) {
-    const api = getRegistryApi();
-    const groups = new Map();
-    courses.forEach((course) => {
-      const date = api.parseIsoDate?.(course.dateFrom);
-      const key = date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}` : '0000-00';
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(course);
-    });
-
-    return Array.from(groups.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, items]) => {
-        const [year, month] = key.split('-');
-        const monthIndex = parseInt(month, 10) - 1;
-        const monthName = api.MONTH_NAMES_RU?.[monthIndex] || `Месяц ${month}`;
-        items.sort((left, right) => String(left.dateFrom).localeCompare(String(right.dateFrom)));
-        return { key, year, month, monthName, items };
-      });
-  }
-
-  function collectAvailableYears(courses) {
-    const years = new Set([String(new Date().getFullYear())]);
-    courses.forEach((course) => {
-      const year = getCourseYear(course);
-      if (year) years.add(year);
-    });
-    return Array.from(years).sort((a, b) => Number(b) - Number(a));
-  }
-
   function renderCalendarDaysPreview(courseRegistry) {
     const api = getRegistryApi();
     const derived = api.deriveCourseDaysByMonth?.(courseRegistry) || {};
@@ -352,195 +255,9 @@
         return `<li><strong>${escapeAttr(key)}</strong>: ${escapeAttr(days.join(', '))}</li>`;
       });
     if (!entries.length) {
-      return '<p class="course-registry-preview__empty">Пока нет активных курсов с датами — календарь не подсвечивает дни.</p>';
+      return '<p class="course-registry-preview__empty">Пока нет курсов с датами. Добавьте их на странице <a href="admin-obuchenie-courses.html">Календарь курсов</a>.</p>';
     }
     return `<ul class="course-registry-preview__list">${entries.join('')}</ul>`;
-  }
-
-  function speakerRowHtml(courseId, speaker, speakerIndex) {
-    return `
-      <div class="course-registry-speaker" data-speaker-row="${speakerIndex}">
-        <div class="form-group" style="margin:0;">
-          <label>ФИО</label>
-          <input type="text" class="form-control" id="obuchenie_cr_${courseId}_sp_${speakerIndex}_name" value="${escapeAttr(speaker.name)}">
-        </div>
-        <div class="form-group" style="margin:0;">
-          <label>Должность и регалии</label>
-          <input type="text" class="form-control" id="obuchenie_cr_${courseId}_sp_${speakerIndex}_position" value="${escapeAttr(speaker.position)}">
-        </div>
-        <button type="button" class="btn-delete course-registry-speaker__remove" onclick="AdminObuchenie.removeCourseSpeaker('${courseId}', ${speakerIndex})" title="Удалить спикера">×</button>
-      </div>`;
-  }
-
-  function courseRegistryCardHtml(course) {
-    const courseId = course.id;
-    const speakers = Array.isArray(course.speakers) && course.speakers.length
-      ? course.speakers
-      : [{ name: '', position: '' }];
-    const summary = `${formatCourseFormatLabel(course.format)} · ${formatCourseDateLabel(course.dateFrom, course.dateTo)}${course.price ? ` · ${course.price}` : ''}`;
-
-    return `
-      <details class="course-registry-card admin-subcard" data-course-id="${escapeAttr(courseId)}" ${course.active === false ? 'data-inactive="1"' : ''}>
-        <summary class="course-registry-card__summary">
-          <div class="course-registry-card__summary-main">
-            <span class="course-registry-card__badge course-registry-card__badge--${course.format === 'dist' ? 'dist' : 'och'}">${formatCourseFormatLabel(course.format)}</span>
-            <div>
-              <strong class="course-registry-card__title">${escapeAttr(course.title || 'Новый курс')}</strong>
-              <span class="course-registry-card__meta">${escapeAttr(summary)}</span>
-            </div>
-          </div>
-          <button type="button" class="btn-delete course-registry-card__delete" onclick="event.preventDefault(); AdminObuchenie.removeCourseRegistryItem('${courseId}')">Удалить</button>
-        </summary>
-        <div class="course-registry-card__body">
-          <input type="hidden" id="obuchenie_cr_${courseId}_id" value="${escapeAttr(courseId)}">
-          <div class="form-group">
-            <label>Название курса</label>
-            <input type="text" class="form-control" id="obuchenie_cr_${courseId}_title" value="${escapeAttr(course.title)}">
-          </div>
-          <div class="course-registry-card__grid">
-            <div class="form-group" style="margin:0;">
-              <label>Формат</label>
-              <select class="form-control" id="obuchenie_cr_${courseId}_format">
-                <option value="och" ${course.format === 'och' ? 'selected' : ''}>Очное</option>
-                <option value="dist" ${course.format === 'dist' ? 'selected' : ''}>Дистанционное</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label>Дата начала</label>
-              <input type="date" class="form-control" id="obuchenie_cr_${courseId}_date_from" value="${escapeAttr(course.dateFrom)}">
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label>Дата окончания</label>
-              <input type="date" class="form-control" id="obuchenie_cr_${courseId}_date_to" value="${escapeAttr(course.dateTo)}">
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label>Стоимость</label>
-              <input type="text" class="form-control" id="obuchenie_cr_${courseId}_price" value="${escapeAttr(course.price)}" placeholder="23 700 ₽">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Описание</label>
-            <textarea class="form-control" id="obuchenie_cr_${courseId}_description" rows="4" placeholder="Свободное описание программы, аудитории, результатов">${escapeAttr(course.description)}</textarea>
-          </div>
-          <div class="course-registry-speakers">
-            <div class="course-registry-speakers__head">
-              <strong>Спикеры</strong>
-              <button type="button" class="btn-save" style="padding:6px 12px;font-size:0.8rem;" onclick="AdminObuchenie.addCourseSpeaker('${courseId}')">+ Спикер</button>
-            </div>
-            <div id="obuchenie_cr_${courseId}_speakers">${speakers.map((speaker, i) => speakerRowHtml(courseId, speaker, i)).join('')}</div>
-          </div>
-          <label class="course-registry-active">
-            <input type="checkbox" id="obuchenie_cr_${courseId}_active" ${course.active !== false ? 'checked' : ''}>
-            Показывать в календаре
-          </label>
-        </div>
-      </details>`;
-  }
-
-  function renderCourseRegistryAdmin(data) {
-    const el = document.getElementById('obuchenieCourseRegistryAdmin');
-    if (!el) return;
-
-    const migrated = getMigratedData(data);
-    const courses = migrated.courseRegistry || [];
-    const filters = getRegistryFilters();
-    const years = collectAvailableYears(courses);
-    const filtered = courses.filter((course) => courseMatchesFilters(course, filters));
-    const groups = groupCoursesByMonth(filtered);
-    const totalCount = courses.length;
-    const visibleCount = filtered.length;
-
-    el.innerHTML = `
-      <div class="course-registry-toolbar">
-        <div class="course-registry-toolbar__filters">
-          <div class="form-group" style="margin:0;">
-            <label>Год</label>
-            <select class="form-control" id="obuchenie_registry_filter_year" onchange="AdminObuchenie.setRegistryFilter('year', this.value)">
-              <option value="all" ${filters.year === 'all' ? 'selected' : ''}>Все годы</option>
-              ${years.map((year) => `<option value="${escapeAttr(year)}" ${filters.year === year ? 'selected' : ''}>${escapeAttr(year)}</option>`).join('')}
-            </select>
-          </div>
-          <div class="form-group" style="margin:0;">
-            <label>Формат</label>
-            <select class="form-control" id="obuchenie_registry_filter_format" onchange="AdminObuchenie.setRegistryFilter('format', this.value)">
-              <option value="all" ${filters.format === 'all' ? 'selected' : ''}>Все форматы</option>
-              <option value="och" ${filters.format === 'och' ? 'selected' : ''}>Очное</option>
-              <option value="dist" ${filters.format === 'dist' ? 'selected' : ''}>Дистанционное</option>
-            </select>
-          </div>
-          <div class="form-group course-registry-toolbar__search" style="margin:0;">
-            <label>Поиск</label>
-            <input type="search" class="form-control" id="obuchenie_registry_filter_search" value="${escapeAttr(filters.search)}" placeholder="Название, спикер, описание" oninput="AdminObuchenie.setRegistryFilter('search', this.value)">
-          </div>
-        </div>
-        <p class="course-registry-toolbar__meta">Всего курсов: ${totalCount}. Показано: ${visibleCount}.</p>
-      </div>
-      <div class="course-registry-groups">
-        ${groups.length
-          ? groups
-              .map(
-                (group) => `
-            <details class="course-registry-month" open>
-              <summary class="course-registry-month__summary">
-                <strong>${escapeAttr(group.monthName)} ${escapeAttr(group.year)}</strong>
-                <span>${group.items.length} ${group.items.length === 1 ? 'курс' : group.items.length < 5 ? 'курса' : 'курсов'}</span>
-              </summary>
-              <div class="course-registry-month__items">
-                ${group.items.map((course) => courseRegistryCardHtml(course)).join('')}
-              </div>
-            </details>`
-              )
-              .join('')
-          : '<div class="course-registry-empty">Курсы не найдены. Добавьте первый курс или измените фильтры.</div>'}
-      </div>`;
-  }
-
-  function collectCourseRegistryFromForm() {
-    const api = getRegistryApi();
-    const existing = window.obucheniePageData?.courseRegistry || [];
-    const byId = new Map(existing.map((course) => [course.id, course]));
-    const cards = document.querySelectorAll('.course-registry-card[data-course-id]');
-
-    cards.forEach((card, index) => {
-      const courseId = card.getAttribute('data-course-id');
-      if (!courseId) return;
-
-      const speakerRows = card.querySelectorAll('[data-speaker-row]');
-      const speakers = [];
-      speakerRows.forEach((row) => {
-        const speakerIndex = row.getAttribute('data-speaker-row');
-        speakers.push({
-          name: document.getElementById(`obuchenie_cr_${courseId}_sp_${speakerIndex}_name`)?.value || '',
-          position: document.getElementById(`obuchenie_cr_${courseId}_sp_${speakerIndex}_position`)?.value || ''
-        });
-      });
-
-      const item = {
-        id: document.getElementById(`obuchenie_cr_${courseId}_id`)?.value || courseId,
-        title: document.getElementById(`obuchenie_cr_${courseId}_title`)?.value || '',
-        format: document.getElementById(`obuchenie_cr_${courseId}_format`)?.value || 'och',
-        dateFrom: document.getElementById(`obuchenie_cr_${courseId}_date_from`)?.value || '',
-        dateTo: document.getElementById(`obuchenie_cr_${courseId}_date_to`)?.value || '',
-        description: document.getElementById(`obuchenie_cr_${courseId}_description`)?.value || '',
-        price: document.getElementById(`obuchenie_cr_${courseId}_price`)?.value || '',
-        speakers,
-        active: document.getElementById(`obuchenie_cr_${courseId}_active`)?.checked !== false
-      };
-
-      byId.set(
-        item.id,
-        api.normalizeCourseRegistryItem ? api.normalizeCourseRegistryItem(item, index) : item
-      );
-    });
-
-    return Array.from(byId.values()).sort((left, right) => {
-      const leftDate = String(left.dateFrom || '');
-      const rightDate = String(right.dateFrom || '');
-      if (leftDate && rightDate) return leftDate.localeCompare(rightDate);
-      if (leftDate) return -1;
-      if (rightDate) return 1;
-      return String(left.title || '').localeCompare(String(right.title || ''), 'ru');
-    });
   }
 
   function renderCalendarAdmin(data) {
@@ -702,7 +419,6 @@
     renderHeroAdmin(migrated);
     renderNavCardsAdmin(migrated);
     renderCourseSearchAdmin(migrated);
-    renderCourseRegistryAdmin(migrated);
     renderCalendarAdmin(migrated);
     renderCourseCardsAdmin(migrated);
     renderTestingAdmin(migrated);
@@ -734,12 +450,9 @@
     setTimeout(() => window.AdminObuchenie?.updateLivePreview?.(), 0);
   }
 
-  function collectCourseDaysFromForm() {
-    const registry = collectCourseRegistryFromForm();
+  function collectCourseDaysFromForm(courseRegistry) {
     const api = getRegistryApi();
-    const derived = api.deriveCourseDaysByMonth?.(registry) || {};
-    if (Object.keys(derived).length) return derived;
-    return {};
+    return api.deriveCourseDaysByMonth?.(courseRegistry || []) || {};
   }
 
   function collectObucheniePageFromForm(existing) {
@@ -778,14 +491,14 @@
       showAllLabel: document.getElementById('obuchenie_search_show_all')?.value ?? data.courseSearch?.showAllLabel ?? ''
     };
 
-    data.courseRegistry = collectCourseRegistryFromForm();
+    data.courseRegistry = window.obucheniePageData?.courseRegistry || data.courseRegistry || [];
 
     data.calendar = {
       promoTitle: document.getElementById('obuchenie_cal_promo_title')?.value ?? data.calendar?.promoTitle ?? '',
       promoTitleColor: readColorVal('obuchenie_cal_promo_title_color', data.calendar?.promoTitleColor || '#FFFFFF'),
       promoImage: readImageVal('obuchenie_cal_promo_image') || data.calendar?.promoImage || '',
       allCoursesLink: document.getElementById('obuchenie_cal_all_link')?.value ?? data.calendar?.allCoursesLink ?? '#courses',
-      courseDaysByMonth: collectCourseDaysFromForm()
+      courseDaysByMonth: collectCourseDaysFromForm(data.courseRegistry)
     };
 
     data.courseCards = [];
@@ -957,74 +670,6 @@
       window.saveObucheniePageStateToMemory?.();
       window.obucheniePageData.courseCards.splice(index, 1);
       renderObucheniePageAdmin(window.obucheniePageData);
-    },
-    setRegistryFilter(key, value) {
-      const filters = getRegistryFilters();
-      filters[key] = value;
-      const rerender = () => {
-        window.saveObucheniePageStateToMemory?.();
-        renderCourseRegistryAdmin(window.obucheniePageData);
-      };
-      if (key === 'search') {
-        clearTimeout(window._obuchenieRegistrySearchTimer);
-        window._obuchenieRegistrySearchTimer = setTimeout(rerender, 250);
-        return;
-      }
-      rerender();
-    },
-    addCourseRegistryItem() {
-      window.saveObucheniePageStateToMemory?.();
-      const filters = getRegistryFilters();
-      const year = filters.year && filters.year !== 'all' ? parseInt(filters.year, 10) : new Date().getFullYear();
-      const month = String(new Date().getMonth() + 1).padStart(2, '0');
-      const newCourse = createEmptyCourse({
-        dateFrom: `${year}-${month}-01`,
-        dateTo: `${year}-${month}-01`
-      });
-      window.obucheniePageData.courseRegistry = window.obucheniePageData.courseRegistry || [];
-      window.obucheniePageData.courseRegistry.push(newCourse);
-      renderObucheniePageAdmin(window.obucheniePageData);
-      requestAnimationFrame(() => {
-        const card = document.querySelector(`.course-registry-card[data-course-id="${newCourse.id}"]`);
-        if (card) {
-          card.open = true;
-          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      });
-    },
-    removeCourseRegistryItem(courseId) {
-      window.saveObucheniePageStateToMemory?.();
-      window.obucheniePageData.courseRegistry = (window.obucheniePageData.courseRegistry || []).filter(
-        (course) => course.id !== courseId
-      );
-      renderObucheniePageAdmin(window.obucheniePageData);
-    },
-    addCourseSpeaker(courseId) {
-      window.saveObucheniePageStateToMemory?.();
-      const course = (window.obucheniePageData.courseRegistry || []).find((item) => item.id === courseId);
-      if (!course) return;
-      course.speakers = course.speakers || [];
-      course.speakers.push({ name: '', position: '' });
-      renderObucheniePageAdmin(window.obucheniePageData);
-      requestAnimationFrame(() => {
-        const card = document.querySelector(`.course-registry-card[data-course-id="${courseId}"]`);
-        if (card) card.open = true;
-      });
-    },
-    removeCourseSpeaker(courseId, speakerIndex) {
-      window.saveObucheniePageStateToMemory?.();
-      const course = (window.obucheniePageData.courseRegistry || []).find((item) => item.id === courseId);
-      if (!course || !Array.isArray(course.speakers)) return;
-      course.speakers.splice(speakerIndex, 1);
-      if (!course.speakers.length) course.speakers.push({ name: '', position: '' });
-      renderObucheniePageAdmin(window.obucheniePageData);
-      requestAnimationFrame(() => {
-        const card = document.querySelector(`.course-registry-card[data-course-id="${courseId}"]`);
-        if (card) card.open = true;
-      });
-    },
-    addCourseMonth() {
-      AdminObuchenie.addCourseRegistryItem();
     }
   };
 })();

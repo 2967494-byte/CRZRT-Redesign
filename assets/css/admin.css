@@ -1473,3 +1473,206 @@ body {
             white-space: pre-line;
             transition: all 0.15s ease-out;
         }
+
+        .admin-courses-page {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 32px 24px 64px;
+        }
+
+        .admin-courses-page__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .admin-courses-page__back {
+            display: inline-block;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.92rem;
+        }
+
+        .admin-courses-page__back:hover {
+            color: var(--accent-color);
+        }
+
+        .admin-courses-page__title {
+            margin: 0 0 8px;
+            font-size: 2rem;
+            line-height: 1.1;
+        }
+
+        .admin-courses-page__subtitle {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 720px;
+        }
+
+        .admin-courses-page__status {
+            min-width: 140px;
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .admin-courses-page__status[data-type="success"] {
+            color: #00AE4D;
+        }
+
+        .admin-courses-page__status[data-type="error"] {
+            color: #ff4d4d;
+        }
+
+        .admin-courses-page__toolbar {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .courses-table-wrap {
+            overflow-x: auto;
+        }
+
+        .courses-table th,
+        .courses-table td {
+            vertical-align: top;
+        }
+
+        .courses-table__description {
+            max-width: 320px;
+            white-space: normal;
+            line-height: 1.45;
+        }
+
+        .courses-table__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-width: 220px;
+        }
+
+        .courses-table-empty {
+            margin: 0;
+            padding: 18px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+
+        .admin-courses-modal {
+            width: min(640px, 92vw);
+            max-width: 640px;
+            padding: 32px 32px 28px;
+            border-radius: 16px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .admin-courses-modal__title {
+            margin: 0 0 24px;
+            padding-right: 40px;
+            text-align: left;
+            font-size: 1.35rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .admin-courses-modal__form {
+            display: grid;
+            gap: 0;
+        }
+
+        .admin-courses-modal__form .form-group {
+            margin-bottom: 18px;
+        }
+
+        .admin-courses-modal__row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .admin-courses-modal__row .form-group {
+            margin-bottom: 0;
+        }
+
+        .admin-courses-modal .form-control {
+            min-height: 44px;
+            box-sizing: border-box;
+        }
+
+        .admin-courses-modal select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+
+        [data-theme="light"] .admin-courses-modal select.form-control {
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23555' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        }
+
+        .admin-courses-modal input[type="date"].form-control {
+            color-scheme: light dark;
+        }
+
+        [data-theme="light"] .admin-courses-modal input[type="date"].form-control {
+            color-scheme: light;
+        }
+
+        .admin-courses-modal textarea.form-control {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .admin-courses-modal__actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 8px;
+            padding-top: 8px;
+        }
+
+        .admin-courses-modal__actions .btn-save,
+        .admin-courses-modal__actions .btn-secondary {
+            min-width: 120px;
+            padding: 10px 20px;
+        }
+
+        @media (max-width: 900px) {
+            .admin-courses-page__header {
+                flex-direction: column;
+            }
+
+            .admin-courses-page__status {
+                text-align: left;
+            }
+
+            .admin-courses-modal {
+                width: min(640px, calc(100vw - 24px));
+                padding: 24px 20px 20px;
+            }
+
+            .admin-courses-modal__row {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-courses-modal__actions {
+                flex-direction: column-reverse;
+            }
+
+            .admin-courses-modal__actions .btn-save,
+            .admin-courses-modal__actions .btn-secondary {
+                width: 100%;
+            }
+        }
