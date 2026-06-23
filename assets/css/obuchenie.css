@@ -1335,6 +1335,11 @@ body[data-page="obuchenie"] .obuchenie-calendar-day--active {
   box-shadow: 0 8px 18px rgba(0, 174, 77, 0.28);
 }
 
+body[data-page="obuchenie"] .obuchenie-calendar-day--active.obuchenie-calendar-day--past {
+  background: #94A3B8;
+  box-shadow: 0 8px 18px rgba(148, 163, 184, 0.28);
+}
+
 body[data-page="obuchenie"] .obuchenie-calendar-block__all {
   margin-top: auto;
   align-self: flex-end;

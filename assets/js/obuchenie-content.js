@@ -279,15 +279,11 @@
       const range = getCourseDateRange(course);
       if (!range) return;
 
-      const cursor = new Date(range.from.getFullYear(), range.from.getMonth(), range.from.getDate());
-
-      while (cursor <= range.to) {
-        const key = `${cursor.getFullYear()}-${cursor.getMonth() + 1}`;
-        if (!result[key]) result[key] = [];
-        const day = cursor.getDate();
-        if (!result[key].includes(day)) result[key].push(day);
-        cursor.setDate(cursor.getDate() + 1);
-      }
+      const start = range.from;
+      const key = `${start.getFullYear()}-${start.getMonth() + 1}`;
+      if (!result[key]) result[key] = [];
+      const day = start.getDate();
+      if (!result[key].includes(day)) result[key].push(day);
     });
 
     Object.keys(result).forEach((key) => {
@@ -571,38 +567,132 @@
     }
   }
 
-  function renderCourseCards(courseCards) {
+  const MONTH_NAMES_GENITIVE_RU = [
+    'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+  ];
+
+  function formatDaysPlural(days) {
+    const d = parseInt(days, 10) || 1;
+    const mod10 = d % 10;
+    const mod100 = d % 100;
+    if (mod10 === 1 && mod100 !== 11) {
+      return 'день';
+    } else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+      return 'дня';
+    } else {
+      return 'дней';
+    }
+  }
+
+  function renderCourseCards(courseCards, courseRegistry) {
     const grid = document.querySelector('.obuchenie-course-cards');
     if (!grid) return;
-    const list = courseCards?.length ? courseCards : OBUCHENIE_DEFAULTS.courseCards;
 
-    grid.innerHTML = list
-      .map((card) => {
-        const btnHref = escapeHtml((card.btnLink || '#contacts').trim() || '#contacts');
-        const moreHref = escapeHtml((card.moreLink || '#courses').trim() || '#courses');
-        const price = escapeHtml(card.price || '');
+    // Filter active courses
+    const activeCourses = (courseRegistry || []).filter(c => c && c.active !== false);
+
+    // Map and calculate dates for sorting
+    const today = new Date();
+    const todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    const mapped = activeCourses.map(course => {
+      const start = parseIsoDate(course.dateFrom);
+      return {
+        course,
+        startDate: start || new Date(2099, 11, 31) // Fallback for sorting if date is invalid
+      };
+    });
+
+    // Split into upcoming and past
+    const upcoming = mapped.filter(item => item.startDate >= todayZero);
+    const past = mapped.filter(item => item.startDate < todayZero);
+
+    // Sort upcoming ascending (closest first)
+    upcoming.sort((a, b) => a.startDate - b.startDate);
+
+    // Sort past descending (most recent first)
+    past.sort((a, b) => b.startDate - a.startDate);
+
+    // Combine and take top 3
+    const combined = [...upcoming, ...past];
+    const top3 = combined.slice(0, 3);
+
+    // If we have no courses in registry at all, fallback to default mock cards
+    if (top3.length === 0) {
+      const mockList = OBUCHENIE_DEFAULTS.courseCards;
+      grid.innerHTML = mockList
+        .map((card) => {
+          const btnHref = escapeHtml((card.btnLink || '#contacts').trim() || '#contacts');
+          const moreHref = escapeHtml((card.moreLink || '#courses').trim() || '#courses');
+          const price = escapeHtml(card.price || '');
+          return `<article class="occ-card">
+            <h3 class="occ-card__title">${escapeHtml(card.title)}</h3>
+            <p class="occ-card__price">${price.replace(/ /g, '&nbsp;')}</p>
+            <div class="occ-card__stats">
+              <div class="occ-card__stat">
+                <span class="occ-card__stat-label">длительность</span>
+                <div class="occ-card__stat-value">
+                  <span class="occ-card__stat-num">${escapeHtml(card.durationNum)}</span>
+                  <span class="occ-card__stat-unit">${escapeHtml(card.durationUnit)}</span>
+                </div>
+              </div>
+              <div class="occ-card__stat-divider"></div>
+              <div class="occ-card__stat">
+                <span class="occ-card__stat-label">график занятий</span>
+                <div class="occ-card__stat-value">
+                  <span class="occ-card__stat-num">${escapeHtml(card.scheduleNum)}</span>
+                  <span class="occ-card__stat-unit">${escapeHtml(card.scheduleUnit)}</span>
+                </div>
+              </div>
+            </div>
+            <a href="${btnHref}" class="occ-card__btn">${escapeHtml(card.btnText || 'Записаться')}</a>
+            <a href="${moreHref}" class="occ-card__more">подробнее ${MORE_ARROW_SVG}</a>
+          </article>`;
+        })
+        .join('');
+      return;
+    }
+
+    grid.innerHTML = top3
+      .map((item) => {
+        const c = item.course;
+        const start = item.startDate;
+        
+        // Format price (fallback to empty)
+        const price = escapeHtml(c.price || '').trim();
+        const priceHtml = price ? `<p class="occ-card__price">${price.replace(/ /g, '&nbsp;')}</p>` : '<p class="occ-card__price">&nbsp;</p>';
+        
+        // Format duration
+        const durDays = c.durationDays || 1;
+        const durUnit = formatDaysPlural(durDays);
+
+        // Format start date
+        const startDay = start.getFullYear() === 2099 ? '—' : String(start.getDate());
+        const startMonth = start.getFullYear() === 2099 ? '' : MONTH_NAMES_GENITIVE_RU[start.getMonth()];
+
         return `<article class="occ-card">
-          <h3 class="occ-card__title">${escapeHtml(card.title)}</h3>
-          <p class="occ-card__price">${price.replace(/ /g, '&nbsp;')}</p>
+          <h3 class="occ-card__title">${escapeHtml(c.title)}</h3>
+          ${priceHtml}
           <div class="occ-card__stats">
             <div class="occ-card__stat">
               <span class="occ-card__stat-label">длительность</span>
               <div class="occ-card__stat-value">
-                <span class="occ-card__stat-num">${escapeHtml(card.durationNum)}</span>
-                <span class="occ-card__stat-unit">${escapeHtml(card.durationUnit)}</span>
+                <span class="occ-card__stat-num">${durDays}</span>
+                <span class="occ-card__stat-unit">${durUnit}</span>
               </div>
             </div>
             <div class="occ-card__stat-divider"></div>
             <div class="occ-card__stat">
-              <span class="occ-card__stat-label">график занятий</span>
+              <span class="occ-card__stat-label">старт курса</span>
               <div class="occ-card__stat-value">
-                <span class="occ-card__stat-num">${escapeHtml(card.scheduleNum)}</span>
-                <span class="occ-card__stat-unit">${escapeHtml(card.scheduleUnit)}</span>
+                <span class="occ-card__stat-num">${startDay}</span>
+                <span class="occ-card__stat-unit">${startMonth}</span>
               </div>
             </div>
           </div>
-          <a href="${btnHref}" class="occ-card__btn">${escapeHtml(card.btnText || 'Записаться')}</a>
-          <a href="${moreHref}" class="occ-card__more">подробнее ${MORE_ARROW_SVG}</a>
+          <a href="#contacts" class="occ-card__btn">Записаться</a>
+          <a href="#contacts" class="occ-card__more">подробнее ${MORE_ARROW_SVG}</a>
         </article>`;
       })
       .join('');
@@ -683,7 +773,7 @@
     renderNavCards(data.navCards);
     renderCourseSearch(data.courseSearch);
     renderCalendar(data.calendar, data.courseRegistry);
-    renderCourseCards(data.courseCards);
+    renderCourseCards(data.courseCards, data.courseRegistry);
     renderTestingBanner(data.testingBanner);
     document.dispatchEvent(new CustomEvent('obuchenieContentReady', { detail: data }));
   }

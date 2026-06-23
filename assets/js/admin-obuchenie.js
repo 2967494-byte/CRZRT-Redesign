@@ -426,7 +426,6 @@
     renderNavCardsAdmin(migrated);
     renderCourseSearchAdmin(migrated);
     renderCalendarAdmin(migrated);
-    renderCourseCardsAdmin(migrated);
     renderTestingAdmin(migrated);
   }
 
@@ -509,20 +508,6 @@
     };
 
     data.courseCards = [];
-    const cardCount = document.querySelectorAll('[id^="obuchenie_course_title_"]').length;
-    for (let i = 0; i < cardCount; i++) {
-      data.courseCards.push({
-        title: document.getElementById(`obuchenie_course_title_${i}`)?.value || '',
-        price: document.getElementById(`obuchenie_course_price_${i}`)?.value || '',
-        durationNum: document.getElementById(`obuchenie_course_duration_num_${i}`)?.value || '',
-        durationUnit: document.getElementById(`obuchenie_course_duration_unit_${i}`)?.value || '',
-        scheduleNum: document.getElementById(`obuchenie_course_schedule_num_${i}`)?.value || '',
-        scheduleUnit: document.getElementById(`obuchenie_course_schedule_unit_${i}`)?.value || '',
-        btnText: document.getElementById(`obuchenie_course_btn_text_${i}`)?.value || 'Записаться',
-        btnLink: document.getElementById(`obuchenie_course_btn_link_${i}`)?.value || '#contacts',
-        moreLink: document.getElementById(`obuchenie_course_more_link_${i}`)?.value || '#courses'
-      });
-    }
 
     const testingTitleEnable = document.getElementById('obuchenie_testing_title_color_enable');
     data.testingBanner = {

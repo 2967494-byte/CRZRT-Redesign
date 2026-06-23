@@ -5,10 +5,7 @@
   ];
 
   /** Дни с курсами: ключ «год-месяц» (месяц 1–12) → массив чисел */
-  var COURSE_DAYS_BY_MONTH = {
-    '2026-5': [5, 8, 15, 20],
-    '2026-6': [3, 10, 17, 24]
-  };
+  var COURSE_DAYS_BY_MONTH = {};
 
   function setCourseDays(map) {
     if (!map || typeof map !== 'object') return;
@@ -76,6 +73,9 @@
       cellIndex += 1;
     }
 
+    var today = new Date();
+    var todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
     for (var day = 1; day <= daysInMonth; day += 1) {
       var cell = document.createElement('span');
       cell.className = 'obuchenie-calendar-day';
@@ -83,7 +83,12 @@
       cell.textContent = String(day);
 
       if (courseDays.indexOf(day) !== -1) {
-        cell.classList.add('obuchenie-calendar-day--active');
+        var cellDate = new Date(year, monthIndex, day);
+        if (cellDate < todayZero) {
+          cell.classList.add('obuchenie-calendar-day--active', 'obuchenie-calendar-day--past');
+        } else {
+          cell.classList.add('obuchenie-calendar-day--active');
+        }
       }
 
       grid.appendChild(cell);
