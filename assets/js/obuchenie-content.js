@@ -162,7 +162,7 @@
     testingBanner: {
       title: 'Проверь себя\nв госзакупках',
       btnText: 'Пройти тест',
-      btnLink: '#contacts',
+      btnLink: 'testing.html',
       image: ''
     }
   };
@@ -728,7 +728,11 @@
     
     if (btnEl) {
       btnEl.textContent = data.btnText || OBUCHENIE_DEFAULTS.testingBanner.btnText;
-      btnEl.href = (data.btnLink || '#contacts').trim() || '#contacts';
+      let btnLink = (data.btnLink || 'testing.html').trim();
+      if (btnLink === '#contacts' || btnLink === '' || btnLink === '#') {
+        btnLink = 'testing.html';
+      }
+      btnEl.href = btnLink;
       
       if (data.titleTop !== undefined || data.titleLeft !== undefined || data.btnBottom !== undefined || data.btnLeft !== undefined) {
          // position the button absolute as well, roughly matching the preview

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <script src="assets/js/page-zoom-sync.js?v=3"></script>
+  <title>Тестирование знаний по госзакупкам | Центр развития закупок РТ</title>
+  <meta name="description" content="Проверьте свои знания в сфере государственных и муниципальных закупок (44-ФЗ и 223-ФЗ).">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
+  
+  <link rel="stylesheet" href="assets/css/landing.css?v=9">
+  <link rel="stylesheet" href="assets/css/obuchenie.css?v=36">
+  <link rel="stylesheet" href="assets/css/testing.css?v=1">
+</head>
+<body class="theme-purple" data-page="testing">
+
+<!-- HEADER -->
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="logo">
+      <img src="assets/img/logo.svg" alt="Центр развития закупок" class="logo__img">
+    </a>
+
+    <nav class="nav">
+      <a href="index.html#about" class="nav__link">О нас</a>
+      <a href="index.html#news" class="nav__link">Новости</a>
+      <a href="index.html#reviews" class="nav__link">Нам доверяют</a>
+      <a href="obuchenie.html#contacts" class="nav__link">Контакты</a>
+    </nav>
+
+    <div class="header__actions">
+      <a href="tel:88001017892" class="btn btn--green">8 800 101-78-92</a>
+    </div>
+  </div>
+</header>
+
+<main class="testing-main">
+  <div class="container">
+    
+    <!-- STATE 1: START SCREEN -->
+    <div id="start-screen" class="testing-card reveal-init">
+      <div class="testing-card__badge">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+        <span>Тестирование</span>
+      </div>
+      <h1 class="testing-card__title">Проверьте свои знания в сфере госзакупок</h1>
+      <p class="testing-card__description">
+        Данный тест составлен экспертами АО «Центр развития закупок РТ» для оценки компетенций специалистов по закупкам. Вопросы охватывают ключевые аспекты Федерального закона от 05.04.2013 № 44-ФЗ.
+      </p>
+      
+      <div class="testing-info-grid">
+        <div class="testing-info-item">
+          <span class="testing-info-label">Количество вопросов</span>
+          <span class="testing-info-val">100 вопросов</span>
+        </div>
+        <div class="testing-info-item">
+          <span class="testing-info-label">Ограничение времени</span>
+          <span class="testing-info-val">1 час (60 минут)</span>
+        </div>
+        <div class="testing-info-item">
+          <span class="testing-info-label">Формат вопросов</span>
+          <span class="testing-info-val">Выбор одного ответа</span>
+        </div>
+      </div>
+
+      <div class="testing-card__actions">
+        <button type="button" class="btn btn--green btn--large btn-start-test" id="btn-start">Начать тест</button>
+        <a href="obuchenie.html" class="btn-cancel">Вернуться назад</a>
+      </div>
+    </div>
+
+    <!-- STATE 2: ACTIVE QUIZ VIEW -->
+    <div id="quiz-screen" class="quiz-layout" style="display: none;">
+      
+      <!-- Left side: Current Question & Options -->
+      <div class="quiz-main">
+        <div class="testing-card quiz-card">
+          <div class="quiz-card__header">
+            <span class="quiz-progress-text" id="question-progress-label">Вопрос 1 из 100</span>
+            <span class="quiz-id-tag" id="question-id-tag">ID: 1</span>
+          </div>
+          
+          <h2 class="quiz-card__question" id="question-text">Текст вопроса загружается...</h2>
+          
+          <div class="quiz-options-list" id="options-container">
+            <!-- Dynamic choice cards go here -->
+          </div>
+          
+          <div class="quiz-card__footer">
+            <button type="button" class="btn btn-nav btn-nav--prev" id="btn-prev" disabled>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              Назад
+            </button>
+            <button type="button" class="btn btn-nav btn-nav--next" id="btn-next">
+              Далее
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <div style="flex:1;"></div>
+            <button type="button" class="btn btn--danger-outline btn-finish-test" id="btn-finish">Завершить тест</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: Sidebar with grid of 100 questions & timer -->
+      <aside class="quiz-sidebar">
+        <!-- Timer widget -->
+        <div class="testing-card timer-card">
+          <div class="timer-widget">
+            <div class="timer-widget__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="timer-widget__time-wrap">
+              <span class="timer-widget__label">Оставшееся время</span>
+              <span class="timer-widget__time" id="timer-display">60:00</span>
+            </div>
+          </div>
+          <div class="sidebar-progress">
+            <div class="sidebar-progress__bar-bg">
+              <div class="sidebar-progress__bar" id="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+            <span class="sidebar-progress__stats" id="answered-count-label">Отвечено: 0 из 100</span>
+          </div>
+        </div>
+
+        <!-- Grid layout of 100 questions -->
+        <div class="testing-card grid-card">
+          <h3 class="grid-card__title">Навигация по вопросам</h3>
+          <div class="questions-grid" id="questions-grid-container">
+            <!-- 100 buttons will be generated here -->
+          </div>
+          <div class="grid-legend">
+            <div class="legend-item"><span class="legend-dot legend-dot--current"></span><span>Текущий</span></div>
+            <div class="legend-item"><span class="legend-dot legend-dot--answered"></span><span>Отвечен</span></div>
+            <div class="legend-item"><span class="legend-dot legend-dot--empty"></span><span>Не отвечен</span></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- STATE 3: RESULTS SCREEN -->
+    <div id="results-screen" class="testing-card results-view" style="display: none;">
+      <div class="results-view__icon-wrap">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h1 class="results-view__title">Тестирование успешно завершено!</h1>
+      <p class="results-view__subtitle">Ваши результаты сохранены и обработаны системой.</p>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-box__val" id="res-total">100</span>
+          <span class="stat-box__label">Всего вопросов</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box__val" id="res-answered">0</span>
+          <span class="stat-box__label">Отвечено</span>
+        </div>
+        <div class="stat-box stat-box--success">
+          <span class="stat-box__val" id="res-correct">0</span>
+          <span class="stat-box__label">Правильно</span>
+        </div>
+        <div class="stat-box stat-box--danger">
+          <span class="stat-box__val" id="res-incorrect">0</span>
+          <span class="stat-box__label">Неправильно</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box__val" id="res-time">00:00</span>
+          <span class="stat-box__label">Затрачено времени</span>
+        </div>
+      </div>
+
+      <div class="results-view__actions">
+        <button type="button" class="btn btn--green" id="btn-toggle-review">Показать список ответов</button>
+        <button type="button" class="btn btn--green-outline" id="btn-restart">Пройти заново</button>
+        <a href="obuchenie.html" class="btn-cancel">Вернуться в «Обучение»</a>
+      </div>
+
+      <!-- Expandable Review Panel showing all 100 questions with details -->
+      <div id="review-panel" class="review-panel" style="display: none;">
+        <h2 class="review-panel__title">Подробный обзор вопросов</h2>
+        <div class="review-questions-list" id="review-questions-container">
+          <!-- Dynamic review blocks -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__col footer__col--address">
+      <p>г. Казань,</p>
+      <p>ул. Петербургская, 86</p>
+      <p>Пн-Чт с 09:00 до 18:00</p>
+      <p>Пт с 09:00 до 17:00</p>
+    </div>
+
+    <div class="footer__col footer__col--nav">
+      <a href="index.html#about">О нас</a>
+      <a href="index.html#news">Новости</a>
+      <a href="index.html#reviews">Нам доверяют</a>
+      <a href="obuchenie.html#contacts">Контакты</a>
+    </div>
+
+    <div class="footer__col footer__col--links">
+      <a href="knowledge.html">Документы</a>
+      <a href="team.html">Карьера</a>
+    </div>
+
+    <div class="footer__col footer__col--contacts">
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Телефон</p>
+        <a href="tel:88001017892" class="footer-phone">8 800 101-78-92</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Основная почта</p>
+        <a href="mailto:crz.rt@tatar.ru" class="footer-email">crz.rt@tatar.ru</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner">
+      <a href="#" class="footer__bottom-link footer__bottom-link--policy">Политика конфиденциальности</a>
+      <a href="#" class="footer__bottom-link footer__bottom-link--consent">Согласие на обработку персональных данных</a>
+      <div class="footer__bottom-aside">
+        <p class="footer__copyright">АО «Центр развития закупок РТ» 2026 (с) Все права защищены</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/testing-questions.js"></script>
+<script src="assets/js/testing.js"></script>
+</body>
+</html>
