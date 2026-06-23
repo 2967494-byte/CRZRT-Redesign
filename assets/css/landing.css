@@ -1893,22 +1893,39 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   }
 }
 
+/* ==========================================================================
+   SCROLL REVEAL ANIMATIONS
+   ========================================================================== */
+
+.reveal-init {
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-init.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Особенные анимации для некоторых блоков (переопределение) */
 .consultation-card__left.reveal-init,
 .consultation-card__right.reveal-init,
 .social-banner.reveal-init {
-  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.consultation-card__left.reveal-init { transform: translateX(-50px); }
-.consultation-card__right.reveal-init { transform: translateX(50px); }
-.social-banner.reveal-init { transform: translateY(25px); }
+.consultation-card__left.reveal-init { transform: translateX(-50px) translateY(0) scale(1); }
+.consultation-card__right.reveal-init { transform: translateX(50px) translateY(0) scale(1); }
+.social-banner.reveal-init { transform: translateY(25px) scale(1); }
 
 .consultation-card__left.reveal-init.revealed,
-.consultation-card__right.reveal-init.revealed {
-  transform: translateX(0);
-}
-
+.consultation-card__right.reveal-init.revealed,
 .social-banner.reveal-init.revealed {
-  transform: translateY(0);
+  opacity: 1;
+  transform: translateX(0) translateY(0) scale(1);
 }
 
