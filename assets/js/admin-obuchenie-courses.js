@@ -349,6 +349,23 @@
       });
     });
 
+    const wysiwygFontSize = $('wysiwygFontSize');
+    const wysiwygColor = $('wysiwygColor');
+
+    if (wysiwygFontSize) {
+      wysiwygFontSize.addEventListener('change', (e) => {
+        document.execCommand('fontSize', false, e.target.value);
+        els.formDescription.focus();
+      });
+    }
+
+    if (wysiwygColor) {
+      wysiwygColor.addEventListener('input', (e) => {
+        document.execCommand('foreColor', false, e.target.value);
+        els.formDescription.focus();
+      });
+    }
+
     els.formDescription?.addEventListener('keyup', updateWysiwygToolbarState);
     els.formDescription?.addEventListener('mouseup', updateWysiwygToolbarState);
 

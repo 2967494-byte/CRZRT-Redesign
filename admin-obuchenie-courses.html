@@ -153,6 +153,20 @@
                             <button type="button" class="wysiwyg-btn" data-command="justifyRight" title="По правому краю">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
                             </button>
+                            <div class="wysiwyg-divider"></div>
+                            <select class="wysiwyg-select" id="wysiwygFontSize" title="Размер шрифта">
+                                <option value="" disabled>Размер</option>
+                                <option value="1">1 (Мелкий)</option>
+                                <option value="2">2 (Небольшой)</option>
+                                <option value="3" selected>3 (Обычный)</option>
+                                <option value="4">4 (Средний)</option>
+                                <option value="5">5 (Большой)</option>
+                                <option value="6">6 (Очень большой)</option>
+                                <option value="7">7 (Огромный)</option>
+                            </select>
+                            <label class="wysiwyg-color-wrapper" title="Цвет текста">
+                                <input type="color" id="wysiwygColor" class="wysiwyg-color-input" value="#1D1D1F">
+                            </label>
                         </div>
                         <div class="wysiwyg-editor form-control" id="courseFormDescription" contenteditable="true" spellcheck="false"></div>
                     </div>

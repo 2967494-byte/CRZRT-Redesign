@@ -1907,6 +1907,45 @@ body {
             margin: 0 8px;
         }
 
+        .wysiwyg-select {
+            height: 32px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-primary);
+            padding: 0 8px;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        [data-theme="dark"] .wysiwyg-select {
+            background: #27272a;
+        }
+
+        .wysiwyg-color-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            margin-left: 4px;
+        }
+
+        .wysiwyg-color-input {
+            width: 150%;
+            height: 150%;
+            border: none;
+            padding: 0;
+            margin: -25%;
+            cursor: pointer;
+            background: none;
+        }
+
         .wysiwyg-editor {
             min-height: 120px;
             max-height: 300px;
