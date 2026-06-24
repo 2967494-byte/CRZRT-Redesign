@@ -47,7 +47,11 @@
   function readAudienceFromForm() {
     return {
       forIndividuals: Boolean(els.formForIndividuals?.checked),
-      forLegalEntities: Boolean(els.formForLegalEntities?.checked)
+      forLegalEntities: Boolean(els.formForLegalEntities?.checked),
+      forCustomers: Boolean(els.formForCustomers?.checked),
+      forSuppliers: Boolean(els.formForSuppliers?.checked),
+      is44fz: Boolean(els.form44fz?.checked),
+      is223fz: Boolean(els.form223fz?.checked)
     };
   }
 
@@ -217,6 +221,10 @@
     els.formPrice.value = course?.price || '';
     els.formForIndividuals.checked = course ? course.forIndividuals !== false : true;
     els.formForLegalEntities.checked = course ? course.forLegalEntities !== false : true;
+    if (els.formForCustomers) els.formForCustomers.checked = Boolean(course?.forCustomers);
+    if (els.formForSuppliers) els.formForSuppliers.checked = Boolean(course?.forSuppliers);
+    if (els.form44fz) els.form44fz.checked = Boolean(course?.is44fz);
+    if (els.form223fz) els.form223fz.checked = Boolean(course?.is223fz);
     setAudienceFormError(false);
     els.modal.style.display = 'flex';
     els.formTitle.focus();
@@ -231,6 +239,10 @@
     els.formId.value = '';
     if (els.formForIndividuals) els.formForIndividuals.checked = true;
     if (els.formForLegalEntities) els.formForLegalEntities.checked = true;
+    if (els.formForCustomers) els.formForCustomers.checked = false;
+    if (els.formForSuppliers) els.formForSuppliers.checked = false;
+    if (els.form44fz) els.form44fz.checked = false;
+    if (els.form223fz) els.form223fz.checked = false;
     setAudienceFormError(false);
   }
 
@@ -250,6 +262,10 @@
       price: els.formPrice.value.trim(),
       forIndividuals: audience.forIndividuals,
       forLegalEntities: audience.forLegalEntities,
+      forCustomers: audience.forCustomers,
+      forSuppliers: audience.forSuppliers,
+      is44fz: audience.is44fz,
+      is223fz: audience.is223fz,
       speakers: [],
       active: true
     };
@@ -448,6 +464,10 @@
     els.formPrice = $('courseFormPrice');
     els.formForIndividuals = $('courseFormForIndividuals');
     els.formForLegalEntities = $('courseFormForLegalEntities');
+    els.formForCustomers = $('courseFormForCustomers');
+    els.formForSuppliers = $('courseFormForSuppliers');
+    els.form44fz = $('courseForm44fz');
+    els.form223fz = $('courseForm223fz');
     els.formAudienceGroup = $('courseFormAudienceGroup');
     els.formAudienceError = $('courseFormAudienceError');
 
