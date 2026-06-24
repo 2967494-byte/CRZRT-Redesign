@@ -78,14 +78,15 @@
             <form id="courseForm" class="admin-courses-modal__form">
                 <input type="hidden" id="courseFormId" value="">
                 <div class="form-group">
-                    <label for="courseFormDateFrom">Дата начала</label>
-                    <input type="date" class="form-control" id="courseFormDateFrom" required>
-                </div>
-                <div class="form-group">
                     <label for="courseFormTitle">Название</label>
                     <input type="text" class="form-control" id="courseFormTitle" required>
                 </div>
-                <div class="admin-courses-modal__row">
+                
+                <div class="admin-courses-modal__row-4">
+                    <div class="form-group">
+                        <label for="courseFormDateFrom">Дата начала</label>
+                        <input type="date" class="form-control" id="courseFormDateFrom" required>
+                    </div>
                     <div class="form-group">
                         <label for="courseFormFormat">Формат</label>
                         <select class="form-control" id="courseFormFormat">
@@ -97,18 +98,15 @@
                         <label for="courseFormDurationDays">Длительность (дней)</label>
                         <input type="number" class="form-control" id="courseFormDurationDays" min="1" max="365" value="1" required>
                     </div>
+                    <div class="form-group">
+                        <label for="courseFormPrice">Стоимость</label>
+                        <input type="text" class="form-control" id="courseFormPrice" placeholder="23 700 ₽">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="courseFormDescription">Описание</label>
-                    <textarea class="form-control" id="courseFormDescription" rows="4"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="courseFormPrice">Стоимость</label>
-                    <input type="text" class="form-control" id="courseFormPrice" placeholder="23 700 ₽">
-                </div>
+
                 <div class="form-group">
                     <span class="form-group__legend">Курс предназначен для *</span>
-                    <div class="admin-courses-audience" id="courseFormAudienceGroup">
+                    <div class="admin-courses-audience admin-courses-audience--inline" id="courseFormAudienceGroup">
                         <label class="checkbox-group">
                             <input type="checkbox" id="courseFormForIndividuals" checked>
                             Для физических лиц
@@ -119,6 +117,15 @@
                         </label>
                     </div>
                     <p class="admin-courses-audience__error" id="courseFormAudienceError" hidden>Выберите хотя бы один вариант</p>
+                </div>
+
+                <div class="form-group admin-courses-modal__desc-section">
+                    <label>Описание</label>
+                    <div id="courseDescBlocks" class="admin-courses-modal__blocks"></div>
+                    <div class="admin-courses-modal__blocks-actions">
+                        <button type="button" id="btnAddDescBlock" class="btn-secondary btn-secondary--add">+ Добавить блок</button>
+                        <span class="admin-courses-modal__desc-hint">Не более 10 блоков</span>
+                    </div>
                 </div>
                 <div class="admin-courses-modal__actions">
                     <button type="button" class="btn-secondary" id="courseModalCancel">Отмена</button>

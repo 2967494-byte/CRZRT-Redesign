@@ -1566,8 +1566,8 @@ body {
         }
 
         .admin-courses-modal {
-            width: min(640px, 92vw);
-            max-width: 640px;
+            width: min(860px, 95vw);
+            max-width: 860px;
             padding: 32px;
             border-radius: 16px;
             max-height: 90vh;
@@ -1612,6 +1612,22 @@ body {
             margin-bottom: 20px;
         }
 
+        .admin-courses-modal__row-4 {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .admin-courses-modal__row-4 .form-group {
+            margin-bottom: 0;
+            min-width: 0;
+        }
+
+        .admin-courses-modal__row-4 input[type="date"].form-control {
+            min-width: 130px;
+        }
+
         .admin-courses-modal__row .form-group {
             flex: 1;
             min-width: 0;
@@ -1633,6 +1649,11 @@ body {
             border: 1px solid var(--border-color);
             border-radius: 10px;
             background: var(--bg-secondary);
+        }
+        
+        .admin-courses-audience--inline {
+            flex-direction: row;
+            gap: 24px;
         }
 
         .admin-courses-audience--error {
@@ -1776,6 +1797,81 @@ body {
             background: rgba(255, 255, 255, 0.03);
         }
 
+        /* Description Blocks Styling */
+        .admin-courses-modal__desc-section {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--card-border);
+        }
+
+        .admin-courses-modal__blocks {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .admin-course-desc-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 16px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .admin-course-desc-block:hover {
+            border-color: var(--accent-color);
+        }
+
+        .admin-course-desc-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .admin-course-desc-block-header .form-group {
+            flex: 1;
+            margin-bottom: 0;
+            margin-right: 16px;
+        }
+
+        .btn-desc-remove {
+            background: transparent;
+            border: none;
+            color: #ff4d4d;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            align-self: flex-end;
+            margin-bottom: 4px;
+        }
+
+        .btn-desc-remove:hover {
+            background: rgba(255, 77, 77, 0.1);
+        }
+
+        .admin-courses-modal__blocks-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-secondary--add {
+            border-style: dashed !important;
+        }
+
+        .admin-courses-modal__desc-hint {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
         /* Flatpickr Premium Green Calendar Custom Theme Overrides */
         .flatpickr-calendar {
             background: var(--card-bg) !important;
@@ -1890,8 +1986,14 @@ body {
                 padding: 24px 20px 20px;
             }
 
-            .admin-courses-modal__row {
+            .admin-courses-modal__row,
+            .admin-courses-modal__row-4 {
                 grid-template-columns: 1fr;
+            }
+            
+            .admin-courses-audience--inline {
+                flex-direction: column;
+                gap: 8px;
             }
 
             .admin-courses-modal__actions {

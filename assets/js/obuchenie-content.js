@@ -280,7 +280,7 @@
       dateFrom,
       dateTo: range ? formatIsoDate(range.to) : (parseIsoDate(raw?.dateTo) ? String(raw.dateTo).trim() : dateFrom),
       durationDays,
-      description: String(raw?.description || '').trim(),
+      description: Array.isArray(raw?.description) ? raw.description : String(raw?.description || '').trim(),
       price: String(raw?.price || '').trim(),
       forIndividuals: audience.forIndividuals,
       forLegalEntities: audience.forLegalEntities,

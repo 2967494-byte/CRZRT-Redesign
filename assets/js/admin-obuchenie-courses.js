@@ -173,7 +173,7 @@
           <td><strong>${escapeHtml(course.title || 'Без названия')}</strong></td>
           <td>${escapeHtml(formatCourseFormat(course.format))}</td>
           <td>${escapeHtml(String(course.durationDays || 1))}</td>
-          <td class="courses-table__description" title="${escapeHtml(course.description || '')}">${escapeHtml(truncateText(course.description)) || '—'}</td>
+          <td class="courses-table__description" title="${escapeHtml(typeof course.description === 'string' ? course.description : (course.description?.[0]?.text || ''))}">${escapeHtml(truncateText(typeof course.description === 'string' ? course.description : (course.description?.[0]?.text || ''))) || '—'}</td>
           <td>${escapeHtml(course.price || '—')}</td>
           <td>${escapeHtml(formatCourseAudience(course))}</td>
           <td class="courses-table__actions">
@@ -198,7 +198,19 @@
     els.formTitle.value = course?.title || '';
     els.formFormat.value = course?.format === 'dist' ? 'dist' : 'och';
     els.formDurationDays.value = String(course?.durationDays || 1);
-    els.formDescription.value = course?.description || '';
+    
+    // Handle description blocks
+    els.descBlocksContainer.innerHTML = '';
+    const desc = course?.description;
+    if (Array.isArray(desc)) {
+      if (desc.length === 0) addDescBlock('', '');
+      else desc.forEach(b => addDescBlock(b.title, b.text));
+    } else if (typeof desc === 'string' && desc.trim()) {
+      addDescBlock('Описание', desc);
+    } else {
+      addDescBlock('', '');
+    }
+
     els.formPrice.value = course?.price || '';
     els.formForIndividuals.checked = course ? course.forIndividuals !== false : true;
     els.formForLegalEntities.checked = course ? course.forLegalEntities !== false : true;
@@ -225,6 +237,11 @@
     if (!validateAudienceForm()) return;
 
     const audience = readAudienceFromForm();
+    
+    const descBlocks = Array.from(els.descBlocksContainer.querySelectorAll('.admin-course-desc-block')).map(block => ({
+      title: block.querySelector('.desc-title-input').value.trim(),
+      text: block.querySelector('.desc-text-input').value.trim()
+    })).filter(b => b.title || b.text);
 
     const payload = {
       id: els.formId.value || (api.createCourseId ? api.createCourseId() : `course_${Date.now()}`),
@@ -232,7 +249,7 @@
       format: els.formFormat.value === 'dist' ? 'dist' : 'och',
       dateFrom: els.formDateFrom.value,
       durationDays: Math.max(1, parseInt(els.formDurationDays.value, 10) || 1),
-      description: els.formDescription.value.trim(),
+      description: descBlocks,
       price: els.formPrice.value.trim(),
       forIndividuals: audience.forIndividuals,
       forLegalEntities: audience.forLegalEntities,
@@ -267,10 +284,53 @@
     await persistPageData('Курс удалён');
   }
 
+  function addDescBlock(title = '', text = '') {
+    if (els.descBlocksContainer.children.length >= 10) {
+      alert('Можно добавить не более 10 блоков описания.');
+      return;
+    }
+
+    const block = document.createElement('div');
+    block.className = 'admin-course-desc-block';
+    block.innerHTML = `
+      <div class="admin-course-desc-block-header">
+        <div class="form-group">
+          <input type="text" class="form-control desc-title-input" placeholder="Заголовок (например, Описание)" value="${escapeHtml(title)}">
+        </div>
+        <button type="button" class="btn-desc-remove" aria-label="Удалить блок" title="Удалить блок">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="form-group" style="margin-bottom: 0;">
+        <textarea class="form-control desc-text-input" placeholder="Текст блока" rows="3">${escapeHtml(text)}</textarea>
+      </div>
+    `;
+
+    block.querySelector('.btn-desc-remove').addEventListener('click', () => {
+      block.remove();
+      updateAddBlockButtonState();
+    });
+
+    els.descBlocksContainer.appendChild(block);
+    updateAddBlockButtonState();
+  }
+
+  function updateAddBlockButtonState() {
+    if (els.descBlocksContainer.children.length >= 10) {
+      els.btnAddDescBlock.style.display = 'none';
+    } else {
+      els.btnAddDescBlock.style.display = 'flex';
+    }
+  }
+
   function bindEvents() {
     $('btnAddCourse')?.addEventListener('click', () => openModal(null));
     $('courseModalClose')?.addEventListener('click', closeModal);
     $('courseModalCancel')?.addEventListener('click', closeModal);
+    els.btnAddDescBlock?.addEventListener('click', () => addDescBlock('', ''));
     els.form?.addEventListener('submit', handleFormSubmit);
     els.formForIndividuals?.addEventListener('change', () => {
       if (readAudienceFromForm().forIndividuals || readAudienceFromForm().forLegalEntities) {
@@ -404,7 +464,8 @@
     els.formTitle = $('courseFormTitle');
     els.formFormat = $('courseFormFormat');
     els.formDurationDays = $('courseFormDurationDays');
-    els.formDescription = $('courseFormDescription');
+    els.descBlocksContainer = $('courseDescBlocks');
+    els.btnAddDescBlock = $('btnAddDescBlock');
     els.formPrice = $('courseFormPrice');
     els.formForIndividuals = $('courseFormForIndividuals');
     els.formForLegalEntities = $('courseFormForLegalEntities');

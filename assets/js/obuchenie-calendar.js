@@ -186,9 +186,33 @@
           title.className = 'calendar-modal__course-title';
           title.textContent = course.title || 'Курс';
           
-          var desc = document.createElement('p');
-          desc.className = 'calendar-modal__course-desc';
-          desc.textContent = course.description || '';
+          var descContainer = document.createElement('div');
+          descContainer.className = 'calendar-modal__course-desc-container';
+          
+          if (Array.isArray(course.description)) {
+            course.description.forEach(function(block) {
+              if (block.title) {
+                var blockTitle = document.createElement('strong');
+                blockTitle.className = 'calendar-modal__course-desc-title';
+                blockTitle.textContent = block.title;
+                blockTitle.style.display = 'block';
+                blockTitle.style.marginTop = '12px';
+                blockTitle.style.marginBottom = '4px';
+                descContainer.appendChild(blockTitle);
+              }
+              if (block.text) {
+                var blockText = document.createElement('p');
+                blockText.className = 'calendar-modal__course-desc';
+                blockText.textContent = block.text;
+                descContainer.appendChild(blockText);
+              }
+            });
+          } else if (typeof course.description === 'string' && course.description.trim()) {
+            var desc = document.createElement('p');
+            desc.className = 'calendar-modal__course-desc';
+            desc.textContent = course.description;
+            descContainer.appendChild(desc);
+          }
           
           var meta = document.createElement('div');
           meta.className = 'calendar-modal__course-meta';
@@ -225,7 +249,7 @@
           enrollBtn.setAttribute('data-for-legal', course.forLegalEntities !== false ? 'true' : 'false');
           
           div.appendChild(title);
-          div.appendChild(desc);
+          div.appendChild(descContainer);
           div.appendChild(meta);
           div.appendChild(enrollBtn);
           coursesContainer.appendChild(div);
