@@ -1930,31 +1930,29 @@ body {
             margin-left: 4px;
         }
 
-        .wysiwyg-color-label {
-            cursor: pointer;
-        }
-
-        .wysiwyg-color-wrapper {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            margin-left: 2px;
+        .wysiwyg-tool-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-right: 2px;
         }
 
         .wysiwyg-color-input {
-            width: 150%;
-            height: 150%;
-            border: none;
+            width: 28px;
+            height: 28px;
             padding: 0;
-            margin: -25%;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
             cursor: pointer;
-            background: none;
+            background: transparent;
+        }
+
+        .wysiwyg-color-input::-webkit-color-swatch-wrapper {
+            padding: 2px;
+        }
+
+        .wysiwyg-color-input::-webkit-color-swatch {
+            border: none;
+            border-radius: 3px;
         }
 
         .wysiwyg-editor {
