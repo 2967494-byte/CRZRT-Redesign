@@ -46,7 +46,7 @@
       const leftDate = String(left.dateFrom || '');
       const rightDate = String(right.dateFrom || '');
       if (leftDate && rightDate && leftDate !== rightDate) {
-        return rightDate.localeCompare(leftDate);
+        return leftDate.localeCompare(rightDate);
       }
       if (leftDate && !rightDate) return -1;
       if (!leftDate && rightDate) return 1;

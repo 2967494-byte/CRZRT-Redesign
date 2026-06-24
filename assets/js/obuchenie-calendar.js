@@ -6,6 +6,7 @@
 
   /** Дни с курсами: ключ «год-месяц» (месяц 1–12) → массив чисел */
   var COURSE_DAYS_BY_MONTH = {};
+  var COURSE_REGISTRY = [];
 
   function setCourseDays(map) {
     if (!map || typeof map !== 'object') return;
@@ -82,6 +83,10 @@
       cell.setAttribute('role', 'gridcell');
       cell.textContent = String(day);
 
+      if (year === todayZero.getFullYear() && monthIndex === todayZero.getMonth() && day === todayZero.getDate()) {
+        cell.classList.add('obuchenie-calendar-day--today');
+      }
+
       if (courseDays.indexOf(day) !== -1) {
         var cellDate = new Date(year, monthIndex, day);
         if (cellDate < todayZero) {
@@ -89,6 +94,13 @@
         } else {
           cell.classList.add('obuchenie-calendar-day--active');
         }
+
+        (function(d) {
+          cell.style.cursor = 'pointer';
+          cell.addEventListener('click', function(e) {
+            openCalendarModal(year, monthIndex, d);
+          });
+        })(day);
       }
 
       grid.appendChild(cell);
@@ -119,7 +131,119 @@
   document.addEventListener('obuchenieContentReady', function (ev) {
     var days = ev.detail && ev.detail.calendar && ev.detail.calendar.courseDaysByMonth;
     if (days) setCourseDays(days);
+
+    if (ev.detail && ev.detail.courseRegistry) {
+      COURSE_REGISTRY = ev.detail.courseRegistry;
+    }
   });
+
+  function openCalendarModal(year, monthIndex, day) {
+    var modal = document.getElementById('calendar-course-modal');
+    if (!modal) return;
+    
+    var dateLabel = document.getElementById('calendar-modal-date-label');
+    var coursesContainer = document.getElementById('calendar-modal-courses');
+    
+    if (dateLabel) {
+      dateLabel.textContent = day + ' ' + MONTH_NAMES[monthIndex].toLowerCase() + ' ' + year;
+    }
+    
+    if (coursesContainer) {
+      coursesContainer.innerHTML = '';
+      
+      var targetDate = new Date(year, monthIndex, day);
+      
+      var coursesOnDate = COURSE_REGISTRY.filter(function(course) {
+        if (!course.active) return false;
+        if (!course.dateFrom) return false;
+        
+        var parts = course.dateFrom.split('-');
+        if (parts.length !== 3) return false;
+        var start = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        
+        var end = new Date(start.getTime());
+        var duration = Math.max(1, parseInt(course.durationDays, 10) || 1);
+        if (course.dateTo) {
+           var endParts = course.dateTo.split('-');
+           if (endParts.length === 3) {
+             end = new Date(parseInt(endParts[0], 10), parseInt(endParts[1], 10) - 1, parseInt(endParts[2], 10));
+           }
+        } else {
+           end.setDate(end.getDate() + duration - 1);
+        }
+        
+        return targetDate >= start && targetDate <= end;
+      });
+      
+      if (coursesOnDate.length === 0) {
+        coursesContainer.innerHTML = '<p>На эту дату курсов не найдено.</p>';
+      } else {
+        coursesOnDate.forEach(function(course) {
+          var div = document.createElement('div');
+          div.className = 'calendar-modal__course';
+          
+          var title = document.createElement('h4');
+          title.className = 'calendar-modal__course-title';
+          title.textContent = course.title || 'Курс';
+          
+          var desc = document.createElement('p');
+          desc.className = 'calendar-modal__course-desc';
+          desc.textContent = course.description || '';
+          
+          var meta = document.createElement('div');
+          meta.className = 'calendar-modal__course-meta';
+          
+          if (course.price) {
+            var price = document.createElement('span');
+            price.className = 'calendar-modal__course-price';
+            price.textContent = course.price;
+            meta.appendChild(price);
+          }
+          
+          if (course.format) {
+            var format = document.createElement('span');
+            format.textContent = course.format === 'dist' ? 'Дистанционно' : 'Очно';
+            meta.appendChild(format);
+          }
+          
+          var enrollBtn = document.createElement('a');
+          enrollBtn.href = '#contacts';
+          enrollBtn.className = 'btn btn--green';
+          enrollBtn.style.marginTop = '16px';
+          enrollBtn.style.display = 'inline-flex';
+          enrollBtn.style.backgroundColor = '#00AE4D';
+          enrollBtn.style.color = '#FFFFFF';
+          enrollBtn.style.textDecoration = 'none';
+          enrollBtn.textContent = 'Записаться';
+          
+          div.appendChild(title);
+          div.appendChild(desc);
+          div.appendChild(meta);
+          div.appendChild(enrollBtn);
+          coursesContainer.appendChild(div);
+        });
+      }
+    }
+    
+    modal.style.display = 'flex';
+  }
+
+  function setupModal() {
+    var modal = document.getElementById('calendar-course-modal');
+    var closeBtn = document.querySelector('.calendar-modal__close');
+    var overlay = document.querySelector('.calendar-modal__overlay');
+    
+    if (!modal) return;
+    
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+    
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (overlay) overlay.addEventListener('click', closeModal);
+  }
+  
+  setupModal();
 
   window.ObuchenieCalendar = { setCourseDays: setCourseDays };
 })();
