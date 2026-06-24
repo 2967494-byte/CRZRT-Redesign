@@ -400,6 +400,55 @@
     };
   }
 
+  function setupEnrollModal() {
+    const modal = document.getElementById('enroll-modal');
+    if (!modal) return;
+    
+    const closeBtn = modal.querySelector('.calendar-modal__close');
+    const overlay = modal.querySelector('.calendar-modal__overlay');
+    const form = document.getElementById('enroll-form');
+    
+    function closeEnrollModal() {
+      modal.style.display = 'none';
+      if (form) form.reset();
+    }
+    
+    if (closeBtn) closeBtn.addEventListener('click', closeEnrollModal);
+    if (overlay) overlay.addEventListener('click', closeEnrollModal);
+    
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('[data-action="enroll"]');
+      if (!btn) return;
+      
+      e.preventDefault();
+      
+      const title = btn.getAttribute('data-title') || '';
+      const date = btn.getAttribute('data-date') || '';
+      
+      const titleEl = document.getElementById('enroll-modal-title');
+      const dateEl = document.getElementById('enroll-modal-date');
+      
+      if (titleEl) titleEl.textContent = title;
+      if (dateEl) dateEl.textContent = date;
+      
+      // Close calendar modal if open
+      const calendarModal = document.getElementById('calendar-course-modal');
+      if (calendarModal && calendarModal.style.display !== 'none') {
+        calendarModal.style.display = 'none';
+      }
+      
+      modal.style.display = 'flex';
+    });
+    
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Заявка успешно отправлена!');
+        closeEnrollModal();
+      });
+    }
+  }
+
   function markObuchenieContentReady() {
     document.documentElement.classList.remove(CONTENT_PENDING_CLASS);
     document.documentElement.classList.add(CONTENT_READY_CLASS);
@@ -677,22 +726,22 @@
           ${priceHtml}
           <div class="occ-card__stats">
             <div class="occ-card__stat">
-              <span class="occ-card__stat-label">длительность</span>
-              <div class="occ-card__stat-value">
-                <span class="occ-card__stat-num">${durDays}</span>
-                <span class="occ-card__stat-unit">${durUnit}</span>
-              </div>
-            </div>
-            <div class="occ-card__stat-divider"></div>
-            <div class="occ-card__stat">
               <span class="occ-card__stat-label">старт курса</span>
               <div class="occ-card__stat-value">
                 <span class="occ-card__stat-num">${startDay}</span>
                 <span class="occ-card__stat-unit">${startMonth}</span>
               </div>
             </div>
+            <div class="occ-card__stat-divider"></div>
+            <div class="occ-card__stat">
+              <span class="occ-card__stat-label">длительность</span>
+              <div class="occ-card__stat-value">
+                <span class="occ-card__stat-num">${durDays}</span>
+                <span class="occ-card__stat-unit">${durUnit}</span>
+              </div>
+            </div>
           </div>
-          <a href="#contacts" class="occ-card__btn">Записаться</a>
+          <button type="button" class="occ-card__btn" data-action="enroll" data-title="${escapeHtml(c.title)}" data-date="${startDay} ${startMonth} ${start.getFullYear()}">Записаться</button>
           <a href="#contacts" class="occ-card__more">подробнее ${MORE_ARROW_SVG}</a>
         </article>`;
       })

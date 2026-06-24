@@ -3107,6 +3107,7 @@ body[data-page="obuchenie"] .obuchenie-course-cards {
   display: flex;
   align-items: stretch;
   gap: 0;
+  margin-top: auto;
   margin-bottom: 16px;
 }
 
@@ -3443,6 +3444,150 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
   overflow: hidden;
   transform-origin: center center;
   animation: modalPopOut 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+}
+
+/* Enrollment Modal Styles */
+.enroll-modal__content {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transform-origin: center center;
+  animation: modalPopOut 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.enroll-modal__header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.enroll-modal__title {
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 120%;
+  color: #000;
+  margin: 0 0 8px;
+}
+
+.enroll-modal__date {
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: #575B6D;
+  margin: 0;
+}
+
+.enroll-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.enroll-modal__field {
+  width: 100%;
+}
+
+.enroll-modal__input,
+.enroll-modal__select {
+  width: 100%;
+  box-sizing: border-box;
+  background: #F4F6F9;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: #000;
+  transition: border-color 0.2s, background 0.2s;
+  appearance: none;
+}
+
+.enroll-modal__input::placeholder {
+  color: #8E98A8;
+}
+
+.enroll-modal__select {
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238E98A8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 20px center;
+  padding-right: 40px;
+}
+
+.enroll-modal__select:invalid {
+  color: #8E98A8;
+}
+
+.enroll-modal__input:focus,
+.enroll-modal__select:focus {
+  outline: none;
+  border-color: #00AE4D;
+  background: #fff;
+}
+
+.enroll-modal__checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.enroll-modal__checkbox {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: #00AE4D;
+  cursor: pointer;
+}
+
+.enroll-modal__checkbox-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 140%;
+  color: #8E98A8;
+}
+
+.enroll-modal__checkbox-text a {
+  color: #00AE4D;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.enroll-modal__checkbox-text a:hover {
+  text-decoration: none;
+}
+
+.enroll-modal__submit {
+  width: 100%;
+  height: 56px;
+  background: #00AE4D;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.enroll-modal__submit:hover {
+  background: #009341;
+}
+
+.enroll-modal__submit:active {
+  transform: translateY(2px);
 }
 @keyframes modalPopOut {
   from { opacity: 0; transform: scale(0.1); }
