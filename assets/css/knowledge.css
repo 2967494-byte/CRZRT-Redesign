@@ -1,0 +1,135 @@
+/* ==========================================================================
+   KNOWLEDGE PAGE STYLES
+   ========================================================================== */
+body[data-page="knowledge"] {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh !important;
+  margin: 0 !important;
+}
+
+body[data-page="knowledge"] .first-screen {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 0 auto !important;
+}
+
+body[data-page="knowledge"] .first-screen > main {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 0 auto !important;
+}
+
+body[data-page="knowledge"] .knowledge-blocks-section {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 0 auto !important;
+  background-color: #FFFFFF;
+}
+
+body[data-page="knowledge"] .knowledge-header {
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 50px;
+  line-height: 1.0;
+  color: #575B6D;
+  margin-top: 60px;
+  margin-bottom: 25px;
+  letter-spacing: 0%;
+}
+
+body[data-page="knowledge"] .knowledge-text {
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.4;
+  color: #575B6D;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-top: 0;
+  margin-bottom: 30px;
+  letter-spacing: 0%;
+  white-space: pre-line;
+}
+
+body[data-page="knowledge"] .knowledge-file-card {
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+body[data-page="knowledge"] .knowledge-file-title {
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.4;
+  color: #575B6D;
+  margin-top: 0;
+  margin-bottom: 12px;
+  letter-spacing: 0%;
+}
+
+body[data-page="knowledge"] .knowledge-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: opacity 0.2s ease;
+}
+
+body[data-page="knowledge"] .knowledge-download-btn:hover {
+  opacity: 0.85;
+}
+
+body[data-page="knowledge"] .knowledge-download-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+body[data-page="knowledge"] .knowledge-download-text {
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.0;
+  color: #575B6D;
+  letter-spacing: 0%;
+}
+
+body[data-page="knowledge"] .knowledge-download-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #0FAA4B;
+  border-radius: 50%;
+  background: #FFFFFF;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+body[data-page="knowledge"] .knowledge-download-btn:hover .knowledge-download-arrow {
+  transform: translate(2px, 2px);
+  background-color: rgba(15, 170, 75, 0.05);
+}
+
+@media (max-width: 768px) {
+  body[data-page="knowledge"] .knowledge-header {
+    font-size: 32px;
+    margin-top: 40px;
+  }
+  body[data-page="knowledge"] .knowledge-text {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  body[data-page="knowledge"] .knowledge-file-title {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+  body[data-page="knowledge"] .knowledge-download-text {
+    font-size: 16px;
+  }
+}

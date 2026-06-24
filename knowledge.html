@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <script src="assets/js/page-zoom-sync.js?v=2"></script>
+  <title>Документы. Центр развития закупок Республики Татарстан</title>
+  <meta name="description" content="Официальные документы Центра развития закупок РТ: нормативные акты, лицензии, руководства и регламенты.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" as="style" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
+  <link rel="preload" href="assets/css/landing.css?v=9" as="style">
+  <link rel="preload" href="assets/css/knowledge.css?v=2" as="style">
+  <link rel="stylesheet" href="assets/css/landing.css?v=9">
+  <link rel="stylesheet" href="assets/css/knowledge.css?v=2">
+  <script>document.documentElement.classList.add('landing-content-pending', 'knowledge-content-pending');</script>
+</head>
+<body class="theme-purple" data-page="knowledge">
+
+<!-- HEADER -->
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="logo">
+      <img src="assets/img/logo.svg" alt="Центр развития закупок" class="logo__img">
+    </a>
+
+    <nav class="nav">
+      <a href="index.html#about" class="nav__link">О нас</a>
+      <a href="index.html#news" class="nav__link">Новости</a>
+      <a href="index.html#reviews" class="nav__link">Нам доверяют</a>
+      <a href="#contacts" class="nav__link">Контакты</a>
+    </nav>
+
+    <div class="header__actions">
+      <a href="tel:88001017892" class="btn btn--green">8 800 101-78-92</a>
+      <button id="openLoginModal" class="btn-icon" aria-label="Личный кабинет">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <div id="loginModal" class="login-popover">
+        <button id="closeLoginModal" class="btn-modal-close" aria-label="Закрыть">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <h2 class="modal-title">Вход в систему</h2>
+        <div id="loginError" class="modal-error">Неверный e-mail или пароль</div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">E-mail</label>
+            <input type="email" id="loginEmail" class="form-control" required placeholder="example@mail.ru">
+          </div>
+          <div class="form-group">
+            <label for="loginPass">Пароль</label>
+            <input type="password" id="loginPass" class="form-control" required placeholder="********">
+          </div>
+          <button type="submit" class="btn-save" style="width: 100%; margin-top: 20px;">Войти</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="first-screen">
+  <main>
+    <!-- HERO BANNER -->
+    <section class="section consulting-hero-section consulting-page-section">
+      <div class="container">
+        <div class="consulting-hero consulting-dynamic knowledge-dynamic">
+          <div class="consulting-hero__inner">
+            <div class="consulting-hero__content consulting-dynamic knowledge-dynamic">
+              <h1 class="consulting-hero__title consulting-hero-title">Документы</h1>
+              <p class="consulting-hero__subtitle consulting-hero-subtitle">Здесь вы найдете все официальные документы для скачивания. Файлы регулярно обновляются.</p>
+            </div>
+
+            <div class="consulting-banner__graphic consulting-dynamic knowledge-dynamic" aria-hidden="true">
+              <img src="" alt="" class="consulting-banner__image consulting-hero-gavel" width="420" height="420" decoding="async">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT BLOCKS -->
+    <section class="section knowledge-blocks-section" style="padding-top: 60px; padding-bottom: 80px;">
+      <div class="container container--narrow" id="knowledge-blocks-container">
+        <!-- Блоки будут сгенерированы динамически из knowledge-content.js -->
+      </div>
+    </section>
+  </main>
+</div>
+
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__col footer__col--address">
+      <p>г. Казань,</p>
+      <p>ул. Петербургская, 86</p>
+      <p>Пн-Чт с 09:00 до 18:00</p>
+      <p>Пт с 09:00 до 17:00</p>
+    </div>
+
+    <div class="footer__col footer__col--nav">
+      <a href="index.html#about">О нас</a>
+      <a href="index.html#news">Новости</a>
+      <a href="index.html#reviews">Нам доверяют</a>
+      <a href="#contacts" class="nav__link">Контакты</a>
+    </div>
+
+    <div class="footer__col footer__col--links">
+      <a href="knowledge.html">Документы</a>
+      <a href="team.html">Карьера</a>
+    </div>
+
+    <div class="footer__col footer__col--contacts">
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Телефон</p>
+        <a href="tel:88001017892" class="footer-phone">8 800 101-78-92</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Основная почта</p>
+        <a href="mailto:crz.rt@tatar.ru" class="footer-email">crz.rt@tatar.ru</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Социальные сети</p>
+        <div class="footer-socials landing-dynamic"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner">
+      <a href="#" class="footer__bottom-link footer__bottom-link--policy">Политика конфиденциальности</a>
+      <a href="#" class="footer__bottom-link footer__bottom-link--consent">Согласие на обработку персональных данных</a>
+      <div class="footer__bottom-aside">
+        <p class="footer__bottom-text">Мы используем файлы cookie, для персонализации сервисов и<br>повышения удобства пользования сайтом. Если вы не согласны<br>на их использование, поменяйте настройки браузера.</p>
+        <p class="footer__copyright">АО «Центр развития закупок РТ» 2026 (с) Все права защищены</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/landing-content.js?v=8" defer></script>
+<script src="assets/js/knowledge-content.js" defer></script>
+<script src="assets/js/landing.js?v=6" defer></script>
+</body>
+</html>

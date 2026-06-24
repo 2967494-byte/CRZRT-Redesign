@@ -76,6 +76,15 @@
                     </svg>
                     Страница Обучение
                 </div>
+                <div class="nav-item" data-target="knowledge-page">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    Страница Документы
+                </div>
 
                 <div class="nav-item" data-target="users">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -327,6 +336,27 @@
                 <div class="admin-card">
                     <div class="card-header"><span>Баннер тестирования</span></div>
                     <div id="obuchenieTestingAdmin"></div>
+                </div>
+            </div>
+
+            <div id="knowledgePageBlock" class="admin-block" data-required-role="knowledge-page">
+                <div class="admin-card">
+                    <div class="card-header"><span>Верхний баннер</span></div>
+                    <div id="knowledgeHeroAdmin"></div>
+                </div>
+                <div class="admin-card">
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+                        <span>Конструктор документов и текстов</span>
+                        <div style="display:flex;gap:8px;">
+                            <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminKnowledge.addHeaderBlock()">+ Заголовок</button>
+                            <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminKnowledge.addTextBlock()">+ Текст</button>
+                            <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminKnowledge.addFileBlock()">+ Файл</button>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">
+                        Создавайте разделы, добавляйте текстовые описания и прикрепляйте документы. Можно менять их порядок стрелками.
+                    </p>
+                    <div id="knowledgeBlocksAdmin" style="display:flex; flex-direction:column; gap:16px;"></div>
                 </div>
             </div>
 
@@ -689,6 +719,7 @@
     <script src="assets/js/admin-consulting-page.js?v=5"></script>
     <script src="assets/js/admin-support.js?v=4"></script>
     <script src="assets/js/admin-obuchenie.js?v=8"></script>
+    <script src="assets/js/admin-knowledge.js?v=1"></script>
     <script src="assets/js/admin-ui.js?v=10"></script>
 </body>
 </html>

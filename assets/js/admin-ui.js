@@ -149,6 +149,18 @@
             obucheniePageData = AdminObuchenie.collectObucheniePageFromForm(obucheniePageData);
             window.obucheniePageData = obucheniePageData;
         };
+        let knowledgePageData = {};
+        if (typeof AdminKnowledge !== 'undefined') {
+            knowledgePageData = AdminKnowledge.migrateKnowledgePageData(
+                JSON.parse(localStorage.getItem('crzrt_knowledge_page_data') || 'null')
+            );
+        }
+        window.knowledgePageData = knowledgePageData;
+        window.saveKnowledgePageStateToMemory = function () {
+            if (typeof AdminKnowledge === 'undefined') return;
+            knowledgePageData = AdminKnowledge.collectKnowledgePageFromForm(knowledgePageData);
+            window.knowledgePageData = knowledgePageData;
+        };
         let aboutData = { ...defaultAboutData };
         let contactsData = { ...defaultContactsData };
         let educationData; // assigned after defaultEducationData is declared (~line 1570)
@@ -161,6 +173,7 @@
                 'crzrt_consulting_page_data',
                 'crzrt_support_page_data',
                 'crzrt_obuchenie_page_data',
+                'crzrt_knowledge_page_data',
                 'crzrt_about_data', 
                 'crzrt_contacts', 
                 'crzrt_education_data', 
@@ -197,13 +210,18 @@
                                 window.obucheniePageData = obucheniePageData;
                                 localStorage.setItem(key, JSON.stringify(obucheniePageData));
                             }
+                            else if (key === 'crzrt_knowledge_page_data' && typeof AdminKnowledge !== 'undefined') {
+                                knowledgePageData = AdminKnowledge.migrateKnowledgePageData(data);
+                                window.knowledgePageData = knowledgePageData;
+                                localStorage.setItem(key, JSON.stringify(knowledgePageData));
+                            }
                             else if (key === 'crzrt_about_data') aboutData = { ...defaultAboutData, ...data };
                             else if (key === 'crzrt_contacts') contactsData = { ...defaultContactsData, ...data };
                             else if (key === 'crzrt_education_data') educationData = { ...educationData, ...data };
                             else if (key === 'crzrt_consulting_data') consultingData = { ...consultingData, ...data };
                             
                             // Save to local for fallback
-                            if (key !== 'crzrt_ecp_page_data' && key !== 'crzrt_consulting_page_data' && key !== 'crzrt_support_page_data' && key !== 'crzrt_obuchenie_page_data') {
+                            if (key !== 'crzrt_ecp_page_data' && key !== 'crzrt_consulting_page_data' && key !== 'crzrt_support_page_data' && key !== 'crzrt_obuchenie_page_data' && key !== 'crzrt_knowledge_page_data') {
                                 localStorage.setItem(key, JSON.stringify(data));
                             }
                         }
@@ -215,6 +233,7 @@
                 else if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
                 else if (currentTarget === 'support-page') renderSupportPageAdmin();
                 else if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
+                else if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();
                 else if (currentTarget === 'about-us') renderAboutUsAdmin();
                 else if (currentTarget === 'contacts') renderContactsAdmin();
                 else if (currentTarget === 'education') renderEducationAdmin();
@@ -261,6 +280,7 @@
             'consulting-page': 'consultingPageBlock',
             'support-page': 'supportPageBlock',
             'obuchenie-page': 'obucheniePageBlock',
+            'knowledge-page': 'knowledgePageBlock',
             'consulting': 'consultingBlock',
             'education': 'educationBlock',
             'users': 'usersBlock',
@@ -301,6 +321,11 @@
         function renderObucheniePageAdmin() {
             if (typeof AdminObuchenie === 'undefined') return;
             AdminObuchenie.renderObucheniePageAdmin(obucheniePageData);
+        }
+
+        function renderKnowledgePageAdmin() {
+            if (typeof AdminKnowledge === 'undefined') return;
+            AdminKnowledge.renderKnowledgePageAdmin(knowledgePageData);
         }
 
         // ═══════════════════════════════════════════════
@@ -853,6 +878,7 @@
                 if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
                 if (currentTarget === 'support-page') renderSupportPageAdmin();
                 if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
+                if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();
                 if (currentTarget === 'consulting') renderConsultingAdmin();
                 if (currentTarget === 'education') renderEducationAdmin();
                 if (currentTarget === 'users') renderUsers();
@@ -1148,6 +1174,9 @@
                     if (AdminSupport?.isSupportFileInputId?.(targetId) && AdminSupport?.setFileUploadState) {
                         AdminSupport.setFileUploadState(targetId, result.url, result.name || file.name);
                     }
+                    if (AdminKnowledge?.setFileUploadState) {
+                        AdminKnowledge.setFileUploadState(targetId, result.url, result.name || file.name);
+                    }
                     if (targetId.startsWith('obuchenie_') && AdminObuchenie?.setFileUploadState) {
                         AdminObuchenie.setFileUploadState(targetId, result.url, result.name || file.name);
                     }
@@ -1346,6 +1375,8 @@
                     [resWidth, resHeight] = AdminSupport.getCropSize(window.cropTarget.uploadId);
                 } else if (window.cropTarget && AdminObuchenie?.isObuchenieUploadId?.(window.cropTarget.uploadId)) {
                     [resWidth, resHeight] = AdminObuchenie.getCropSize(window.cropTarget.uploadId);
+                } else if (window.cropTarget && AdminKnowledge?.isKnowledgeUploadId?.(window.cropTarget.uploadId)) {
+                    [resWidth, resHeight] = AdminKnowledge.getCropSize(window.cropTarget.uploadId);
                 } else if (window.cropTarget && AdminLanding) {
                     [resWidth, resHeight] = AdminLanding.getCropSize(window.cropTarget.uploadId);
                 }
@@ -1426,6 +1457,9 @@
                     window.cropTarget = null;
                 } else if (window.cropTarget && AdminObuchenie?.isObuchenieUploadId?.(window.cropTarget.uploadId)) {
                     AdminObuchenie.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
+                    window.cropTarget = null;
+                } else if (window.cropTarget && AdminKnowledge?.isKnowledgeUploadId?.(window.cropTarget.uploadId)) {
+                    AdminKnowledge.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
                     window.cropTarget = null;
                 } else if (window.cropTarget && AdminLanding) {
                     AdminLanding.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
@@ -1894,6 +1928,24 @@
             return data;
         }
 
+        async function replaceKnowledgeBase64WithUploads(data) {
+            const cache = new Map();
+            const uploadOrReuse = (src, slot, maxWidth, maxHeight) => {
+                if (!isImageDataUrl(src)) return Promise.resolve(src);
+                const key = `${slot}:${src.slice(0, 64)}:${src.length}`;
+                if (!cache.has(key)) {
+                    cache.set(key, uploadDataUrlImage(src, slot, maxWidth, maxHeight));
+                }
+                return cache.get(key);
+            };
+
+            if (data.hero) {
+                data.hero.background = await uploadOrReuse(data.hero.background, 'knowledge_hero_bg', 1520, 420);
+            }
+
+            return data;
+        }
+
         async function replaceObuchenieBase64WithUploads(data) {
             const cache = new Map();
             const uploadOrReuse = (src, slot, maxWidth, maxHeight) => {
@@ -1961,6 +2013,10 @@
                     saveObucheniePageStateToMemory();
                     keyToSave = 'crzrt_obuchenie_page_data';
                     dataToSave = obucheniePageData;
+                } else if (currentTarget === 'knowledge-page') {
+                    saveKnowledgePageStateToMemory();
+                    keyToSave = 'crzrt_knowledge_page_data';
+                    dataToSave = knowledgePageData;
                 } else if (currentTarget === 'about-us') {
                     saveAboutUsStateToMemory();
                     keyToSave = 'crzrt_about_data';
@@ -2023,6 +2079,15 @@
                     obucheniePageData = dataToSave;
                     window.obucheniePageData = obucheniePageData;
                     renderObucheniePageAdmin();
+                }
+
+                if (currentTarget === 'knowledge-page') {
+                    btn.innerText = 'Загрузка медиа...';
+                    const snapshot = JSON.parse(JSON.stringify(dataToSave));
+                    dataToSave = await replaceKnowledgeBase64WithUploads(snapshot);
+                    knowledgePageData = dataToSave;
+                    window.knowledgePageData = knowledgePageData;
+                    renderKnowledgePageAdmin();
                 }
 
                 btn.innerText = 'Сохраняется...';
