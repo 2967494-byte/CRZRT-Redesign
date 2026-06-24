@@ -197,9 +197,9 @@
               }
             });
           } else if (typeof course.description === 'string' && course.description.trim()) {
-            var desc = document.createElement('p');
+            var desc = document.createElement('div');
             desc.className = 'calendar-modal__course-desc';
-            desc.textContent = course.description;
+            desc.innerHTML = course.description;
             descContainer.appendChild(desc);
           }
           

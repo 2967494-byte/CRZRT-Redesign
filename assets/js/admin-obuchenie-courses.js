@@ -64,8 +64,14 @@
     return valid;
   }
 
+  function stripHtml(html) {
+    const tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  }
+
   function truncateText(text, max = 120) {
-    const value = String(text || '').trim();
+    const value = stripHtml(String(text || '')).trim();
     if (value.length <= max) return value;
     return `${value.slice(0, max - 1)}…`;
   }
@@ -173,7 +179,7 @@
           <td><strong>${escapeHtml(course.title || 'Без названия')}</strong></td>
           <td>${escapeHtml(formatCourseFormat(course.format))}</td>
           <td>${escapeHtml(String(course.durationDays || 1))}</td>
-          <td class="courses-table__description" title="${escapeHtml(typeof course.description === 'string' ? course.description : (course.description?.[0]?.text || ''))}">${escapeHtml(truncateText(typeof course.description === 'string' ? course.description : (course.description?.[0]?.text || ''))) || '—'}</td>
+          <td class="courses-table__description" title="${escapeHtml(stripHtml(typeof course.description === 'string' ? course.description : (course.description?.[0]?.text || '')))}">${escapeHtml(truncateText(typeof course.description === 'string' ? course.description : (course.description?.[0]?.text || ''))) || '—'}</td>
           <td>${escapeHtml(course.price || '—')}</td>
           <td>${escapeHtml(formatCourseAudience(course))}</td>
           <td class="courses-table__actions">
@@ -199,17 +205,14 @@
     els.formFormat.value = course?.format === 'dist' ? 'dist' : 'och';
     els.formDurationDays.value = String(course?.durationDays || 1);
     
-    // Handle description blocks
-    els.descBlocksContainer.innerHTML = '';
+    let descHtml = '';
     const desc = course?.description;
     if (Array.isArray(desc)) {
-      if (desc.length === 0) addDescBlock('', '');
-      else desc.forEach(b => addDescBlock(b.title, b.text));
-    } else if (typeof desc === 'string' && desc.trim()) {
-      addDescBlock('Описание', desc);
-    } else {
-      addDescBlock('', '');
+      descHtml = desc.map(b => (b.title ? `<b>${b.title}</b><br>` : '') + b.text).join('<br><br>');
+    } else if (typeof desc === 'string') {
+      descHtml = desc;
     }
+    els.formDescription.innerHTML = descHtml;
 
     els.formPrice.value = course?.price || '';
     els.formForIndividuals.checked = course ? course.forIndividuals !== false : true;
@@ -238,18 +241,7 @@
 
     const audience = readAudienceFromForm();
     
-    const descBlocks = Array.from(els.descBlocksContainer.querySelectorAll('.admin-course-desc-block')).map(block => ({
-      title: block.querySelector('.desc-title-input').value.trim(),
-      text: block.querySelector('.desc-text-input').value.trim()
-    })).filter(b => b.title || b.text);
-
-    const payload = {
-      id: els.formId.value || (api.createCourseId ? api.createCourseId() : `course_${Date.now()}`),
-      title: els.formTitle.value.trim(),
-      format: els.formFormat.value === 'dist' ? 'dist' : 'och',
-      dateFrom: els.formDateFrom.value,
-      durationDays: Math.max(1, parseInt(els.formDurationDays.value, 10) || 1),
-      description: descBlocks,
+      description: els.formDescription.innerHTML,
       price: els.formPrice.value.trim(),
       forIndividuals: audience.forIndividuals,
       forLegalEntities: audience.forLegalEntities,
@@ -284,53 +276,35 @@
     await persistPageData('Курс удалён');
   }
 
-  function addDescBlock(title = '', text = '') {
-    if (els.descBlocksContainer.children.length >= 10) {
-      alert('Можно добавить не более 10 блоков описания.');
-      return;
-    }
-
-    const block = document.createElement('div');
-    block.className = 'admin-course-desc-block';
-    block.innerHTML = `
-      <div class="admin-course-desc-block-header">
-        <div class="form-group">
-          <input type="text" class="form-control desc-title-input" placeholder="Заголовок (например, Описание)" value="${escapeHtml(title)}">
-        </div>
-        <button type="button" class="btn-desc-remove" aria-label="Удалить блок" title="Удалить блок">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          </svg>
-        </button>
-      </div>
-      <div class="form-group" style="margin-bottom: 0;">
-        <textarea class="form-control desc-text-input" placeholder="Текст блока" rows="3">${escapeHtml(text)}</textarea>
-      </div>
-    `;
-
-    block.querySelector('.btn-desc-remove').addEventListener('click', () => {
-      block.remove();
-      updateAddBlockButtonState();
+  function updateWysiwygToolbarState() {
+    els.wysiwygBtns.forEach(btn => {
+      const command = btn.getAttribute('data-command');
+      if (document.queryCommandState(command)) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
     });
-
-    els.descBlocksContainer.appendChild(block);
-    updateAddBlockButtonState();
-  }
-
-  function updateAddBlockButtonState() {
-    if (els.descBlocksContainer.children.length >= 10) {
-      els.btnAddDescBlock.style.display = 'none';
-    } else {
-      els.btnAddDescBlock.style.display = 'flex';
-    }
   }
 
   function bindEvents() {
     $('btnAddCourse')?.addEventListener('click', () => openModal(null));
     $('courseModalClose')?.addEventListener('click', closeModal);
     $('courseModalCancel')?.addEventListener('click', closeModal);
-    els.btnAddDescBlock?.addEventListener('click', () => addDescBlock('', ''));
+    
+    els.wysiwygBtns?.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const command = btn.getAttribute('data-command');
+        document.execCommand(command, false, null);
+        els.formDescription.focus();
+        updateWysiwygToolbarState();
+      });
+    });
+
+    els.formDescription?.addEventListener('keyup', updateWysiwygToolbarState);
+    els.formDescription?.addEventListener('mouseup', updateWysiwygToolbarState);
+
     els.form?.addEventListener('submit', handleFormSubmit);
     els.formForIndividuals?.addEventListener('change', () => {
       if (readAudienceFromForm().forIndividuals || readAudienceFromForm().forLegalEntities) {
@@ -464,8 +438,8 @@
     els.formTitle = $('courseFormTitle');
     els.formFormat = $('courseFormFormat');
     els.formDurationDays = $('courseFormDurationDays');
-    els.descBlocksContainer = $('courseDescBlocks');
-    els.btnAddDescBlock = $('btnAddDescBlock');
+    els.formDescription = $('courseFormDescription');
+    els.wysiwygBtns = document.querySelectorAll('.wysiwyg-btn');
     els.formPrice = $('courseFormPrice');
     els.formForIndividuals = $('courseFormForIndividuals');
     els.formForLegalEntities = $('courseFormForLegalEntities');
