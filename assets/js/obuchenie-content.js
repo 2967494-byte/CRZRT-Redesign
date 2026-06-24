@@ -620,6 +620,17 @@
     }
 
     document.addEventListener('click', function (e) {
+      const detailBtn = e.target.closest('[data-action="course-detail"]');
+      if (detailBtn) {
+        e.preventDefault();
+        const courseId = detailBtn.getAttribute('data-course-id') || '';
+        const course = activeCourseRegistry.find((item) => item.id === courseId);
+        if (course && window.ObuchenieCalendar?.openCourseDetailModal) {
+          window.ObuchenieCalendar.openCourseDetailModal(course);
+        }
+        return;
+      }
+
       const btn = e.target.closest('[data-action="enroll"]');
       if (!btn) return;
 
@@ -853,6 +864,10 @@
     return `data-action="enroll" data-course-id="${escapeAttr(course.id)}" data-title="${escapeAttr(course.title || '')}" data-date="${escapeAttr(dateLabel)}" data-for-individuals="${forIndividuals ? 'true' : 'false'}" data-for-legal="${forLegal ? 'true' : 'false'}"`;
   }
 
+  function buildCourseDetailAttrs(course) {
+    return `data-action="course-detail" data-course-id="${escapeAttr(course.id)}"`;
+  }
+
   function renderCourseCards(courseCards, courseRegistry) {
     const grid = document.querySelector('.obuchenie-course-cards');
     if (!grid) return;
@@ -945,6 +960,7 @@
           ? ''
           : `${startDay} ${startMonth} ${start.getFullYear()}`;
         const enrollAttrs = buildEnrollAttrs(c, dateLabel);
+        const detailAttrs = buildCourseDetailAttrs(c);
 
         return `<article class="occ-card">
           <div class="occ-card__top" style="flex-grow: 1; margin-bottom: auto;">
@@ -969,7 +985,7 @@
             </div>
           </div>
           <button type="button" class="occ-card__btn" ${enrollAttrs}>Записаться</button>
-          <button type="button" class="occ-card__more" ${enrollAttrs}>подробнее ${MORE_ARROW_SVG}</button>
+          <button type="button" class="occ-card__more" ${detailAttrs}>подробнее ${MORE_ARROW_SVG}</button>
         </article>`;
       })
       .join('');

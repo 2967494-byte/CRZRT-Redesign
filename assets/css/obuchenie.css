@@ -3725,8 +3725,16 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
   background: #e2e8f0;
   color: #354557;
 }
-.calendar-modal__header--compact {
-  padding-right: 56px;
+.calendar-modal__header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-right: 52px;
+}
+.calendar-modal__header-info {
+  flex: 1;
+  min-width: 0;
 }
 .calendar-modal__header-meta {
   display: flex;
@@ -3747,8 +3755,60 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
   color: #00AE4D;
   line-height: 1.2;
 }
-.calendar-modal__enroll-btn {
+.calendar-modal__action {
+  flex-shrink: 0;
+  align-self: flex-start;
+  padding-top: 2px;
+}
+.calendar-modal__header-enroll {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 999px;
+  background: #00AE4D;
+  color: #fff;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.calendar-modal__header-enroll:hover {
+  background: #009a44;
+}
+.calendar-modal__format-pill {
+  display: inline-flex;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.calendar-modal__format-pill--dist {
+  background: rgba(0, 174, 77, 0.1);
+  color: #00AE4D;
+  border: 1px solid #00AE4D;
+}
+.calendar-modal__format-pill--och {
+  background: rgba(33, 150, 243, 0.1);
+  color: #2196F3;
+  border: 1px solid #2196F3;
+}
+.calendar-modal__course-head {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.calendar-modal__course-title--single {
+  margin: 0 0 16px;
+}
+.calendar-modal__enroll-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -3762,7 +3822,7 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  transition: background 0.2s ease;
 }
 .calendar-modal__enroll-btn:hover {
   background: #009a44;
