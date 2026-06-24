@@ -336,6 +336,11 @@
 
   window.ObuchenieCalendar = {
     setCourseDays: setCourseDays,
-    openCourseDetailModal: openCourseDetailModal
+    openCourseDetailModal: openCourseDetailModal,
+    openCalendarModal: openCalendarModal
   };
+
+  // Expose globally for course-search.js
+  window.openCalendarModal = openCalendarModal;
 })();
+

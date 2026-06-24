@@ -224,6 +224,18 @@
             <button type="button" class="obuchenie-course-search-tag obuchenie-course-search-tag--more">Показать все</button>
           </div>
         </div>
+
+        <!-- РЕЗУЛЬТАТЫ ПОИСКА -->
+        <div id="course-search-results" class="course-search-results" aria-live="polite" hidden>
+          <div class="course-search-results__header">
+            <span class="course-search-results__count" id="course-search-count"></span>
+            <button type="button" class="course-search-results__reset" id="courseSearchReset">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Сбросить фильтры
+            </button>
+          </div>
+          <div class="course-search-results__grid" id="course-search-grid"></div>
+        </div>
       </div>
     </section>
 
@@ -601,5 +613,7 @@
 <script src="assets/js/obuchenie-content.js?v=17" defer></script>
 <script src="assets/js/landing.js?v=6" defer></script>
 <script src="assets/js/csr-dropdown.js" defer></script>
+<script src="assets/js/course-search.js" defer></script>
+
 </body>
 </html>
