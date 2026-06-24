@@ -161,18 +161,7 @@
         if (parts.length !== 3) return false;
         var start = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
         
-        var end = new Date(start.getTime());
-        var duration = Math.max(1, parseInt(course.durationDays, 10) || 1);
-        if (course.dateTo) {
-           var endParts = course.dateTo.split('-');
-           if (endParts.length === 3) {
-             end = new Date(parseInt(endParts[0], 10), parseInt(endParts[1], 10) - 1, parseInt(endParts[2], 10));
-           }
-        } else {
-           end.setDate(end.getDate() + duration - 1);
-        }
-        
-        return targetDate >= start && targetDate <= end;
+        return targetDate.getTime() === start.getTime();
       });
       
       if (coursesOnDate.length === 0) {
