@@ -18,7 +18,7 @@
   };
 
   const SESSION_PREFIX = 'crzrt_quiz_';
-  const TIME_LIMIT = 3600; // 1 час = 3600 секунд
+  const TIME_LIMIT = 600; // 10 минут = 600 секунд
 
   let questions = [];
   let currentQuestionIndex = 0;
@@ -58,8 +58,8 @@
   const reviewQuestionsContainer = document.getElementById('review-questions-container');
 
   function init() {
-    questions = window.TEST_QUESTIONS || [];
-    if (!questions.length) {
+    const allQuestions = window.TEST_QUESTIONS || [];
+    if (!allQuestions.length) {
       console.error('Вопросы для тестирования не найдены!');
       return;
     }
@@ -96,13 +96,21 @@
     showScreen('quiz');
 
     if (!resume) {
+      // Выбираем 20 случайных вопросов
+      let allQ = [...(window.TEST_QUESTIONS || [])];
+      for (let i = allQ.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allQ[i], allQ[j]] = [allQ[j], allQ[i]];
+      }
+      questions = allQ.slice(0, 20);
+
       currentQuestionIndex = 0;
       answers = {};
       timeLeftSeconds = TIME_LIMIT;
       saveSessionState();
     }
 
-    // Создаем сетку из 100 кнопок
+    // Создаем сетку кнопок
     buildQuestionsGrid();
     
     // Отрисовываем первый/текущий вопрос
@@ -115,6 +123,13 @@
 
   function loadSessionState() {
     try {
+      const savedQIds = sessionStorage.getItem(`${SESSION_PREFIX}question_ids`);
+      if (savedQIds !== null) {
+        const qIds = JSON.parse(savedQIds);
+        const allQ = window.TEST_QUESTIONS || [];
+        questions = qIds.map(id => allQ.find(q => q.id === id)).filter(Boolean);
+      }
+
       const idx = sessionStorage.getItem(`${SESSION_PREFIX}current_index`);
       if (idx !== null) currentQuestionIndex = parseInt(idx, 10);
 
@@ -133,6 +148,8 @@
     sessionStorage.setItem(`${SESSION_PREFIX}current_index`, currentQuestionIndex);
     sessionStorage.setItem(`${SESSION_PREFIX}answers`, JSON.stringify(answers));
     sessionStorage.setItem(`${SESSION_PREFIX}time_left`, timeLeftSeconds);
+    const questionIds = questions.map(q => q.id);
+    sessionStorage.setItem(`${SESSION_PREFIX}question_ids`, JSON.stringify(questionIds));
   }
 
   function clearSessionState() {
@@ -140,6 +157,7 @@
     sessionStorage.removeItem(`${SESSION_PREFIX}current_index`);
     sessionStorage.removeItem(`${SESSION_PREFIX}answers`);
     sessionStorage.removeItem(`${SESSION_PREFIX}time_left`);
+    sessionStorage.removeItem(`${SESSION_PREFIX}question_ids`);
   }
 
   function buildQuestionsGrid() {
