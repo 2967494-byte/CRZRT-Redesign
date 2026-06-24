@@ -154,18 +154,36 @@
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
                             </button>
                             <div class="wysiwyg-divider"></div>
-                            <select class="wysiwyg-select" id="wysiwygFontSize" title="Размер шрифта">
-                                <option value="" disabled>Размер</option>
-                                <option value="1">1 (Мелкий)</option>
-                                <option value="2">2 (Небольшой)</option>
-                                <option value="3" selected>3 (Обычный)</option>
-                                <option value="4">4 (Средний)</option>
-                                <option value="5">5 (Большой)</option>
-                                <option value="6">6 (Очень большой)</option>
-                                <option value="7">7 (Огромный)</option>
-                            </select>
-                            <label class="wysiwyg-color-wrapper" title="Цвет текста">
-                                <input type="color" id="wysiwygColor" class="wysiwyg-color-input" value="#1D1D1F">
+                            
+                            <div class="wysiwyg-tool-group" title="Размер шрифта">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-secondary);">
+                                    <path d="M3 7V5h12v2"></path>
+                                    <path d="M9 5v14"></path>
+                                    <path d="M15 13v-2h6v2"></path>
+                                    <path d="M18 11v8"></path>
+                                </svg>
+                                <select class="wysiwyg-select" id="wysiwygFontSize">
+                                    <option value="" disabled>Размер</option>
+                                    <option value="1">1 (Мелкий)</option>
+                                    <option value="2">2 (Небольшой)</option>
+                                    <option value="3" selected>3 (Обычный)</option>
+                                    <option value="4">4 (Средний)</option>
+                                    <option value="5">5 (Большой)</option>
+                                    <option value="6">6 (Очень большой)</option>
+                                    <option value="7">7 (Огромный)</option>
+                                </select>
+                            </div>
+
+                            <label class="wysiwyg-tool-group wysiwyg-color-label" title="Цвет текста">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-secondary);">
+                                    <path d="M4 20h16"></path>
+                                    <path d="M12 4l-4 12"></path>
+                                    <path d="M12 4l4 12"></path>
+                                    <path d="M10 14h4"></path>
+                                </svg>
+                                <div class="wysiwyg-color-wrapper">
+                                    <input type="color" id="wysiwygColor" class="wysiwyg-color-input" value="#1D1D1F">
+                                </div>
                             </label>
                         </div>
                         <div class="wysiwyg-editor form-control" id="courseFormDescription" contenteditable="true" spellcheck="false"></div>
