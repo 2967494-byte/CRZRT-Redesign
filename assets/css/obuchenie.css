@@ -1251,6 +1251,15 @@ body[data-page="obuchenie"] .csr-card__meta-item {
   gap: 4px;
 }
 
+body[data-page="obuchenie"] .csr-card__meta-item--date {
+  font-weight: 600;
+  color: #1D1D1F;
+}
+
+body[data-page="obuchenie"] .csr-card__meta-item--date svg {
+  color: #00AE4D;
+}
+
 body[data-page="obuchenie"] .csr-card__price {
   font-family: 'Google Sans', sans-serif;
   font-size: 22px;
@@ -1286,6 +1295,7 @@ body[data-page="obuchenie"] .csr-card:hover .csr-card__arrow {
 }
 
 body[data-page="obuchenie"] .csr-no-results {
+  grid-column: 1 / -1;
   text-align: center;
   padding: 48px 24px;
   color: #575B6D;

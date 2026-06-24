@@ -46,6 +46,17 @@
     return COURSE_REGISTRY.filter(function (c) {
       if (!c.active) return false;
 
+      // Filter out past courses
+      if (c.dateFrom) {
+        var parts = c.dateFrom.split('-');
+        if (parts.length === 3) {
+          var courseDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          var today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (courseDate < today) return false;
+        }
+      }
+
       // Audience: customer → forCustomers, supplier → forSuppliers
       if (audience === 'customer' && !c.forCustomers) return false;
       if (audience === 'supplier' && !c.forSuppliers) return false;
@@ -93,7 +104,7 @@
 
     if (course.dateFrom) {
       var dateItem = document.createElement('span');
-      dateItem.className = 'csr-card__meta-item';
+      dateItem.className = 'csr-card__meta-item csr-card__meta-item--date';
       dateItem.innerHTML =
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' +
         '<span>' + formatDate(course.dateFrom) + '</span>';
