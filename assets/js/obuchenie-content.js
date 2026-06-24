@@ -829,7 +829,57 @@
     renderCalendar(data.calendar, data.courseRegistry);
     renderCourseCards(data.courseCards, data.courseRegistry);
     renderTestingBanner(data.testingBanner);
+    setupEnrollModal();
     document.dispatchEvent(new CustomEvent('obuchenieContentReady', { detail: data }));
+  }
+
+  function setupEnrollModal() {
+    const modal = document.getElementById('enroll-modal');
+    if (!modal) return;
+    
+    const closeBtn = modal.querySelector('.calendar-modal__close');
+    const overlay = modal.querySelector('.calendar-modal__overlay');
+    const form = document.getElementById('enroll-form');
+    
+    function closeEnrollModal() {
+      modal.style.display = 'none';
+      if (form) form.reset();
+    }
+    
+    if (closeBtn) closeBtn.addEventListener('click', closeEnrollModal);
+    if (overlay) overlay.addEventListener('click', closeEnrollModal);
+    
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('[data-action="enroll"]');
+      if (!btn) return;
+      
+      e.preventDefault();
+      
+      const title = btn.getAttribute('data-title') || '';
+      const date = btn.getAttribute('data-date') || '';
+      
+      const titleEl = document.getElementById('enroll-modal-title');
+      const dateEl = document.getElementById('enroll-modal-date');
+      
+      if (titleEl) titleEl.textContent = title;
+      if (dateEl) dateEl.textContent = date;
+      
+      // Close calendar modal if open
+      const calendarModal = document.getElementById('calendar-course-modal');
+      if (calendarModal && calendarModal.style.display !== 'none') {
+        calendarModal.style.display = 'none';
+      }
+      
+      modal.style.display = 'flex';
+    });
+    
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Заявка успешно отправлена!');
+        closeEnrollModal();
+      });
+    }
   }
 
   async function initObuchenieContent() {
