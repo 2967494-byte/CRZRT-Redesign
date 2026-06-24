@@ -240,7 +240,12 @@
     if (!validateAudienceForm()) return;
 
     const audience = readAudienceFromForm();
-    
+    const payload = {
+      id: els.formId.value || (api.createCourseId ? api.createCourseId() : `course_${Date.now()}`),
+      title: els.formTitle.value.trim(),
+      format: els.formFormat.value === 'dist' ? 'dist' : 'och',
+      dateFrom: els.formDateFrom.value,
+      durationDays: Math.max(1, parseInt(els.formDurationDays.value, 10) || 1),
       description: els.formDescription.innerHTML,
       price: els.formPrice.value.trim(),
       forIndividuals: audience.forIndividuals,
