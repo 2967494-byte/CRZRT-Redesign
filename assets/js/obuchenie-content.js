@@ -650,9 +650,11 @@
           const moreHref = escapeHtml((card.moreLink || '#courses').trim() || '#courses');
           const price = escapeHtml(card.price || '');
           return `<article class="occ-card">
-            <h3 class="occ-card__title">${escapeHtml(card.title)}</h3>
-            <p class="occ-card__price">${price.replace(/ /g, '&nbsp;')}</p>
-            <div class="occ-card__stats">
+            <div class="occ-card__top" style="flex-grow: 1; margin-bottom: auto;">
+              <h3 class="occ-card__title">${escapeHtml(card.title)}</h3>
+              <p class="occ-card__price">${price.replace(/ /g, '&nbsp;')}</p>
+            </div>
+            <div class="occ-card__stats" style="margin-top: 0;">
               <div class="occ-card__stat">
                 <span class="occ-card__stat-label">длительность</span>
                 <div class="occ-card__stat-value">
@@ -722,9 +724,11 @@
         const startMonth = start.getFullYear() === 2099 ? '' : MONTH_NAMES_GENITIVE_RU[start.getMonth()];
 
         return `<article class="occ-card">
-          <h3 class="occ-card__title">${escapeHtml(c.title)}</h3>
-          ${priceHtml}
-          <div class="occ-card__stats">
+          <div class="occ-card__top" style="flex-grow: 1; margin-bottom: auto;">
+            <h3 class="occ-card__title">${escapeHtml(c.title)}</h3>
+            ${priceHtml}
+          </div>
+          <div class="occ-card__stats" style="margin-top: 0;">
             <div class="occ-card__stat">
               <span class="occ-card__stat-label">старт курса</span>
               <div class="occ-card__stat-value">
