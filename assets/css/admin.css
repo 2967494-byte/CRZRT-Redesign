@@ -1923,6 +1923,17 @@ body {
             background: #27272a;
         }
 
+        .wysiwyg-tool-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 4px;
+        }
+
+        .wysiwyg-color-label {
+            cursor: pointer;
+        }
+
         .wysiwyg-color-wrapper {
             display: inline-flex;
             align-items: center;
@@ -1933,7 +1944,7 @@ body {
             overflow: hidden;
             border: 1px solid var(--border-color);
             cursor: pointer;
-            margin-left: 4px;
+            margin-left: 2px;
         }
 
         .wysiwyg-color-input {
