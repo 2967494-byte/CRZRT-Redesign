@@ -1613,6 +1613,43 @@ body {
         }
 
         .admin-courses-modal__row .form-group {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .form-group__legend {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .admin-courses-audience {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-secondary);
+        }
+
+        .admin-courses-audience--error {
+            border-color: #e74c3c;
+        }
+
+        .admin-courses-audience .checkbox-group {
+            margin-bottom: 0;
+        }
+
+        .admin-courses-audience__error {
+            margin: 8px 0 0;
+            font-size: 0.85rem;
+            color: #e74c3c;
+        }
+
+        .admin-courses-modal__row .form-group {
             margin-bottom: 0;
         }
 

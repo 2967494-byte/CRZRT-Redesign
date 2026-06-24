@@ -8,7 +8,7 @@
     <title>Календарь курсов | Админ-панель</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="assets/css/admin.css?v=11">
+    <link rel="stylesheet" href="assets/css/admin.css?v=12">
 </head>
 
 <body>
@@ -54,6 +54,7 @@
                                 <th>Длительность (дней)</th>
                                 <th>Описание</th>
                                 <th>Стоимость</th>
+                                <th>Аудитория</th>
                                 <th>Действия</th>
                             </tr>
                         </thead>
@@ -105,6 +106,20 @@
                     <label for="courseFormPrice">Стоимость</label>
                     <input type="text" class="form-control" id="courseFormPrice" placeholder="23 700 ₽">
                 </div>
+                <div class="form-group">
+                    <span class="form-group__legend">Курс предназначен для *</span>
+                    <div class="admin-courses-audience" id="courseFormAudienceGroup">
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="courseFormForIndividuals" checked>
+                            Для физических лиц
+                        </label>
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="courseFormForLegalEntities" checked>
+                            Для юридических лиц
+                        </label>
+                    </div>
+                    <p class="admin-courses-audience__error" id="courseFormAudienceError" hidden>Выберите хотя бы один вариант</p>
+                </div>
                 <div class="admin-courses-modal__actions">
                     <button type="button" class="btn-secondary" id="courseModalCancel">Отмена</button>
                     <button type="submit" class="btn-save" id="courseModalSave">Сохранить</button>
@@ -131,8 +146,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
-    <script src="assets/js/obuchenie-content.js?v=10"></script>
-    <script src="assets/js/admin-obuchenie-courses.js?v=3"></script>
+    <script src="assets/js/obuchenie-content.js?v=14"></script>
+    <script src="assets/js/admin-obuchenie-courses.js?v=4"></script>
 </body>
 
 </html>

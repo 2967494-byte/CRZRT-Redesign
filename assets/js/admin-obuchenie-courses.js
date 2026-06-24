@@ -35,6 +35,35 @@
     return format === 'dist' ? 'Заочный' : 'Очный';
   }
 
+  function formatCourseAudience(course) {
+    const forIndividuals = course?.forIndividuals !== false;
+    const forLegalEntities = course?.forLegalEntities !== false;
+    if (forIndividuals && forLegalEntities) return 'Физ. и юр.';
+    if (forIndividuals) return 'Физ. лица';
+    if (forLegalEntities) return 'Юр. лица';
+    return '—';
+  }
+
+  function readAudienceFromForm() {
+    return {
+      forIndividuals: Boolean(els.formForIndividuals?.checked),
+      forLegalEntities: Boolean(els.formForLegalEntities?.checked)
+    };
+  }
+
+  function setAudienceFormError(visible) {
+    if (!els.formAudienceError) return;
+    els.formAudienceError.hidden = !visible;
+    els.formAudienceGroup?.classList.toggle('admin-courses-audience--error', visible);
+  }
+
+  function validateAudienceForm() {
+    const audience = readAudienceFromForm();
+    const valid = audience.forIndividuals || audience.forLegalEntities;
+    setAudienceFormError(!valid);
+    return valid;
+  }
+
   function truncateText(text, max = 120) {
     const value = String(text || '').trim();
     if (value.length <= max) return value;
@@ -146,6 +175,7 @@
           <td>${escapeHtml(String(course.durationDays || 1))}</td>
           <td class="courses-table__description" title="${escapeHtml(course.description || '')}">${escapeHtml(truncateText(course.description)) || '—'}</td>
           <td>${escapeHtml(course.price || '—')}</td>
+          <td>${escapeHtml(formatCourseAudience(course))}</td>
           <td class="courses-table__actions">
             <button type="button" class="btn-edit" data-action="edit" data-id="${escapeHtml(course.id)}">Редактировать</button>
             <button type="button" class="btn-delete" data-action="delete" data-id="${escapeHtml(course.id)}">Удалить</button>
@@ -170,6 +200,9 @@
     els.formDurationDays.value = String(course?.durationDays || 1);
     els.formDescription.value = course?.description || '';
     els.formPrice.value = course?.price || '';
+    els.formForIndividuals.checked = course ? course.forIndividuals !== false : true;
+    els.formForLegalEntities.checked = course ? course.forLegalEntities !== false : true;
+    setAudienceFormError(false);
     els.modal.style.display = 'flex';
     els.formTitle.focus();
   }
@@ -181,10 +214,17 @@
       datePickerInstance.clear();
     }
     els.formId.value = '';
+    if (els.formForIndividuals) els.formForIndividuals.checked = true;
+    if (els.formForLegalEntities) els.formForLegalEntities.checked = true;
+    setAudienceFormError(false);
   }
 
   async function handleFormSubmit(event) {
     event.preventDefault();
+
+    if (!validateAudienceForm()) return;
+
+    const audience = readAudienceFromForm();
 
     const payload = {
       id: els.formId.value || (api.createCourseId ? api.createCourseId() : `course_${Date.now()}`),
@@ -194,6 +234,8 @@
       durationDays: Math.max(1, parseInt(els.formDurationDays.value, 10) || 1),
       description: els.formDescription.value.trim(),
       price: els.formPrice.value.trim(),
+      forIndividuals: audience.forIndividuals,
+      forLegalEntities: audience.forLegalEntities,
       speakers: [],
       active: true
     };
@@ -230,6 +272,16 @@
     $('courseModalClose')?.addEventListener('click', closeModal);
     $('courseModalCancel')?.addEventListener('click', closeModal);
     els.form?.addEventListener('submit', handleFormSubmit);
+    els.formForIndividuals?.addEventListener('change', () => {
+      if (readAudienceFromForm().forIndividuals || readAudienceFromForm().forLegalEntities) {
+        setAudienceFormError(false);
+      }
+    });
+    els.formForLegalEntities?.addEventListener('change', () => {
+      if (readAudienceFromForm().forIndividuals || readAudienceFromForm().forLegalEntities) {
+        setAudienceFormError(false);
+      }
+    });
 
     els.tableBody?.addEventListener('click', (event) => {
       const button = event.target.closest('[data-action]');
@@ -354,6 +406,10 @@
     els.formDurationDays = $('courseFormDurationDays');
     els.formDescription = $('courseFormDescription');
     els.formPrice = $('courseFormPrice');
+    els.formForIndividuals = $('courseFormForIndividuals');
+    els.formForLegalEntities = $('courseFormForLegalEntities');
+    els.formAudienceGroup = $('courseFormAudienceGroup');
+    els.formAudienceError = $('courseFormAudienceError');
 
     // Initialize flatpickr datepicker
     if (typeof flatpickr !== 'undefined' && els.formDateFrom) {

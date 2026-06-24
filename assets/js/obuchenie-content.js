@@ -99,6 +99,8 @@
       durationDays: 5,
       description: 'Практический курс для специалистов по закупкам: разбор типовых ошибок, кейсы и шаблоны документов.',
       price: '23 700 ₽',
+      forIndividuals: true,
+      forLegalEntities: true,
       speakers: [
         { name: 'Иванов Иван Иванович', position: 'к.ю.н., эксперт по госзакупкам' }
       ],
@@ -113,6 +115,8 @@
       durationDays: 15,
       description: 'Онлайн-программа с доступом к материалам и консультациями куратора.',
       price: '10 890 ₽',
+      forIndividuals: true,
+      forLegalEntities: false,
       speakers: [
         { name: 'Петрова Анна Сергеевна', position: 'ведущий преподаватель, опыт 12 лет' }
       ],
@@ -240,6 +244,23 @@
     };
   }
 
+  function normalizeCourseAudience(raw) {
+    const hasFl = raw?.forIndividuals;
+    const hasUr = raw?.forLegalEntities;
+    if (hasFl === undefined && hasUr === undefined) {
+      return { forIndividuals: true, forLegalEntities: true };
+    }
+
+    let forIndividuals = hasFl !== false;
+    let forLegalEntities = hasUr !== false;
+    if (!forIndividuals && !forLegalEntities) {
+      forIndividuals = true;
+      forLegalEntities = true;
+    }
+
+    return { forIndividuals, forLegalEntities };
+  }
+
   function normalizeCourseRegistryItem(raw, index) {
     const format = raw?.format === 'dist' ? 'dist' : 'och';
     const dateFrom = parseIsoDate(raw?.dateFrom) ? String(raw.dateFrom).trim() : '';
@@ -250,6 +271,7 @@
     const speakers = Array.isArray(raw?.speakers) && raw.speakers.length
       ? raw.speakers.map(normalizeSpeaker).filter((speaker) => speaker.name || speaker.position)
       : [];
+    const audience = normalizeCourseAudience(raw);
 
     return {
       id: String(raw?.id || createCourseId() || `course_${index}`),
@@ -260,6 +282,8 @@
       durationDays,
       description: String(raw?.description || '').trim(),
       price: String(raw?.price || '').trim(),
+      forIndividuals: audience.forIndividuals,
+      forLegalEntities: audience.forLegalEntities,
       speakers,
       active: raw?.active !== false
     };
@@ -400,48 +424,126 @@
     };
   }
 
-  function setupEnrollModal() {
+  let enrollModalInitialized = false;
+
+  function setEnrollAudienceMode(mode) {
+    const audienceInput = document.getElementById('enroll-audience-type');
+    const companyField = document.getElementById('enroll-company-field');
+    const companyInput = document.getElementById('enroll-company');
+    const labels = document.querySelectorAll('[data-audience-label]');
+    const normalizedMode = mode === 'legal' ? 'legal' : 'individual';
+
+    if (audienceInput) audienceInput.value = normalizedMode;
+
+    labels.forEach((label) => {
+      label.classList.toggle('enroll-modal__audience-label--active', label.dataset.audienceLabel === normalizedMode);
+    });
+
+    if (companyField && companyInput) {
+      const isLegal = normalizedMode === 'legal';
+      companyField.hidden = !isLegal;
+      companyInput.required = isLegal;
+      if (!isLegal) companyInput.value = '';
+    }
+  }
+
+  function configureEnrollModalAudience(options) {
+    const forIndividuals = options?.forIndividuals !== false;
+    const forLegalEntities = options?.forLegalEntities !== false;
+    const switchWrap = document.getElementById('enroll-audience-switch');
+    const toggle = document.getElementById('enroll-audience-toggle');
+
+    if (switchWrap) {
+      switchWrap.hidden = !(forIndividuals && forLegalEntities);
+    }
+
+    let mode = 'individual';
+    if (!forIndividuals && forLegalEntities) {
+      mode = 'legal';
+    } else if (forIndividuals && !forLegalEntities) {
+      mode = 'individual';
+    } else if (toggle) {
+      mode = toggle.checked ? 'legal' : 'individual';
+    }
+
+    if (toggle) toggle.checked = mode === 'legal';
+    setEnrollAudienceMode(mode);
+  }
+
+  function openEnrollModal(options) {
     const modal = document.getElementById('enroll-modal');
     if (!modal) return;
-    
+
+    const titleEl = document.getElementById('enroll-modal-title');
+    const dateEl = document.getElementById('enroll-modal-date');
+    const form = document.getElementById('enroll-form');
+
+    if (titleEl) titleEl.textContent = options?.title || '';
+    if (dateEl) dateEl.textContent = options?.date || '';
+    if (form) {
+      form.dataset.courseId = options?.courseId || '';
+    }
+
+    configureEnrollModalAudience({
+      forIndividuals: options?.forIndividuals,
+      forLegalEntities: options?.forLegalEntities
+    });
+
+    const calendarModal = document.getElementById('calendar-course-modal');
+    if (calendarModal && calendarModal.style.display !== 'none') {
+      calendarModal.style.display = 'none';
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  function setupEnrollModal() {
+    if (enrollModalInitialized) return;
+    enrollModalInitialized = true;
+
+    const modal = document.getElementById('enroll-modal');
+    if (!modal) return;
+
     const closeBtn = modal.querySelector('.calendar-modal__close');
     const overlay = modal.querySelector('.calendar-modal__overlay');
     const form = document.getElementById('enroll-form');
-    
+    const audienceToggle = document.getElementById('enroll-audience-toggle');
+
     function closeEnrollModal() {
       modal.style.display = 'none';
-      if (form) form.reset();
+      if (form) {
+        form.reset();
+        delete form.dataset.courseId;
+      }
+      configureEnrollModalAudience({ forIndividuals: true, forLegalEntities: true });
     }
-    
+
     if (closeBtn) closeBtn.addEventListener('click', closeEnrollModal);
     if (overlay) overlay.addEventListener('click', closeEnrollModal);
-    
-    document.addEventListener('click', function(e) {
+
+    if (audienceToggle) {
+      audienceToggle.addEventListener('change', function () {
+        setEnrollAudienceMode(audienceToggle.checked ? 'legal' : 'individual');
+      });
+    }
+
+    document.addEventListener('click', function (e) {
       const btn = e.target.closest('[data-action="enroll"]');
       if (!btn) return;
-      
+
       e.preventDefault();
-      
-      const title = btn.getAttribute('data-title') || '';
-      const date = btn.getAttribute('data-date') || '';
-      
-      const titleEl = document.getElementById('enroll-modal-title');
-      const dateEl = document.getElementById('enroll-modal-date');
-      
-      if (titleEl) titleEl.textContent = title;
-      if (dateEl) dateEl.textContent = date;
-      
-      // Close calendar modal if open
-      const calendarModal = document.getElementById('calendar-course-modal');
-      if (calendarModal && calendarModal.style.display !== 'none') {
-        calendarModal.style.display = 'none';
-      }
-      
-      modal.style.display = 'flex';
+
+      openEnrollModal({
+        title: btn.getAttribute('data-title') || '',
+        date: btn.getAttribute('data-date') || '',
+        courseId: btn.getAttribute('data-course-id') || '',
+        forIndividuals: btn.getAttribute('data-for-individuals') !== 'false',
+        forLegalEntities: btn.getAttribute('data-for-legal') !== 'false'
+      });
     });
-    
+
     if (form) {
-      form.addEventListener('submit', function(e) {
+      form.addEventListener('submit', function (e) {
         e.preventDefault();
         alert('Заявка успешно отправлена!');
         closeEnrollModal();
@@ -722,6 +824,11 @@
         // Format start date
         const startDay = start.getFullYear() === 2099 ? '—' : String(start.getDate());
         const startMonth = start.getFullYear() === 2099 ? '' : MONTH_NAMES_GENITIVE_RU[start.getMonth()];
+        const dateLabel = start.getFullYear() === 2099
+          ? ''
+          : `${startDay} ${startMonth} ${start.getFullYear()}`;
+        const forIndividuals = c.forIndividuals !== false;
+        const forLegal = c.forLegalEntities !== false;
 
         return `<article class="occ-card">
           <div class="occ-card__top" style="flex-grow: 1; margin-bottom: auto;">
@@ -745,7 +852,7 @@
               </div>
             </div>
           </div>
-          <button type="button" class="occ-card__btn" data-action="enroll" data-title="${escapeHtml(c.title)}" data-date="${startDay} ${startMonth} ${start.getFullYear()}">Записаться</button>
+          <button type="button" class="occ-card__btn" data-action="enroll" data-course-id="${escapeAttr(c.id)}" data-title="${escapeAttr(c.title)}" data-date="${escapeAttr(dateLabel)}" data-for-individuals="${forIndividuals ? 'true' : 'false'}" data-for-legal="${forLegal ? 'true' : 'false'}">Записаться</button>
           <a href="#contacts" class="occ-card__more">подробнее ${MORE_ARROW_SVG}</a>
         </article>`;
       })
@@ -837,55 +944,6 @@
     document.dispatchEvent(new CustomEvent('obuchenieContentReady', { detail: data }));
   }
 
-  function setupEnrollModal() {
-    const modal = document.getElementById('enroll-modal');
-    if (!modal) return;
-    
-    const closeBtn = modal.querySelector('.calendar-modal__close');
-    const overlay = modal.querySelector('.calendar-modal__overlay');
-    const form = document.getElementById('enroll-form');
-    
-    function closeEnrollModal() {
-      modal.style.display = 'none';
-      if (form) form.reset();
-    }
-    
-    if (closeBtn) closeBtn.addEventListener('click', closeEnrollModal);
-    if (overlay) overlay.addEventListener('click', closeEnrollModal);
-    
-    document.addEventListener('click', function(e) {
-      const btn = e.target.closest('[data-action="enroll"]');
-      if (!btn) return;
-      
-      e.preventDefault();
-      
-      const title = btn.getAttribute('data-title') || '';
-      const date = btn.getAttribute('data-date') || '';
-      
-      const titleEl = document.getElementById('enroll-modal-title');
-      const dateEl = document.getElementById('enroll-modal-date');
-      
-      if (titleEl) titleEl.textContent = title;
-      if (dateEl) dateEl.textContent = date;
-      
-      // Close calendar modal if open
-      const calendarModal = document.getElementById('calendar-course-modal');
-      if (calendarModal && calendarModal.style.display !== 'none') {
-        calendarModal.style.display = 'none';
-      }
-      
-      modal.style.display = 'flex';
-    });
-    
-    if (form) {
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('Заявка успешно отправлена!');
-        closeEnrollModal();
-      });
-    }
-  }
-
   async function initObuchenieContent() {
     try {
       const localData = loadObuchenieDataFromLocal();
@@ -915,12 +973,16 @@
     migrateObucheniePageData,
     normalizeCourseRegistry,
     normalizeCourseRegistryItem,
+    normalizeCourseAudience,
     deriveCourseDaysByMonth,
     resolveCalendarCourseDays,
     getCourseDateRange,
     createCourseId,
     parseIsoDate,
     formatIsoDate,
+    configureEnrollModalAudience,
+    openEnrollModal,
+    setEnrollAudienceMode,
     loadObuchenieDataFromApi,
     loadObuchenieDataFromLocal,
     renderObucheniePage

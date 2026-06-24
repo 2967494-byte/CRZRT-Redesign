@@ -206,15 +206,23 @@
             meta.appendChild(format);
           }
           
-          var enrollBtn = document.createElement('a');
-          enrollBtn.href = '#contacts';
+          var enrollBtn = document.createElement('button');
+          enrollBtn.type = 'button';
           enrollBtn.className = 'btn btn--green';
           enrollBtn.style.marginTop = '16px';
           enrollBtn.style.display = 'inline-flex';
           enrollBtn.style.backgroundColor = '#00AE4D';
           enrollBtn.style.color = '#FFFFFF';
           enrollBtn.style.textDecoration = 'none';
+          enrollBtn.style.border = 'none';
+          enrollBtn.style.cursor = 'pointer';
           enrollBtn.textContent = 'Записаться';
+          enrollBtn.setAttribute('data-action', 'enroll');
+          enrollBtn.setAttribute('data-course-id', course.id || '');
+          enrollBtn.setAttribute('data-title', course.title || 'Курс');
+          enrollBtn.setAttribute('data-date', day + ' ' + MONTH_NAMES[monthIndex].toLowerCase() + ' ' + year);
+          enrollBtn.setAttribute('data-for-individuals', course.forIndividuals !== false ? 'true' : 'false');
+          enrollBtn.setAttribute('data-for-legal', course.forLegalEntities !== false ? 'true' : 'false');
           
           div.appendChild(title);
           div.appendChild(desc);
