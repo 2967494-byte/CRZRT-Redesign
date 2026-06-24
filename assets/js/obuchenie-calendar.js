@@ -149,14 +149,12 @@
     var dateLabel = document.getElementById('calendar-modal-date-label');
     var coursesContainer = document.getElementById('calendar-modal-courses');
     var priceContainer = document.getElementById('calendar-modal-price');
-    var actionContainer = document.getElementById('calendar-modal-action');
     var formatContainer = document.getElementById('calendar-modal-format');
     
     if (dateLabel) {
       dateLabel.textContent = day + ' ' + MONTH_NAMES_GENITIVE[monthIndex] + ' ' + year;
     }
     if (priceContainer) priceContainer.innerHTML = '';
-    if (actionContainer) actionContainer.innerHTML = '';
     if (formatContainer) formatContainer.innerHTML = '';
     
     if (coursesContainer) {
@@ -271,14 +269,7 @@
           
           var enrollBtn = document.createElement('button');
           enrollBtn.type = 'button';
-          enrollBtn.className = 'btn btn--green';
-          enrollBtn.style.marginTop = '16px';
-          enrollBtn.style.display = 'inline-flex';
-          enrollBtn.style.backgroundColor = '#00AE4D';
-          enrollBtn.style.color = '#FFFFFF';
-          enrollBtn.style.textDecoration = 'none';
-          enrollBtn.style.border = 'none';
-          enrollBtn.style.cursor = 'pointer';
+          enrollBtn.className = 'btn btn--green calendar-modal__enroll-btn';
           enrollBtn.textContent = 'Записаться';
           enrollBtn.setAttribute('data-action', 'enroll');
           enrollBtn.setAttribute('data-course-id', course.id || '');
@@ -289,13 +280,7 @@
           
           div.appendChild(descContainer);
           if (meta.hasChildNodes()) div.appendChild(meta);
-          
-          if (coursesOnDate.length === 1 && actionContainer) {
-            enrollBtn.style.marginTop = '0';
-            actionContainer.appendChild(enrollBtn);
-          } else {
-            div.appendChild(enrollBtn);
-          }
+          div.appendChild(enrollBtn);
           
           coursesContainer.appendChild(div);
         });
@@ -307,10 +292,10 @@
 
   function setupModal() {
     var modal = document.getElementById('calendar-course-modal');
-    var closeBtn = document.querySelector('.calendar-modal__close');
-    var overlay = document.querySelector('.calendar-modal__overlay');
-    
     if (!modal) return;
+
+    var closeBtn = modal.querySelector('.calendar-modal__close');
+    var overlay = modal.querySelector('.calendar-modal__overlay');
     
     function closeModal() {
       modal.style.display = 'none';

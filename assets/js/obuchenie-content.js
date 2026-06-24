@@ -847,6 +847,12 @@
     }
   }
 
+  function buildEnrollAttrs(course, dateLabel) {
+    const forIndividuals = course.forIndividuals !== false;
+    const forLegal = course.forLegalEntities !== false;
+    return `data-action="enroll" data-course-id="${escapeAttr(course.id)}" data-title="${escapeAttr(course.title || '')}" data-date="${escapeAttr(dateLabel)}" data-for-individuals="${forIndividuals ? 'true' : 'false'}" data-for-legal="${forLegal ? 'true' : 'false'}"`;
+  }
+
   function renderCourseCards(courseCards, courseRegistry) {
     const grid = document.querySelector('.obuchenie-course-cards');
     if (!grid) return;
@@ -938,8 +944,7 @@
         const dateLabel = start.getFullYear() === 2099
           ? ''
           : `${startDay} ${startMonth} ${start.getFullYear()}`;
-        const forIndividuals = c.forIndividuals !== false;
-        const forLegal = c.forLegalEntities !== false;
+        const enrollAttrs = buildEnrollAttrs(c, dateLabel);
 
         return `<article class="occ-card">
           <div class="occ-card__top" style="flex-grow: 1; margin-bottom: auto;">
@@ -963,8 +968,8 @@
               </div>
             </div>
           </div>
-          <button type="button" class="occ-card__btn" data-action="enroll" data-course-id="${escapeAttr(c.id)}" data-title="${escapeAttr(c.title)}" data-date="${escapeAttr(dateLabel)}" data-for-individuals="${forIndividuals ? 'true' : 'false'}" data-for-legal="${forLegal ? 'true' : 'false'}">Записаться</button>
-          <a href="#contacts" class="occ-card__more">подробнее ${MORE_ARROW_SVG}</a>
+          <button type="button" class="occ-card__btn" ${enrollAttrs}>Записаться</button>
+          <button type="button" class="occ-card__more" ${enrollAttrs}>подробнее ${MORE_ARROW_SVG}</button>
         </article>`;
       })
       .join('');

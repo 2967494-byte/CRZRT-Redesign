@@ -3207,6 +3207,13 @@ body[data-page="obuchenie"] .obuchenie-course-cards {
   transition: color 0.18s ease;
 }
 
+button.occ-card__more {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
 .occ-card__more:hover {
   color: #0FAA4B;
 }
@@ -3461,8 +3468,13 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
   overflow-y: auto;
   transform-origin: center center;
   animation: modalPopOut 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
-  padding: 40px;
+  padding: 48px 40px 40px;
   box-sizing: border-box;
+}
+
+.enroll-modal__content > .calendar-modal__close {
+  top: 12px;
+  right: 12px;
 }
 
 .enroll-modal__header {
@@ -3712,6 +3724,48 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
 .calendar-modal__close:hover {
   background: #e2e8f0;
   color: #354557;
+}
+.calendar-modal__header--compact {
+  padding-right: 56px;
+}
+.calendar-modal__header-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.calendar-modal__title--inline {
+  margin: 0;
+}
+.calendar-modal__date-accent {
+  color: #00AE4D;
+}
+.calendar-modal__header-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #00AE4D;
+  line-height: 1.2;
+}
+.calendar-modal__enroll-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 999px;
+  background: #00AE4D;
+  color: #fff;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.calendar-modal__enroll-btn:hover {
+  background: #009a44;
 }
 .calendar-modal__header {
   padding: 32px 32px 24px;
