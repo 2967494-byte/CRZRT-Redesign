@@ -1355,8 +1355,8 @@
             }
         }
 
-        const HERO_MAX_BASE64_BYTES = 420 * 1024;
-        const PROMO_COVER_MAX_BASE64_BYTES = 600 * 1024;
+        const HERO_MAX_BASE64_BYTES = 1.2 * 1024 * 1024;
+        const PROMO_COVER_MAX_BASE64_BYTES = 1.2 * 1024 * 1024;
 
         function dataUrlBytes(dataUrl) {
             const commaIdx = dataUrl?.indexOf(',');
@@ -1399,7 +1399,7 @@
         }
 
         function makeHeroDataUrlWithinLimit(canvas) {
-            return makeDataUrlWithinLimit(canvas, HERO_MAX_BASE64_BYTES, 0.76);
+            return makeDataUrlWithinLimit(canvas, HERO_MAX_BASE64_BYTES, 0.85);
         }
 
         function makePromoCoverDataUrlWithinLimit(canvas) {
@@ -1507,7 +1507,7 @@
                         ? makePromoCoverDataUrlWithinLimit(canvas)
                         : isHeroSlide
                             ? makeHeroDataUrlWithinLimit(canvas)
-                            : canvas.toDataURL('image/jpeg', 0.7);
+                            : canvas.toDataURL('image/jpeg', 0.85);
 
                 if (window.activeAuthorIndex !== null) {
                     const idx = window.activeAuthorIndex;
