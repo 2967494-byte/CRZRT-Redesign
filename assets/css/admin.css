@@ -1699,6 +1699,17 @@ body {
             color: #e74c3c;
         }
 
+        .admin-courses-modal .form-hint {
+            margin: 6px 0 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.35;
+        }
+
+        .admin-courses-modal .form-hint code {
+            font-size: 0.78rem;
+        }
+
         .admin-courses-modal__row .form-group {
             margin-bottom: 0;
         }

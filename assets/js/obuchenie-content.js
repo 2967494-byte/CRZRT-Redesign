@@ -101,6 +101,8 @@
       price: '23 700 ₽',
       forIndividuals: true,
       forLegalEntities: true,
+      bitrixFormFl: { id: '886', sec: 'a7wdlg' },
+      bitrixFormUr: { id: '888', sec: '6wx7xd' },
       speakers: [
         { name: 'Иванов Иван Иванович', position: 'к.ю.н., эксперт по госзакупкам' }
       ],
@@ -244,6 +246,29 @@
     };
   }
 
+  function parseBitrixFormRef(value) {
+    const match = String(value || '').trim().match(/^(\d+)\s*[/:]\s*([a-z0-9]+)$/i);
+    if (!match) return null;
+    return { id: match[1], sec: match[2] };
+  }
+
+  function formatBitrixFormRef(form) {
+    if (!form?.id || !form?.sec) return '';
+    return `${form.id} / ${form.sec}`;
+  }
+
+  function normalizeBitrixForm(raw) {
+    if (raw && typeof raw === 'object' && raw.id && raw.sec) {
+      const id = String(raw.id).trim();
+      const sec = String(raw.sec).trim();
+      if (/^\d+$/.test(id) && /^[a-z0-9]+$/i.test(sec)) {
+        return { id, sec };
+      }
+      return null;
+    }
+    return parseBitrixFormRef(raw);
+  }
+
   function normalizeCourseAudience(raw) {
     const hasFl = raw?.forIndividuals;
     const hasUr = raw?.forLegalEntities;
@@ -284,6 +309,12 @@
       price: String(raw?.price || '').trim(),
       forIndividuals: audience.forIndividuals,
       forLegalEntities: audience.forLegalEntities,
+      forCustomers: Boolean(raw?.forCustomers),
+      forSuppliers: Boolean(raw?.forSuppliers),
+      is44fz: Boolean(raw?.is44fz),
+      is223fz: Boolean(raw?.is223fz),
+      bitrixFormFl: normalizeBitrixForm(raw?.bitrixFormFl),
+      bitrixFormUr: normalizeBitrixForm(raw?.bitrixFormUr),
       speakers,
       active: raw?.active !== false
     };
@@ -425,6 +456,64 @@
   }
 
   let enrollModalInitialized = false;
+  let activeCourseRegistry = [];
+
+  function setEnrollFormStatus(message, type) {
+    const statusEl = document.getElementById('enroll-form-status');
+    if (!statusEl) return;
+    if (!message) {
+      statusEl.hidden = true;
+      statusEl.textContent = '';
+      statusEl.className = 'enroll-modal__status';
+      return;
+    }
+    statusEl.hidden = false;
+    statusEl.textContent = message;
+    statusEl.className = `enroll-modal__status enroll-modal__status--${type || 'info'}`;
+  }
+
+  async function submitEnrollToBitrix(form) {
+    const courseId = form?.dataset?.courseId || '';
+    const course = activeCourseRegistry.find((item) => item.id === courseId);
+    const audienceType = document.getElementById('enroll-audience-type')?.value === 'legal' ? 'legal' : 'individual';
+    const bitrixForm = audienceType === 'legal' ? course?.bitrixFormUr : course?.bitrixFormFl;
+
+    if (!bitrixForm?.id || !bitrixForm?.sec) {
+      throw new Error('Для этого курса не настроена CRM-форма Bitrix24. Укажите ID формы в админке.');
+    }
+
+    const values = {
+      LEAD_NAME: document.getElementById('enroll-name')?.value.trim() || '',
+      LEAD_PHONE: document.getElementById('enroll-phone')?.value.trim() || '',
+      LEAD_EMAIL: document.getElementById('enroll-email')?.value.trim() || '',
+      LEAD_UF_CRM_1669365821: document.getElementById('enroll-source')?.value || '',
+      AGREEMENT_24: 'Y'
+    };
+
+    if (audienceType === 'legal') {
+      values.LEAD_COMPANY_TITLE = document.getElementById('enroll-company')?.value.trim() || '';
+      if (!values.LEAD_COMPANY_TITLE) {
+        throw new Error('Укажите название компании');
+      }
+    }
+
+    const response = await fetch('api/bitrix-enroll.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        formId: parseInt(bitrixForm.id, 10),
+        sec: bitrixForm.sec,
+        values
+      })
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Не удалось отправить заявку в Bitrix24');
+    }
+
+    return result;
+  }
 
   function setEnrollAudienceMode(mode) {
     const audienceInput = document.getElementById('enroll-audience-type');
@@ -484,6 +573,8 @@
       form.dataset.courseId = options?.courseId || '';
     }
 
+    setEnrollFormStatus('');
+
     configureEnrollModalAudience({
       forIndividuals: options?.forIndividuals,
       forLegalEntities: options?.forLegalEntities
@@ -515,6 +606,7 @@
         form.reset();
         delete form.dataset.courseId;
       }
+      setEnrollFormStatus('');
       configureEnrollModalAudience({ forIndividuals: true, forLegalEntities: true });
     }
 
@@ -543,10 +635,29 @@
     });
 
     if (form) {
-      form.addEventListener('submit', function (e) {
+      const submitBtn = form.querySelector('.enroll-modal__submit');
+      form.addEventListener('submit', async function (e) {
         e.preventDefault();
-        alert('Заявка успешно отправлена!');
-        closeEnrollModal();
+        setEnrollFormStatus('');
+
+        const originalText = submitBtn?.textContent || 'Отправить';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Отправка…';
+        }
+
+        try {
+          const result = await submitEnrollToBitrix(form);
+          setEnrollFormStatus(result.message || 'Заявка принята', 'success');
+          window.setTimeout(closeEnrollModal, 2200);
+        } catch (error) {
+          setEnrollFormStatus(error.message || 'Ошибка отправки', 'error');
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+          }
+        }
       });
     }
   }
@@ -934,6 +1045,7 @@
   }
 
   function renderObucheniePage(data) {
+    activeCourseRegistry = Array.isArray(data.courseRegistry) ? data.courseRegistry : [];
     renderHero(data.hero);
     renderNavCards(data.navCards);
     renderCourseSearch(data.courseSearch);
@@ -980,6 +1092,9 @@
     createCourseId,
     parseIsoDate,
     formatIsoDate,
+    parseBitrixFormRef,
+    formatBitrixFormRef,
+    normalizeBitrixForm,
     configureEnrollModalAudience,
     openEnrollModal,
     setEnrollAudienceMode,

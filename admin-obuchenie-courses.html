@@ -8,7 +8,7 @@
     <title>Календарь курсов | Админ-панель</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="assets/css/admin.css?v=12">
+    <link rel="stylesheet" href="assets/css/admin.css?v=13">
 </head>
 
 <body>
@@ -117,6 +117,19 @@
                 </div>
                 <p class="admin-courses-audience__error" id="courseFormAudienceError" hidden>Выберите хотя бы один вариант аудитории</p>
 
+                <div class="admin-courses-modal__row" id="courseFormBitrixRow">
+                    <div class="form-group" id="courseFormBitrixFlGroup">
+                        <label for="courseFormBitrixFl">Bitrix24 — физ. лица</label>
+                        <input type="text" class="form-control" id="courseFormBitrixFl" placeholder="886 / a7wdlg" autocomplete="off">
+                        <p class="form-hint">ID и sec из <code>data-b24-form</code> на странице курса старого сайта</p>
+                    </div>
+                    <div class="form-group" id="courseFormBitrixUrGroup">
+                        <label for="courseFormBitrixUr">Bitrix24 — юр. лица</label>
+                        <input type="text" class="form-control" id="courseFormBitrixUr" placeholder="888 / 6wx7xd" autocomplete="off">
+                        <p class="form-hint">Формат: <code>884 / 4lv6be</code></p>
+                    </div>
+                </div>
+
                 <div class="form-group admin-courses-modal__desc-section">
                     <label>Описание</label>
                     <div class="wysiwyg-container">
@@ -170,8 +183,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
-    <script src="assets/js/obuchenie-content.js?v=14"></script>
-    <script src="assets/js/admin-obuchenie-courses.js?v=4"></script>
+    <script src="assets/js/obuchenie-content.js?v=15"></script>
+    <script src="assets/js/admin-obuchenie-courses.js?v=5"></script>
 </body>
 
 </html>

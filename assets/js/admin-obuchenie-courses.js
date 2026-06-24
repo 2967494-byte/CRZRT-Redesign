@@ -68,6 +68,16 @@
     return valid;
   }
 
+  function syncBitrixFieldsVisibility() {
+    const audience = readAudienceFromForm();
+    if (els.formBitrixFlGroup) {
+      els.formBitrixFlGroup.hidden = !audience.forIndividuals;
+    }
+    if (els.formBitrixUrGroup) {
+      els.formBitrixUrGroup.hidden = !audience.forLegalEntities;
+    }
+  }
+
   function stripHtml(html) {
     const tmp = document.createElement("DIV");
     tmp.innerHTML = html;
@@ -225,6 +235,17 @@
     if (els.formForSuppliers) els.formForSuppliers.checked = Boolean(course?.forSuppliers);
     if (els.form44fz) els.form44fz.checked = Boolean(course?.is44fz);
     if (els.form223fz) els.form223fz.checked = Boolean(course?.is223fz);
+    if (els.formBitrixFl) {
+      els.formBitrixFl.value = api.formatBitrixFormRef
+        ? api.formatBitrixFormRef(course?.bitrixFormFl)
+        : '';
+    }
+    if (els.formBitrixUr) {
+      els.formBitrixUr.value = api.formatBitrixFormRef
+        ? api.formatBitrixFormRef(course?.bitrixFormUr)
+        : '';
+    }
+    syncBitrixFieldsVisibility();
     setAudienceFormError(false);
     els.modal.style.display = 'flex';
     els.formTitle.focus();
@@ -243,6 +264,9 @@
     if (els.formForSuppliers) els.formForSuppliers.checked = false;
     if (els.form44fz) els.form44fz.checked = false;
     if (els.form223fz) els.form223fz.checked = false;
+    if (els.formBitrixFl) els.formBitrixFl.value = '';
+    if (els.formBitrixUr) els.formBitrixUr.value = '';
+    syncBitrixFieldsVisibility();
     setAudienceFormError(false);
   }
 
@@ -266,6 +290,8 @@
       forSuppliers: audience.forSuppliers,
       is44fz: audience.is44fz,
       is223fz: audience.is223fz,
+      bitrixFormFl: api.parseBitrixFormRef ? api.parseBitrixFormRef(els.formBitrixFl?.value) : null,
+      bitrixFormUr: api.parseBitrixFormRef ? api.parseBitrixFormRef(els.formBitrixUr?.value) : null,
       speakers: [],
       active: true
     };
@@ -328,11 +354,13 @@
 
     els.form?.addEventListener('submit', handleFormSubmit);
     els.formForIndividuals?.addEventListener('change', () => {
+      syncBitrixFieldsVisibility();
       if (readAudienceFromForm().forIndividuals || readAudienceFromForm().forLegalEntities) {
         setAudienceFormError(false);
       }
     });
     els.formForLegalEntities?.addEventListener('change', () => {
+      syncBitrixFieldsVisibility();
       if (readAudienceFromForm().forIndividuals || readAudienceFromForm().forLegalEntities) {
         setAudienceFormError(false);
       }
@@ -470,6 +498,10 @@
     els.form223fz = $('courseForm223fz');
     els.formAudienceGroup = $('courseFormAudienceGroup');
     els.formAudienceError = $('courseFormAudienceError');
+    els.formBitrixFl = $('courseFormBitrixFl');
+    els.formBitrixUr = $('courseFormBitrixUr');
+    els.formBitrixFlGroup = $('courseFormBitrixFlGroup');
+    els.formBitrixUrGroup = $('courseFormBitrixUrGroup');
 
     // Initialize flatpickr datepicker
     if (typeof flatpickr !== 'undefined' && els.formDateFrom) {
