@@ -137,6 +137,11 @@
     }
   });
 
+  var MONTH_NAMES_GENITIVE = [
+    'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+  ];
+
   function openCalendarModal(year, monthIndex, day) {
     var modal = document.getElementById('calendar-course-modal');
     if (!modal) return;
@@ -145,12 +150,14 @@
     var coursesContainer = document.getElementById('calendar-modal-courses');
     var priceContainer = document.getElementById('calendar-modal-price');
     var actionContainer = document.getElementById('calendar-modal-action');
+    var formatContainer = document.getElementById('calendar-modal-format');
     
     if (dateLabel) {
       dateLabel.textContent = day + ' ' + MONTH_NAMES_GENITIVE[monthIndex] + ' ' + year;
     }
     if (priceContainer) priceContainer.innerHTML = '';
     if (actionContainer) actionContainer.innerHTML = '';
+    if (formatContainer) formatContainer.innerHTML = '';
     
     if (coursesContainer) {
       coursesContainer.innerHTML = '';
@@ -198,7 +205,12 @@
               formatPill.style.color = '#2196F3';
               formatPill.style.border = '1px solid #2196F3';
             }
-            titleContainer.appendChild(formatPill);
+            
+            if (coursesOnDate.length === 1 && formatContainer) {
+              formatContainer.appendChild(formatPill);
+            } else {
+              titleContainer.appendChild(formatPill);
+            }
           }
 
           var title = document.createElement('h4');
@@ -206,7 +218,13 @@
           title.textContent = course.title || 'Курс';
           title.style.margin = '0';
           
-          titleContainer.appendChild(title);
+          if (coursesOnDate.length > 1 || !formatContainer) {
+            titleContainer.appendChild(title);
+            div.appendChild(titleContainer);
+          } else {
+            title.style.marginBottom = '16px';
+            div.appendChild(title);
+          }
           
           var descContainer = document.createElement('div');
           descContainer.className = 'calendar-modal__course-desc-container';
@@ -269,7 +287,6 @@
           enrollBtn.setAttribute('data-for-individuals', course.forIndividuals !== false ? 'true' : 'false');
           enrollBtn.setAttribute('data-for-legal', course.forLegalEntities !== false ? 'true' : 'false');
           
-          div.appendChild(titleContainer);
           div.appendChild(descContainer);
           if (meta.hasChildNodes()) div.appendChild(meta);
           

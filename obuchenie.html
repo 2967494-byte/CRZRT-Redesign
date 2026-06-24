@@ -516,13 +516,17 @@
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
     </button>
-    <div class="calendar-modal__header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-      <div>
-        <h3 class="calendar-modal__title">Курсы на выбранную дату</h3>
-        <p class="calendar-modal__date" id="calendar-modal-date-label"></p>
+    <div class="calendar-modal__header" style="padding-right: 48px;">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; width: 100%;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <div id="calendar-modal-format"></div>
+            <h3 class="calendar-modal__title" style="margin: 0;">Курсы на <span id="calendar-modal-date-label" style="color: var(--primary-color);"></span></h3>
+          </div>
+          <div id="calendar-modal-price" style="font-size: 2rem; font-weight: bold; color: var(--primary-color);"></div>
+        </div>
+        <div id="calendar-modal-action"></div>
       </div>
-      <div id="calendar-modal-price" style="font-size: 2.5rem; font-weight: bold; color: var(--text-primary); text-align: center; flex: 1;"></div>
-      <div id="calendar-modal-action" style="margin-left: 20px;"></div>
     </div>
     <div class="calendar-modal__body" id="calendar-modal-courses">
       <!-- Course cards will be injected here -->
