@@ -1229,8 +1229,81 @@
             };
         }
 
+        function shouldBypassCropping(uploadId) {
+            if (!uploadId) return false;
+            return (
+                uploadId === 'knowledge_hero_bg' ||
+                uploadId === 'ecp_hero_bg' ||
+                uploadId === 'ecp_support_bg' ||
+                uploadId === 'consulting_hero_bg' ||
+                uploadId === 'support_hero_bg' ||
+                uploadId === 'obuchenie_hero_bg' ||
+                uploadId.startsWith('m_hero_bg_')
+            );
+        }
+
+        function processImageWithoutCropping(file, uploadId) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    let width = img.naturalWidth;
+                    let height = img.naturalHeight;
+                    const maxDim = 1920;
+                    if (width > maxDim || height > maxDim) {
+                        if (width > height) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, width, height);
+                    }
+                    const resultBase64 = canvas.toDataURL('image/jpeg', 0.82);
+
+                    if (window.AdminEcp && typeof window.AdminEcp.isEcpUploadId === 'function' && window.AdminEcp.isEcpUploadId(uploadId)) {
+                        window.AdminEcp.applyCroppedImage(uploadId, resultBase64);
+                    } else if (window.AdminConsultingPage && typeof window.AdminConsultingPage.isConsultingUploadId === 'function' && window.AdminConsultingPage.isConsultingUploadId(uploadId)) {
+                        window.AdminConsultingPage.applyCroppedImage(uploadId, resultBase64);
+                    } else if (window.AdminSupport && typeof window.AdminSupport.isSupportUploadId === 'function' && window.AdminSupport.isSupportUploadId(uploadId)) {
+                        window.AdminSupport.applyCroppedImage(uploadId, resultBase64);
+                    } else if (window.AdminObuchenie && typeof window.AdminObuchenie.isObuchenieUploadId === 'function' && window.AdminObuchenie.isObuchenieUploadId(uploadId)) {
+                        window.AdminObuchenie.applyCroppedImage(uploadId, resultBase64);
+                    } else if (window.AdminKnowledge && typeof window.AdminKnowledge.isKnowledgeUploadId === 'function' && window.AdminKnowledge.isKnowledgeUploadId(uploadId)) {
+                        window.AdminKnowledge.applyCroppedImage(uploadId, resultBase64);
+                    } else if (window.AdminLanding && typeof window.AdminLanding.applyCroppedImage === 'function') {
+                        window.AdminLanding.applyCroppedImage(uploadId, resultBase64);
+                    }
+
+                    const saveBtnHint = document.getElementById('globalSaveBtn');
+                    if (saveBtnHint) {
+                        saveBtnHint.style.boxShadow = '0 0 15px rgba(52, 199, 89, 0.5)';
+                        saveBtnHint.innerText = 'Сохраните изменения!';
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         function handleFiles(files) {
             if (files && files.length > 0) {
+                const uploadId = window.cropTarget?.uploadId;
+                if (shouldBypassCropping(uploadId)) {
+                    processImageWithoutCropping(files[0], uploadId);
+                    if (imageInput) imageInput.value = '';
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     imageToCrop.src = e.target.result;

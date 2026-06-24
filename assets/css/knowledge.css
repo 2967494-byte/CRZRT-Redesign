@@ -1,10 +1,14 @@
 /* ==========================================================================
    KNOWLEDGE PAGE STYLES
    ========================================================================== */
+html {
+  height: 100% !important;
+}
+
 body[data-page="knowledge"] {
   display: flex !important;
   flex-direction: column !important;
-  min-height: 100vh !important;
+  min-height: 100% !important;
   margin: 0 !important;
 }
 
@@ -25,6 +29,62 @@ body[data-page="knowledge"] .knowledge-blocks-section {
   flex-direction: column !important;
   flex: 1 0 auto !important;
   background-color: #FFFFFF;
+}
+
+/* Hero Banner Layout & Styles */
+body[data-page="knowledge"] .consulting-hero-section.section {
+  padding-bottom: 0 !important;
+}
+
+body[data-page="knowledge"] .consulting-hero {
+  position: relative !important;
+  width: 100% !important;
+  height: 420px !important;
+  background-color: #E2E8F0 !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: cover !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+body[data-page="knowledge"] .consulting-hero__inner {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+body[data-page="knowledge"] .consulting-hero__content {
+  display: block !important;
+  position: static !important;
+}
+
+body[data-page="knowledge"] .consulting-hero-title {
+  position: absolute !important;
+  z-index: 2 !important;
+  font-family: 'Google Sans', 'Inter', sans-serif !important;
+  font-size: 50px !important;
+  font-weight: 700 !important;
+  line-height: 110% !important;
+  letter-spacing: -0.01em !important;
+  margin: 0 !important;
+}
+
+body[data-page="knowledge"] .consulting-hero-subtitle {
+  position: absolute !important;
+  z-index: 2 !important;
+  font-family: 'Google Sans', 'Inter', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  line-height: 130% !important;
+  letter-spacing: 0 !important;
+  margin: 0 !important;
+}
+
+body[data-page="knowledge"] .consulting-banner__graphic,
+body[data-page="knowledge"] .consulting-banner__graphic.is-hidden,
+body[data-page="knowledge"] .consulting-hero-gavel {
+  display: none !important;
 }
 
 body[data-page="knowledge"] .knowledge-header {
@@ -71,52 +131,76 @@ body[data-page="knowledge"] .knowledge-file-title {
 }
 
 body[data-page="knowledge"] .knowledge-download-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  cursor: pointer;
-  padding: 4px 0;
-  transition: opacity 0.2s ease;
+  font-family: 'Google Sans', 'Inter', sans-serif !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  color: #575B6D !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
 }
 
 body[data-page="knowledge"] .knowledge-download-btn:hover {
-  opacity: 0.85;
+  color: #0FAA4B !important;
 }
 
-body[data-page="knowledge"] .knowledge-download-icon {
-  flex-shrink: 0;
-  display: inline-flex;
+body[data-page="knowledge"] .knowledge-download-btn span.arrow-down-right {
+  margin-left: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  transition: transform 0.2s ease !important;
 }
 
-body[data-page="knowledge"] .knowledge-download-text {
-  font-family: 'Google Sans', 'Inter', sans-serif;
-  font-weight: 500;
-  font-size: 20px;
-  line-height: 1.0;
-  color: #575B6D;
-  letter-spacing: 0%;
+body[data-page="knowledge"] .knowledge-download-btn:hover span.arrow-down-right {
+  transform: translate(2px, 2px) !important;
 }
 
-body[data-page="knowledge"] .knowledge-download-arrow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border: 2px solid #0FAA4B;
-  border-radius: 50%;
-  background: #FFFFFF;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  flex-shrink: 0;
-}
-
-body[data-page="knowledge"] .knowledge-download-btn:hover .knowledge-download-arrow {
-  transform: translate(2px, 2px);
-  background-color: rgba(15, 170, 75, 0.05);
+@media (max-width: 1200px) {
+  body[data-page="knowledge"] .consulting-hero {
+    height: auto !important;
+    min-height: 380px !important;
+  }
+  body[data-page="knowledge"] .consulting-hero__inner {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding: 40px !important;
+    box-sizing: border-box !important;
+  }
+  body[data-page="knowledge"] .consulting-hero-title {
+    position: static !important;
+    font-size: 38px !important;
+    margin-bottom: 16px !important;
+    top: auto !important;
+    left: auto !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+  body[data-page="knowledge"] .consulting-hero-subtitle {
+    position: static !important;
+    font-size: 16px !important;
+    top: auto !important;
+    left: auto !important;
+    width: auto !important;
+    max-width: none !important;
+  }
 }
 
 @media (max-width: 768px) {
+  body[data-page="knowledge"] .consulting-hero {
+    min-height: 300px !important;
+  }
+  body[data-page="knowledge"] .consulting-hero__inner {
+    padding: 24px !important;
+  }
+  body[data-page="knowledge"] .consulting-hero-title {
+    font-size: 28px !important;
+  }
+  body[data-page="knowledge"] .consulting-hero-subtitle {
+    font-size: 14px !important;
+  }
   body[data-page="knowledge"] .knowledge-header {
     font-size: 32px;
     margin-top: 40px;

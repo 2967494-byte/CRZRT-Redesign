@@ -18,8 +18,8 @@
   `;
 
   const ARROW_SVG = `
-    <svg width="8" height="8" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M1 1L11 11M11 11V3M11 11H3" stroke="#0FAA4B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M1 1L11 11M11 11V3M11 11H3" stroke="#0FAA4B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   `;
 
@@ -201,9 +201,7 @@
         }
 
         downloadLink.innerHTML = `
-          <span class="knowledge-download-icon">${PDF_ICON_SVG}</span>
-          <span class="knowledge-download-text">скачать</span>
-          <span class="knowledge-download-arrow">${ARROW_SVG}</span>
+          скачать <span class="arrow-down-right">${ARROW_SVG}</span>
         `;
 
         fileCard.appendChild(fileTitle);
