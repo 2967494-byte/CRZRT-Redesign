@@ -184,6 +184,18 @@
             knowledgePageData = AdminKnowledge.collectKnowledgePageFromForm(knowledgePageData);
             window.knowledgePageData = knowledgePageData;
         };
+        let newsPageData = {};
+        if (typeof AdminNews !== 'undefined') {
+            newsPageData = AdminNews.migrateNewsPageData(
+                JSON.parse(localStorage.getItem('crzrt_news_page_data') || 'null')
+            );
+        }
+        window.newsPageData = newsPageData;
+        window.saveNewsPageStateToMemory = function () {
+            if (typeof AdminNews === 'undefined') return;
+            newsPageData = AdminNews.collectNewsPageFromForm(newsPageData);
+            window.newsPageData = newsPageData;
+        };
         let aboutData = { ...defaultAboutData };
         let contactsData = { ...defaultContactsData };
         let educationData; // assigned after defaultEducationData is declared (~line 1570)
@@ -197,6 +209,7 @@
                 'crzrt_support_page_data',
                 'crzrt_obuchenie_page_data',
                 'crzrt_knowledge_page_data',
+                'crzrt_news_page_data',
                 'crzrt_about_data', 
                 'crzrt_contacts', 
                 'crzrt_education_data', 
@@ -238,13 +251,18 @@
                                 window.knowledgePageData = knowledgePageData;
                                 localStorage.setItem(key, JSON.stringify(knowledgePageData));
                             }
+                            else if (key === 'crzrt_news_page_data' && typeof AdminNews !== 'undefined') {
+                                newsPageData = AdminNews.migrateNewsPageData(data);
+                                window.newsPageData = newsPageData;
+                                localStorage.setItem(key, JSON.stringify(newsPageData));
+                            }
                             else if (key === 'crzrt_about_data') aboutData = { ...defaultAboutData, ...data };
                             else if (key === 'crzrt_contacts') contactsData = { ...defaultContactsData, ...data };
                             else if (key === 'crzrt_education_data') educationData = { ...educationData, ...data };
                             else if (key === 'crzrt_consulting_data') consultingData = { ...consultingData, ...data };
                             
                             // Save to local for fallback
-                            if (key !== 'crzrt_ecp_page_data' && key !== 'crzrt_consulting_page_data' && key !== 'crzrt_support_page_data' && key !== 'crzrt_obuchenie_page_data' && key !== 'crzrt_knowledge_page_data') {
+                            if (key !== 'crzrt_ecp_page_data' && key !== 'crzrt_consulting_page_data' && key !== 'crzrt_support_page_data' && key !== 'crzrt_obuchenie_page_data' && key !== 'crzrt_knowledge_page_data' && key !== 'crzrt_news_page_data') {
                                 localStorage.setItem(key, JSON.stringify(data));
                             }
                         }
@@ -257,6 +275,7 @@
                 else if (currentTarget === 'support-page') renderSupportPageAdmin();
                 else if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
                 else if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();
+                else if (currentTarget === 'news-page') renderNewsPageAdmin();
                 else if (currentTarget === 'about-us') renderAboutUsAdmin();
                 else if (currentTarget === 'contacts') renderContactsAdmin();
                 else if (currentTarget === 'education') renderEducationAdmin();
@@ -304,6 +323,7 @@
             'support-page': 'supportPageBlock',
             'obuchenie-page': 'obucheniePageBlock',
             'knowledge-page': 'knowledgePageBlock',
+            'news-page': 'newsPageBlock',
             'consulting': 'consultingBlock',
             'education': 'educationBlock',
             'users': 'usersBlock',
@@ -349,6 +369,11 @@
         function renderKnowledgePageAdmin() {
             if (typeof AdminKnowledge === 'undefined') return;
             AdminKnowledge.renderKnowledgePageAdmin(knowledgePageData);
+        }
+
+        function renderNewsPageAdmin() {
+            if (typeof AdminNews === 'undefined') return;
+            AdminNews.renderNewsPageAdmin(newsPageData);
         }
 
         // ═══════════════════════════════════════════════
@@ -902,6 +927,7 @@
                 if (currentTarget === 'support-page') renderSupportPageAdmin();
                 if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
                 if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();
+                if (currentTarget === 'news-page') renderNewsPageAdmin();
                 if (currentTarget === 'consulting') renderConsultingAdmin();
                 if (currentTarget === 'education') renderEducationAdmin();
                 if (currentTarget === 'users') renderUsers();
@@ -1226,6 +1252,7 @@
             if (AdminSupport?.isSupportUploadId?.(uploadId)) return AdminSupport.getAspect(uploadId);
             if (AdminObuchenie?.isObuchenieUploadId?.(uploadId)) return AdminObuchenie.getAspect(uploadId);
             if (AdminKnowledge?.isKnowledgeUploadId?.(uploadId)) return AdminKnowledge.getAspect(uploadId);
+            if (AdminNews?.isNewsUploadId?.(uploadId)) return AdminNews.getAspect(uploadId);
             if (AdminLanding?.getAspect) return AdminLanding.getAspect(uploadId);
             return window.activeAuthorIndex !== null ? 1 : 16 / 9;
         }
@@ -1286,6 +1313,7 @@
                             AdminSupport?.isSupportUploadId?.(uploadId) ||
                             AdminObuchenie?.isObuchenieUploadId?.(uploadId) ||
                             AdminKnowledge?.isKnowledgeUploadId?.(uploadId) ||
+                            AdminNews?.isNewsUploadId?.(uploadId) ||
                             window.activeAuthorIndex !== null
                         )
                     ) {
@@ -1401,6 +1429,8 @@
                     [resWidth, resHeight] = AdminObuchenie.getCropSize(window.cropTarget.uploadId);
                 } else if (window.cropTarget && AdminKnowledge?.isKnowledgeUploadId?.(window.cropTarget.uploadId)) {
                     [resWidth, resHeight] = AdminKnowledge.getCropSize(window.cropTarget.uploadId);
+                } else if (window.cropTarget && AdminNews?.isNewsUploadId?.(window.cropTarget.uploadId)) {
+                    [resWidth, resHeight] = AdminNews.getCropSize(window.cropTarget.uploadId);
                 } else if (window.cropTarget && AdminLanding) {
                     [resWidth, resHeight] = AdminLanding.getCropSize(window.cropTarget.uploadId);
                 }
@@ -1412,7 +1442,8 @@
                     AdminConsultingPage?.isConsultingUploadId?.(uploadId) ||
                     AdminSupport?.isSupportUploadId?.(uploadId) ||
                     AdminObuchenie?.isObuchenieUploadId?.(uploadId) ||
-                    AdminKnowledge?.isKnowledgeUploadId?.(uploadId)
+                    AdminKnowledge?.isKnowledgeUploadId?.(uploadId) ||
+                    AdminNews?.isNewsUploadId?.(uploadId)
                 )) {
                     canvasOpts = {
                         width: resWidth,
@@ -1433,7 +1464,8 @@
                         || uploadId === 'consulting_hero_bg'
                         || uploadId === 'support_hero_bg'
                         || uploadId === 'obuchenie_hero_bg'
-                        || uploadId === 'knowledge_hero_bg')
+                        || uploadId === 'knowledge_hero_bg'
+                        || uploadId === 'news_hero_bg')
                 );
                 const isPromoCover = uploadId === 'obuchenie_cal_promo_image'
                     || uploadId === 'obuchenie_testing_image'
@@ -1470,6 +1502,8 @@
                     window.cropTarget = null;
                 } else if (window.cropTarget && AdminKnowledge?.isKnowledgeUploadId?.(window.cropTarget.uploadId)) {
                     AdminKnowledge.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
+                } else if (window.cropTarget && AdminNews?.isNewsUploadId?.(window.cropTarget.uploadId)) {
+                    AdminNews.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
                     window.cropTarget = null;
                 } else if (window.cropTarget && AdminLanding) {
                     AdminLanding.applyCroppedImage(window.cropTarget.uploadId, resultBase64);
@@ -1989,6 +2023,35 @@
             return data;
         }
 
+            return data;
+        }
+
+        async function replaceNewsBase64WithUploads(data) {
+            const cache = new Map();
+            const uploadOrReuse = (src, slot, maxWidth, maxHeight) => {
+                if (!isImageDataUrl(src)) return Promise.resolve(src);
+                const key = `${slot}:${src.slice(0, 64)}:${src.length}`;
+                if (!cache.has(key)) {
+                    cache.set(key, uploadDataUrlImage(src, slot, maxWidth, maxHeight));
+                }
+                return cache.get(key);
+            };
+
+            if (data.hero) {
+                data.hero.background = await uploadOrReuse(data.hero.background, 'news_hero_bg', 1520, 420);
+            }
+
+            if (Array.isArray(data.items)) {
+                for (let i = 0; i < data.items.length; i++) {
+                    const item = data.items[i];
+                    if (!item) continue;
+                    item.image = await uploadOrReuse(item.image, `news_item_image_${i}`, 511, 474);
+                }
+            }
+
+            return data;
+        }
+
         const handleSaveClick = async () => {
             const originalText = 'Сохранить изменения';
 
@@ -2024,6 +2087,10 @@
                     saveKnowledgePageStateToMemory();
                     keyToSave = 'crzrt_knowledge_page_data';
                     dataToSave = knowledgePageData;
+                } else if (currentTarget === 'news-page') {
+                    saveNewsPageStateToMemory();
+                    keyToSave = 'crzrt_news_page_data';
+                    dataToSave = newsPageData;
                 } else if (currentTarget === 'about-us') {
                     saveAboutUsStateToMemory();
                     keyToSave = 'crzrt_about_data';
@@ -2097,6 +2164,15 @@
                     knowledgePageData = dataToSave;
                     window.knowledgePageData = knowledgePageData;
                     renderKnowledgePageAdmin();
+                }
+
+                if (currentTarget === 'news-page') {
+                    updateSaveButtonsState({ text: 'Загрузка медиа...' });
+                    const snapshot = JSON.parse(JSON.stringify(dataToSave));
+                    dataToSave = await replaceNewsBase64WithUploads(snapshot);
+                    newsPageData = dataToSave;
+                    window.newsPageData = newsPageData;
+                    renderNewsPageAdmin();
                 }
 
                 updateSaveButtonsState({ text: 'Сохраняется...' });

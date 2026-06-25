@@ -621,9 +621,28 @@
     }
   }
 
+  async function loadAndRenderLandingNews() {
+    const api = window.NewsContent;
+    if (!api?.renderLandingNewsPreview) return;
+
+    try {
+      const localData = api.loadNewsDataFromLocal();
+      const initialData = localData || api.migrateNewsPageData(null);
+      api.renderLandingNewsPreview(initialData.items);
+
+      const apiData = await api.loadNewsDataFromApi();
+      if (apiData) {
+        api.renderLandingNewsPreview(apiData.items);
+      }
+    } catch (error) {
+      console.warn('Landing: news load failed', error);
+    }
+  }
+
   async function initLandingContent() {
     const revealTimer = window.setTimeout(markLandingContentReady, REVEAL_TIMEOUT_MS);
     const upcomingEventsPromise = loadAndRenderUpcomingEvents();
+    const landingNewsPromise = loadAndRenderLandingNews();
     try {
       const localData = loadLandingDataFromLocal();
       const initialData = localData || migrateLandingData(null);

@@ -193,6 +193,7 @@
   document.addEventListener('consultingContentReady', prepareAllInternalLinks);
   document.addEventListener('supportContentReady', prepareAllInternalLinks);
   document.addEventListener('obuchenieContentReady', prepareAllInternalLinks);
+  document.addEventListener('newsContentReady', prepareAllInternalLinks);
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', prepareAllInternalLinks);
