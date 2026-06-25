@@ -2119,20 +2119,20 @@ body {
             }
         }
 
-        .knowledge-admin-tree-node + .knowledge-admin-tree-node {
+        #knowledgeBlocksAdmin .knowledge-admin-tree-node + .knowledge-admin-tree-node {
             margin-top: 12px;
         }
 
-        .knowledge-admin-tree-node--group-root {
+        #knowledgeBlocksAdmin .knowledge-admin-tree-node--group-root {
             margin-top: 20px;
             margin-bottom: 8px;
         }
 
-        .knowledge-admin-tree-node--group-root:first-child {
+        #knowledgeBlocksAdmin .knowledge-admin-tree-node--group-root:first-child {
             margin-top: 0;
         }
 
-        .knowledge-admin-block-card {
+        #knowledgeBlocksAdmin .knowledge-admin-block-card {
             padding: 16px;
             border: 1px solid var(--card-border);
             border-radius: 12px;
@@ -2140,51 +2140,61 @@ body {
             background: var(--card-bg);
         }
 
-        .knowledge-admin-block-card--group {
+        #knowledgeBlocksAdmin .knowledge-admin-block-card--group {
             border: 2px solid rgba(131, 56, 236, 0.45);
             background: linear-gradient(180deg, rgba(131, 56, 236, 0.07) 0%, rgba(131, 56, 236, 0.02) 100%);
             box-shadow: 0 4px 14px rgba(131, 56, 236, 0.1);
         }
 
-        .knowledge-admin-block-card__header {
+        #knowledgeBlocksAdmin .knowledge-admin-block-card__header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.06);
             padding-bottom: 8px;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 10px;
+            flex-wrap: nowrap;
         }
 
-        .knowledge-admin-block-card__controls {
+        #knowledgeBlocksAdmin .knowledge-admin-block-card__header .block-badge {
+            flex-shrink: 0;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-admin-block-card__controls {
             display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            margin-left: auto;
         }
 
-        .knowledge-block-btn {
+        #knowledgeBlocksAdmin .knowledge-block-btn {
             padding: 4px 8px;
             font-size: 0.75rem;
+            flex-shrink: 0;
+            min-width: 28px;
         }
 
-        .knowledge-block-btn:disabled {
+        #knowledgeBlocksAdmin .knowledge-block-btn:disabled {
             opacity: 0.3;
             cursor: not-allowed;
         }
 
-        .knowledge-move-to-group {
+        #knowledgeBlocksAdmin .knowledge-move-to-group {
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            flex-shrink: 0;
         }
 
-        .knowledge-move-to-group__select {
+        #knowledgeBlocksAdmin .knowledge-move-to-group__select {
             height: 28px;
-            max-width: 160px;
-            padding: 2px 8px;
-            font-size: 0.75rem;
+            width: 118px;
+            max-width: 118px;
+            padding: 2px 6px;
+            font-size: 0.72rem;
             border: 1px solid var(--card-border);
             border-radius: 6px;
             background: rgba(0, 0, 0, 0.06);
@@ -2192,12 +2202,13 @@ body {
             cursor: pointer;
         }
 
-        .knowledge-move-to-group__btn {
+        #knowledgeBlocksAdmin .knowledge-move-to-group__btn {
             padding: 4px 8px;
             font-size: 0.75rem;
+            flex-shrink: 0;
         }
 
-        .knowledge-admin-tree-children {
+        #knowledgeBlocksAdmin .knowledge-admin-tree-children {
             margin-top: 14px;
             padding: 14px 14px 4px;
             border-left: 3px solid rgba(131, 56, 236, 0.35);
@@ -2208,36 +2219,78 @@ body {
             gap: 12px;
         }
 
-        .knowledge-admin-tree-children .knowledge-admin-tree-node {
+        #knowledgeBlocksAdmin .knowledge-admin-tree-children .knowledge-admin-tree-node {
             margin-left: 0 !important;
         }
 
-        .knowledge-file-block-row {
-            display: grid;
-            grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+        #knowledgeBlocksAdmin .knowledge-file-block-row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
             gap: 12px;
-            align-items: end;
+            align-items: flex-end;
+            width: 100%;
         }
 
-        .knowledge-file-block-row .form-group {
+        #knowledgeBlocksAdmin .knowledge-file-block-row__title,
+        #knowledgeBlocksAdmin .knowledge-file-block-row__file {
+            flex: 1 1 0;
+            min-width: 0;
             margin-bottom: 0;
         }
 
-        .knowledge-file-block-row__action .btn-save {
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            white-space: nowrap;
+        #knowledgeBlocksAdmin .knowledge-file-block-row__action {
+            flex: 0 0 auto;
+            padding-bottom: 1px;
         }
 
-        .knowledge-file-block-row__name {
+        #knowledgeBlocksAdmin .knowledge-file-block-row__action-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            line-height: 1;
+            visibility: hidden;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-file-block-row .form-group {
+            margin-bottom: 0;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-file-block-row__action .btn-save {
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            margin: 0;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-file-block-row__name {
             display: block;
             color: var(--text-secondary);
             font-size: 0.8rem;
             margin-top: 6px;
         }
 
+        @media (max-width: 1100px) {
+            #knowledgeBlocksAdmin .knowledge-admin-block-card__header {
+                flex-wrap: wrap;
+            }
+
+            #knowledgeBlocksAdmin .knowledge-admin-block-card__controls {
+                flex-wrap: wrap;
+                margin-left: 0;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
         @media (max-width: 900px) {
-            .knowledge-file-block-row {
-                grid-template-columns: 1fr;
+            #knowledgeBlocksAdmin .knowledge-file-block-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #knowledgeBlocksAdmin .knowledge-file-block-row__action .btn-save {
+                width: 100%;
             }
         }

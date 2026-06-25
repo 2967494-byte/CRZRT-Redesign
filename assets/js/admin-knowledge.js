@@ -140,6 +140,7 @@
           <input type="text" class="form-control" id="${fileId}" value="${escapeAttr(file)}" placeholder="Ссылка или uploads/files/...">
         </div>
         <div class="knowledge-file-block-row__action">
+          <span class="knowledge-file-block-row__action-label" aria-hidden="true">&nbsp;</span>
           <button type="button" class="btn-save" onclick="AdminKnowledge.pickFile('${fileId}')">Загрузить</button>
         </div>
       </div>
