@@ -297,7 +297,7 @@
               <input type="text" class="form-control" id="consulting_comp_link_${i}" value="${escapeAttr(item.link || '#competencies')}" placeholder="#competencies">
             </div>
             <div class="form-group" style="margin-top:8px; margin-bottom:0;">
-              <button type="button" class="btn-secondary" style="width: 100%; font-size: 0.85rem; padding: 6px 12px;" onclick="AdminConsultingPage.openDescriptionModal(${i})">Описание</button>
+              <button type="button" class="btn-save" style="width: 100%; font-size: 0.85rem; padding: 6px 12px;" onclick="AdminConsultingPage.openDescriptionModal(${i})">Описание</button>
               <textarea id="consulting_comp_desc_${i}" style="display:none;">${escapeAttr(item.description || '')}</textarea>
             </div>
           </div>`
@@ -403,8 +403,79 @@
 
   function initCompetencyModal() {
     if (competencyModalInitialized) return;
-    const modal = document.getElementById('competencyModal');
-    if (!modal) return;
+    let modal = document.getElementById('competencyModal');
+    if (!modal) {
+      console.log('competencyModal not found in DOM, creating dynamically...');
+      modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.id = 'competencyModal';
+      modal.style.cssText = 'display: none; z-index: 1050;';
+      modal.innerHTML = `
+        <div class="modal-content admin-courses-modal" style="max-width: 800px; width: 100%;">
+            <button type="button" class="btn-modal-close" id="competencyModalClose" aria-label="Закрыть">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h2 class="modal-title admin-courses-modal__title" id="competencyModalTitle">Описание компетенции</h2>
+            <form id="competencyForm" class="admin-courses-modal__form">
+                <div class="form-group admin-courses-modal__desc-section">
+                    <div class="wysiwyg-container">
+                        <div class="wysiwyg-toolbar" id="compWysiwygToolbar">
+                            <button type="button" class="wysiwyg-btn" data-command="bold" title="Жирный">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>
+                            </button>
+                            <button type="button" class="wysiwyg-btn" data-command="italic" title="Курсив">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>
+                            </button>
+                            <button type="button" class="wysiwyg-btn" data-command="underline" title="Подчеркнутый">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path><line x1="4" y1="21" x2="20" y2="21"></line></svg>
+                            </button>
+                            <div class="wysiwyg-divider"></div>
+                            <button type="button" class="wysiwyg-btn" data-command="justifyLeft" title="По левому краю">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
+                            </button>
+                            <button type="button" class="wysiwyg-btn" data-command="justifyCenter" title="По центру">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>
+                            </button>
+                            <button type="button" class="wysiwyg-btn" data-command="justifyRight" title="По правому краю">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
+                            </button>
+                            <div class="wysiwyg-divider"></div>
+                            
+                            <div class="wysiwyg-tool-group" title="Размер шрифта">
+                                <span class="wysiwyg-tool-label">Размер:</span>
+                                <select class="wysiwyg-select" id="compWysiwygFontSize">
+                                    <option value="1">1 (Мелкий)</option>
+                                    <option value="2">2 (Небольшой)</option>
+                                    <option value="3" selected>3 (Обычный)</option>
+                                    <option value="4">4 (Средний)</option>
+                                    <option value="5">5 (Большой)</option>
+                                    <option value="6">6 (Очень большой)</option>
+                                    <option value="7">7 (Огромный)</option>
+                                </select>
+                            </div>
+
+                            <div class="wysiwyg-divider"></div>
+
+                            <div class="wysiwyg-tool-group" title="Цвет текста">
+                                <span class="wysiwyg-tool-label">Цвет:</span>
+                                <input type="color" id="compWysiwygColor" class="wysiwyg-color-input" value="#1D1D1F">
+                            </div>
+                        </div>
+                        <div class="wysiwyg-editor form-control" id="competencyFormDescription" contenteditable="true" spellcheck="false" style="min-height: 250px;"></div>
+                    </div>
+                </div>
+                <div class="admin-courses-modal__actions" style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px;">
+                    <button type="button" class="btn-secondary" id="competencyModalCancel">Отмена</button>
+                    <button type="submit" class="btn-save" id="competencyModalSave">Сохранить</button>
+                </div>
+            </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
 
     const closeBtn = document.getElementById('competencyModalClose');
     const cancelBtn = document.getElementById('competencyModalCancel');

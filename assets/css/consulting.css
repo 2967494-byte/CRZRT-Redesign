@@ -2145,7 +2145,7 @@ body.theme-purple .review-card {
   background: rgba(15, 23, 42, 0.4);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  z-index: 1000;
+  z-index: 15000;
   display: flex;
   align-items: center;
   justify-content: center;
