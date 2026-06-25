@@ -1486,8 +1486,10 @@
                 }
 
                 document.getElementById('cropperGlobalContainer').style.display = 'none';
-
-
+                updateSaveButtonsState({
+                    boxShadow: '0 0 15px rgba(52, 199, 89, 0.5)',
+                    text: 'Сохраните изменения!'
+                });
                 cropper.destroy();
                 cropper = null;
                 setCropperWrapperLayout(NaN);
@@ -1987,9 +1989,8 @@
             return data;
         }
 
-        document.getElementById('globalSaveBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('globalSaveBtn');
-            const originalText = btn.innerText;
+        const handleSaveClick = async () => {
+            const originalText = 'Сохранить изменения';
 
             try {
                 let keyToSave = '';
@@ -2038,12 +2039,14 @@
 
                 if (!keyToSave) return;
 
-                btn.innerText = 'Сохраняется...';
-                btn.style.opacity = '0.8';
-                btn.disabled = true;
+                updateSaveButtonsState({
+                    text: 'Сохраняется...',
+                    opacity: '0.8',
+                    disabled: true
+                });
 
                 if (currentTarget === 'main-page') {
-                    btn.innerText = 'Загрузка медиа...';
+                    updateSaveButtonsState({ text: 'Загрузка медиа...' });
                     const snapshot = JSON.parse(JSON.stringify(dataToSave));
                     dataToSave = await replaceMainPageBase64WithUploads(snapshot);
                     mainPageData = dataToSave;
@@ -2052,7 +2055,7 @@
                 }
 
                 if (currentTarget === 'ecp-page') {
-                    btn.innerText = 'Загрузка медиа...';
+                    updateSaveButtonsState({ text: 'Загрузка медиа...' });
                     const snapshot = JSON.parse(JSON.stringify(dataToSave));
                     dataToSave = await replaceEcpBase64WithUploads(snapshot);
                     ecpPageData = dataToSave;
@@ -2061,7 +2064,7 @@
                 }
 
                 if (currentTarget === 'consulting-page') {
-                    btn.innerText = 'Загрузка медиа...';
+                    updateSaveButtonsState({ text: 'Загрузка медиа...' });
                     const snapshot = JSON.parse(JSON.stringify(dataToSave));
                     dataToSave = await replaceConsultingBase64WithUploads(snapshot);
                     consultingPageData = dataToSave;
@@ -2070,7 +2073,7 @@
                 }
 
                 if (currentTarget === 'support-page') {
-                    btn.innerText = 'Загрузка медиа...';
+                    updateSaveButtonsState({ text: 'Загрузка медиа...' });
                     const snapshot = JSON.parse(JSON.stringify(dataToSave));
                     dataToSave = await replaceSupportBase64WithUploads(snapshot);
                     supportPageData = dataToSave;
@@ -2079,7 +2082,7 @@
                 }
 
                 if (currentTarget === 'obuchenie-page') {
-                    btn.innerText = 'Загрузка медиа...';
+                    updateSaveButtonsState({ text: 'Загрузка медиа...' });
                     const snapshot = JSON.parse(JSON.stringify(dataToSave));
                     dataToSave = await replaceObuchenieBase64WithUploads(snapshot);
                     obucheniePageData = dataToSave;
@@ -2088,7 +2091,7 @@
                 }
 
                 if (currentTarget === 'knowledge-page') {
-                    btn.innerText = 'Загрузка медиа...';
+                    updateSaveButtonsState({ text: 'Загрузка медиа...' });
                     const snapshot = JSON.parse(JSON.stringify(dataToSave));
                     dataToSave = await replaceKnowledgeBase64WithUploads(snapshot);
                     knowledgePageData = dataToSave;
@@ -2096,7 +2099,7 @@
                     renderKnowledgePageAdmin();
                 }
 
-                btn.innerText = 'Сохраняется...';
+                updateSaveButtonsState({ text: 'Сохраняется...' });
 
                 // Отправляем данные на Бэкенд
                 const response = await fetch('api/settings.php', {
@@ -2126,24 +2129,38 @@
                 }
 
                 // Визуальный отклик об успехе
-                btn.innerText = `Сохранено! (${(result.size / 1024).toFixed(1)} KB)`;
-                btn.style.backgroundColor = '#34c759';
-                btn.style.color = '#fff';
-                btn.style.opacity = '1';
+                updateSaveButtonsState({
+                    text: `Сохранено! (${(result.size / 1024).toFixed(1)} KB)`,
+                    backgroundColor: '#34c759',
+                    color: '#fff',
+                    opacity: '1'
+                });
 
                 setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.backgroundColor = '';
-                    btn.style.color = '';
-                    btn.disabled = false;
+                    updateSaveButtonsState({
+                        text: originalText,
+                        backgroundColor: '',
+                        color: '',
+                        boxShadow: '',
+                        disabled: false
+                    });
                 }, 2000);
 
             } catch (e) {
                 console.error("Storage error:", e);
                 alert("Ошибка сохранения: " + e.message + "\nПроверьте формат/размер изображения и повторите.");
-                btn.innerText = originalText;
-                btn.style.opacity = '1';
-                btn.disabled = false;
+                updateSaveButtonsState({
+                    text: originalText,
+                    opacity: '1',
+                    disabled: false
+                });
+            }
+        };
+
+        document.getElementById('globalSaveBtn').addEventListener('click', handleSaveClick);
+        document.addEventListener('click', e => {
+            if (e.target && e.target.classList.contains('btn-save-bottom')) {
+                handleSaveClick();
             }
         });
 
