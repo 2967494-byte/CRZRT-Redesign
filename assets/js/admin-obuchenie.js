@@ -152,6 +152,28 @@
       </div>`;
   }
 
+  function renderHeroAdmin(data) {
+    const el = document.getElementById('obuchenieHeroAdmin');
+    if (!el) return;
+    const hero = getMigratedData(data).hero || {};
+    el.innerHTML = `
+      <div class="obuchenie-hero-grid">
+        <!-- Left: Banner upload & Preview -->
+        <div class="obuchenie-hero-banner-col">
+          ${heroBgUploadShell('obuchenie_hero_bg', 'Готовый баннер (~1520×420 px)')}
+          
+          <div style="margin-top:20px;">
+            <label style="font-weight:600; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">Предпросмотр готового баннера с наложенным текстом</label>
+            <div class="obuchenie-live-banner-preview" id="obuchenie_live_banner_preview">
+              <div class="obuchenie-live-banner-title" id="obuchenie_live_banner_title"></div>
+              <div class="obuchenie-live-banner-subtitle" id="obuchenie_live_banner_subtitle"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right: Fields -->
+        <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
+          <!-- Block "Заголовок" -->
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
             ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'obuchenie_hero_title_color', hero.titleColor || '#00AE4D', '#00AE4D', hero.titleFontSize, hero.titleFontWeight, hero.titleItalic, hero.titleUnderline)}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
