@@ -74,6 +74,38 @@
       .join('<br>');
   }
 
+  function normalizeKnowledgeBlock(b, index) {
+    const id = b.id || `block_${Date.now()}_${index}`;
+    const type = b.type || 'text';
+
+    if (type === 'group') {
+      const children = Array.isArray(b.children) ? b.children : [];
+      return {
+        id,
+        type: 'group',
+        value: b.value !== undefined ? String(b.value) : '',
+        defaultExpanded: Boolean(b.defaultExpanded),
+        children: children.map((child, childIndex) => normalizeKnowledgeBlock(child, childIndex))
+      };
+    }
+
+    if (type === 'file') {
+      return {
+        id,
+        type: 'file',
+        title: b.title !== undefined ? String(b.title) : '',
+        file: b.file !== undefined ? String(b.file) : '',
+        fileName: b.fileName !== undefined ? String(b.fileName) : ''
+      };
+    }
+
+    return {
+      id,
+      type,
+      value: b.value !== undefined ? String(b.value) : ''
+    };
+  }
+
   function migrateKnowledgePageData(raw) {
     const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
     const blocks = Array.isArray(raw?.blocks) ? raw.blocks : [...DEFAULT_KNOWLEDGE_PAGE.blocks];
@@ -98,16 +130,7 @@
         subtitleItalic: rawHero.subtitleItalic || false,
         subtitleUnderline: rawHero.subtitleUnderline || false
       },
-      blocks: blocks.map((b, index) => {
-        return {
-          id: b.id || `block_${Date.now()}_${index}`,
-          type: b.type || 'text',
-          value: b.value !== undefined ? String(b.value) : '',
-          title: b.title !== undefined ? String(b.title) : '',
-          file: b.file !== undefined ? String(b.file) : '',
-          fileName: b.fileName !== undefined ? String(b.fileName) : ''
-        };
-      })
+      blocks: blocks.map((b, index) => normalizeKnowledgeBlock(b, index))
     };
   }
 
@@ -189,48 +212,96 @@
     if (graphicEl) graphicEl.classList.add('is-hidden');
   }
 
+  function renderBlockInto(block, parentEl) {
+    if (!block || !parentEl) return;
+
+    if (block.type === 'header') {
+      const headerEl = document.createElement('h2');
+      headerEl.className = 'knowledge-header';
+      headerEl.textContent = block.value || '';
+      parentEl.appendChild(headerEl);
+      return;
+    }
+
+    if (block.type === 'text') {
+      const textEl = document.createElement('p');
+      textEl.className = 'knowledge-text';
+      textEl.textContent = block.value || '';
+      parentEl.appendChild(textEl);
+      return;
+    }
+
+    if (block.type === 'file') {
+      const fileCard = document.createElement('div');
+      fileCard.className = 'knowledge-file-card';
+
+      const fileTitle = document.createElement('h3');
+      fileTitle.className = 'knowledge-file-title';
+      fileTitle.textContent = block.title || 'Документ';
+
+      const downloadLink = document.createElement('a');
+      downloadLink.className = 'knowledge-download-btn';
+      downloadLink.href = block.file || '#';
+      if (block.file && block.file !== '#') {
+        downloadLink.setAttribute('download', block.fileName || '');
+        downloadLink.setAttribute('target', '_blank');
+      }
+
+      downloadLink.innerHTML = `
+          скачать <span class="arrow-down-right">${ARROW_SVG}</span>
+        `;
+
+      fileCard.appendChild(fileTitle);
+      fileCard.appendChild(downloadLink);
+      parentEl.appendChild(fileCard);
+      return;
+    }
+
+    if (block.type === 'group') {
+      const groupEl = document.createElement('div');
+      groupEl.className = 'knowledge-group';
+
+      const headerEl = document.createElement('div');
+      headerEl.className = 'knowledge-group__header';
+
+      const titleEl = document.createElement('h3');
+      titleEl.className = 'knowledge-group__title';
+      titleEl.textContent = block.value || 'Раздел';
+
+      const toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'knowledge-group__toggle';
+      const expanded = Boolean(block.defaultExpanded);
+      toggleBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      toggleBtn.textContent = expanded ? 'Скрыть' : 'Раскрыть';
+
+      const bodyEl = document.createElement('div');
+      bodyEl.className = 'knowledge-group__body';
+      bodyEl.hidden = !expanded;
+
+      toggleBtn.addEventListener('click', () => {
+        const isOpen = !bodyEl.hidden;
+        bodyEl.hidden = isOpen;
+        toggleBtn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+        toggleBtn.textContent = isOpen ? 'Раскрыть' : 'Скрыть';
+      });
+
+      headerEl.appendChild(titleEl);
+      headerEl.appendChild(toggleBtn);
+      groupEl.appendChild(headerEl);
+
+      (block.children || []).forEach((child) => renderBlockInto(child, bodyEl));
+      groupEl.appendChild(bodyEl);
+      parentEl.appendChild(groupEl);
+    }
+  }
+
   function renderBlocks(blocks) {
     const container = document.getElementById('knowledge-blocks-container');
     if (!container) return;
 
     container.innerHTML = '';
-
-    blocks.forEach((block) => {
-      if (block.type === 'header') {
-        const headerEl = document.createElement('h2');
-        headerEl.className = 'knowledge-header';
-        headerEl.textContent = block.value || '';
-        container.appendChild(headerEl);
-      } else if (block.type === 'text') {
-        const textEl = document.createElement('p');
-        textEl.className = 'knowledge-text';
-        textEl.textContent = block.value || '';
-        container.appendChild(textEl);
-      } else if (block.type === 'file') {
-        const fileCard = document.createElement('div');
-        fileCard.className = 'knowledge-file-card';
-
-        const fileTitle = document.createElement('h3');
-        fileTitle.className = 'knowledge-file-title';
-        fileTitle.textContent = block.title || 'Документ';
-
-        const downloadLink = document.createElement('a');
-        downloadLink.className = 'knowledge-download-btn';
-        downloadLink.href = block.file || '#';
-        if (block.file && block.file !== '#') {
-          downloadLink.setAttribute('download', block.fileName || '');
-          downloadLink.setAttribute('target', '_blank');
-        }
-
-        downloadLink.innerHTML = `
-          скачать <span class="arrow-down-right">${ARROW_SVG}</span>
-        `;
-
-        fileCard.appendChild(fileTitle);
-        fileCard.appendChild(downloadLink);
-        container.appendChild(fileCard);
-      }
-    });
+    blocks.forEach((block) => renderBlockInto(block, container));
   }
 
   function renderKnowledgePage(data) {
@@ -263,6 +334,7 @@
   window.KnowledgeContent = {
     STORAGE_KEY,
     DEFAULT_KNOWLEDGE_PAGE,
+    normalizeKnowledgeBlock,
     migrateKnowledgePageData,
     loadKnowledgeDataFromApi,
     loadKnowledgeDataFromLocal,

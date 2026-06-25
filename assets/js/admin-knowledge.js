@@ -233,63 +233,170 @@
     }
   }
 
+  function createKnowledgeBlock(type) {
+    const id = `block_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    if (type === 'group') {
+      return { id, type: 'group', value: '', defaultExpanded: false, children: [] };
+    }
+    if (type === 'file') {
+      return { id, type: 'file', title: '', file: '', fileName: '' };
+    }
+    return { id, type, value: '' };
+  }
+
+  function parseBlockPath(pathStr) {
+    if (!pathStr && pathStr !== 0) return [];
+    return String(pathStr).split('.').map((part) => parseInt(part, 10));
+  }
+
+  function pathToString(path) {
+    return path.join('.');
+  }
+
+  function resolveBlockPath(blocks, path) {
+    if (!path.length) return null;
+    let list = blocks;
+    for (let i = 0; i < path.length - 1; i++) {
+      const block = list[path[i]];
+      if (!block || block.type !== 'group' || !Array.isArray(block.children)) return null;
+      list = block.children;
+    }
+    const index = path[path.length - 1];
+    return { list, index, block: list[index] };
+  }
+
+  function collectBlockFromDom(block) {
+    const result = { id: block.id, type: block.type };
+
+    if (block.type === 'header' || block.type === 'text' || block.type === 'group') {
+      result.value = document.getElementById(`knowledge_block_val_${block.id}`)?.value || '';
+    }
+
+    if (block.type === 'group') {
+      result.defaultExpanded = document.getElementById(`knowledge_block_expanded_${block.id}`)?.checked || false;
+      result.children = (block.children || []).map(collectBlockFromDom);
+    }
+
+    if (block.type === 'file') {
+      const fileId = `knowledge_block_file_${block.id}`;
+      result.title = document.getElementById(`knowledge_block_title_${block.id}`)?.value || '';
+      result.file = document.getElementById(fileId)?.value || '';
+      const label = document.getElementById(`${fileId}_name`);
+      result.fileName = label ? label.textContent.trim() : (result.file ? result.file.split('/').pop() : '');
+    }
+
+    return result;
+  }
+
+  function renderBlockFields(block) {
+    const blockId = block.id;
+
+    if (block.type === 'header') {
+      return `
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Текст заголовка</label>
+          <input type="text" class="form-control" id="knowledge_block_val_${blockId}" value="${escapeAttr(block.value)}" placeholder="Например: Основные сведения">
+        </div>`;
+    }
+
+    if (block.type === 'text') {
+      return `
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Содержимое текста</label>
+          <textarea class="form-control" id="knowledge_block_val_${blockId}" rows="4" placeholder="Введите текстовое описание...">${escapeAttr(block.value)}</textarea>
+        </div>`;
+    }
+
+    if (block.type === 'group') {
+      const children = block.children || [];
+      const pathStr = block._pathStr || '';
+      return `
+        <div class="form-group" style="margin-bottom:12px;">
+          <label>Название группы</label>
+          <input type="text" class="form-control" id="knowledge_block_val_${blockId}" value="${escapeAttr(block.value)}" placeholder="Например: Реквизиты">
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);margin-bottom:12px;cursor:pointer;">
+          <input type="checkbox" id="knowledge_block_expanded_${blockId}" ${block.defaultExpanded ? 'checked' : ''}>
+          Открыта по умолчанию на сайте
+        </label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+          <button type="button" class="btn-save" style="padding:4px 10px;font-size:0.75rem;" onclick="AdminKnowledge.addChildBlock('${pathStr}', 'header')">+ Заголовок</button>
+          <button type="button" class="btn-save" style="padding:4px 10px;font-size:0.75rem;" onclick="AdminKnowledge.addChildBlock('${pathStr}', 'text')">+ Текст</button>
+          <button type="button" class="btn-save" style="padding:4px 10px;font-size:0.75rem;" onclick="AdminKnowledge.addChildBlock('${pathStr}', 'file')">+ Файл</button>
+          <button type="button" class="btn-save" style="padding:4px 10px;font-size:0.75rem;" onclick="AdminKnowledge.addChildBlock('${pathStr}', 'group')">+ Группа</button>
+        </div>
+        <div class="knowledge-admin-tree-children">
+          ${children.length
+            ? children.map((child, childIndex) => renderBlockAdminCard(child, [...(block._path || []), childIndex])).join('')
+            : '<p style="color:var(--text-secondary);font-size:0.85rem;margin:0;padding:8px 0;">Внутри группы пока нет элементов.</p>'}
+        </div>`;
+    }
+
+    if (block.type === 'file') {
+      const fileId = `knowledge_block_file_${blockId}`;
+      return `
+        <div class="form-group" style="margin-bottom:12px;">
+          <label>Название документа</label>
+          <input type="text" class="form-control" id="knowledge_block_title_${blockId}" value="${escapeAttr(block.title)}" placeholder="Например: Лицензия на осуществление образовательной деятельности">
+        </div>
+        ${fileUploadRow(fileId, 'Файл документа', block.file || '', block.fileName)}`;
+    }
+
+    return '';
+  }
+
+  function getBlockMeta(block) {
+    if (block.type === 'header') return { label: 'Заголовок', color: '#00AE4D' };
+    if (block.type === 'text') return { label: 'Текст', color: '#3a86ff' };
+    if (block.type === 'file') return { label: 'Документ (файл)', color: '#f72585' };
+    if (block.type === 'group') return { label: 'Группа', color: '#8338ec' };
+    return { label: block.type, color: 'var(--text-secondary)' };
+  }
+
+  function renderBlockAdminCard(block, path) {
+    const pathStr = pathToString(path);
+    const depth = Math.max(0, path.length - 1);
+    const resolved = resolveBlockPath(window.knowledgePageData?.blocks || [], path);
+    const siblings = resolved?.list || [];
+    const index = resolved?.index ?? 0;
+    const prevSibling = index > 0 ? siblings[index - 1] : null;
+    const canNest = prevSibling && prevSibling.type === 'group';
+    const canUnnest = path.length > 1;
+
+    block._path = path;
+    block._pathStr = pathStr;
+
+    const meta = getBlockMeta(block);
+
+    return `
+      <div class="knowledge-admin-tree-node" data-block-path="${pathStr}" style="margin-left:${depth * 20}px;">
+        <div class="admin-subcard knowledge-admin-block-card" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;background:var(--card-bg);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.05); padding-bottom:8px; gap:8px; flex-wrap:wrap;">
+            <span class="block-badge" style="background:${meta.color}; color:#fff; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">${meta.label}</span>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn-save" style="padding:4px 8px; font-size:0.75rem;" title="Выше" onclick="AdminKnowledge.moveBlockUp('${pathStr}')" ${index === 0 ? 'disabled style="opacity:0.3;"' : ''}>▲</button>
+              <button type="button" class="btn-save" style="padding:4px 8px; font-size:0.75rem;" title="Ниже" onclick="AdminKnowledge.moveBlockDown('${pathStr}')" ${index >= siblings.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>▼</button>
+              ${canNest ? `<button type="button" class="btn-save" style="padding:4px 8px; font-size:0.75rem;" title="Вложить в группу выше" onclick="AdminKnowledge.nestIntoPreviousGroup('${pathStr}')">→</button>` : ''}
+              ${canUnnest ? `<button type="button" class="btn-save" style="padding:4px 8px; font-size:0.75rem;" title="Вынести из группы" onclick="AdminKnowledge.unnestBlock('${pathStr}')">←</button>` : ''}
+              <button type="button" class="btn-delete" style="padding:4px 8px; font-size:0.75rem;" title="Удалить" onclick="AdminKnowledge.removeBlock('${pathStr}')">×</button>
+            </div>
+          </div>
+          ${renderBlockFields(block)}
+        </div>
+      </div>`;
+  }
+
   function renderBlocksAdmin(data) {
     const el = document.getElementById('knowledgeBlocksAdmin');
     if (!el) return;
     const list = data.blocks || [];
 
     if (list.length === 0) {
-      el.innerHTML = `<div style="text-align:center; padding:30px; border:2px dashed var(--card-border); border-radius:12px; color:var(--text-secondary);">Нет добавленных блоков. Нажмите кнопки выше, чтобы добавить заголовок, текст или документ.</div>`;
+      el.innerHTML = `<div style="text-align:center; padding:30px; border:2px dashed var(--card-border); border-radius:12px; color:var(--text-secondary);">Нет добавленных блоков. Нажмите кнопки выше, чтобы добавить заголовок, текст, группу или документ.</div>`;
       return;
     }
 
-    el.innerHTML = list
-      .map((block, i) => {
-        let blockFields = '';
-        let badgeColor = 'var(--text-secondary)';
-        let blockLabel = '';
-
-        if (block.type === 'header') {
-          blockLabel = 'Заголовок';
-          badgeColor = '#00AE4D';
-          blockFields = `
-            <div class="form-group" style="margin-bottom:0;">
-              <label>Текст заголовка</label>
-              <input type="text" class="form-control" id="knowledge_block_val_${i}" value="${escapeAttr(block.value)}" placeholder="Например: Основные сведения">
-            </div>`;
-        } else if (block.type === 'text') {
-          blockLabel = 'Текст';
-          badgeColor = '#3a86ff';
-          blockFields = `
-            <div class="form-group" style="margin-bottom:0;">
-              <label>Содержимое текста</label>
-              <textarea class="form-control" id="knowledge_block_val_${i}" rows="4" placeholder="Введите текстовое описание...">${escapeAttr(block.value)}</textarea>
-            </div>`;
-        } else if (block.type === 'file') {
-          blockLabel = 'Документ (файл)';
-          badgeColor = '#f72585';
-          blockFields = `
-            <div class="form-group" style="margin-bottom:12px;">
-              <label>Название документа</label>
-              <input type="text" class="form-control" id="knowledge_block_title_${i}" value="${escapeAttr(block.title)}" placeholder="Например: Лицензия на осуществление образовательной деятельности">
-            </div>
-            ${fileUploadRow(`knowledge_block_file_${i}`, 'Файл документа', block.file || '', block.fileName)}`;
-        }
-
-        return `
-          <div class="admin-subcard" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;background:var(--card-bg);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.05); padding-bottom:8px;">
-              <span class="block-badge" style="background:${badgeColor}; color:#fff; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">${blockLabel}</span>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="btn-save" style="padding:4px 8px; font-size:0.75rem;" onclick="AdminKnowledge.moveBlockUp(${i})" ${i === 0 ? 'disabled style="opacity:0.3;"' : ''}>▲</button>
-                <button type="button" class="btn-save" style="padding:4px 8px; font-size:0.75rem;" onclick="AdminKnowledge.moveBlockDown(${i})" ${i === list.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>▼</button>
-                <button type="button" class="btn-delete" style="padding:4px 8px; font-size:0.75rem;" onclick="AdminKnowledge.removeBlock(${i})">×</button>
-              </div>
-            </div>
-            ${blockFields}
-          </div>`;
-      })
-      .join('');
+    el.innerHTML = list.map((block, i) => renderBlockAdminCard(block, [i])).join('');
   }
 
   function renderKnowledgePageAdmin(data) {
@@ -325,33 +432,7 @@
       subtitleUnderline: document.getElementById('knowledge_hero_subtitle_underline')?.checked || false
     };
 
-    const blockList = [];
-    const elements = document.getElementById('knowledgeBlocksAdmin')?.children || [];
-    const currentList = data.blocks || [];
-
-    for (let i = 0; i < elements.length; i++) {
-      const orig = currentList[i];
-      if (!orig) continue;
-
-      const block = {
-        id: orig.id,
-        type: orig.type
-      };
-
-      if (orig.type === 'header' || orig.type === 'text') {
-        block.value = document.getElementById(`knowledge_block_val_${i}`)?.value || '';
-      } else if (orig.type === 'file') {
-        block.title = document.getElementById(`knowledge_block_title_${i}`)?.value || '';
-        block.file = document.getElementById(`knowledge_block_file_${i}`)?.value || '';
-        
-        const label = document.getElementById(`knowledge_block_file_${i}_name`);
-        block.fileName = label ? label.textContent.trim() : (block.file ? block.file.split('/').pop() : '');
-      }
-
-      blockList.push(block);
-    }
-
-    data.blocks = blockList;
+    data.blocks = (data.blocks || []).map(collectBlockFromDom);
     return data;
   }
 
@@ -405,42 +486,101 @@
     getCropSize,
     isKnowledgeUploadId,
     setFileUploadState,
+    parseBlockPath,
     addHeaderBlock() {
       window.saveKnowledgePageStateToMemory?.();
-      window.knowledgePageData.blocks.push({ id: `block_${Date.now()}`, type: 'header', value: '' });
+      window.knowledgePageData.blocks.push(createKnowledgeBlock('header'));
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
     addTextBlock() {
       window.saveKnowledgePageStateToMemory?.();
-      window.knowledgePageData.blocks.push({ id: `block_${Date.now()}`, type: 'text', value: '' });
+      window.knowledgePageData.blocks.push(createKnowledgeBlock('text'));
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
     addFileBlock() {
       window.saveKnowledgePageStateToMemory?.();
-      window.knowledgePageData.blocks.push({ id: `block_${Date.now()}`, type: 'file', title: '', file: '', fileName: '' });
+      window.knowledgePageData.blocks.push(createKnowledgeBlock('file'));
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
-    removeBlock(i) {
+    addGroupBlock() {
       window.saveKnowledgePageStateToMemory?.();
-      window.knowledgePageData.blocks.splice(i, 1);
+      window.knowledgePageData.blocks.push(createKnowledgeBlock('group'));
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
-    moveBlockUp(i) {
-      if (i <= 0) return;
+    addChildBlock(parentPathStr, type) {
       window.saveKnowledgePageStateToMemory?.();
-      const list = window.knowledgePageData.blocks;
-      const temp = list[i];
-      list[i] = list[i - 1];
-      list[i - 1] = temp;
+      const path = parseBlockPath(parentPathStr);
+      const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
+      if (!resolved?.block || resolved.block.type !== 'group') return;
+      if (!Array.isArray(resolved.block.children)) resolved.block.children = [];
+      resolved.block.children.push(createKnowledgeBlock(type));
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
-    moveBlockDown(i) {
-      const list = window.knowledgePageData.blocks;
-      if (i >= list.length - 1) return;
+    removeBlock(pathStr) {
       window.saveKnowledgePageStateToMemory?.();
-      const temp = list[i];
-      list[i] = list[i + 1];
-      list[i + 1] = temp;
+      const path = parseBlockPath(pathStr);
+      const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
+      if (!resolved) return;
+      resolved.list.splice(resolved.index, 1);
+      renderKnowledgePageAdmin(window.knowledgePageData);
+    },
+    moveBlockUp(pathStr) {
+      const path = parseBlockPath(pathStr);
+      const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
+      if (!resolved || resolved.index <= 0) return;
+      window.saveKnowledgePageStateToMemory?.();
+      const { list, index } = resolved;
+      [list[index - 1], list[index]] = [list[index], list[index - 1]];
+      renderKnowledgePageAdmin(window.knowledgePageData);
+    },
+    moveBlockDown(pathStr) {
+      const path = parseBlockPath(pathStr);
+      const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
+      if (!resolved || resolved.index >= resolved.list.length - 1) return;
+      window.saveKnowledgePageStateToMemory?.();
+      const { list, index } = resolved;
+      [list[index + 1], list[index]] = [list[index], list[index + 1]];
+      renderKnowledgePageAdmin(window.knowledgePageData);
+    },
+    nestIntoPreviousGroup(pathStr) {
+      const path = parseBlockPath(pathStr);
+      const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
+      if (!resolved || resolved.index <= 0) return;
+      const prev = resolved.list[resolved.index - 1];
+      if (!prev || prev.type !== 'group') return;
+      window.saveKnowledgePageStateToMemory?.();
+      const [block] = resolved.list.splice(resolved.index, 1);
+      if (!Array.isArray(prev.children)) prev.children = [];
+      prev.children.push(block);
+      renderKnowledgePageAdmin(window.knowledgePageData);
+    },
+    unnestBlock(pathStr) {
+      const path = parseBlockPath(pathStr);
+      if (path.length < 2) return;
+      const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
+      if (!resolved) return;
+      const parentPath = path.slice(0, -1);
+      const parentResolved = resolveBlockPath(window.knowledgePageData.blocks, parentPath);
+      if (!parentResolved?.block || parentResolved.block.type !== 'group') return;
+
+      window.saveKnowledgePageStateToMemory?.();
+      const [block] = resolved.list.splice(resolved.index, 1);
+
+      const containerPath = parentPath.slice(0, -1);
+      let containerList;
+      let insertAfterIndex;
+
+      if (containerPath.length === 0) {
+        containerList = window.knowledgePageData.blocks;
+        insertAfterIndex = parentPath[0];
+      } else {
+        const containerResolved = resolveBlockPath(window.knowledgePageData.blocks, containerPath);
+        if (!containerResolved?.block || containerResolved.block.type !== 'group') return;
+        containerList = containerResolved.block.children;
+        insertAfterIndex = parentPath[parentPath.length - 1];
+      }
+
+      containerList.splice(insertAfterIndex + 1, 0, block);
       renderKnowledgePageAdmin(window.knowledgePageData);
     }
   };
