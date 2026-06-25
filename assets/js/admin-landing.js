@@ -200,7 +200,7 @@
   }
 
   function blockHeaderWithColorHtml(title, colorId, colorValue, defaultColor, fontSize = '', fontWeight = '', italic = false, underline = false) {
-    const isEnabled = colorValue && colorValue !== defaultColor && colorValue !== '#000000' && colorValue !== '#333333';
+    const color = /^#[0-9A-Fa-f]{6}$/.test(colorValue || '') ? colorValue : defaultColor;
     const sizeId = colorId.replace('_color', '_size');
     const weightId = colorId.replace('_color', '_weight');
     const italicId = colorId.replace('_color', '_italic');
@@ -224,8 +224,8 @@
             <input type="checkbox" id="${underlineId}" ${underline ? 'checked' : ''} style="display:none;" onchange="this.parentElement.style.background = this.checked ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'">
             U
           </label>
-          <input type="checkbox" id="${colorId}_enable" ${isEnabled ? 'checked' : ''} onchange="document.getElementById('${colorId}').disabled = !this.checked">
-          <input type="color" id="${colorId}" value="${colorValue || defaultColor}" ${isEnabled ? '' : 'disabled'} style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer; margin-bottom:0;">
+          <input type="color" id="${colorId}_picker" value="${escapeAttr(color)}" style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer; background:transparent; margin-bottom:0;">
+          <input type="text" class="form-control" id="${colorId}" value="${escapeAttr(colorValue || '')}" placeholder="${defaultColor}" style="max-width:90px; padding:4px 8px; font-size:0.85rem; font-family:monospace; margin-bottom:0;">
         </div>
       </div>
     `;
@@ -301,7 +301,7 @@
         ['title', 'subtitle'].forEach(field => {
             const input = document.getElementById(`m_hero_${field}_${i}`);
             const color = document.getElementById(`m_hero_${field}_color_${i}`);
-            const colorEnable = document.getElementById(`m_hero_${field}_color_${i}_enable`);
+            const colorPicker = document.getElementById(`m_hero_${field}_color_${i}_picker`);
             const top = document.getElementById(`m_hero_${field}_top_${i}`);
             const left = document.getElementById(`m_hero_${field}_left_${i}`);
             const live = document.getElementById(`m_hero_live_${field}_${i}`);
@@ -311,12 +311,8 @@
             const underline = document.getElementById(`m_hero_${field}_underline_${i}`);
 
             if(input && live) input.addEventListener('input', e => live.innerText = e.target.value);
-            if(color && live) color.addEventListener('input', e => live.style.color = e.target.value);
-            if(colorEnable && live && color) {
-                colorEnable.addEventListener('change', e => {
-                    live.style.color = e.target.checked ? color.value : '';
-                });
-            }
+            if(color && live) color.addEventListener('input', e => { live.style.color = e.target.value; if(colorPicker) colorPicker.value = e.target.value; });
+            if(colorPicker && live) colorPicker.addEventListener('input', e => { live.style.color = e.target.value; if(color) color.value = e.target.value; });
             if(top && live) top.addEventListener('input', e => live.style.top = `${(e.target.value / 420) * 100}%`);
             if(left && live) left.addEventListener('input', e => live.style.left = `${(e.target.value / 1520) * 100}%`);
             if(size && live) size.addEventListener('input', e => { if(e.target.value) live.style.fontSize = `${e.target.value}px`; else live.style.removeProperty('font-size'); });
@@ -574,11 +570,9 @@
     const heroSlides = [];
     const heroCount = document.querySelectorAll('[id^="m_hero_bg_"][type="hidden"]').length;
     for (let i = 0; i < heroCount; i++) {
-      const titleColorEnable = document.getElementById(`m_hero_title_color_${i}_enable`);
-      const subtitleColorEnable = document.getElementById(`m_hero_subtitle_color_${i}_enable`);
       heroSlides.push({
         title: document.getElementById(`m_hero_title_${i}`)?.value || '',
-        titleColor: (titleColorEnable && titleColorEnable.checked) ? (document.getElementById(`m_hero_title_color_${i}`)?.value || '#ffffff') : '',
+        titleColor: document.getElementById(`m_hero_title_color_${i}`)?.value || '',
         titleTop: parseInt(document.getElementById(`m_hero_title_top_${i}`)?.value || 122, 10),
         titleLeft: parseInt(document.getElementById(`m_hero_title_left_${i}`)?.value || 70, 10),
         titleFontSize: document.getElementById(`m_hero_title_size_${i}`)?.value || '',
@@ -586,13 +580,13 @@
         titleItalic: document.getElementById(`m_hero_title_italic_${i}`)?.checked || false,
         titleUnderline: document.getElementById(`m_hero_title_underline_${i}`)?.checked || false,
         subtitle: document.getElementById(`m_hero_subtitle_${i}`)?.value || '',
-        subtitleColor: (subtitleColorEnable && subtitleColorEnable.checked) ? (document.getElementById(`m_hero_subtitle_color_${i}`)?.value || '#ffffff') : '',
+        subtitleColor: document.getElementById(`m_hero_subtitle_color_${i}`)?.value || '',
         subtitleTop: parseInt(document.getElementById(`m_hero_subtitle_top_${i}`)?.value || 213, 10),
         subtitleLeft: parseInt(document.getElementById(`m_hero_subtitle_left_${i}`)?.value || 70, 10),
         subtitleFontSize: document.getElementById(`m_hero_subtitle_size_${i}`)?.value || '',
         subtitleFontWeight: document.getElementById(`m_hero_subtitle_weight_${i}`)?.value || '',
         subtitleItalic: document.getElementById(`m_hero_subtitle_italic_${i}`)?.checked || false,
-        subtitleUnderline: document.getElementById('m_hero_subtitle_underline_' + i)?.checked || false,
+        subtitleUnderline: document.getElementById(`m_hero_subtitle_underline_${i}`)?.checked || false,
         background: readImageVal(`m_hero_bg_${i}`)
       });
     }
