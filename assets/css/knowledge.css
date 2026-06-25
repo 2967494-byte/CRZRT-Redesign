@@ -87,6 +87,21 @@ body[data-page="knowledge"] .consulting-hero-gavel {
   display: none !important;
 }
 
+body[data-page="knowledge"] #knowledge-blocks-container {
+  background-color: #EEEEFA !important;
+  border-radius: 20px !important;
+  padding: 46px 70px 70px !important;
+  box-sizing: border-box !important;
+}
+
+body[data-page="knowledge"] #knowledge-blocks-container > :first-child {
+  margin-top: 0 !important;
+}
+
+body[data-page="knowledge"] #knowledge-blocks-container > :last-child {
+  margin-bottom: 0 !important;
+}
+
 body[data-page="knowledge"] .knowledge-header {
   font-family: 'Google Sans', 'Inter', sans-serif;
   font-weight: 500;
@@ -189,6 +204,10 @@ body[data-page="knowledge"] .knowledge-download-btn:hover span.arrow-down-right 
 }
 
 @media (max-width: 768px) {
+  body[data-page="knowledge"] #knowledge-blocks-container {
+    padding: 30px 24px 40px !important;
+    border-radius: 16px !important;
+  }
   body[data-page="knowledge"] .consulting-hero {
     min-height: 300px !important;
   }
