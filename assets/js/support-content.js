@@ -43,21 +43,21 @@
       price: 'от 10 000 руб.',
       btnText: 'Оставить заявку',
       btnLink: '#contacts',
-      moreLink: '#'
+      detailsHtml: ''
     },
     {
       title: 'Подготовка\nзакупочной документации',
       price: 'от 10 000 руб.',
       btnText: 'Оставить заявку',
       btnLink: '#contacts',
-      moreLink: '#'
+      detailsHtml: ''
     },
     {
       title: 'Комплексное\nсопровождение',
       price: 'от 10 000 руб.',
       btnText: 'Оставить заявку',
       btnLink: '#contacts',
-      moreLink: '#'
+      detailsHtml: ''
     }
   ];
 
@@ -78,21 +78,21 @@
       price: 'от 10 000 руб.',
       btnText: 'Оставить заявку',
       btnLink: '#contacts',
-      moreLink: '#'
+      detailsHtml: ''
     },
     {
       title: 'Помощь участия\nв торгах',
       price: 'от 10 000 руб.',
       btnText: 'Оставить заявку',
       btnLink: '#contacts',
-      moreLink: '#'
+      detailsHtml: ''
     },
     {
       title: 'Защита интересов\nв ФАС и в судах',
       price: 'от 10 000 руб.',
       btnText: 'Оставить заявку',
       btnLink: '#contacts',
-      moreLink: '#'
+      detailsHtml: ''
     }
   ];
 
@@ -119,7 +119,8 @@
     navCards: DEFAULT_NAV_CARDS.map((card) => ({ ...card })),
     customers: {
       title: 'Для заказчиков',
-      services: DEFAULT_CUSTOMER_SERVICES.map((item) => ({ ...item })),
+      services44: DEFAULT_CUSTOMER_SERVICES.map((item) => ({ ...item })),
+      services223: DEFAULT_CUSTOMER_SERVICES.map((item) => ({ ...item })),
       checklist: {
         title: DEFAULT_CUSTOMER_CHECKLIST.title,
         items: DEFAULT_CUSTOMER_CHECKLIST.items.map((item) => ({ lines: [...item.lines], file: item.file }))
@@ -212,18 +213,46 @@
       .join('<br>');
   }
 
-  function migrateAudienceSection(rawSection, defaults) {
+  function normalizeServiceItem(item, fallback) {
+    const base = fallback || {};
+    return {
+      title: item?.title !== undefined ? String(item.title) : (base.title || ''),
+      price: item?.price !== undefined ? String(item.price) : (base.price || 'от 10 000 руб.'),
+      btnText: item?.btnText || base.btnText || 'Оставить заявку',
+      btnLink: item?.btnLink || base.btnLink || '#contacts',
+      detailsHtml: item?.detailsHtml !== undefined
+        ? String(item.detailsHtml)
+        : (item?.moreLink && /<[a-z][\s\S]*>/i.test(String(item.moreLink)) ? String(item.moreLink) : (base.detailsHtml || ''))
+    };
+  }
+
+  function normalizeServicesList(rawList, defaults, count = 3) {
+    const source = Array.isArray(rawList) && rawList.length ? rawList : defaults.map((item) => ({ ...item }));
+    const items = [];
+    for (let i = 0; i < count; i++) {
+      items.push(normalizeServiceItem(source[i], defaults[i] || defaults[0] || {}));
+    }
+    return items;
+  }
+
+  function migrateAudienceSection(rawSection, defaults, options = {}) {
     const raw = rawSection && typeof rawSection === 'object' ? rawSection : {};
-    const services =
-      Array.isArray(raw.services) && raw.services.length
-        ? raw.services.map((item) => ({
-            title: item?.title || '',
-            price: item?.price || '',
-            btnText: item?.btnText || 'Оставить заявку',
-            btnLink: item?.btnLink || '#contacts',
-            moreLink: item?.moreLink || '#'
-          }))
-        : defaults.services.map((item) => ({ ...item }));
+    const legacyServices = Array.isArray(raw.services) ? raw.services : [];
+    const services44 = normalizeServicesList(
+      raw.services44 || legacyServices,
+      defaults.services44 || defaults.services || DEFAULT_CUSTOMER_SERVICES,
+      3
+    );
+    const services223 = normalizeServicesList(
+      raw.services223 || legacyServices,
+      defaults.services223 || defaults.services || DEFAULT_CUSTOMER_SERVICES,
+      3
+    );
+    const services = normalizeServicesList(
+      raw.services || legacyServices,
+      defaults.services || DEFAULT_SUPPLIER_SERVICES,
+      3
+    );
 
     const rawChecklist = raw.checklist && typeof raw.checklist === 'object' ? raw.checklist : {};
     const checklistItems =
@@ -239,14 +268,22 @@
           }))
         : defaults.checklist.items.map((item) => ({ lines: [...item.lines], file: item.file || '' }));
 
-    return {
+    const section = {
       title: raw.title || defaults.title,
-      services,
       checklist: {
         title: rawChecklist.title || defaults.checklist.title,
         items: checklistItems
       }
     };
+
+    if (options.splitByLaw) {
+      section.services44 = services44;
+      section.services223 = services223;
+    } else {
+      section.services = services;
+    }
+
+    return section;
   }
 
   function migrateSupportPageData(raw) {
@@ -280,7 +317,7 @@
           }))
         : DEFAULT_NAV_CARDS.map((card) => ({ ...card }));
 
-    const customers = migrateAudienceSection(raw?.customers, SUPPORT_DEFAULTS.customers);
+    const customers = migrateAudienceSection(raw?.customers, SUPPORT_DEFAULTS.customers, { splitByLaw: true });
     const suppliers = migrateAudienceSection(raw?.suppliers, SUPPORT_DEFAULTS.suppliers);
 
     const rawCalc = raw?.calculator && typeof raw.calculator === 'object' ? raw.calculator : {};
@@ -496,25 +533,95 @@
       .join('');
   }
 
+  let cachedCustomersSection = null;
+
   function renderServiceCards(container, services) {
     if (!container) return;
     const list = services?.length ? services : [];
     container.innerHTML = list
-      .map((item) => {
+      .map((item, index) => {
         const btnHref = escapeHtml((item.btnLink || '#contacts').trim() || '#contacts');
-        const moreHref = escapeHtml((item.moreLink || '#').trim() || '#');
         const price = escapeHtml(item.price || '');
-        return `<article class="support-service-card">
+        const hasDetails = Boolean((item.detailsHtml || '').trim());
+        const moreControl = hasDetails
+          ? `<button type="button" class="support-service-card__more" data-support-service-detail="${index}">
+            подробнее
+            ${MORE_ARROW_SVG}
+          </button>`
+          : `<span class="support-service-card__more support-service-card__more--empty">
+            подробнее
+            ${MORE_ARROW_SVG}
+          </span>`;
+        return `<article class="support-service-card" data-service-index="${index}">
           <h3 class="support-service-card__title">${multilineHtml(item.title)}</h3>
           <p class="support-service-card__price">${price.replace(/ /g, '&nbsp;')}</p>
           <a href="${btnHref}" class="support-service-card__btn">${escapeHtml(item.btnText || 'Оставить заявку')}</a>
-          <a href="${moreHref}" class="support-service-card__more">
-            подробнее
-            ${MORE_ARROW_SVG}
-          </a>
+          ${moreControl}
         </article>`;
       })
       .join('');
+    container.dataset.servicesJson = JSON.stringify(list);
+  }
+
+  function getCurrentCustomerLaw() {
+    const toggle = document.querySelector('.support-law-toggle');
+    return toggle?.classList.contains('support-law-toggle--223') ? '223' : '44';
+  }
+
+  function renderCustomerServiceCards(section) {
+    const root = document.getElementById('for-customers');
+    const container = root?.querySelector('.support-service-cards');
+    if (!container || !section) return;
+    const law = getCurrentCustomerLaw();
+    const services = law === '223' ? section.services223 : section.services44;
+    renderServiceCards(container, services);
+  }
+
+  function bindSupportServiceDetails() {
+    document.querySelectorAll('.support-service-cards').forEach((container) => {
+      if (container.dataset.detailsBound === 'true') return;
+      container.dataset.detailsBound = 'true';
+      container.addEventListener('click', (event) => {
+        const btn = event.target.closest('[data-support-service-detail]');
+        if (!btn) return;
+        const index = parseInt(btn.getAttribute('data-support-service-detail'), 10);
+        let services = [];
+        try {
+          services = JSON.parse(container.dataset.servicesJson || '[]');
+        } catch (error) {
+          services = [];
+        }
+        const item = services[index];
+        if (!item || !(item.detailsHtml || '').trim()) return;
+        openSupportServiceModal(item);
+      });
+    });
+  }
+
+  function openSupportServiceModal(item) {
+    const modal = document.getElementById('supportServiceModal');
+    const titleEl = document.getElementById('supportServiceModalTitle');
+    const bodyEl = document.getElementById('supportServiceModalBody');
+    if (!modal || !titleEl || !bodyEl) return;
+    titleEl.innerHTML = multilineHtml(item.title);
+    bodyEl.innerHTML = item.detailsHtml || '';
+    modal.style.display = 'flex';
+  }
+
+  function closeSupportServiceModal() {
+    const modal = document.getElementById('supportServiceModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function bindSupportServiceModal() {
+    const modal = document.getElementById('supportServiceModal');
+    if (!modal || modal.dataset.bound === 'true') return;
+    modal.dataset.bound = 'true';
+    modal.querySelector('.support-service-modal__close')?.addEventListener('click', closeSupportServiceModal);
+    modal.querySelector('.support-service-modal__overlay')?.addEventListener('click', closeSupportServiceModal);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeSupportServiceModal();
+    });
   }
 
   function renderChecklistBlock(checklistEl, checklist) {
@@ -559,8 +666,14 @@
     if (!root) return;
     const titleEl = root.querySelector(titleSelector);
     if (titleEl) titleEl.textContent = section?.title || '';
-    renderServiceCards(root.querySelector('.support-service-cards'), section?.services);
+    if (sectionId === 'for-customers') {
+      cachedCustomersSection = section;
+      renderCustomerServiceCards(section);
+    } else {
+      renderServiceCards(root.querySelector('.support-service-cards'), section?.services);
+    }
     renderChecklistBlock(root.querySelector('.support-checklist'), section?.checklist);
+    bindSupportServiceDetails();
   }
 
   function renderCalculator(calculator) {
@@ -754,6 +867,7 @@
         label.classList.toggle('support-law-toggle__label--active', label.dataset.law === law);
       });
       toggle.dispatchEvent(new CustomEvent('supportLawChange', { detail: { law } }));
+      if (cachedCustomersSection) renderCustomerServiceCards(cachedCustomersSection);
     }
 
     btn.addEventListener('click', () => {
@@ -767,6 +881,7 @@
       const initialData = localData || migrateSupportPageData(null);
       renderSupportPage(initialData);
       initSupportLawToggle();
+      bindSupportServiceModal();
       markSupportContentReady();
 
       const apiData = await loadSupportDataFromApi();

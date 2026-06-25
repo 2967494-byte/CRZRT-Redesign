@@ -9,10 +9,12 @@
       subtitle: '', subtitleColor: '#ffffff', subtitleTop: 213, subtitleLeft: 70 
     },
     navCards: [],
-    customers: { title: '', services: [], checklist: { title: '', items: [] } },
+    customers: { title: '', services44: [], services223: [], checklist: { title: '', items: [] } },
     calculator: { title: '', image: '' },
     suppliers: { title: '', services: [], checklist: { title: '', items: [] } }
   };
+
+  let supportDetailsWysiwygBound = false;
 
   function escapeAttr(s) {
     return String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -292,34 +294,56 @@
     cards.forEach((card, i) => setImageUploadState(`support_nav_icon_${i}`, card.icon));
   }
 
-  function serviceCardHtml(prefix, item, i) {
+  function serviceCardRowHtml(prefix, item, i) {
     return `
-      <div class="admin-subcard" style="margin-bottom:16px;padding:16px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <strong>Услуга ${i + 1}</strong>
-          <button type="button" class="btn-delete" style="padding:6px 12px;font-size:0.8rem;" onclick="AdminSupport.removeService('${prefix}', ${i})">Удалить</button>
-        </div>
-        <div class="form-group">
-          <label>Название (Enter — перенос)</label>
+      <div class="support-svc-admin-card">
+        <span class="support-svc-admin-card__num">Плашка ${i + 1}</span>
+        <div class="support-svc-admin-card__field">
+          <label for="support_${prefix}_svc_title_${i}">Название</label>
           <textarea class="form-control" id="support_${prefix}_svc_title_${i}" rows="2">${escapeAttr(item.title)}</textarea>
         </div>
-        <div class="form-group">
-          <label>Цена</label>
+        <div class="support-svc-admin-card__field">
+          <label for="support_${prefix}_svc_price_${i}">Стоимость от</label>
           <input type="text" class="form-control" id="support_${prefix}_svc_price_${i}" value="${escapeAttr(item.price)}">
         </div>
-        <div class="form-group">
-          <label>Текст кнопки</label>
-          <input type="text" class="form-control" id="support_${prefix}_svc_btn_text_${i}" value="${escapeAttr(item.btnText)}">
-        </div>
-        <div class="form-group">
-          <label>Ссылка кнопки</label>
-          <input type="text" class="form-control" id="support_${prefix}_svc_btn_link_${i}" value="${escapeAttr(item.btnLink)}">
-        </div>
-        <div class="form-group">
-          <label>Ссылка «подробнее»</label>
-          <input type="text" class="form-control" id="support_${prefix}_svc_more_${i}" value="${escapeAttr(item.moreLink)}">
+        <div class="support-svc-admin-card__field">
+          <label>Подробнее</label>
+          <button type="button" class="btn-edit support-svc-admin-card__details-btn" onclick="AdminSupport.openServiceDetails('${prefix}', ${i})">Редактировать</button>
+          <textarea id="support_${prefix}_svc_details_${i}" style="display:none;" aria-hidden="true"></textarea>
         </div>
       </div>`;
+  }
+
+  function renderServicesBlockHtml(blockTitle, prefix, services) {
+    const list = Array.isArray(services) ? services.slice(0, 3) : [];
+    while (list.length < 3) list.push({});
+    return `
+      <div class="support-svc-admin-block">
+        <h4 class="support-svc-admin-block__title">${blockTitle}</h4>
+        <div class="support-svc-admin-row">
+          ${list.map((item, i) => serviceCardRowHtml(prefix, item, i)).join('')}
+        </div>
+      </div>`;
+  }
+
+  function fillServiceDetailsTextareas(prefix, services) {
+    const list = services || [];
+    for (let i = 0; i < 3; i++) {
+      const textarea = document.getElementById(`support_${prefix}_svc_details_${i}`);
+      if (textarea) textarea.value = list[i]?.detailsHtml || '';
+    }
+  }
+
+  function renderChecklistSectionHtml(prefix, checklist) {
+    const data = checklist || { title: '', items: [] };
+    const items = data.items || [];
+    return `
+      <h4 style="margin:24px 0 12px;font-size:0.95rem;">Чек-листы</h4>
+      <div class="form-group">
+        <label>Заголовок блока чек-листов (Enter — перенос)</label>
+        <textarea class="form-control" id="support_${prefix}_check_title" rows="2">${escapeAttr(data.title)}</textarea>
+      </div>
+      ${items.map((item, i) => checklistItemHtml(prefix, item, i)).join('')}`;
   }
 
   function checklistItemHtml(prefix, item, i) {
@@ -338,27 +362,40 @@
       </div>`;
   }
 
-  function renderAudienceAdmin(prefix, containerId, section) {
-    const el = document.getElementById(containerId);
+  function renderCustomersAdmin(section) {
+    const el = document.getElementById('supportCustomersAdmin');
     if (!el) return;
-    const data = section || { title: '', services: [], checklist: { title: '', items: [] } };
-    const services = data.services || [];
-    const checklist = data.checklist || { title: '', items: [] };
-    const items = checklist.items || [];
+    const data = section || { title: '', services44: [], services223: [], checklist: { title: '', items: [] } };
 
     el.innerHTML = `
       <div class="form-group">
         <label>Заголовок секции</label>
-        <input type="text" class="form-control" id="support_${prefix}_title" value="${escapeAttr(data.title)}">
+        <input type="text" class="form-control" id="support_customers_title" value="${escapeAttr(data.title)}">
       </div>
       <h4 style="margin:24px 0 12px;font-size:0.95rem;">Карточки услуг</h4>
-      ${services.map((item, i) => serviceCardHtml(prefix, item, i)).join('')}
-      <h4 style="margin:24px 0 12px;font-size:0.95rem;">Чек-листы</h4>
+      ${renderServicesBlockHtml('44-ФЗ', 'customers_44', data.services44)}
+      ${renderServicesBlockHtml('223-ФЗ', 'customers_223', data.services223)}
+      ${renderChecklistSectionHtml('customers', data.checklist)}`;
+
+    fillServiceDetailsTextareas('customers_44', data.services44);
+    fillServiceDetailsTextareas('customers_223', data.services223);
+  }
+
+  function renderSuppliersAdmin(section) {
+    const el = document.getElementById('supportSuppliersAdmin');
+    if (!el) return;
+    const data = section || { title: '', services: [], checklist: { title: '', items: [] } };
+
+    el.innerHTML = `
       <div class="form-group">
-        <label>Заголовок блока чек-листов (Enter — перенос)</label>
-        <textarea class="form-control" id="support_${prefix}_check_title" rows="2">${escapeAttr(checklist.title)}</textarea>
+        <label>Заголовок секции</label>
+        <input type="text" class="form-control" id="support_suppliers_title" value="${escapeAttr(data.title)}">
       </div>
-      ${items.map((item, i) => checklistItemHtml(prefix, item, i)).join('')}`;
+      <h4 style="margin:24px 0 12px;font-size:0.95rem;">Карточки услуг</h4>
+      ${renderServicesBlockHtml('Услуги', 'suppliers', data.services)}
+      ${renderChecklistSectionHtml('suppliers', data.checklist)}`;
+
+    fillServiceDetailsTextareas('suppliers', data.services);
   }
 
   function renderCalculatorAdmin(data) {
@@ -379,32 +416,118 @@
     setImageUploadState('support_calc_image', calc.image);
   }
 
+  function bindSupportDetailsWysiwyg() {
+    if (supportDetailsWysiwygBound) return;
+    const editor = document.getElementById('supportServiceDetailsEditor');
+    if (!editor) return;
+    supportDetailsWysiwygBound = true;
+
+    const buttons = document.querySelectorAll('#supportServiceDetailsToolbar .wysiwyg-btn');
+    const fontSize = document.getElementById('supportServiceDetailsFontSize');
+    const color = document.getElementById('supportServiceDetailsColor');
+
+    function updateToolbar() {
+      buttons.forEach((btn) => {
+        const command = btn.getAttribute('data-command');
+        btn.classList.toggle('active', document.queryCommandState(command));
+      });
+    }
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.execCommand(btn.getAttribute('data-command'), false, null);
+        editor.focus();
+        updateToolbar();
+      });
+    });
+
+    fontSize?.addEventListener('change', (e) => {
+      document.execCommand('fontSize', false, e.target.value);
+      editor.focus();
+    });
+
+    color?.addEventListener('input', (e) => {
+      document.execCommand('foreColor', false, e.target.value);
+      editor.focus();
+    });
+
+    editor.addEventListener('keyup', updateToolbar);
+    editor.addEventListener('mouseup', updateToolbar);
+  }
+
+  function bindSupportDetailsModalEvents() {
+    const form = document.getElementById('supportServiceDetailsForm');
+    if (!form || form.dataset.bound === 'true') return;
+    form.dataset.bound = 'true';
+    form.addEventListener('submit', saveServiceDetailsFromModal);
+    document.getElementById('supportServiceDetailsModalClose')?.addEventListener('click', closeServiceDetailsModal);
+    document.getElementById('supportServiceDetailsModalCancel')?.addEventListener('click', closeServiceDetailsModal);
+  }
+
+  function openServiceDetails(prefix, index) {
+    window.saveSupportPageStateToMemory?.();
+    const textarea = document.getElementById(`support_${prefix}_svc_details_${index}`);
+    const modal = document.getElementById('supportServiceDetailsModal');
+    const editor = document.getElementById('supportServiceDetailsEditor');
+    const titleEl = document.getElementById('supportServiceDetailsModalTitle');
+    const cardTitle = document.getElementById(`support_${prefix}_svc_title_${index}`)?.value?.trim() || `Плашка ${index + 1}`;
+
+    if (!modal || !editor || !textarea) return;
+
+    document.getElementById('supportServiceDetailsPrefix').value = prefix;
+    document.getElementById('supportServiceDetailsIndex').value = String(index);
+    if (titleEl) titleEl.textContent = `Подробнее: ${cardTitle}`;
+    editor.innerHTML = textarea.value || '';
+    modal.style.display = 'flex';
+    bindSupportDetailsWysiwyg();
+    editor.focus();
+  }
+
+  function closeServiceDetailsModal() {
+    const modal = document.getElementById('supportServiceDetailsModal');
+    if (modal) modal.style.display = 'none';
+    const editor = document.getElementById('supportServiceDetailsEditor');
+    if (editor) editor.innerHTML = '';
+  }
+
+  function saveServiceDetailsFromModal(event) {
+    event.preventDefault();
+    const prefix = document.getElementById('supportServiceDetailsPrefix')?.value || '';
+    const index = parseInt(document.getElementById('supportServiceDetailsIndex')?.value || '-1', 10);
+    const editor = document.getElementById('supportServiceDetailsEditor');
+    const textarea = document.getElementById(`support_${prefix}_svc_details_${index}`);
+    if (!prefix || index < 0 || !textarea || !editor) return;
+    textarea.value = editor.innerHTML || '';
+    closeServiceDetailsModal();
+  }
+
   function renderSupportPageAdmin(data) {
     const migrated = getMigratedData(data);
     renderHeroAdmin(migrated);
     renderNavCardsAdmin(migrated);
-    renderAudienceAdmin('customers', 'supportCustomersAdmin', migrated.customers);
+    renderCustomersAdmin(migrated.customers);
     renderCalculatorAdmin(migrated);
-    renderAudienceAdmin('suppliers', 'supportSuppliersAdmin', migrated.suppliers);
+    renderSuppliersAdmin(migrated.suppliers);
+    bindSupportDetailsModalEvents();
   }
 
-  function readImageVal(id) {
-    return document.getElementById(`${id}_val`)?.value || '';
-  }
-
-  function collectAudienceSection(prefix, existing) {
+  function collectServiceList(prefix, existingList) {
     const services = [];
-    const svcCount = document.querySelectorAll(`[id^="support_${prefix}_svc_title_"]`).length;
-    for (let i = 0; i < svcCount; i++) {
+    for (let i = 0; i < 3; i++) {
+      const existing = existingList?.[i] || {};
       services.push({
         title: document.getElementById(`support_${prefix}_svc_title_${i}`)?.value || '',
         price: document.getElementById(`support_${prefix}_svc_price_${i}`)?.value || '',
-        btnText: document.getElementById(`support_${prefix}_svc_btn_text_${i}`)?.value || '',
-        btnLink: document.getElementById(`support_${prefix}_svc_btn_link_${i}`)?.value || '',
-        moreLink: document.getElementById(`support_${prefix}_svc_more_${i}`)?.value || ''
+        detailsHtml: document.getElementById(`support_${prefix}_svc_details_${i}`)?.value || '',
+        btnText: existing.btnText || 'Оставить заявку',
+        btnLink: existing.btnLink || '#contacts'
       });
     }
+    return services;
+  }
 
+  function collectChecklistSection(prefix, existing) {
     const checklistItems = [];
     const checkCount = document.querySelectorAll(`[id^="support_${prefix}_check_lines_"]`).length;
     for (let i = 0; i < checkCount; i++) {
@@ -418,12 +541,29 @@
     }
 
     return {
+      title: document.getElementById(`support_${prefix}_check_title`)?.value ?? existing?.title ?? '',
+      items: checklistItems
+    };
+  }
+
+  function readImageVal(id) {
+    return document.getElementById(`${id}_val`)?.value || '';
+  }
+
+  function collectAudienceSection(prefix, existing, options = {}) {
+    if (options.splitByLaw) {
+      return {
+        title: document.getElementById(`support_${prefix}_title`)?.value ?? existing?.title ?? '',
+        services44: collectServiceList('customers_44', existing?.services44),
+        services223: collectServiceList('customers_223', existing?.services223),
+        checklist: collectChecklistSection(prefix, existing?.checklist)
+      };
+    }
+
+    return {
       title: document.getElementById(`support_${prefix}_title`)?.value ?? existing?.title ?? '',
-      services,
-      checklist: {
-        title: document.getElementById(`support_${prefix}_check_title`)?.value ?? existing?.checklist?.title ?? '',
-        items: checklistItems
-      }
+      services: collectServiceList(prefix, existing?.services),
+      checklist: collectChecklistSection(prefix, existing?.checklist)
     };
   }
 
@@ -460,7 +600,7 @@
       });
     }
 
-    data.customers = collectAudienceSection('customers', data.customers);
+    data.customers = collectAudienceSection('customers', data.customers, { splitByLaw: true });
     data.suppliers = collectAudienceSection('suppliers', data.suppliers);
 
     data.calculator = {
@@ -468,7 +608,7 @@
       image: readImageVal('support_calc_image') || data.calculator?.image || ''
     };
 
-    return data;
+    return migrateSupportPageData(data);
   }
 
   function pickImage(uploadId) {
@@ -531,24 +671,7 @@
     getCropSize,
     isSupportUploadId,
     isSupportFileInputId,
-    addService(prefix) {
-      window.saveSupportPageStateToMemory?.();
-      const key = prefix === 'customers' ? 'customers' : 'suppliers';
-      window.supportPageData[key].services.push({
-        title: '',
-        price: 'от 10 000 руб.',
-        btnText: 'Оставить заявку',
-        btnLink: '#contacts',
-        moreLink: '#'
-      });
-      renderSupportPageAdmin(window.supportPageData);
-    },
-    removeService(prefix, index) {
-      window.saveSupportPageStateToMemory?.();
-      const key = prefix === 'customers' ? 'customers' : 'suppliers';
-      window.supportPageData[key].services.splice(index, 1);
-      renderSupportPageAdmin(window.supportPageData);
-    },
+    openServiceDetails,
     addChecklistItem(prefix) {
       window.saveSupportPageStateToMemory?.();
       const key = prefix === 'customers' ? 'customers' : 'suppliers';

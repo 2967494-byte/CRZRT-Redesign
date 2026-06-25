@@ -2474,3 +2474,73 @@ body {
                 width: 100%;
             }
         }
+
+        #supportCustomersAdmin .support-svc-admin-block,
+        #supportSuppliersAdmin .support-svc-admin-block {
+            margin-top: 20px;
+            padding: 16px;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        #supportCustomersAdmin .support-svc-admin-block__title,
+        #supportSuppliersAdmin .support-svc-admin-block__title {
+            margin: 0 0 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        #supportCustomersAdmin .support-svc-admin-row,
+        #supportSuppliersAdmin .support-svc-admin-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        #supportCustomersAdmin .support-svc-admin-card,
+        #supportSuppliersAdmin .support-svc-admin-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.12);
+        }
+
+        #supportCustomersAdmin .support-svc-admin-card__num,
+        #supportSuppliersAdmin .support-svc-admin-card__num {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        #supportCustomersAdmin .support-svc-admin-card label,
+        #supportSuppliersAdmin .support-svc-admin-card label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        #supportCustomersAdmin .support-svc-admin-card .form-control,
+        #supportSuppliersAdmin .support-svc-admin-card .form-control {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+        }
+
+        #supportCustomersAdmin .support-svc-admin-card__details-btn,
+        #supportSuppliersAdmin .support-svc-admin-card__details-btn {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.82rem;
+        }
+
+        @media (max-width: 1100px) {
+            #supportCustomersAdmin .support-svc-admin-row,
+            #supportSuppliersAdmin .support-svc-admin-row {
+                grid-template-columns: 1fr;
+            }
+        }

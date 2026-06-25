@@ -8,7 +8,7 @@
     <title>Админ-панель | Центр Развития Закупок РТ</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/admin.css?v=13">
+    <link rel="stylesheet" href="assets/css/admin.css?v=14">
 </head>
 
 <body>
@@ -304,10 +304,7 @@
                 <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                         <span>Для заказчиков</span>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                            <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminSupport.addService('customers')">+ Услуга</button>
-                            <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminSupport.addChecklistItem('customers')">+ Чек-лист</button>
-                        </div>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminSupport.addChecklistItem('customers')">+ Чек-лист</button>
                     </div>
                     <div id="supportCustomersAdmin"></div>
                 </div>
@@ -319,10 +316,7 @@
                 <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
                         <span>Для поставщиков</span>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                            <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminSupport.addService('suppliers')">+ Услуга</button>
-                            <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminSupport.addChecklistItem('suppliers')">+ Чек-лист</button>
-                        </div>
+                        <button type="button" class="btn-save" style="padding:8px 16px;font-size:0.85rem;" onclick="AdminSupport.addChecklistItem('suppliers')">+ Чек-лист</button>
                     </div>
                     <div id="supportSuppliersAdmin"></div>
                 </div>
@@ -894,18 +888,72 @@
         </div>
     </div>
 
+    <!-- Модальное окно описания услуги (Сопровождение) -->
+    <div class="modal-overlay" id="supportServiceDetailsModal" style="display: none; z-index: 1050;">
+        <div class="modal-content admin-courses-modal" style="max-width: 860px; width: 100%;">
+            <button type="button" class="btn-modal-close" id="supportServiceDetailsModalClose" aria-label="Закрыть">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h2 class="modal-title admin-courses-modal__title" id="supportServiceDetailsModalTitle">Описание услуги</h2>
+            <form id="supportServiceDetailsForm" class="admin-courses-modal__form">
+                <input type="hidden" id="supportServiceDetailsPrefix" value="">
+                <input type="hidden" id="supportServiceDetailsIndex" value="">
+                <div class="form-group admin-courses-modal__desc-section">
+                    <label>Текст для «подробнее»</label>
+                    <div class="wysiwyg-container">
+                        <div class="wysiwyg-toolbar" id="supportServiceDetailsToolbar">
+                            <button type="button" class="wysiwyg-btn" data-command="bold" title="Жирный"><strong>B</strong></button>
+                            <button type="button" class="wysiwyg-btn" data-command="italic" title="Курсив"><em>I</em></button>
+                            <button type="button" class="wysiwyg-btn" data-command="underline" title="Подчеркнутый"><u>U</u></button>
+                            <div class="wysiwyg-divider"></div>
+                            <button type="button" class="wysiwyg-btn" data-command="justifyLeft" title="По левому краю">≡</button>
+                            <button type="button" class="wysiwyg-btn" data-command="justifyCenter" title="По центру">≡</button>
+                            <button type="button" class="wysiwyg-btn" data-command="justifyRight" title="По правому краю">≡</button>
+                            <div class="wysiwyg-divider"></div>
+                            <div class="wysiwyg-tool-group" title="Размер шрифта">
+                                <span class="wysiwyg-tool-label">Размер:</span>
+                                <select class="wysiwyg-select" id="supportServiceDetailsFontSize">
+                                    <option value="1">1 (Мелкий)</option>
+                                    <option value="2">2 (Небольшой)</option>
+                                    <option value="3" selected>3 (Обычный)</option>
+                                    <option value="4">4 (Средний)</option>
+                                    <option value="5">5 (Большой)</option>
+                                    <option value="6">6 (Очень большой)</option>
+                                    <option value="7">7 (Огромный)</option>
+                                </select>
+                            </div>
+                            <div class="wysiwyg-divider"></div>
+                            <div class="wysiwyg-tool-group" title="Цвет текста">
+                                <span class="wysiwyg-tool-label">Цвет:</span>
+                                <input type="color" id="supportServiceDetailsColor" class="wysiwyg-color-input" value="#575B6D">
+                            </div>
+                        </div>
+                        <div class="wysiwyg-editor form-control" id="supportServiceDetailsEditor" contenteditable="true" spellcheck="false" data-placeholder="Введите описание услуги..."></div>
+                    </div>
+                </div>
+                <div class="admin-courses-modal__actions" style="display:flex; justify-content:flex-end; gap:15px; margin-top:20px;">
+                    <button type="button" class="btn-secondary" id="supportServiceDetailsModalCancel">Отмена</button>
+                    <button type="submit" class="btn-save">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="assets/js/landing-content.js?v=2"></script>
     <script src="assets/js/knowledge-content.js?v=2"></script>
     <script src="assets/js/news-content.js?v=1"></script>
     <script src="assets/js/ecp-content.js?v=11"></script>
     <script src="assets/js/consulting-content.js?v=6"></script>
-    <script src="assets/js/support-content.js?v=4"></script>
+    <script src="assets/js/support-content.js?v=5"></script>
     <script src="assets/js/obuchenie-content.js?v=10"></script>
     <script src="assets/js/admin-landing.js?v=2"></script>
     <script src="assets/js/admin-ecp.js?v=6"></script>
     <script src="assets/js/admin-consulting-page.js?v=6"></script>
-    <script src="assets/js/admin-support.js?v=5"></script>
+    <script src="assets/js/admin-support.js?v=6"></script>
     <script src="assets/js/admin-obuchenie.js?v=9"></script>
     <script src="assets/js/admin-knowledge.js?v=6"></script>
     <script src="assets/js/admin-news.js?v=2"></script>
