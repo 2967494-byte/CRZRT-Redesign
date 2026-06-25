@@ -12,33 +12,7 @@
   /** Дни с курсами: ключ «год-месяц» (месяц 1–12) → массив чисел */
   var COURSE_DAYS_BY_MONTH = {};
   var COURSE_REGISTRY = [];
-
-  function setCourseDays(map) {
-    if (!map || typeof map !== 'object') return;
-    COURSE_DAYS_BY_MONTH = {};
-    Object.keys(map).forEach(function (key) {
-      var days = map[key];
-      if (!Array.isArray(days)) return;
-      var normalized = days
-        .map(function (day) { return parseInt(day, 10); })
-        .filter(function (day) { return day >= 1 && day <= 31; });
-      if (normalized.length) COURSE_DAYS_BY_MONTH[key] = normalized;
-    });
-    render();
-  }
-
-  var root = document.getElementById('obuchenieCourseCalendar');
-  if (!root) return;
-
-  var monthLabel = root.querySelector('[data-calendar-month-label]');
-  var grid = root.querySelector('[data-calendar-grid]');
-  var prevBtn = root.querySelector('[data-calendar-prev]');
-  var nextBtn = root.querySelector('[data-calendar-next]');
-
-  if (!monthLabel || !grid || !prevBtn || !nextBtn) return;
-
-  var viewDate = new Date();
-  viewDate.setDate(1);
+  var calendarRender = null;
 
   function monthKey(year, monthIndex) {
     return year + '-' + (monthIndex + 1);
@@ -232,94 +206,24 @@
     modal.style.display = 'flex';
   }
 
-  function render() {
-    var year = viewDate.getFullYear();
-    var monthIndex = viewDate.getMonth();
-    var daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-    var offset = getMondayBasedOffset(year, monthIndex);
-    var courseDays = getCourseDays(year, monthIndex);
-    var label = formatMonthLabel(year, monthIndex);
-
-    monthLabel.textContent = label;
-    grid.setAttribute('aria-label', label);
-    grid.innerHTML = '';
-
-    var cellIndex = 0;
-
-    for (var i = 0; i < offset; i += 1) {
-      var empty = document.createElement('span');
-      empty.className = 'obuchenie-calendar-day obuchenie-calendar-day--empty';
-      empty.setAttribute('aria-hidden', 'true');
-      grid.appendChild(empty);
-      cellIndex += 1;
-    }
-
-    var today = new Date();
-    var todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-    for (var day = 1; day <= daysInMonth; day += 1) {
-      var cell = document.createElement('span');
-      cell.className = 'obuchenie-calendar-day';
-      cell.setAttribute('role', 'gridcell');
-      cell.textContent = String(day);
-
-      if (year === todayZero.getFullYear() && monthIndex === todayZero.getMonth() && day === todayZero.getDate()) {
-        cell.classList.add('obuchenie-calendar-day--today');
-      }
-
-      if (courseDays.indexOf(day) !== -1) {
-        var cellDate = new Date(year, monthIndex, day);
-        if (cellDate < todayZero) {
-          cell.classList.add('obuchenie-calendar-day--active', 'obuchenie-calendar-day--past');
-        } else {
-          cell.classList.add('obuchenie-calendar-day--active');
-        }
-
-        (function (d) {
-          cell.style.cursor = 'pointer';
-          cell.addEventListener('click', function () {
-            openCalendarModal(year, monthIndex, d);
-          });
-        })(day);
-      }
-
-      grid.appendChild(cell);
-      cellIndex += 1;
-    }
-
-    while (cellIndex < 42) {
-      var trailing = document.createElement('span');
-      trailing.className = 'obuchenie-calendar-day obuchenie-calendar-day--empty';
-      trailing.setAttribute('aria-hidden', 'true');
-      grid.appendChild(trailing);
-      cellIndex += 1;
-    }
+  function setCourseDays(map) {
+    if (!map || typeof map !== 'object') return;
+    COURSE_DAYS_BY_MONTH = {};
+    Object.keys(map).forEach(function (key) {
+      var days = map[key];
+      if (!Array.isArray(days)) return;
+      var normalized = days
+        .map(function (day) { return parseInt(day, 10); })
+        .filter(function (day) { return day >= 1 && day <= 31; });
+      if (normalized.length) COURSE_DAYS_BY_MONTH[key] = normalized;
+    });
+    if (calendarRender) calendarRender();
   }
-
-  prevBtn.addEventListener('click', function () {
-    viewDate.setMonth(viewDate.getMonth() - 1);
-    render();
-  });
-
-  nextBtn.addEventListener('click', function () {
-    viewDate.setMonth(viewDate.getMonth() + 1);
-    render();
-  });
-
-  render();
-
-  document.addEventListener('obuchenieContentReady', function (ev) {
-    var days = ev.detail && ev.detail.calendar && ev.detail.calendar.courseDaysByMonth;
-    if (days) setCourseDays(days);
-
-    if (ev.detail && ev.detail.courseRegistry) {
-      COURSE_REGISTRY = ev.detail.courseRegistry;
-    }
-  });
 
   function setupModal() {
     var modal = document.getElementById('calendar-course-modal');
-    if (!modal) return;
+    if (!modal || modal.dataset.modalBound === 'true') return;
+    modal.dataset.modalBound = 'true';
 
     var closeBtn = modal.querySelector('.calendar-modal__close');
     var overlay = modal.querySelector('.calendar-modal__overlay');
@@ -332,7 +236,109 @@
     if (overlay) overlay.addEventListener('click', closeModal);
   }
 
+  function initCalendar() {
+    var root = document.getElementById('obuchenieCourseCalendar');
+    if (!root) return;
+
+    var monthLabel = root.querySelector('[data-calendar-month-label]');
+    var grid = root.querySelector('[data-calendar-grid]');
+    var prevBtn = root.querySelector('[data-calendar-prev]');
+    var nextBtn = root.querySelector('[data-calendar-next]');
+
+    if (!monthLabel || !grid || !prevBtn || !nextBtn) return;
+
+    var viewDate = new Date();
+    viewDate.setDate(1);
+
+    function render() {
+      var year = viewDate.getFullYear();
+      var monthIndex = viewDate.getMonth();
+      var daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+      var offset = getMondayBasedOffset(year, monthIndex);
+      var courseDays = getCourseDays(year, monthIndex);
+      var label = formatMonthLabel(year, monthIndex);
+
+      monthLabel.textContent = label;
+      grid.setAttribute('aria-label', label);
+      grid.innerHTML = '';
+
+      var cellIndex = 0;
+
+      for (var i = 0; i < offset; i += 1) {
+        var empty = document.createElement('span');
+        empty.className = 'obuchenie-calendar-day obuchenie-calendar-day--empty';
+        empty.setAttribute('aria-hidden', 'true');
+        grid.appendChild(empty);
+        cellIndex += 1;
+      }
+
+      var today = new Date();
+      var todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+      for (var day = 1; day <= daysInMonth; day += 1) {
+        var cell = document.createElement('span');
+        cell.className = 'obuchenie-calendar-day';
+        cell.setAttribute('role', 'gridcell');
+        cell.textContent = String(day);
+
+        if (year === todayZero.getFullYear() && monthIndex === todayZero.getMonth() && day === todayZero.getDate()) {
+          cell.classList.add('obuchenie-calendar-day--today');
+        }
+
+        if (courseDays.indexOf(day) !== -1) {
+          var cellDate = new Date(year, monthIndex, day);
+          if (cellDate < todayZero) {
+            cell.classList.add('obuchenie-calendar-day--active', 'obuchenie-calendar-day--past');
+          } else {
+            cell.classList.add('obuchenie-calendar-day--active');
+          }
+
+          (function (d) {
+            cell.style.cursor = 'pointer';
+            cell.addEventListener('click', function () {
+              openCalendarModal(year, monthIndex, d);
+            });
+          })(day);
+        }
+
+        grid.appendChild(cell);
+        cellIndex += 1;
+      }
+
+      while (cellIndex < 42) {
+        var trailing = document.createElement('span');
+        trailing.className = 'obuchenie-calendar-day obuchenie-calendar-day--empty';
+        trailing.setAttribute('aria-hidden', 'true');
+        grid.appendChild(trailing);
+        cellIndex += 1;
+      }
+    }
+
+    prevBtn.addEventListener('click', function () {
+      viewDate.setMonth(viewDate.getMonth() - 1);
+      render();
+    });
+
+    nextBtn.addEventListener('click', function () {
+      viewDate.setMonth(viewDate.getMonth() + 1);
+      render();
+    });
+
+    calendarRender = render;
+    render();
+  }
+
+  document.addEventListener('obuchenieContentReady', function (ev) {
+    var days = ev.detail && ev.detail.calendar && ev.detail.calendar.courseDaysByMonth;
+    if (days) setCourseDays(days);
+
+    if (ev.detail && ev.detail.courseRegistry) {
+      COURSE_REGISTRY = ev.detail.courseRegistry;
+    }
+  });
+
   setupModal();
+  initCalendar();
 
   window.ObuchenieCalendar = {
     setCourseDays: setCourseDays,
@@ -340,7 +346,5 @@
     openCalendarModal: openCalendarModal
   };
 
-  // Expose globally for course-search.js
   window.openCalendarModal = openCalendarModal;
 })();
-

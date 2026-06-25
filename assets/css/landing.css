@@ -702,13 +702,36 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .events-list__item {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  padding: 24px 0;
+  padding: 0;
   border-bottom: 1px solid rgba(87, 91, 109, 0.1);
 }
 .events-list__item:first-child { border-top: 1px solid rgba(87, 91, 109, 0.1); }
+
+.events-list__btn {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  margin: 0;
+  padding: 24px 20px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.events-list__btn:hover {
+  background-color: #B5E3C9;
+}
+
+.events-list__btn:focus-visible {
+  outline: 2px solid #0FAA4B;
+  outline-offset: -2px;
+}
 
 .event-date {
   display: flex;

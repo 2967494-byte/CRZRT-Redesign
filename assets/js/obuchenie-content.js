@@ -934,6 +934,9 @@
     const list = document.getElementById('landingUpcomingEvents');
     if (!list) return;
 
+    activeCourseRegistry = Array.isArray(courseRegistry) ? courseRegistry : [];
+    setupEnrollModal();
+
     const limit = options?.limit || 4;
     const upcoming = getUpcomingCourses(courseRegistry, limit);
 
@@ -943,10 +946,13 @@
         const monthHtml = month
           ? `<span class="event-date__month">${escapeHtml(month)}</span>`
           : '';
+        const detailAttrs = buildCourseDetailAttrs(course);
 
         return `<li class="events-list__item">
-          <div class="event-date"><span class="event-date__range">${escapeHtml(range)}</span>${monthHtml}</div>
-          <div class="event-desc">${escapeHtml(course.title)}</div>
+          <button type="button" class="events-list__btn" ${detailAttrs}>
+            <div class="event-date"><span class="event-date__range">${escapeHtml(range)}</span>${monthHtml}</div>
+            <div class="event-desc">${escapeHtml(course.title)}</div>
+          </button>
         </li>`;
       })
       .join('');
