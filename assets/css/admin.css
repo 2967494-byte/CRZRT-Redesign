@@ -2497,6 +2497,7 @@ body {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 12px;
+            width: 100%;
         }
 
         #supportCustomersAdmin .support-svc-admin-card,
@@ -2504,6 +2505,7 @@ body {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            min-width: 0;
             padding: 12px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 10px;
@@ -2538,7 +2540,7 @@ body {
             font-size: 0.82rem;
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 720px) {
             #supportCustomersAdmin .support-svc-admin-row,
             #supportSuppliersAdmin .support-svc-admin-row {
                 grid-template-columns: 1fr;
