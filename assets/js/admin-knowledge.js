@@ -13,6 +13,8 @@
     blocks: []
   };
 
+  const expandedAdminGroups = new Set();
+
   function escapeAttr(s) {
     return String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
   }
@@ -124,27 +126,6 @@
         </div>
         <small id="${id}_name" style="display:${shownName ? 'inline' : 'none'};color:var(--text-secondary);margin-top:6px;display:block;">${escapeAttr(shownName)}</small>
       </div>`;
-  }
-
-  function fileBlockRowInline(blockId, title, file, fileName) {
-    const fileId = `knowledge_block_file_${blockId}`;
-    const shownName = fileName || (file ? file.split('/').pop() : '');
-    return `
-      <div class="knowledge-file-block-row">
-        <div class="form-group knowledge-file-block-row__title">
-          <label>Название документа</label>
-          <input type="text" class="form-control" id="knowledge_block_title_${blockId}" value="${escapeAttr(title)}" placeholder="Например: Устав АО">
-        </div>
-        <div class="form-group knowledge-file-block-row__file">
-          <label>Файл документа</label>
-          <input type="text" class="form-control" id="${fileId}" value="${escapeAttr(file)}" placeholder="Ссылка или uploads/files/...">
-        </div>
-        <div class="knowledge-file-block-row__action">
-          <span class="knowledge-file-block-row__action-label" aria-hidden="true">&nbsp;</span>
-          <button type="button" class="btn-save" onclick="AdminKnowledge.pickFile('${fileId}')">Загрузить</button>
-        </div>
-      </div>
-      <small id="${fileId}_name" class="knowledge-file-block-row__name" style="display:${shownName ? 'block' : 'none'};">${escapeAttr(shownName)}</small>`;
   }
 
   function isDescendantPath(ancestorPathStr, pathStr) {
@@ -352,22 +333,6 @@
   function renderBlockFields(block) {
     const blockId = block.id;
 
-    if (block.type === 'header') {
-      return `
-        <div class="form-group" style="margin-bottom:0;">
-          <label>Текст заголовка</label>
-          <input type="text" class="form-control" id="knowledge_block_val_${blockId}" value="${escapeAttr(block.value)}" placeholder="Например: Основные сведения">
-        </div>`;
-    }
-
-    if (block.type === 'text') {
-      return `
-        <div class="form-group" style="margin-bottom:0;">
-          <label>Содержимое текста</label>
-          <textarea class="form-control" id="knowledge_block_val_${blockId}" rows="4" placeholder="Введите текстовое описание...">${escapeAttr(block.value)}</textarea>
-        </div>`;
-    }
-
     if (block.type === 'group') {
       const children = block.children || [];
       const pathStr = block._pathStr || '';
@@ -393,19 +358,51 @@
         </div>`;
     }
 
-    if (block.type === 'file') {
-      return fileBlockRowInline(blockId, block.title || '', block.file || '', block.fileName || '');
+    return '';
+  }
+
+  function renderCompactBlockContent(block) {
+    const blockId = block.id;
+
+    if (block.type === 'header') {
+      return {
+        fields: `<input type="text" class="form-control knowledge-inline-field" id="knowledge_block_val_${blockId}" value="${escapeAttr(block.value)}" placeholder="Текст заголовка">`,
+        footer: ''
+      };
     }
 
-    return '';
+    if (block.type === 'text') {
+      return {
+        fields: `<textarea class="form-control knowledge-inline-field knowledge-inline-field--textarea" id="knowledge_block_val_${blockId}" rows="2" placeholder="Содержимое текста...">${escapeAttr(block.value)}</textarea>`,
+        footer: ''
+      };
+    }
+
+    if (block.type === 'file') {
+      const fileId = `knowledge_block_file_${blockId}`;
+      const shownName = block.fileName || (block.file ? block.file.split('/').pop() : '');
+      return {
+        fields: `
+          <input type="text" class="form-control knowledge-inline-field knowledge-inline-field--title" id="knowledge_block_title_${blockId}" value="${escapeAttr(block.title)}" placeholder="Название документа" title="Название документа">
+          <input type="text" class="form-control knowledge-inline-field knowledge-inline-field--file" id="${fileId}" value="${escapeAttr(block.file)}" placeholder="Ссылка или uploads/files/..." title="Файл документа">
+          <button type="button" class="btn-save knowledge-inline-upload-btn" onclick="AdminKnowledge.pickFile('${fileId}')">Загрузить</button>`,
+        footer: `<small id="${fileId}_name" class="knowledge-inline-file-name" style="display:${shownName ? 'block' : 'none'};">${escapeAttr(shownName)}</small>`
+      };
+    }
+
+    return { fields: '', footer: '' };
   }
 
   function getBlockMeta(block) {
     if (block.type === 'header') return { label: 'Заголовок', color: '#00AE4D' };
     if (block.type === 'text') return { label: 'Текст', color: '#3a86ff' };
-    if (block.type === 'file') return { label: 'Документ (файл)', color: '#f72585' };
+    if (block.type === 'file') return { label: 'Документ', color: '#f72585' };
     if (block.type === 'group') return { label: 'Группа', color: '#8338ec' };
     return { label: block.type, color: 'var(--text-secondary)' };
+  }
+
+  function isGroupExpandedInAdmin(blockId) {
+    return expandedAdminGroups.has(blockId);
   }
 
   function renderBlockAdminCard(block, path) {
@@ -416,8 +413,10 @@
     const canUnnest = path.length > 1;
     const isGroup = block.type === 'group';
     const depth = Math.max(0, path.length - 1);
+    const isExpanded = !isGroup || isGroupExpandedInAdmin(block.id);
+    const childCount = isGroup ? (block.children || []).length : 0;
     const cardClass = isGroup
-      ? 'admin-subcard knowledge-admin-block-card knowledge-admin-block-card--group'
+      ? `admin-subcard knowledge-admin-block-card knowledge-admin-block-card--group${isExpanded ? '' : ' knowledge-admin-block-card--group-collapsed'}`
       : 'admin-subcard knowledge-admin-block-card';
     const nodeClass = isGroup && depth === 0
       ? 'knowledge-admin-tree-node knowledge-admin-tree-node--group-root'
@@ -429,21 +428,48 @@
     const meta = getBlockMeta(block);
     const upDisabled = index === 0 ? 'disabled' : '';
     const downDisabled = index >= siblings.length - 1 ? 'disabled' : '';
+    const controlsHtml = `
+      <div class="knowledge-admin-block-card__controls">
+        <button type="button" class="btn-save knowledge-block-btn" title="Выше" ${upDisabled} onclick="AdminKnowledge.moveBlockUp('${pathStr}')">▲</button>
+        <button type="button" class="btn-save knowledge-block-btn" title="Ниже" ${downDisabled} onclick="AdminKnowledge.moveBlockDown('${pathStr}')">▼</button>
+        ${renderMoveToGroupControl(pathStr, block.id)}
+        ${canUnnest ? `<button type="button" class="btn-save knowledge-block-btn" title="Вынести из группы" onclick="AdminKnowledge.unnestBlock('${pathStr}')">←</button>` : ''}
+        <button type="button" class="btn-delete knowledge-block-btn" title="Удалить" onclick="AdminKnowledge.removeBlock('${pathStr}')">×</button>
+      </div>`;
+
+    const headerHtml = isGroup
+      ? `
+          <div class="knowledge-admin-block-card__header">
+            <div class="knowledge-admin-block-card__lead">
+              <button type="button" class="knowledge-group-collapse-btn" aria-expanded="${isExpanded ? 'true' : 'false'}" title="${isExpanded ? 'Свернуть группу' : 'Развернуть группу'}" onclick="AdminKnowledge.toggleGroupCollapsed('${block.id}')">${isExpanded ? '▼' : '▶'}</button>
+              <span class="block-badge" style="background:${meta.color}; color:#fff; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">${meta.label}</span>
+              ${!isExpanded ? `<span class="knowledge-group-summary">${escapeAttr(block.value || 'Без названия')}</span>` : ''}
+              ${!isExpanded ? `<span class="knowledge-group-count">${childCount} эл.</span>` : ''}
+            </div>
+            ${controlsHtml}
+          </div>
+          <div class="knowledge-admin-block-card__body"${isExpanded ? '' : ' hidden'}>
+            ${renderBlockFields(block)}
+          </div>`
+      : (() => {
+          const compact = renderCompactBlockContent(block);
+          return `
+          <div class="knowledge-admin-block-card__toolbar knowledge-admin-block-card__toolbar--${block.type}">
+            <span class="block-badge" style="background:${meta.color}; color:#fff; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">${meta.label}</span>
+            ${compact.fields}
+            ${controlsHtml}
+          </div>
+          ${compact.footer}`;
+        })();
+
+    const cardClassFinal = isGroup
+      ? cardClass
+      : `admin-subcard knowledge-admin-block-card knowledge-admin-block-card--compact knowledge-admin-block-card--${block.type}`;
 
     return `
       <div class="${nodeClass}" data-block-path="${pathStr}">
-        <div class="${cardClass}">
-          <div class="knowledge-admin-block-card__header">
-            <span class="block-badge" style="background:${meta.color}; color:#fff; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">${meta.label}</span>
-            <div class="knowledge-admin-block-card__controls">
-              <button type="button" class="btn-save knowledge-block-btn" title="Выше" ${upDisabled} onclick="AdminKnowledge.moveBlockUp('${pathStr}')">▲</button>
-              <button type="button" class="btn-save knowledge-block-btn" title="Ниже" ${downDisabled} onclick="AdminKnowledge.moveBlockDown('${pathStr}')">▼</button>
-              ${renderMoveToGroupControl(pathStr, block.id)}
-              ${canUnnest ? `<button type="button" class="btn-save knowledge-block-btn" title="Вынести из группы" onclick="AdminKnowledge.unnestBlock('${pathStr}')">←</button>` : ''}
-              <button type="button" class="btn-delete knowledge-block-btn" title="Удалить" onclick="AdminKnowledge.removeBlock('${pathStr}')">×</button>
-            </div>
-          </div>
-          ${renderBlockFields(block)}
+        <div class="${isGroup ? cardClass : cardClassFinal}">
+          ${headerHtml}
         </div>
       </div>`;
   }
@@ -568,6 +594,15 @@
       window.knowledgePageData.blocks.push(createKnowledgeBlock('group'));
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
+    toggleGroupCollapsed(blockId) {
+      window.saveKnowledgePageStateToMemory?.();
+      if (expandedAdminGroups.has(blockId)) {
+        expandedAdminGroups.delete(blockId);
+      } else {
+        expandedAdminGroups.add(blockId);
+      }
+      renderKnowledgePageAdmin(window.knowledgePageData);
+    },
     addChildBlock(parentPathStr, type) {
       window.saveKnowledgePageStateToMemory?.();
       const path = parseBlockPath(parentPathStr);
@@ -575,6 +610,7 @@
       if (!resolved?.block || resolved.block.type !== 'group') return;
       if (!Array.isArray(resolved.block.children)) resolved.block.children = [];
       resolved.block.children.push(createKnowledgeBlock(type));
+      expandedAdminGroups.add(resolved.block.id);
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
     removeBlock(pathStr) {
@@ -582,6 +618,9 @@
       const path = parseBlockPath(pathStr);
       const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
       if (!resolved) return;
+      if (resolved.block?.type === 'group') {
+        expandedAdminGroups.delete(resolved.block.id);
+      }
       resolved.list.splice(resolved.index, 1);
       renderKnowledgePageAdmin(window.knowledgePageData);
     },

@@ -2146,6 +2146,68 @@ body {
             box-shadow: 0 4px 14px rgba(131, 56, 236, 0.1);
         }
 
+        #knowledgeBlocksAdmin .knowledge-admin-block-card--group-collapsed {
+            padding-bottom: 12px;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-admin-block-card--group-collapsed .knowledge-admin-block-card__header {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-admin-block-card__lead {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-group-collapse-btn {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border: 1px solid rgba(131, 56, 236, 0.35);
+            border-radius: 6px;
+            background: rgba(131, 56, 236, 0.1);
+            color: #8338ec;
+            font-size: 0.7rem;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-group-collapse-btn:hover {
+            background: rgba(131, 56, 236, 0.18);
+        }
+
+        #knowledgeBlocksAdmin .knowledge-group-summary {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-group-count {
+            flex-shrink: 0;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.06);
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-admin-block-card__body {
+            margin-top: 4px;
+        }
+
         #knowledgeBlocksAdmin .knowledge-admin-block-card__header {
             display: flex;
             justify-content: space-between;
@@ -2223,6 +2285,64 @@ body {
             margin-left: 0 !important;
         }
 
+        #knowledgeBlocksAdmin .knowledge-admin-block-card--compact {
+            padding: 10px 12px;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-admin-block-card__toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-admin-block-card__toolbar .block-badge {
+            flex-shrink: 0;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-inline-field {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin: 0;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-inline-field--textarea {
+            min-height: 38px;
+            max-height: 96px;
+            resize: vertical;
+            line-height: 1.35;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-admin-block-card__toolbar--file .knowledge-inline-field--title {
+            flex: 1.1 1 0;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-admin-block-card__toolbar--file .knowledge-inline-field--file {
+            flex: 1.3 1 0;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-inline-upload-btn {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            margin: 0;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-inline-file-name {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            margin-top: 6px;
+            padding-left: 2px;
+        }
+
+        #knowledgeBlocksAdmin .knowledge-admin-block-card__toolbar .knowledge-admin-block-card__controls {
+            margin-left: 0;
+        }
+
         #knowledgeBlocksAdmin .knowledge-file-block-row {
             display: flex;
             flex-direction: row;
@@ -2279,6 +2399,22 @@ body {
             #knowledgeBlocksAdmin .knowledge-admin-block-card__controls {
                 flex-wrap: wrap;
                 margin-left: 0;
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            #knowledgeBlocksAdmin .knowledge-admin-block-card__toolbar {
+                flex-wrap: wrap;
+            }
+
+            #knowledgeBlocksAdmin .knowledge-admin-block-card__toolbar .knowledge-inline-field,
+            #knowledgeBlocksAdmin .knowledge-admin-block-card__toolbar .knowledge-inline-field--title,
+            #knowledgeBlocksAdmin .knowledge-admin-block-card__toolbar .knowledge-inline-field--file {
+                flex: 1 1 100%;
+                min-width: 100%;
+            }
+
+            #knowledgeBlocksAdmin .knowledge-admin-block-card__toolbar .knowledge-admin-block-card__controls {
                 width: 100%;
                 justify-content: flex-end;
             }
