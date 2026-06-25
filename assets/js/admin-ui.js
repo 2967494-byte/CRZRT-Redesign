@@ -42,6 +42,29 @@
             }
         }
 
+        function updateSaveButtonsState(options) {
+            const buttons = [
+                document.getElementById('globalSaveBtn'),
+                ...document.querySelectorAll('.btn-save-bottom')
+            ].filter(Boolean);
+
+            buttons.forEach(btn => {
+                if (options.text !== undefined) btn.innerText = options.text;
+                if (options.disabled !== undefined) {
+                    btn.disabled = options.disabled;
+                    if (options.disabled) {
+                        btn.setAttribute('disabled', 'disabled');
+                    } else {
+                        btn.removeAttribute('disabled');
+                    }
+                }
+                if (options.opacity !== undefined) btn.style.opacity = options.opacity;
+                if (options.boxShadow !== undefined) btn.style.boxShadow = options.boxShadow;
+                if (options.backgroundColor !== undefined) btn.style.backgroundColor = options.backgroundColor;
+                if (options.color !== undefined) btn.style.color = options.color;
+            });
+        }
+
         // Theme Toggle for Admin
         const themeBtn = document.getElementById('theme-toggle-admin');
         const root = document.documentElement;
@@ -1180,11 +1203,10 @@
                     if (targetId.startsWith('obuchenie_') && AdminObuchenie?.setFileUploadState) {
                         AdminObuchenie.setFileUploadState(targetId, result.url, result.name || file.name);
                     }
-                    const saveBtnHint = document.getElementById('globalSaveBtn');
-                    if (saveBtnHint) {
-                        saveBtnHint.style.boxShadow = '0 0 15px rgba(52, 199, 89, 0.5)';
-                        saveBtnHint.innerText = 'Сохраните изменения!';
-                    }
+                    updateSaveButtonsState({
+                        boxShadow: '0 0 15px rgba(52, 199, 89, 0.5)',
+                        text: 'Сохраните изменения!'
+                    });
                 } catch (error) {
                     alert('Ошибка загрузки файла: ' + error.message);
                 } finally {
@@ -1464,11 +1486,7 @@
                 }
 
                 document.getElementById('cropperGlobalContainer').style.display = 'none';
-                const saveBtnHint = document.getElementById('globalSaveBtn');
-                if (saveBtnHint) {
-                    saveBtnHint.style.boxShadow = '0 0 15px rgba(52, 199, 89, 0.5)';
-                    saveBtnHint.innerText = 'Сохраните изменения!';
-                }
+
 
                 cropper.destroy();
                 cropper = null;

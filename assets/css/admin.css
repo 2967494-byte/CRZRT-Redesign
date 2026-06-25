@@ -1209,6 +1209,7 @@ body {
         }
 
         .theme-toggle-admin {
+            display: none !important;
             background: transparent;
             border: 1px solid var(--card-border);
             border-radius: 50%;
