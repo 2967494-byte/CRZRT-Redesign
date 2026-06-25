@@ -334,31 +334,49 @@
     }
   }
 
+  function checklistFileUploadHtml(id, value, fileName) {
+    const shownName = fileName || (value ? value.split('/').pop() : '');
+    return `
+      <div class="support-checklist-admin-card__file">
+        <label for="${id}">Файл для скачивания</label>
+        <input type="text" class="form-control" id="${id}" value="${escapeAttr(value)}" placeholder="Ссылка или uploads/files/...">
+        <button type="button" class="btn-save support-checklist-admin-card__upload-btn" onclick="AdminSupport.pickFile('${id}')">Загрузить файл</button>
+        <small id="${id}_name" class="support-checklist-admin-card__file-name" style="display:${shownName ? 'block' : 'none'};">${escapeAttr(shownName)}</small>
+      </div>`;
+  }
+
   function renderChecklistSectionHtml(prefix, checklist) {
     const data = checklist || { title: '', items: [] };
     const items = data.items || [];
     return `
-      <h4 style="margin:24px 0 12px;font-size:0.95rem;">Чек-листы</h4>
-      <div class="form-group">
-        <label>Заголовок блока чек-листов (Enter — перенос)</label>
-        <textarea class="form-control" id="support_${prefix}_check_title" rows="2">${escapeAttr(data.title)}</textarea>
-      </div>
-      ${items.map((item, i) => checklistItemHtml(prefix, item, i)).join('')}`;
+      <div class="support-checklist-admin-section">
+        <div class="support-checklist-admin-section__head">
+          <h4 class="support-checklist-admin-section__title">Чек-листы</h4>
+          <button type="button" class="btn-save support-checklist-admin-section__add" onclick="AdminSupport.addChecklistItem('${prefix}')">+ Чек-лист</button>
+        </div>
+        <div class="form-group">
+          <label>Заголовок блока чек-листов (Enter — перенос)</label>
+          <textarea class="form-control" id="support_${prefix}_check_title" rows="2">${escapeAttr(data.title)}</textarea>
+        </div>
+        <div class="support-checklist-admin-grid">
+          ${items.map((item, i) => checklistItemHtml(prefix, item, i)).join('')}
+        </div>
+      </div>`;
   }
 
   function checklistItemHtml(prefix, item, i) {
     const lines = Array.isArray(item.lines) ? item.lines.join('\n') : '';
     return `
-      <div class="admin-subcard" style="margin-bottom:16px;padding:16px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <strong>Чек-лист ${i + 1}</strong>
-          <button type="button" class="btn-delete" style="padding:6px 12px;font-size:0.8rem;" onclick="AdminSupport.removeChecklistItem('${prefix}', ${i})">Удалить</button>
+      <div class="support-checklist-admin-card">
+        <div class="support-checklist-admin-card__head">
+          <span class="support-checklist-admin-card__num">Чек-лист ${i + 1}</span>
+          <button type="button" class="btn-delete support-checklist-admin-card__delete" onclick="AdminSupport.removeChecklistItem('${prefix}', ${i})">Удалить</button>
         </div>
-        <div class="form-group">
-          <label>Текст (каждая строка — отдельная линия на карточке)</label>
+        <div class="support-checklist-admin-card__field">
+          <label for="support_${prefix}_check_lines_${i}">Текст (каждая строка — отдельная линия на карточке)</label>
           <textarea class="form-control" id="support_${prefix}_check_lines_${i}" rows="3">${escapeAttr(lines)}</textarea>
         </div>
-        ${fileUploadRow(`support_${prefix}_check_file_${i}`, 'Файл для скачивания', item.file || '', item.fileName)}
+        ${checklistFileUploadHtml(`support_${prefix}_check_file_${i}`, item.file || '', item.fileName)}
       </div>`;
   }
 

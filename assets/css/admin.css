@@ -2546,3 +2546,116 @@ body {
                 grid-template-columns: 1fr;
             }
         }
+
+        #supportCustomersAdmin .support-checklist-admin-section,
+        #supportSuppliersAdmin .support-checklist-admin-section {
+            margin-top: 24px;
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-section__head,
+        #supportSuppliersAdmin .support-checklist-admin-section__head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-section__title,
+        #supportSuppliersAdmin .support-checklist-admin-section__title {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-section__add,
+        #supportSuppliersAdmin .support-checklist-admin-section__add {
+            padding: 8px 14px;
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-grid,
+        #supportSuppliersAdmin .support-checklist-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            width: 100%;
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-card,
+        #supportSuppliersAdmin .support-checklist-admin-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.12);
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-card__head,
+        #supportSuppliersAdmin .support-checklist-admin-card__head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-card__num,
+        #supportSuppliersAdmin .support-checklist-admin-card__num {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-card__delete,
+        #supportSuppliersAdmin .support-checklist-admin-card__delete {
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-card label,
+        #supportSuppliersAdmin .support-checklist-admin-card label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-card .form-control,
+        #supportSuppliersAdmin .support-checklist-admin-card .form-control {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-card__file,
+        #supportSuppliersAdmin .support-checklist-admin-card__file {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-card__upload-btn,
+        #supportSuppliersAdmin .support-checklist-admin-card__upload-btn {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.82rem;
+        }
+
+        #supportCustomersAdmin .support-checklist-admin-card__file-name,
+        #supportSuppliersAdmin .support-checklist-admin-card__file-name {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            word-break: break-all;
+        }
+
+        @media (max-width: 720px) {
+            #supportCustomersAdmin .support-checklist-admin-grid,
+            #supportSuppliersAdmin .support-checklist-admin-grid {
+                grid-template-columns: 1fr;
+            }
+        }
