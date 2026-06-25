@@ -7,12 +7,12 @@
   const CONTENT_READY_CLASS = 'consulting-content-ready';
 
   const DEFAULT_COMPETENCIES = [
-    { title: 'Решения\nдля бизнеса', icon: 'assets/img/consulting/icon-business.png', link: '#competencies' },
-    { title: 'Сложные\nсудебные споры', icon: 'assets/img/consulting/icon-disputes.png', link: '#competencies' },
-    { title: 'Сопровождение\nсделок', icon: 'assets/img/consulting/icon-deals.png', link: '#competencies' },
-    { title: 'Поддержка\nгосзаказчиков', icon: 'assets/img/consulting/icon-public.png', link: '#competencies' },
-    { title: 'Конкурентный\nконсалтинг', icon: 'assets/img/consulting/icon-competitor.png', link: '#competencies' },
-    { title: 'Корпоративное\nправо', icon: 'assets/img/consulting/icon-corporate.png', link: '#competencies' }
+    { title: 'Решения\nдля бизнеса', icon: 'assets/img/consulting/icon-business.png', link: '#competencies', description: '' },
+    { title: 'Сложные\nсудебные споры', icon: 'assets/img/consulting/icon-disputes.png', link: '#competencies', description: '' },
+    { title: 'Сопровождение\nсделок', icon: 'assets/img/consulting/icon-deals.png', link: '#competencies', description: '' },
+    { title: 'Поддержка\nгосзаказчиков', icon: 'assets/img/consulting/icon-public.png', link: '#competencies', description: '' },
+    { title: 'Конкурентный\nконсалтинг', icon: 'assets/img/consulting/icon-competitor.png', link: '#competencies', description: '' },
+    { title: 'Корпоративное\nправо', icon: 'assets/img/consulting/icon-corporate.png', link: '#competencies', description: '' }
   ];
 
   const CONSULTING_DEFAULTS = {
@@ -122,7 +122,8 @@
         ? raw.competencies.map((item) => ({
             title: item?.title || '',
             icon: item?.icon || '',
-            link: item?.link || '#competencies'
+            link: item?.link || '#competencies',
+            description: item?.description || ''
           }))
         : [...CONSULTING_DEFAULTS.competencies];
 
@@ -227,6 +228,74 @@
     document.dispatchEvent(new CustomEvent('heroSlidesUpdated', { detail: { count: 1 } }));
   }
 
+  let publicModalOverlay = null;
+
+  function openPublicModal(cardData) {
+    if (!publicModalOverlay) {
+      publicModalOverlay = document.createElement('div');
+      publicModalOverlay.className = 'comp-public-overlay';
+      publicModalOverlay.innerHTML = `
+        <div class="comp-public-card">
+          <button type="button" class="comp-public-close" aria-label="Закрыть">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          <div class="comp-public-header">
+            <div class="comp-public-icon-circle">
+              <img src="" alt="" class="comp-public-icon">
+            </div>
+            <h3 class="comp-public-title"></h3>
+          </div>
+          <div class="comp-public-body"></div>
+        </div>
+      `;
+      document.body.appendChild(publicModalOverlay);
+
+      // Close events
+      publicModalOverlay.addEventListener('click', (e) => {
+        if (e.target === publicModalOverlay) {
+          closePublicModal();
+        }
+      });
+      publicModalOverlay.querySelector('.comp-public-close').addEventListener('click', closePublicModal);
+
+      // Close on Esc key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && publicModalOverlay.classList.contains('is-active')) {
+          closePublicModal();
+        }
+      });
+    }
+
+    const titleEl = publicModalOverlay.querySelector('.comp-public-title');
+    const iconEl = publicModalOverlay.querySelector('.comp-public-icon');
+    const bodyEl = publicModalOverlay.querySelector('.comp-public-body');
+
+    titleEl.innerHTML = cardData.title || '';
+    iconEl.src = cardData.icon || '';
+    bodyEl.innerHTML = cardData.description || '';
+
+    publicModalOverlay.style.display = 'flex';
+    // Force reflow
+    publicModalOverlay.offsetHeight;
+    publicModalOverlay.classList.add('is-active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePublicModal() {
+    if (publicModalOverlay) {
+      publicModalOverlay.classList.remove('is-active');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        if (!publicModalOverlay.classList.contains('is-active')) {
+          publicModalOverlay.style.display = 'none';
+        }
+      }, 300);
+    }
+  }
+
   function renderCompetencies(data) {
     const titleEl = document.querySelector('.consulting-competencies-title');
     const grid = document.querySelector('.consulting-competencies-grid');
@@ -241,7 +310,8 @@
       .map((item) => {
         const href = escapeAttr((item.link || '#competencies').trim() || '#competencies');
         const icon = escapeAttr(item.icon || '');
-        return `<a href="${href}" class="consulting-competency-card">
+        const desc = escapeAttr(item.description || '');
+        return `<a href="${href}" class="consulting-competency-card" data-description="${desc}">
           <div class="consulting-competency-card__icon-circle">
             <img src="${icon}" alt="" class="consulting-competency-card__icon" width="109" height="110" decoding="async">
           </div>
@@ -249,6 +319,26 @@
         </a>`;
       })
       .join('');
+
+    if (!grid.dataset.listenerBound) {
+      grid.addEventListener('click', (e) => {
+        const card = e.target.closest('.consulting-competency-card');
+        if (!card) return;
+
+        const description = card.getAttribute('data-description');
+        if (description && description.trim().length > 0) {
+          e.preventDefault();
+          const title = card.querySelector('.consulting-competency-card__title')?.innerHTML || '';
+          const icon = card.querySelector('.consulting-competency-card__icon')?.getAttribute('src') || '';
+          openPublicModal({
+            title,
+            icon,
+            description
+          });
+        }
+      });
+      grid.dataset.listenerBound = 'true';
+    }
   }
 
   function renderWhyUs(whyUs) {

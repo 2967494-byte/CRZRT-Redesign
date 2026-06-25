@@ -2137,3 +2137,180 @@ body.theme-purple .review-card {
     height: 60px;
   }
 }
+
+/* Всплывающее модальное окно описания компетенции на публичном сайте */
+.comp-public-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.comp-public-overlay.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.comp-public-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 680px;
+  box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.15), 0 0 40px rgba(0, 0, 0, 0.03);
+  padding: 40px;
+  position: relative;
+  box-sizing: border-box;
+  transform: translateY(20px) scale(0.96);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.comp-public-overlay.is-active .comp-public-card {
+  transform: translateY(0) scale(1);
+}
+
+.comp-public-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748B;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  z-index: 10;
+}
+
+.comp-public-close:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+  transform: rotate(90deg);
+}
+
+.comp-public-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.comp-public-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.comp-public-icon-circle {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #EEEEFB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.comp-public-icon {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  display: block;
+  mix-blend-mode: multiply;
+}
+
+.comp-public-title {
+  font-family: 'Google Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 120%;
+  color: #1E293B;
+  margin: 0;
+}
+
+.comp-public-body {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 16px;
+  line-height: 160%;
+  color: #334155;
+  overflow-y: auto;
+  padding-right: 8px;
+  max-height: 55vh;
+}
+
+.comp-public-body p {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+.comp-public-body p:last-child {
+  margin-bottom: 0;
+}
+
+.comp-public-body ul, .comp-public-body ol {
+  margin-top: 0;
+  margin-bottom: 1em;
+  padding-left: 20px;
+}
+
+/* Красивый скроллбар для тела описания */
+.comp-public-body::-webkit-scrollbar {
+  width: 6px;
+}
+.comp-public-body::-webkit-scrollbar-track {
+  background: #F8FAFC;
+  border-radius: 3px;
+}
+.comp-public-body::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+.comp-public-body::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 640px) {
+  .comp-public-card {
+    padding: 30px 20px 24px;
+    border-radius: 20px;
+  }
+  .comp-public-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+  }
+  .comp-public-icon-circle {
+    width: 64px;
+    height: 64px;
+  }
+  .comp-public-icon {
+    width: 48px;
+    height: 48px;
+  }
+  .comp-public-title {
+    font-size: 22px;
+  }
+}
+

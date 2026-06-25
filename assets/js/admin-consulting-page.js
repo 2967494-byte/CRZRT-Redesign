@@ -296,6 +296,10 @@
               <label>Ссылка</label>
               <input type="text" class="form-control" id="consulting_comp_link_${i}" value="${escapeAttr(item.link || '#competencies')}" placeholder="#competencies">
             </div>
+            <div class="form-group" style="margin-top:8px; margin-bottom:0;">
+              <button type="button" class="btn-secondary" style="width: 100%; font-size: 0.85rem; padding: 6px 12px;" onclick="AdminConsultingPage.openDescriptionModal(${i})">Описание</button>
+              <textarea id="consulting_comp_desc_${i}" style="display:none;">${escapeAttr(item.description || '')}</textarea>
+            </div>
           </div>`
           )
           .join('')}
@@ -372,6 +376,115 @@
     return document.getElementById(`${id}_val`)?.value || '';
   }
 
+  let activeCompetencyIndex = null;
+  let competencyModalInitialized = false;
+
+  function openDescriptionModal(i) {
+    activeCompetencyIndex = i;
+    const modal = document.getElementById('competencyModal');
+    const editor = document.getElementById('competencyFormDescription');
+    const textarea = document.getElementById(`consulting_comp_desc_${i}`);
+    
+    if (modal && editor && textarea) {
+      editor.innerHTML = textarea.value || '';
+      modal.style.display = 'flex';
+      editor.focus();
+      updateWysiwygToolbarState();
+    }
+  }
+
+  function closeDescriptionModal() {
+    const modal = document.getElementById('competencyModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    activeCompetencyIndex = null;
+  }
+
+  function initCompetencyModal() {
+    if (competencyModalInitialized) return;
+    const modal = document.getElementById('competencyModal');
+    if (!modal) return;
+
+    const closeBtn = document.getElementById('competencyModalClose');
+    const cancelBtn = document.getElementById('competencyModalCancel');
+    const form = document.getElementById('competencyForm');
+
+    if (closeBtn) closeBtn.addEventListener('click', closeDescriptionModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeDescriptionModal);
+
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const editor = document.getElementById('competencyFormDescription');
+        if (activeCompetencyIndex !== null && editor) {
+          const textarea = document.getElementById(`consulting_comp_desc_${activeCompetencyIndex}`);
+          if (textarea) {
+            textarea.value = editor.innerHTML;
+            window.saveConsultingPageStateToMemory?.();
+          }
+        }
+        closeDescriptionModal();
+      });
+    }
+
+    const wysiwygBtns = document.querySelectorAll('#compWysiwygToolbar .wysiwyg-btn');
+    wysiwygBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const command = btn.getAttribute('data-command');
+        document.execCommand(command, false, null);
+        const editor = document.getElementById('competencyFormDescription');
+        if (editor) editor.focus();
+        updateWysiwygToolbarState();
+      });
+    });
+
+    const wysiwygFontSize = document.getElementById('compWysiwygFontSize');
+    if (wysiwygFontSize) {
+      wysiwygFontSize.addEventListener('change', (e) => {
+        document.execCommand('fontSize', false, e.target.value);
+        const editor = document.getElementById('competencyFormDescription');
+        if (editor) editor.focus();
+      });
+    }
+
+    const wysiwygColor = document.getElementById('compWysiwygColor');
+    if (wysiwygColor) {
+      wysiwygColor.addEventListener('input', (e) => {
+        document.execCommand('foreColor', false, e.target.value);
+        const editor = document.getElementById('competencyFormDescription');
+        if (editor) editor.focus();
+      });
+    }
+
+    const editor = document.getElementById('competencyFormDescription');
+    if (editor) {
+      editor.addEventListener('keyup', updateWysiwygToolbarState);
+      editor.addEventListener('mouseup', updateWysiwygToolbarState);
+    }
+
+    competencyModalInitialized = true;
+  }
+
+  function updateWysiwygToolbarState() {
+    const wysiwygBtns = document.querySelectorAll('#compWysiwygToolbar .wysiwyg-btn');
+    wysiwygBtns.forEach(btn => {
+      const command = btn.getAttribute('data-command');
+      if (document.queryCommandState(command)) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCompetencyModal);
+  } else {
+    initCompetencyModal();
+  }
+
   function collectConsultingPageFromForm(existing) {
     const data = getMigratedData(existing || window.consultingPageData || {});
 
@@ -386,7 +499,7 @@
       titleFontWeight: document.getElementById('consulting_hero_title_weight')?.value || '',
       titleItalic: document.getElementById('consulting_hero_title_italic')?.checked || false,
       titleUnderline: document.getElementById('consulting_hero_title_underline')?.checked || false,
-      subtitle: document.getElementById('consulting_hero_subtitle')?.value ?? data.hero?.subtitle ?? CONSULTING_DEFAULTS.hero.subtitle,
+      subtitle: document.getElementById('consulting_hero_subtitle')?.value ?? data.hero?.subtitle ?? DEFAULT_CONSULTING_PAGE.hero.subtitle,
       subtitleColor: document.getElementById('consulting_hero_subtitle_color')?.value ?? data.hero?.subtitleColor ?? '#ffffff',
       subtitleTop: parseInt(document.getElementById('consulting_hero_subtitle_top')?.value || 213, 10),
       subtitleLeft: parseInt(document.getElementById('consulting_hero_subtitle_left')?.value || 70, 10),
@@ -405,7 +518,8 @@
       data.competencies.push({
         title: document.getElementById(`consulting_comp_text_${i}`)?.value || '',
         icon: readImageVal(`consulting_comp_icon_${i}`) || data.competencies?.[i]?.icon || '',
-        link: document.getElementById(`consulting_comp_link_${i}`)?.value || '#competencies'
+        link: document.getElementById(`consulting_comp_link_${i}`)?.value || '#competencies',
+        description: document.getElementById(`consulting_comp_desc_${i}`)?.value || ''
       });
     }
 
@@ -485,12 +599,15 @@
     getAspect,
     getCropSize,
     isConsultingUploadId,
+    openDescriptionModal,
+    closeDescriptionModal,
     addCompetency() {
       window.saveConsultingPageStateToMemory?.();
       window.consultingPageData.competencies.push({
         title: '',
         icon: '',
-        link: '#competencies'
+        link: '#competencies',
+        description: ''
       });
       renderConsultingPageAdmin(window.consultingPageData);
     },
