@@ -9,13 +9,21 @@
   --quiz-danger-border: #FCA5A5;
 }
 
+html:has(body[data-page="testing"]) {
+  background-color: #1E334C;
+}
+
 body[data-page="testing"] {
-  min-height: 100vh;
+  min-height: calc(100vh / var(--crzrt-zoom, 1));
   display: flex;
   flex-direction: column;
   --green: #00AE4D;
   --green-dark: #009341;
   --green-light: #EAF7F0;
+}
+
+body[data-page="testing"] .footer {
+  margin-top: auto;
 }
 
 body[data-page="testing"] .header__actions .btn--green {
