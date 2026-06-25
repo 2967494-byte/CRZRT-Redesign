@@ -173,7 +173,10 @@
     }
   };
 
-  document.documentElement.classList.add(CONTENT_PENDING_CLASS);
+  const isObucheniePage = document.body.dataset.page === 'obuchenie';
+  if (isObucheniePage) {
+    document.documentElement.classList.add(CONTENT_PENDING_CLASS);
+  }
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -876,6 +879,85 @@
     'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
   ];
 
+  const MONTH_NAMES_NOMINATIVE_RU = [
+    'январь', 'февраль', 'март', 'апрель', 'май', 'июнь',
+    'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'
+  ];
+
+  function formatUpcomingEventDate(course) {
+    const range = getCourseDateRange(course);
+    if (!range) return { range: '—', month: '' };
+
+    const start = range.from;
+    const end = range.to;
+    const startDay = start.getDate();
+    const endDay = end.getDate();
+
+    if (startDay === endDay) {
+      return {
+        range: String(startDay),
+        month: MONTH_NAMES_NOMINATIVE_RU[start.getMonth()]
+      };
+    }
+
+    const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+    if (sameMonth) {
+      return {
+        range: `${startDay}–${endDay}`,
+        month: MONTH_NAMES_NOMINATIVE_RU[start.getMonth()]
+      };
+    }
+
+    return {
+      range: `${startDay}–${endDay}`,
+      month: `${MONTH_NAMES_NOMINATIVE_RU[start.getMonth()]}–${MONTH_NAMES_NOMINATIVE_RU[end.getMonth()]}`
+    };
+  }
+
+  function getUpcomingCourses(courseRegistry, limit = 4) {
+    const today = new Date();
+    const todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const activeCourses = (courseRegistry || []).filter((course) => course && course.active !== false);
+
+    return activeCourses
+      .map((course) => ({
+        course,
+        startDate: parseIsoDate(course.dateFrom) || new Date(2099, 11, 31)
+      }))
+      .filter((item) => item.startDate >= todayZero)
+      .sort((a, b) => a.startDate - b.startDate)
+      .slice(0, limit)
+      .map((item) => item.course);
+  }
+
+  function renderLandingUpcomingEvents(courseRegistry, options) {
+    const list = document.getElementById('landingUpcomingEvents');
+    if (!list) return;
+
+    const limit = options?.limit || 4;
+    const upcoming = getUpcomingCourses(courseRegistry, limit);
+
+    list.innerHTML = upcoming
+      .map((course) => {
+        const { range, month } = formatUpcomingEventDate(course);
+        const monthHtml = month
+          ? `<span class="event-date__month">${escapeHtml(month)}</span>`
+          : '';
+
+        return `<li class="events-list__item">
+          <div class="event-date"><span class="event-date__range">${escapeHtml(range)}</span>${monthHtml}</div>
+          <div class="event-desc">${escapeHtml(course.title)}</div>
+        </li>`;
+      })
+      .join('');
+
+    const allLink = document.getElementById('landingAllEventsLink');
+    if (allLink) {
+      allLink.href = 'obuchenie.html#schedule';
+      window.CrzrtZoomSync?.prepareInternalLink?.(allLink);
+    }
+  }
+
   function formatDaysPlural(days) {
     const d = parseInt(days, 10) || 1;
     const mod10 = d % 10;
@@ -1166,12 +1248,17 @@
     setEnrollAudienceMode,
     loadObuchenieDataFromApi,
     loadObuchenieDataFromLocal,
-    renderObucheniePage
+    renderObucheniePage,
+    getUpcomingCourses,
+    formatUpcomingEventDate,
+    renderLandingUpcomingEvents
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initObuchenieContent);
-  } else {
-    initObuchenieContent();
+  if (isObucheniePage) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initObuchenieContent);
+    } else {
+      initObuchenieContent();
+    }
   }
 })();

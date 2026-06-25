@@ -603,8 +603,27 @@
     document.dispatchEvent(new CustomEvent('landingContentReady', { detail: data }));
   }
 
+  async function loadAndRenderUpcomingEvents() {
+    const api = window.ObuchenieContent;
+    if (!api?.renderLandingUpcomingEvents) return;
+
+    try {
+      const localData = api.loadObuchenieDataFromLocal();
+      const initialData = localData || api.migrateObucheniePageData(null);
+      api.renderLandingUpcomingEvents(initialData.courseRegistry);
+
+      const apiData = await api.loadObuchenieDataFromApi();
+      if (apiData) {
+        api.renderLandingUpcomingEvents(apiData.courseRegistry);
+      }
+    } catch (error) {
+      console.warn('Landing: upcoming events load failed', error);
+    }
+  }
+
   async function initLandingContent() {
     const revealTimer = window.setTimeout(markLandingContentReady, REVEAL_TIMEOUT_MS);
+    const upcomingEventsPromise = loadAndRenderUpcomingEvents();
     try {
       const localData = loadLandingDataFromLocal();
       const initialData = localData || migrateLandingData(null);
