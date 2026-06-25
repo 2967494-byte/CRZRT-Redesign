@@ -39,6 +39,7 @@
       ]
     },
     manual: {
+      title: 'Руководство пользователя\nпо работе на ЭТП',
       bookImage: 'uploads/etp-book.png',
       items: [
         { title: 'Регламент пользования АИС ЭТП ЦРЗ РТ;', file: '' },
@@ -130,6 +131,7 @@
             : [...ECP_DEFAULTS.blanks.items]
       },
       manual: {
+        title: raw?.manual?.title !== undefined ? raw.manual.title : ECP_DEFAULTS.manual.title,
         bookImage: raw?.manual?.bookImage || ECP_DEFAULTS.manual.bookImage,
         items:
           Array.isArray(raw?.manual?.items) && raw.manual.items.length
@@ -355,9 +357,16 @@
   }
 
   function renderManual(manual) {
+    const titleEl = document.querySelector('.ecp-manual__title');
     const listEl = document.querySelector('.ecp-manual__list');
     const bookEl = document.querySelector('.ecp-manual__image');
     const items = manual?.items?.length ? manual.items : ECP_DEFAULTS.manual.items;
+
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(
+        manual?.title !== undefined ? manual.title : ECP_DEFAULTS.manual.title
+      );
+    }
 
     if (listEl) {
       listEl.innerHTML = items

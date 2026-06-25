@@ -10,7 +10,7 @@
     },
     tariffs: [],
     blanks: { patternImage: '', items: [] },
-    manual: { bookImage: '', items: [] },
+    manual: { title: '', bookImage: '', items: [] },
     videos: [],
     support: {
       background: '',
@@ -148,11 +148,11 @@
       </div>`;
   }
 
-  function compactFileUploadHtml(id, value, fileName) {
+  function compactFileUploadHtml(id, value, fileName, label = 'Файл для скачивания') {
     const shownName = fileName || (value ? value.split('/').pop() : '');
     return `
       <div class="ecp-admin-card__file">
-        <label for="${id}">Файл для скачивания</label>
+        <label for="${id}">${label}</label>
         <input type="text" class="form-control" id="${id}" value="${escapeAttr(value)}" placeholder="Ссылка или uploads/files/...">
         <button type="button" class="btn-save ecp-admin-card__upload-btn" onclick="AdminEcp.pickFile('${id}')">Загрузить файл</button>
         <small id="${id}_name" class="ecp-admin-card__file-name" style="display:${shownName ? 'block' : 'none'};">${escapeAttr(shownName)}</small>
@@ -347,22 +347,32 @@
     const manual = data.manual || {};
     const items = manual.items || [];
     el.innerHTML = `
+      <div class="form-group">
+        <label for="ecp_manual_section_title">Заголовок блока (Enter — перенос)</label>
+        <textarea class="form-control" id="ecp_manual_section_title" rows="2">${escapeAttr(manual.title)}</textarea>
+      </div>
       ${imageUploadHtml('ecp_manual_book', 'Изображение книги справа')}
       <div id="ecpManualItemsAdmin"></div>
     `;
     setImageUploadState('ecp_manual_book', manual.bookImage);
     const itemsEl = document.getElementById('ecpManualItemsAdmin');
-    itemsEl.innerHTML = items
-      .map(
-        (item, i) => `
-        <div class="admin-subcard" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;margin-bottom:12px;">
-          <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;" onclick="AdminEcp.removeManualItem(${i})">×</button>
-          <div class="form-group"><label>Название документа</label>
-            <input type="text" class="form-control" id="ecp_manual_title_${i}" value="${escapeAttr(item.title)}"></div>
-          ${fileUploadRow(`ecp_manual_file_${i}`, 'PDF / файл', item.file || '', item.fileName)}
-        </div>`
-      )
-      .join('');
+    itemsEl.innerHTML = ecpAdminGridHtml(
+      'ecp-admin-grid--4',
+      items
+        .map((item, i) =>
+          ecpAdminCardHtml(
+            i,
+            `AdminEcp.removeManualItem(${i})`,
+            `
+          <div class="ecp-admin-card__field">
+            <label for="ecp_manual_title_${i}">Название документа</label>
+            <input type="text" class="form-control" id="ecp_manual_title_${i}" value="${escapeAttr(item.title)}">
+          </div>
+          ${compactFileUploadHtml(`ecp_manual_file_${i}`, item.file || '', item.fileName, 'PDF / файл')}`
+          )
+        )
+        .join('')
+    );
   }
 
   function resolveAdminVideoPreview(video) {
@@ -494,6 +504,7 @@
     }
 
     data.manual = {
+      title: document.getElementById('ecp_manual_section_title')?.value ?? data.manual?.title ?? '',
       bookImage: readImageVal('ecp_manual_book'),
       items: []
     };
@@ -615,7 +626,7 @@
     },
     addManualItem() {
       window.saveEcpPageStateToMemory?.();
-      if (!window.ecpPageData.manual) window.ecpPageData.manual = { bookImage: '', items: [] };
+      if (!window.ecpPageData.manual) window.ecpPageData.manual = { title: '', bookImage: '', items: [] };
       window.ecpPageData.manual.items.push({ title: '', file: '' });
       renderEcpPageAdmin(window.ecpPageData);
     },
