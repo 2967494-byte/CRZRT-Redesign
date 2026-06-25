@@ -1075,6 +1075,14 @@ body[data-page="support"] .support-checklist-card {
   border-radius: 20px;
   background: radial-gradient(77.13% 155.15% at 86.32% 119.38%, #C6DBFF 0.98%, #516496 100%);
   overflow: visible;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 12px 30px -10px rgba(81, 100, 150, 0.25);
+}
+
+body[data-page="support"] .support-checklist-item:hover .support-checklist-card {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 45px -15px rgba(81, 100, 150, 0.45);
+  background: radial-gradient(77.13% 155.15% at 86.32% 119.38%, #d5e6ff 0.98%, #475a8a 100%);
 }
 
 body[data-page="support"] .support-checklist-card__icon {
@@ -1086,6 +1094,11 @@ body[data-page="support"] .support-checklist-card__icon {
   height: 93px;
   overflow: visible;
   pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body[data-page="support"] .support-checklist-item:hover .support-checklist-card__icon {
+  transform: scale(1.08) translateY(-4px);
 }
 
 body[data-page="support"] .support-checklist-card__icon-bg {
@@ -1151,15 +1164,24 @@ body[data-page="support"] .support-checklist-card__download {
   letter-spacing: -0.03em;
   color: #575B6D;
   text-decoration: none;
+  transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-body[data-page="support"] .support-checklist-card__download:hover {
+body[data-page="support"] .support-checklist-item:hover .support-checklist-card__download {
   color: #354557;
 }
 
 body[data-page="support"] .support-checklist-card__download-arrow {
   display: inline-flex;
   flex-shrink: 0;
+}
+
+body[data-page="support"] .support-checklist-card__download-arrow svg {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body[data-page="support"] .support-checklist-item:hover .support-checklist-card__download-arrow svg {
+  transform: translate(3px, 3px);
 }
 
 /* Калькулятор НМЦК */

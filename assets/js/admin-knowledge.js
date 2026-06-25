@@ -442,7 +442,7 @@
           <div class="knowledge-admin-block-card__header">
             <div class="knowledge-admin-block-card__lead">
               <button type="button" class="knowledge-group-collapse-btn" aria-expanded="${isExpanded ? 'true' : 'false'}" title="${isExpanded ? 'Свернуть группу' : 'Развернуть группу'}" onclick="AdminKnowledge.toggleGroupCollapsed('${block.id}')">${isExpanded ? '▼' : '▶'}</button>
-              <span class="block-badge" style="background:${meta.color}; color:#fff; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">${meta.label}</span>
+              <span class="block-badge" style="background:${meta.color}; color:#fff; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; cursor:pointer; user-select:none;" onclick="AdminKnowledge.toggleGroupCollapsed('${block.id}')">${meta.label}</span>
               ${!isExpanded ? `<span class="knowledge-group-summary">${escapeAttr(block.value || 'Без названия')}</span>` : ''}
               ${!isExpanded ? `<span class="knowledge-group-count">${childCount} эл.</span>` : ''}
             </div>
