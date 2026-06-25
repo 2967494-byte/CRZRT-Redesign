@@ -2659,3 +2659,122 @@ body {
                 grid-template-columns: 1fr;
             }
         }
+
+        #ecpTariffsAdmin .ecp-admin-grid,
+        #ecpBlanksItemsAdmin .ecp-admin-grid,
+        #ecpVideosAdmin .ecp-admin-grid {
+            display: grid;
+            gap: 12px;
+            width: 100%;
+        }
+
+        #ecpTariffsAdmin .ecp-admin-grid--4,
+        #ecpBlanksItemsAdmin .ecp-admin-grid--4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        #ecpVideosAdmin .ecp-admin-grid--3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        #ecpBlanksItemsAdmin {
+            margin-top: 16px;
+        }
+
+        #ecpTariffsAdmin .ecp-admin-card,
+        #ecpBlanksItemsAdmin .ecp-admin-card,
+        #ecpVideosAdmin .ecp-admin-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.12);
+        }
+
+        #ecpTariffsAdmin .ecp-admin-card__head,
+        #ecpBlanksItemsAdmin .ecp-admin-card__head,
+        #ecpVideosAdmin .ecp-admin-card__head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #ecpTariffsAdmin .ecp-admin-card__num,
+        #ecpBlanksItemsAdmin .ecp-admin-card__num,
+        #ecpVideosAdmin .ecp-admin-card__num {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        #ecpTariffsAdmin .ecp-admin-card__delete,
+        #ecpBlanksItemsAdmin .ecp-admin-card__delete,
+        #ecpVideosAdmin .ecp-admin-card__delete {
+            padding: 2px 8px;
+            font-size: 0.9rem;
+            line-height: 1.2;
+        }
+
+        #ecpTariffsAdmin .ecp-admin-card label,
+        #ecpBlanksItemsAdmin .ecp-admin-card label,
+        #ecpVideosAdmin .ecp-admin-card label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        #ecpTariffsAdmin .ecp-admin-card .form-control,
+        #ecpBlanksItemsAdmin .ecp-admin-card .form-control,
+        #ecpVideosAdmin .ecp-admin-card .form-control {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+        }
+
+        #ecpTariffsAdmin .ecp-admin-card__file,
+        #ecpBlanksItemsAdmin .ecp-admin-card__file {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        #ecpTariffsAdmin .ecp-admin-card__upload-btn,
+        #ecpBlanksItemsAdmin .ecp-admin-card__upload-btn {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.82rem;
+        }
+
+        #ecpTariffsAdmin .ecp-admin-card__file-name,
+        #ecpBlanksItemsAdmin .ecp-admin-card__file-name {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            word-break: break-all;
+        }
+
+        #ecpVideosAdmin .ecp-admin-card .form-group {
+            margin-bottom: 0;
+        }
+
+        #ecpVideosAdmin .ecp-admin-card .image-upload-mini img,
+        #ecpVideosAdmin .ecp-admin-card__auto-preview {
+            max-width: 100% !important;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        #ecpVideosAdmin .ecp-admin-card__auto-preview {
+            margin-top: 8px;
+        }
+
+        @media (max-width: 720px) {
+            #ecpTariffsAdmin .ecp-admin-grid--4,
+            #ecpBlanksItemsAdmin .ecp-admin-grid--4,
+            #ecpVideosAdmin .ecp-admin-grid--3 {
+                grid-template-columns: 1fr;
+            }
+        }

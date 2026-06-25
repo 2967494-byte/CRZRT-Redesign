@@ -148,6 +148,32 @@
       </div>`;
   }
 
+  function compactFileUploadHtml(id, value, fileName) {
+    const shownName = fileName || (value ? value.split('/').pop() : '');
+    return `
+      <div class="ecp-admin-card__file">
+        <label for="${id}">Файл для скачивания</label>
+        <input type="text" class="form-control" id="${id}" value="${escapeAttr(value)}" placeholder="Ссылка или uploads/files/...">
+        <button type="button" class="btn-save ecp-admin-card__upload-btn" onclick="AdminEcp.pickFile('${id}')">Загрузить файл</button>
+        <small id="${id}_name" class="ecp-admin-card__file-name" style="display:${shownName ? 'block' : 'none'};">${escapeAttr(shownName)}</small>
+      </div>`;
+  }
+
+  function ecpAdminGridHtml(gridModifier, cardsHtml) {
+    return `<div class="ecp-admin-grid ${gridModifier}">${cardsHtml}</div>`;
+  }
+
+  function ecpAdminCardHtml(index, removeOnclick, bodyHtml) {
+    return `
+      <div class="ecp-admin-card">
+        <div class="ecp-admin-card__head">
+          <span class="ecp-admin-card__num">Карточка ${index + 1}</span>
+          <button type="button" class="btn-delete ecp-admin-card__delete" onclick="${removeOnclick}">×</button>
+        </div>
+        ${bodyHtml}
+      </div>`;
+  }
+
   function getMigratedEcpData(data) {
     if (window.EcpContent?.migrateEcpData) {
       return window.EcpContent.migrateEcpData(data || {});
@@ -266,17 +292,23 @@
     const el = document.getElementById('ecpTariffsAdmin');
     if (!el) return;
     const list = data.tariffs || [];
-    el.innerHTML = list
-      .map(
-        (item, i) => `
-        <div class="admin-subcard" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;margin-bottom:12px;">
-          <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;" onclick="AdminEcp.removeTariff(${i})">×</button>
-          <div class="form-group"><label>Название (Enter — перенос)</label>
-            <textarea class="form-control" id="ecp_tariff_text_${i}" rows="2">${escapeAttr(item.text)}</textarea></div>
-          ${fileUploadRow(`ecp_tariff_file_${i}`, 'Файл для скачивания', item.file || '', item.fileName)}
-        </div>`
-      )
-      .join('');
+    el.innerHTML = ecpAdminGridHtml(
+      'ecp-admin-grid--4',
+      list
+        .map((item, i) =>
+          ecpAdminCardHtml(
+            i,
+            `AdminEcp.removeTariff(${i})`,
+            `
+          <div class="ecp-admin-card__field">
+            <label for="ecp_tariff_text_${i}">Название (Enter — перенос)</label>
+            <textarea class="form-control" id="ecp_tariff_text_${i}" rows="2">${escapeAttr(item.text)}</textarea>
+          </div>
+          ${compactFileUploadHtml(`ecp_tariff_file_${i}`, item.file || '', item.fileName)}`
+          )
+        )
+        .join('')
+    );
   }
 
   function renderBlanksAdmin(data) {
@@ -290,17 +322,23 @@
     `;
     setImageUploadState('ecp_blanks_pattern', blanks.patternImage);
     const itemsEl = document.getElementById('ecpBlanksItemsAdmin');
-    itemsEl.innerHTML = items
-      .map(
-        (item, i) => `
-        <div class="admin-subcard" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;margin-bottom:12px;">
-          <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;" onclick="AdminEcp.removeBlank(${i})">×</button>
-          <div class="form-group"><label>Текст карточки</label>
-            <textarea class="form-control" id="ecp_blank_text_${i}" rows="3">${escapeAttr(item.text)}</textarea></div>
-          ${fileUploadRow(`ecp_blank_file_${i}`, 'Файл для скачивания', item.file || '', item.fileName)}
-        </div>`
-      )
-      .join('');
+    itemsEl.innerHTML = ecpAdminGridHtml(
+      'ecp-admin-grid--4',
+      items
+        .map((item, i) =>
+          ecpAdminCardHtml(
+            i,
+            `AdminEcp.removeBlank(${i})`,
+            `
+          <div class="ecp-admin-card__field">
+            <label for="ecp_blank_text_${i}">Текст карточки</label>
+            <textarea class="form-control" id="ecp_blank_text_${i}" rows="3">${escapeAttr(item.text)}</textarea>
+          </div>
+          ${compactFileUploadHtml(`ecp_blank_file_${i}`, item.file || '', item.fileName)}`
+          )
+        )
+        .join('')
+    );
   }
 
   function renderManualAdmin(data) {
@@ -338,21 +376,31 @@
     const el = document.getElementById('ecpVideosAdmin');
     if (!el) return;
     const list = data.videos || [];
-    el.innerHTML = list
-      .map((video, i) => {
-        const thumb = resolveAdminVideoPreview(video);
-        return `
-        <div class="admin-subcard" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;margin-bottom:12px;">
-          <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;" onclick="AdminEcp.removeVideo(${i})">×</button>
-          <div class="form-group"><label>Ссылка на видео</label>
-            <input type="url" class="form-control" id="ecp_video_url_${i}" value="${escapeAttr(video.url)}" placeholder="https://youtube.com/... или https://vk.com/video..."></div>
-          <div class="form-group"><label>Описание</label>
-            <textarea class="form-control" id="ecp_video_title_${i}" rows="2">${escapeAttr(video.title)}</textarea></div>
-          ${imageUploadHtml(`ecp_video_thumb_${i}`, 'Превью (необязательно)', 'Для YouTube, Rutube и VK подставится автоматически')}
-          <img id="ecp_video_auto_preview_${i}" src="${escapeAttr(thumb)}" alt="" style="max-width:180px;border-radius:8px;margin-top:8px;${thumb ? '' : 'display:none;'}">
-        </div>`;
-      })
-      .join('');
+    el.innerHTML = ecpAdminGridHtml(
+      'ecp-admin-grid--3',
+      list
+        .map((video, i) => {
+          const thumb = resolveAdminVideoPreview(video);
+          return ecpAdminCardHtml(
+            i,
+            `AdminEcp.removeVideo(${i})`,
+            `
+          <div class="ecp-admin-card__field">
+            <label for="ecp_video_url_${i}">Ссылка на видео</label>
+            <input type="url" class="form-control" id="ecp_video_url_${i}" value="${escapeAttr(video.url)}" placeholder="https://youtube.com/...">
+          </div>
+          <div class="ecp-admin-card__field">
+            <label for="ecp_video_title_${i}">Описание</label>
+            <textarea class="form-control" id="ecp_video_title_${i}" rows="2">${escapeAttr(video.title)}</textarea>
+          </div>
+          <div class="ecp-admin-card__thumb">
+            ${imageUploadHtml(`ecp_video_thumb_${i}`, 'Превью (необязательно)', 'Для YouTube, Rutube и VK подставится автоматически')}
+            <img id="ecp_video_auto_preview_${i}" class="ecp-admin-card__auto-preview" src="${escapeAttr(thumb)}" alt="" style="${thumb ? '' : 'display:none;'}">
+          </div>`
+          );
+        })
+        .join('')
+    );
     list.forEach((video, i) => setImageUploadState(`ecp_video_thumb_${i}`, video.thumbnail || ''));
   }
 
