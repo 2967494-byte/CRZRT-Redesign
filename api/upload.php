@@ -28,6 +28,13 @@ if (strpos($slot, 'obuchenie_cal_promo') !== false
     || strpos($slot, 'consulting_why_side') !== false) {
     $targetMaxBytes = 700 * 1024;
 }
+// For hero/banner/background/promo images, allow higher size to preserve high quality
+if (strpos($slot, 'hero') !== false
+    || strpos($slot, 'bg') !== false
+    || strpos($slot, 'banner') !== false
+    || strpos($slot, 'promo') !== false) {
+    $targetMaxBytes = 1.2 * 1024 * 1024; // 1.2 MB
+}
 
 if (!is_string($dataUrl) || strpos($dataUrl, 'data:image/') !== 0) {
     http_response_code(400);
