@@ -60,7 +60,120 @@
           ? `url('${v}')`
           : 'radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #B8FDC6 100%)';
       }
+      updateNewsLivePreview();
     }
+  }
+
+  function readColorVal(id, fallback) {
+    const raw = document.getElementById(id)?.value || fallback || '';
+    const normalized = String(raw).trim();
+    if (/^#[0-9A-Fa-f]{6}$/i.test(normalized)) return normalized.toUpperCase();
+    if (/^[0-9A-Fa-f]{6}$/.test(normalized)) return `#${normalized}`.toUpperCase();
+    return fallback || '#575B6D';
+  }
+
+  function syncColorField(id, value, fromText) {
+    const textEl = document.getElementById(id);
+    const pickerEl = document.getElementById(`${id}_picker`);
+    if (!textEl || !pickerEl) return;
+
+    let normalized = String(value || '').trim();
+    if (/^[0-9A-Fa-f]{6}$/.test(normalized)) normalized = `#${normalized}`;
+    if (!/^#[0-9A-Fa-f]{6}$/i.test(normalized)) {
+      if (fromText) return;
+      normalized = '#000000';
+    }
+
+    textEl.value = normalized.toUpperCase();
+    pickerEl.value = normalized.toLowerCase();
+    updateNewsLivePreview();
+  }
+
+  function updateNewsLivePreview() {
+    const titleEl = document.getElementById('news_hero_live_title');
+    const subtitleEl = document.getElementById('news_hero_live_subtitle');
+    const previewEl = document.getElementById('news_hero_live_preview');
+    if (!titleEl || !subtitleEl || !previewEl) return;
+
+    const titleText = document.getElementById('news_hero_title')?.value || '';
+    const subtitleText = document.getElementById('news_hero_subtitle')?.value || '';
+    const titleColor = readColorVal('news_hero_title_color', '#575B6D');
+    const subtitleColor = readColorVal('news_hero_subtitle_color', '#FFFFFF');
+    const bgImage = document.getElementById('news_hero_bg_val')?.value || '';
+
+    const titleTop = parseFloat(document.getElementById('news_hero_title_top')?.value) || 122;
+    const titleLeft = parseFloat(document.getElementById('news_hero_title_left')?.value) || 70;
+    const subtitleTop = parseFloat(document.getElementById('news_hero_subtitle_top')?.value) || 213;
+    const subtitleLeft = parseFloat(document.getElementById('news_hero_subtitle_left')?.value) || 70;
+
+    previewEl.style.backgroundImage = bgImage
+      ? `url('${bgImage.replace(/'/g, "\\'")}')`
+      : 'radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #B8FDC6 100%)';
+
+    titleEl.textContent = titleText;
+    titleEl.style.color = titleColor;
+    titleEl.style.top = `calc((${titleTop} / 420) * 100%)`;
+    titleEl.style.left = `calc((${titleLeft} / 1520) * 100%)`;
+    titleEl.style.maxWidth = `calc(100% - ((${titleLeft} / 1520) * 100%) - 10px)`;
+    titleEl.hidden = !titleText.trim();
+
+    const titleSize = document.getElementById('news_hero_title_size')?.value || '';
+    const titleWeight = document.getElementById('news_hero_title_weight')?.value || '';
+    const titleItalic = document.getElementById('news_hero_title_italic')?.checked || false;
+    const titleUnderline = document.getElementById('news_hero_title_underline')?.checked || false;
+    if (titleSize) titleEl.style.fontSize = `${titleSize}px`; else titleEl.style.removeProperty('font-size');
+    if (titleWeight) titleEl.style.fontWeight = titleWeight; else titleEl.style.removeProperty('font-weight');
+    titleEl.style.fontStyle = titleItalic ? 'italic' : '';
+    titleEl.style.textDecoration = titleUnderline ? 'underline' : '';
+
+    subtitleEl.textContent = subtitleText;
+    subtitleEl.style.color = subtitleColor;
+    subtitleEl.style.top = `calc((${subtitleTop} / 420) * 100%)`;
+    subtitleEl.style.left = `calc((${subtitleLeft} / 1520) * 100%)`;
+    subtitleEl.style.maxWidth = `calc(100% - ((${subtitleLeft} / 1520) * 100%) - 10px)`;
+    subtitleEl.hidden = !subtitleText.trim();
+
+    const subtitleSize = document.getElementById('news_hero_subtitle_size')?.value || '';
+    const subtitleWeight = document.getElementById('news_hero_subtitle_weight')?.value || '';
+    const subtitleItalic = document.getElementById('news_hero_subtitle_italic')?.checked || false;
+    const subtitleUnderline = document.getElementById('news_hero_subtitle_underline')?.checked || false;
+    if (subtitleSize) subtitleEl.style.fontSize = `${subtitleSize}px`; else subtitleEl.style.removeProperty('font-size');
+    if (subtitleWeight) subtitleEl.style.fontWeight = subtitleWeight; else subtitleEl.style.removeProperty('font-weight');
+    subtitleEl.style.fontStyle = subtitleItalic ? 'italic' : '';
+    subtitleEl.style.textDecoration = subtitleUnderline ? 'underline' : '';
+  }
+
+  function bindNewsHeroPreviewControls() {
+    const selectors = [
+      '#news_hero_title',
+      '#news_hero_subtitle',
+      '#news_hero_title_top',
+      '#news_hero_title_left',
+      '#news_hero_subtitle_top',
+      '#news_hero_subtitle_left',
+      '#news_hero_title_size',
+      '#news_hero_title_weight',
+      '#news_hero_subtitle_size',
+      '#news_hero_subtitle_weight'
+    ];
+
+    selectors.forEach((selector) => {
+      document.querySelectorAll(selector).forEach((el) => {
+        if (el.dataset.newsPreviewBound === 'true') return;
+        el.dataset.newsPreviewBound = 'true';
+        el.addEventListener('input', updateNewsLivePreview);
+        el.addEventListener('change', updateNewsLivePreview);
+      });
+    });
+
+    ['#news_hero_title_italic', '#news_hero_title_underline', '#news_hero_subtitle_italic', '#news_hero_subtitle_underline']
+      .forEach((selector) => {
+        document.querySelectorAll(selector).forEach((el) => {
+          if (el.dataset.newsPreviewBound === 'true') return;
+          el.dataset.newsPreviewBound = 'true';
+          el.addEventListener('change', updateNewsLivePreview);
+        });
+      });
   }
 
   function heroBgUploadShell(id, label, sizeLabel = '1520×420') {
@@ -117,15 +230,15 @@
             <option value="700" ${fontWeight === '700' ? 'selected' : ''}>Толстый</option>
           </select>
           <label title="Курсив" style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--card-border); border-radius:4px; cursor:pointer; background:${italic ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'}; margin-bottom:0; font-style:italic; font-weight:bold; user-select:none; font-family:serif;">
-            <input type="checkbox" id="${italicId}" ${italic ? 'checked' : ''} style="display:none;" onchange="this.parentElement.style.background = this.checked ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'">
+            <input type="checkbox" id="${italicId}" ${italic ? 'checked' : ''} style="display:none;" onchange="this.parentElement.style.background = this.checked ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'; AdminNews.updateNewsLivePreview()">
             I
           </label>
           <label title="Подчеркнутый" style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--card-border); border-radius:4px; cursor:pointer; background:${underline ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'}; margin-bottom:0; text-decoration:underline; font-weight:bold; user-select:none; font-family:serif;">
-            <input type="checkbox" id="${underlineId}" ${underline ? 'checked' : ''} style="display:none;" onchange="this.parentElement.style.background = this.checked ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'">
+            <input type="checkbox" id="${underlineId}" ${underline ? 'checked' : ''} style="display:none;" onchange="this.parentElement.style.background = this.checked ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'; AdminNews.updateNewsLivePreview()">
             U
           </label>
-          <input type="color" id="${colorId}_picker" value="${escapeAttr(color)}" style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer; background:transparent; margin-bottom:0;">
-          <input type="text" class="form-control" id="${colorId}" value="${escapeAttr(color)}" placeholder="${defaultColor}" style="max-width:90px; padding:4px 8px; font-size:0.85rem; font-family:monospace; margin-bottom:0;">
+          <input type="color" id="${colorId}_picker" value="${escapeAttr(color)}" style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer; background:transparent; margin-bottom:0;" oninput="AdminNews.syncColorField('${colorId}', this.value)">
+          <input type="text" class="form-control" id="${colorId}" value="${escapeAttr(color)}" placeholder="${defaultColor}" style="max-width:90px; padding:4px 8px; font-size:0.85rem; font-family:monospace; margin-bottom:0;" oninput="AdminNews.syncColorField('${colorId}', this.value, true)">
         </div>
       </div>`;
   }
@@ -150,62 +263,41 @@
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
             ${blockHeaderWithColorHtml('Заголовок', 'news_hero_title_color', hero.titleColor, '#575B6D', hero.titleFontSize, hero.titleFontWeight, hero.titleItalic, hero.titleUnderline)}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
-              <textarea class="form-control" id="news_hero_title" rows="2">${escapeAttr(hero.title)}</textarea>
+              <textarea class="form-control" id="news_hero_title" rows="2" oninput="AdminNews.updateNewsLivePreview()">${escapeAttr(hero.title)}</textarea>
             </div>
             <div style="display:flex; gap:16px; margin-top:12px;">
               <div style="flex:1;" class="form-group">
                 <label style="font-size:0.75rem; color:var(--text-secondary);">Отступ сверху (px)</label>
-                <input type="number" class="form-control" id="news_hero_title_top" value="${hero.titleTop !== undefined ? hero.titleTop : 122}">
+                <input type="number" class="form-control" id="news_hero_title_top" value="${hero.titleTop !== undefined ? hero.titleTop : 122}" oninput="AdminNews.updateNewsLivePreview()">
               </div>
               <div style="flex:1;" class="form-group">
                 <label style="font-size:0.75rem; color:var(--text-secondary);">Отступ слева (px)</label>
-                <input type="number" class="form-control" id="news_hero_title_left" value="${hero.titleLeft !== undefined ? hero.titleLeft : 70}">
+                <input type="number" class="form-control" id="news_hero_title_left" value="${hero.titleLeft !== undefined ? hero.titleLeft : 70}" oninput="AdminNews.updateNewsLivePreview()">
               </div>
             </div>
           </div>
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
             ${blockHeaderWithColorHtml('Подзаголовок (необязательно)', 'news_hero_subtitle_color', hero.subtitleColor, '#FFFFFF', hero.subtitleFontSize, hero.subtitleFontWeight, hero.subtitleItalic, hero.subtitleUnderline)}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
-              <textarea class="form-control" id="news_hero_subtitle" rows="2" placeholder="Необязательно">${escapeAttr(hero.subtitle)}</textarea>
+              <textarea class="form-control" id="news_hero_subtitle" rows="2" placeholder="Необязательно" oninput="AdminNews.updateNewsLivePreview()">${escapeAttr(hero.subtitle)}</textarea>
             </div>
             <div style="display:flex; gap:16px; margin-top:12px;">
               <div style="flex:1;" class="form-group">
                 <label style="font-size:0.75rem; color:var(--text-secondary);">Отступ сверху (px)</label>
-                <input type="number" class="form-control" id="news_hero_subtitle_top" value="${hero.subtitleTop !== undefined ? hero.subtitleTop : 213}">
+                <input type="number" class="form-control" id="news_hero_subtitle_top" value="${hero.subtitleTop !== undefined ? hero.subtitleTop : 213}" oninput="AdminNews.updateNewsLivePreview()">
               </div>
               <div style="flex:1;" class="form-group">
                 <label style="font-size:0.75rem; color:var(--text-secondary);">Отступ слева (px)</label>
-                <input type="number" class="form-control" id="news_hero_subtitle_left" value="${hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70}">
+                <input type="number" class="form-control" id="news_hero_subtitle_left" value="${hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70}" oninput="AdminNews.updateNewsLivePreview()">
               </div>
             </div>
           </div>
         </div>
       </div>`;
 
-    ['title', 'subtitle'].forEach((field) => {
-      const input = document.getElementById(`news_hero_${field}`);
-      const color = document.getElementById(`news_hero_${field}_color`);
-      const colorPicker = document.getElementById(`news_hero_${field}_color_picker`);
-      const top = document.getElementById(`news_hero_${field}_top`);
-      const left = document.getElementById(`news_hero_${field}_left`);
-      const live = document.getElementById(`news_hero_live_${field}`);
-      const size = document.getElementById(`news_hero_${field}_size`);
-      const weight = document.getElementById(`news_hero_${field}_weight`);
-      const italic = document.getElementById(`news_hero_${field}_italic`);
-      const underline = document.getElementById(`news_hero_${field}_underline`);
-
-      if (input && live) input.addEventListener('input', (e) => { live.innerText = e.target.value; });
-      if (color && live) color.addEventListener('input', (e) => { live.style.color = e.target.value; if (colorPicker) colorPicker.value = e.target.value; });
-      if (colorPicker && live) colorPicker.addEventListener('input', (e) => { live.style.color = e.target.value; if (color) color.value = e.target.value; });
-      if (top && live) top.addEventListener('input', (e) => { live.style.top = `${(e.target.value / 420) * 100}%`; });
-      if (left && live) left.addEventListener('input', (e) => { live.style.left = `${(e.target.value / 1520) * 100}%`; });
-      if (size && live) size.addEventListener('input', (e) => { if (e.target.value) live.style.fontSize = `${e.target.value}px`; else live.style.removeProperty('font-size'); });
-      if (weight && live) weight.addEventListener('change', (e) => { if (e.target.value) live.style.fontWeight = e.target.value; else live.style.removeProperty('font-weight'); });
-      if (italic && live) italic.addEventListener('change', (e) => { live.style.fontStyle = e.target.checked ? 'italic' : ''; });
-      if (underline && live) underline.addEventListener('change', (e) => { live.style.textDecoration = e.target.checked ? 'underline' : ''; });
-    });
-
     setImageUploadState('news_hero_bg', hero.background);
+    bindNewsHeroPreviewControls();
+    updateNewsLivePreview();
   }
 
   function renderItemsAdmin(data) {
@@ -454,6 +546,8 @@
     getCropSize,
     isNewsUploadId,
     setImageUploadState,
+    syncColorField,
+    updateNewsLivePreview,
     openItemModal,
     closeItemModal,
     addItem() {
