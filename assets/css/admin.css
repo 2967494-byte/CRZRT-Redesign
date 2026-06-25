@@ -2430,3 +2430,47 @@ body {
                 width: 100%;
             }
         }
+
+        #supportCalculatorAdmin .support-calc-admin-row {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 24px;
+        }
+
+        #supportCalculatorAdmin .support-calc-admin-row__image {
+            flex: 0 0 260px;
+            max-width: 260px;
+        }
+
+        #supportCalculatorAdmin .support-calc-admin-row__image .form-group {
+            margin-bottom: 0;
+        }
+
+        #supportCalculatorAdmin .support-calc-admin-row__image img {
+            max-width: 100% !important;
+            max-height: 180px !important;
+        }
+
+        #supportCalculatorAdmin .support-calc-admin-row__title {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-bottom: 0;
+        }
+
+        #supportCalculatorAdmin .support-calc-admin-row__textarea {
+            min-height: 160px;
+            resize: vertical;
+        }
+
+        @media (max-width: 900px) {
+            #supportCalculatorAdmin .support-calc-admin-row {
+                flex-direction: column;
+            }
+
+            #supportCalculatorAdmin .support-calc-admin-row__image {
+                flex: 1 1 auto;
+                max-width: 100%;
+                width: 100%;
+            }
+        }

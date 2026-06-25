@@ -366,11 +366,15 @@
     if (!el) return;
     const calc = getMigratedData(data).calculator || {};
     el.innerHTML = `
-      <div class="form-group">
-        <label>Заголовок в правом блоке</label>
-        <textarea class="form-control" id="support_calc_title" rows="4">${escapeAttr(calc.title)}</textarea>
+      <div class="support-calc-admin-row">
+        <div class="support-calc-admin-row__image">
+          ${imageUploadHtml('support_calc_image', 'Фоновое изображение (необязательно)', 'Если загружено — заменит градиент в оранжевом блоке справа от калькулятора.')}
+        </div>
+        <div class="support-calc-admin-row__title form-group">
+          <label>Заголовок в правом блоке</label>
+          <textarea class="form-control support-calc-admin-row__textarea" id="support_calc_title" rows="4">${escapeAttr(calc.title)}</textarea>
+        </div>
       </div>
-      ${imageUploadHtml('support_calc_image', 'Фоновое изображение (необязательно)', 'Если загружено — заменит градиент в оранжевом блоке справа от калькулятора.')}
     `;
     setImageUploadState('support_calc_image', calc.image);
   }
