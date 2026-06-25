@@ -1025,10 +1025,31 @@
   function renderTestingBanner(testingBanner) {
     const data = testingBanner || OBUCHENIE_DEFAULTS.testingBanner;
     const bannerEl = document.querySelector('.obuchenie-testing-banner');
+    const contentEl = document.querySelector('.obuchenie-testing-banner__content');
     const titleEl = document.querySelector('.obuchenie-testing-banner__title');
     const btnEl = document.querySelector('.obuchenie-testing-banner__btn');
     const imageEl = document.querySelector('.obuchenie-testing-banner__image');
     const image = (data.image || '').trim();
+    const hasCustomLayout = data.titleTop !== undefined
+      || data.titleLeft !== undefined
+      || data.btnBottom !== undefined
+      || data.btnLeft !== undefined;
+
+    if (contentEl) {
+      if (hasCustomLayout) {
+        contentEl.style.position = 'absolute';
+        contentEl.style.inset = '0';
+        contentEl.style.padding = '0';
+        contentEl.style.gap = '0';
+        contentEl.style.justifyContent = 'flex-start';
+      } else {
+        contentEl.style.position = '';
+        contentEl.style.inset = '';
+        contentEl.style.padding = '';
+        contentEl.style.gap = '';
+        contentEl.style.justifyContent = '';
+      }
+    }
 
     if (titleEl) {
       titleEl.innerHTML = multilineHtml(data.title);
@@ -1037,15 +1058,17 @@
       } else {
         titleEl.style.color = '';
       }
-      if (data.titleTop !== undefined || data.titleLeft !== undefined) {
+      if (hasCustomLayout) {
         titleEl.style.position = 'absolute';
         titleEl.style.margin = '0';
-        if (data.titleTop !== undefined) titleEl.style.top = `${data.titleTop}px`;
-        if (data.titleLeft !== undefined) titleEl.style.left = `${data.titleLeft}px`;
+        titleEl.style.top = `${data.titleTop !== undefined ? data.titleTop : 68}px`;
+        titleEl.style.left = `${data.titleLeft !== undefined ? data.titleLeft : 60}px`;
+        titleEl.style.maxWidth = `calc(100% - ${data.titleLeft !== undefined ? data.titleLeft : 60}px - 24px)`;
       } else {
         titleEl.style.position = '';
         titleEl.style.top = '';
         titleEl.style.left = '';
+        titleEl.style.maxWidth = '';
       }
       applyTypographyStyles(titleEl, data.titleFontSize, data.titleFontWeight, data.titleItalic, data.titleUnderline);
     }
@@ -1058,28 +1081,18 @@
       }
       btnEl.href = btnLink;
       
-      if (data.titleTop !== undefined || data.titleLeft !== undefined || data.btnBottom !== undefined || data.btnLeft !== undefined) {
-         // position the button absolute as well, roughly matching the preview
+      if (hasCustomLayout) {
          btnEl.style.position = 'absolute';
          btnEl.style.margin = '0';
-         if (data.btnBottom !== undefined) {
-           btnEl.style.bottom = `${data.btnBottom}px`;
-         } else {
-           btnEl.style.bottom = '65px';
-         }
-         
-         if (data.btnLeft !== undefined) {
-           btnEl.style.left = `${data.btnLeft}px`;
-         } else if (data.titleLeft !== undefined) {
-           btnEl.style.left = `${data.titleLeft}px`;
-         } else {
-           btnEl.style.left = '60px';
-         }
+         btnEl.style.bottom = `${data.btnBottom !== undefined ? data.btnBottom : 65}px`;
+         btnEl.style.left = `${data.btnLeft !== undefined ? data.btnLeft : (data.titleLeft !== undefined ? data.titleLeft : 60)}px`;
+         btnEl.style.top = 'auto';
       } else {
          btnEl.style.position = '';
          btnEl.style.margin = '';
          btnEl.style.bottom = '';
          btnEl.style.left = '';
+         btnEl.style.top = '';
       }
     }
 

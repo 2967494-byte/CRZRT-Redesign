@@ -47,6 +47,9 @@
     if (id === 'obuchenie_hero_bg') {
       setTimeout(() => window.AdminObuchenie?.updateLivePreview?.(), 0);
     }
+    if (id === 'obuchenie_testing_image') {
+      setTimeout(() => window.AdminObuchenie?.updateTestingLivePreview?.(), 0);
+    }
   }
 
   function heroBgUploadShell(id, label, sizeLabel = '1520×420') {
@@ -441,11 +444,7 @@
     setImageUploadState('obuchenie_testing_image', banner.image);
     setTimeout(() => {
       AdminObuchenie.updateTestingLivePreview();
-      const colorEnable = document.getElementById('obuchenie_testing_title_color_enable');
-      const colorInput = document.getElementById('obuchenie_testing_title_color');
-      if (colorEnable) colorEnable.addEventListener('change', AdminObuchenie.updateTestingLivePreview);
-      if (colorInput) colorInput.addEventListener('input', AdminObuchenie.updateTestingLivePreview);
-      ['title_size', 'title_weight', 'title_italic', 'title_underline'].forEach(prop => {
+      ['title_size', 'title_weight', 'title_italic', 'title_underline'].forEach((prop) => {
         const el = document.getElementById(`obuchenie_testing_${prop}`);
         if (el) {
           el.addEventListener('input', () => AdminObuchenie.updateTestingLivePreview());
@@ -475,6 +474,14 @@
     return fallback;
   }
 
+  function previewMultilineHtml(text) {
+    return String(text ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br>');
+  }
+
   function syncColorField(id, value, fromText) {
     const textEl = document.getElementById(id);
     const pickerEl = document.getElementById(`${id}_picker`);
@@ -487,7 +494,13 @@
     }
     textEl.value = normalized.toUpperCase();
     pickerEl.value = normalized.toLowerCase();
-    setTimeout(() => window.AdminObuchenie?.updateLivePreview?.(), 0);
+    setTimeout(() => {
+      if (String(id).startsWith('obuchenie_testing_')) {
+        window.AdminObuchenie?.updateTestingLivePreview?.();
+      } else {
+        window.AdminObuchenie?.updateLivePreview?.();
+      }
+    }, 0);
   }
 
   function collectCourseDaysFromForm(courseRegistry) {
@@ -552,10 +565,9 @@
 
     data.courseCards = [];
 
-    const testingTitleEnable = document.getElementById('obuchenie_testing_title_color_enable');
     data.testingBanner = {
       title: document.getElementById('obuchenie_testing_title')?.value ?? data.testingBanner?.title ?? '',
-      titleColor: (testingTitleEnable && testingTitleEnable.checked) ? (document.getElementById('obuchenie_testing_title_color')?.value || '#ffffff') : '',
+      titleColor: readColorVal('obuchenie_testing_title_color', data.testingBanner?.titleColor || '#FFFFFF'),
       titleTop: parseFloat(document.getElementById('obuchenie_testing_title_top')?.value) || 68,
       titleLeft: parseFloat(document.getElementById('obuchenie_testing_title_left')?.value) || 60,
       titleFontSize: document.getElementById('obuchenie_testing_title_size')?.value || '',
@@ -564,6 +576,8 @@
       titleUnderline: document.getElementById('obuchenie_testing_title_underline')?.checked || false,
       btnText: document.getElementById('obuchenie_testing_btn_text')?.value ?? data.testingBanner?.btnText ?? '',
       btnLink: document.getElementById('obuchenie_testing_btn_link')?.value ?? data.testingBanner?.btnLink ?? '#contacts',
+      btnBottom: parseFloat(document.getElementById('obuchenie_testing_btn_bottom')?.value) || 65,
+      btnLeft: parseFloat(document.getElementById('obuchenie_testing_btn_left')?.value) || 60,
       image: readImageVal('obuchenie_testing_image') || data.testingBanner?.image || ''
     };
 
@@ -646,39 +660,38 @@
 
       const titleText = document.getElementById('obuchenie_testing_title')?.value || '';
       const btnText = document.getElementById('obuchenie_testing_btn_text')?.value || 'Пройти тест';
-      
-      const titleEnable = document.getElementById('obuchenie_testing_title_color_enable');
-      const titleColor = (titleEnable && titleEnable.checked) ? document.getElementById('obuchenie_testing_title_color')?.value : '#ffffff';
-      
+      const titleColor = readColorVal('obuchenie_testing_title_color', '#FFFFFF');
       const bgImage = document.getElementById('obuchenie_testing_image_val')?.value || '';
       const titleTop = parseFloat(document.getElementById('obuchenie_testing_title_top')?.value) || 68;
       const titleLeft = parseFloat(document.getElementById('obuchenie_testing_title_left')?.value) || 60;
-      
       const btnBottom = parseFloat(document.getElementById('obuchenie_testing_btn_bottom')?.value) || 65;
       const btnLeft = parseFloat(document.getElementById('obuchenie_testing_btn_left')?.value) || 60;
 
-      if (bgImage) {
-        previewEl.style.backgroundImage = `url(${bgImage})`;
-      } else {
-        previewEl.style.backgroundImage = '';
-      }
+      previewEl.style.backgroundImage = bgImage ? `url(${bgImage})` : '';
+      previewEl.style.backgroundColor = bgImage ? 'transparent' : '';
 
-      titleEl.textContent = titleText;
-      titleEl.style.color = titleColor || '#ffffff';
+      titleEl.innerHTML = previewMultilineHtml(titleText);
+      titleEl.style.color = titleColor;
       titleEl.style.top = `calc((${titleTop} / 435) * 100%)`;
       titleEl.style.left = `calc((${titleLeft} / 1520) * 100%)`;
+      titleEl.style.maxWidth = `calc(100% - ((${titleLeft} / 1520) * 100%) - 10px)`;
 
       const titleSize = document.getElementById('obuchenie_testing_title_size')?.value || '';
       const titleWeight = document.getElementById('obuchenie_testing_title_weight')?.value || '';
       const titleItalic = document.getElementById('obuchenie_testing_title_italic')?.checked || false;
       const titleUnderline = document.getElementById('obuchenie_testing_title_underline')?.checked || false;
 
-      if (titleSize) titleEl.style.fontSize = `${titleSize}px`; else titleEl.style.removeProperty('font-size');
-      if (titleWeight) titleEl.style.fontWeight = titleWeight; else titleEl.style.removeProperty('font-weight');
-      if (titleItalic) titleEl.style.fontStyle = 'italic'; else titleEl.style.removeProperty('font-style');
-      if (titleUnderline) titleEl.style.textDecoration = 'underline'; else titleEl.style.removeProperty('text-decoration');
+      if (titleSize) titleEl.style.fontSize = `${titleSize}px`;
+      else titleEl.style.removeProperty('font-size');
+      if (titleWeight) titleEl.style.fontWeight = titleWeight;
+      else titleEl.style.removeProperty('font-weight');
+      titleEl.style.fontStyle = titleItalic ? 'italic' : '';
+      titleEl.style.textDecoration = titleUnderline ? 'underline' : '';
 
       btnEl.textContent = btnText;
+      btnEl.style.bottom = `calc((${btnBottom} / 435) * 100%)`;
+      btnEl.style.left = `calc((${btnLeft} / 1520) * 100%)`;
+      btnEl.style.top = 'auto';
     },
     updateLivePreview() {
       const titleEl = document.getElementById('obuchenie_live_banner_title');
