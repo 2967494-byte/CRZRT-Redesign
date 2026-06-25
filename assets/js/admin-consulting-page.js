@@ -322,44 +322,52 @@
         <input type="text" class="form-control" id="consulting_why_title" value="${escapeAttr(why.title)}">
       </div>
 
-      <div class="admin-card" style="margin:16px 0;padding:16px;background:rgba(255,255,255,0.03);">
-        <strong style="display:block;margin-bottom:12px;">Блок 1 — большая карточка слева</strong>
-        <div class="form-group">
-          <label>Текст</label>
-          <textarea class="form-control" id="consulting_why_lead_text" rows="3">${escapeAttr(lead.text)}</textarea>
+      <div class="consulting-why-admin-row" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 16px;">
+        <div class="admin-card" style="margin:0;padding:16px;background:rgba(255,255,255,0.03); display: flex; flex-direction: column;">
+          <strong style="display:block;margin-bottom:12px;">Блок 1 — большая карточка</strong>
+          <div class="form-group" style="flex-grow: 1; display: flex; flex-direction: column; margin-bottom: 0;">
+            <label>Текст</label>
+            <textarea class="form-control" id="consulting_why_lead_text" rows="8" style="flex-grow: 1; resize: vertical;">${escapeAttr(lead.text)}</textarea>
+          </div>
         </div>
-      </div>
 
-      <div class="admin-card" style="margin:16px 0;padding:16px;background:rgba(255,255,255,0.03);">
-        <strong style="display:block;margin-bottom:12px;">Блок 2 — фото с подписью</strong>
-        ${imageUploadHtml('consulting_why_photo', 'Фото (~494×329)', '')}
-        <div class="form-group" style="margin-top:12px;">
-          <label>Подпись под фото</label>
-          <input type="text" class="form-control" id="consulting_why_photo_caption" value="${escapeAttr(photo.caption)}">
+        <div class="admin-card" style="margin:0;padding:16px;background:rgba(255,255,255,0.03); display: flex; flex-direction: column;">
+          <strong style="display:block;margin-bottom:12px;">Блок 2 — фото с подписью</strong>
+          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 12px;">
+            ${imageUploadHtml('consulting_why_photo', 'Фото (~494×329)', '')}
+            <div class="form-group" style="margin-bottom: 0; margin-top: auto;">
+              <label>Подпись под фото</label>
+              <input type="text" class="form-control" id="consulting_why_photo_caption" value="${escapeAttr(photo.caption)}" style="margin-bottom: 0;">
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="admin-card" style="margin:16px 0;padding:16px;background:rgba(255,255,255,0.03);">
-        <strong style="display:block;margin-bottom:12px;">Блок 3 — «Помогаем на протяжении всего пути»</strong>
-        <div class="form-group">
-          <label>Текст (Enter — перенос строки)</label>
-          <textarea class="form-control" id="consulting_why_support_text" rows="3">${escapeAttr(support.text)}</textarea>
+        <div class="admin-card" style="margin:0;padding:16px;background:rgba(255,255,255,0.03); display: flex; flex-direction: column;">
+          <strong style="display:block;margin-bottom:12px;">Блок 3 — «Помогаем...»</strong>
+          <div class="form-group" style="flex-grow: 1; display: flex; flex-direction: column; margin-bottom: 0;">
+            <label>Текст (Enter — перенос)</label>
+            <textarea class="form-control" id="consulting_why_support_text" rows="8" style="flex-grow: 1; resize: vertical;">${escapeAttr(support.text)}</textarea>
+          </div>
         </div>
-      </div>
 
-      <div class="admin-card" style="margin:16px 0;padding:16px;background:rgba(255,255,255,0.03);">
-        <strong style="display:block;margin-bottom:12px;">Блок 4 — боковая карточка</strong>
-        <div class="form-group">
-          <label>Текст</label>
-          <textarea class="form-control" id="consulting_why_side_text" rows="3">${escapeAttr(side.text)}</textarea>
+        <div class="admin-card" style="margin:0;padding:16px;background:rgba(255,255,255,0.03); display: flex; flex-direction: column;">
+          <strong style="display:block;margin-bottom:12px;">Блок 4 — боковая карточка</strong>
+          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 12px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>Текст</label>
+              <textarea class="form-control" id="consulting_why_side_text" rows="2">${escapeAttr(side.text)}</textarea>
+            </div>
+            <div style="margin-top: auto;">
+              ${coverUploadShell(
+                'consulting_why_side_image',
+                'Фоновое изображение',
+                '',
+                489,
+                763
+              )}
+            </div>
+          </div>
         </div>
-        ${coverUploadShell(
-          'consulting_why_side_image',
-          'Фоновое изображение блока',
-          'Заливает весь боковой блок. Рекомендуемый размер ~489×763 px (2× Retina: 978×1526).',
-          489,
-          763
-        )}
       </div>`;
 
     setImageUploadState('consulting_why_photo', photo.image);

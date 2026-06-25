@@ -26,7 +26,7 @@ $targetMaxBytes = 300 * 1024;
 if (strpos($slot, 'obuchenie_cal_promo') !== false
     || strpos($slot, 'obuchenie_testing') !== false
     || strpos($slot, 'consulting_why_side') !== false) {
-    $targetMaxBytes = 700 * 1024;
+    $targetMaxBytes = 1.2 * 1024 * 1024; // 1.2 MB
 }
 // For hero/banner/background/promo images, allow higher size to preserve high quality
 if (strpos($slot, 'hero') !== false

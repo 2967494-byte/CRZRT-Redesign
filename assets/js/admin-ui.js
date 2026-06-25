@@ -1284,8 +1284,8 @@
             }
         }
 
-        const HERO_MAX_BASE64_BYTES = 1.2 * 1024 * 1024;
-        const PROMO_COVER_MAX_BASE64_BYTES = 1.2 * 1024 * 1024;
+        const HERO_MAX_BASE64_BYTES = 1.6 * 1024 * 1024;
+        const PROMO_COVER_MAX_BASE64_BYTES = 1.6 * 1024 * 1024;
 
         function dataUrlBytes(dataUrl) {
             const commaIdx = dataUrl?.indexOf(',');
