@@ -126,6 +126,66 @@
       </div>`;
   }
 
+  function fileBlockRowInline(blockId, title, file, fileName) {
+    const fileId = `knowledge_block_file_${blockId}`;
+    const shownName = fileName || (file ? file.split('/').pop() : '');
+    return `
+      <div class="knowledge-file-block-row">
+        <div class="form-group knowledge-file-block-row__title">
+          <label>Название документа</label>
+          <input type="text" class="form-control" id="knowledge_block_title_${blockId}" value="${escapeAttr(title)}" placeholder="Например: Устав АО">
+        </div>
+        <div class="form-group knowledge-file-block-row__file">
+          <label>Файл документа</label>
+          <input type="text" class="form-control" id="${fileId}" value="${escapeAttr(file)}" placeholder="Ссылка или uploads/files/...">
+        </div>
+        <div class="knowledge-file-block-row__action">
+          <button type="button" class="btn-save" onclick="AdminKnowledge.pickFile('${fileId}')">Загрузить</button>
+        </div>
+      </div>
+      <small id="${fileId}_name" class="knowledge-file-block-row__name" style="display:${shownName ? 'block' : 'none'};">${escapeAttr(shownName)}</small>`;
+  }
+
+  function isDescendantPath(ancestorPathStr, pathStr) {
+    if (!ancestorPathStr) return false;
+    return pathStr === ancestorPathStr || pathStr.startsWith(`${ancestorPathStr}.`);
+  }
+
+  function collectGroupTargets(blocks, path = [], excludePathStr = '', options = []) {
+    (blocks || []).forEach((block, i) => {
+      const currentPath = [...path, i];
+      const pathStr = pathToString(currentPath);
+      if (block.type === 'group' && pathStr !== excludePathStr && !isDescendantPath(excludePathStr, pathStr)) {
+        const prefix = path.length ? `${'— '.repeat(path.length)}` : '';
+        options.push({
+          pathStr,
+          label: `${prefix}${block.value || 'Группа без названия'}`
+        });
+        collectGroupTargets(block.children || [], currentPath, excludePathStr, options);
+      }
+    });
+    return options;
+  }
+
+  function renderMoveToGroupControl(pathStr, blockId) {
+    const groupTargets = collectGroupTargets(window.knowledgePageData?.blocks || [], [], pathStr);
+    if (!groupTargets.length) return '';
+
+    const selectId = `knowledge_move_target_${blockId}`;
+    return `
+      <div class="knowledge-move-to-group">
+        <select id="${selectId}" class="knowledge-move-to-group__select" title="Выберите группу">
+          <option value="">В группу…</option>
+          ${groupTargets.map((g) => `<option value="${escapeAttr(g.pathStr)}">${escapeHtml(g.label)}</option>`).join('')}
+        </select>
+        <button type="button" class="btn-save knowledge-move-to-group__btn" title="Переместить в выбранную группу" onclick="AdminKnowledge.moveBlockToGroup('${pathStr}', document.getElementById('${selectId}').value)">→</button>
+      </div>`;
+  }
+
+  function escapeHtml(s) {
+    return escapeAttr(s);
+  }
+
   function renderHeroAdmin(data) {
     const el = document.getElementById('knowledgeHeroAdmin');
     if (!el) return;
@@ -333,13 +393,7 @@
     }
 
     if (block.type === 'file') {
-      const fileId = `knowledge_block_file_${blockId}`;
-      return `
-        <div class="form-group" style="margin-bottom:12px;">
-          <label>Название документа</label>
-          <input type="text" class="form-control" id="knowledge_block_title_${blockId}" value="${escapeAttr(block.title)}" placeholder="Например: Лицензия на осуществление образовательной деятельности">
-        </div>
-        ${fileUploadRow(fileId, 'Файл документа', block.file || '', block.fileName)}`;
+      return fileBlockRowInline(blockId, block.title || '', block.file || '', block.fileName || '');
     }
 
     return '';
@@ -355,30 +409,37 @@
 
   function renderBlockAdminCard(block, path) {
     const pathStr = pathToString(path);
-    const depth = Math.max(0, path.length - 1);
     const resolved = resolveBlockPath(window.knowledgePageData?.blocks || [], path);
     const siblings = resolved?.list || [];
     const index = resolved?.index ?? 0;
-    const prevSibling = index > 0 ? siblings[index - 1] : null;
-    const canNest = prevSibling && prevSibling.type === 'group';
     const canUnnest = path.length > 1;
+    const isGroup = block.type === 'group';
+    const depth = Math.max(0, path.length - 1);
+    const cardClass = isGroup
+      ? 'admin-subcard knowledge-admin-block-card knowledge-admin-block-card--group'
+      : 'admin-subcard knowledge-admin-block-card';
+    const nodeClass = isGroup && depth === 0
+      ? 'knowledge-admin-tree-node knowledge-admin-tree-node--group-root'
+      : 'knowledge-admin-tree-node';
 
     block._path = path;
     block._pathStr = pathStr;
 
     const meta = getBlockMeta(block);
+    const upDisabled = index === 0 ? 'disabled' : '';
+    const downDisabled = index >= siblings.length - 1 ? 'disabled' : '';
 
     return `
-      <div class="knowledge-admin-tree-node" data-block-path="${pathStr}" style="margin-left:${depth * 20}px;">
-        <div class="admin-subcard knowledge-admin-block-card" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;background:var(--card-bg);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.05); padding-bottom:8px; gap:8px; flex-wrap:wrap;">
+      <div class="${nodeClass}" data-block-path="${pathStr}">
+        <div class="${cardClass}">
+          <div class="knowledge-admin-block-card__header">
             <span class="block-badge" style="background:${meta.color}; color:#fff; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">${meta.label}</span>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <button type="button" class="btn-save" style="padding:4px 8px; font-size:0.75rem;" title="Выше" onclick="AdminKnowledge.moveBlockUp('${pathStr}')" ${index === 0 ? 'disabled style="opacity:0.3;"' : ''}>▲</button>
-              <button type="button" class="btn-save" style="padding:4px 8px; font-size:0.75rem;" title="Ниже" onclick="AdminKnowledge.moveBlockDown('${pathStr}')" ${index >= siblings.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>▼</button>
-              ${canNest ? `<button type="button" class="btn-save" style="padding:4px 8px; font-size:0.75rem;" title="Вложить в группу выше" onclick="AdminKnowledge.nestIntoPreviousGroup('${pathStr}')">→</button>` : ''}
-              ${canUnnest ? `<button type="button" class="btn-save" style="padding:4px 8px; font-size:0.75rem;" title="Вынести из группы" onclick="AdminKnowledge.unnestBlock('${pathStr}')">←</button>` : ''}
-              <button type="button" class="btn-delete" style="padding:4px 8px; font-size:0.75rem;" title="Удалить" onclick="AdminKnowledge.removeBlock('${pathStr}')">×</button>
+            <div class="knowledge-admin-block-card__controls">
+              <button type="button" class="btn-save knowledge-block-btn" title="Выше" ${upDisabled} onclick="AdminKnowledge.moveBlockUp('${pathStr}')">▲</button>
+              <button type="button" class="btn-save knowledge-block-btn" title="Ниже" ${downDisabled} onclick="AdminKnowledge.moveBlockDown('${pathStr}')">▼</button>
+              ${renderMoveToGroupControl(pathStr, block.id)}
+              ${canUnnest ? `<button type="button" class="btn-save knowledge-block-btn" title="Вынести из группы" onclick="AdminKnowledge.unnestBlock('${pathStr}')">←</button>` : ''}
+              <button type="button" class="btn-delete knowledge-block-btn" title="Удалить" onclick="AdminKnowledge.removeBlock('${pathStr}')">×</button>
             </div>
           </div>
           ${renderBlockFields(block)}
@@ -486,7 +547,6 @@
     getCropSize,
     isKnowledgeUploadId,
     setFileUploadState,
-    parseBlockPath,
     addHeaderBlock() {
       window.saveKnowledgePageStateToMemory?.();
       window.knowledgePageData.blocks.push(createKnowledgeBlock('header'));
@@ -525,36 +585,55 @@
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
     moveBlockUp(pathStr) {
+      window.saveKnowledgePageStateToMemory?.();
       const path = parseBlockPath(pathStr);
       const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
       if (!resolved || resolved.index <= 0) return;
-      window.saveKnowledgePageStateToMemory?.();
       const { list, index } = resolved;
       [list[index - 1], list[index]] = [list[index], list[index - 1]];
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
     moveBlockDown(pathStr) {
+      window.saveKnowledgePageStateToMemory?.();
       const path = parseBlockPath(pathStr);
       const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
       if (!resolved || resolved.index >= resolved.list.length - 1) return;
-      window.saveKnowledgePageStateToMemory?.();
       const { list, index } = resolved;
       [list[index + 1], list[index]] = [list[index], list[index + 1]];
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
+    moveBlockToGroup(blockPathStr, targetGroupPathStr) {
+      if (!targetGroupPathStr) return;
+      window.saveKnowledgePageStateToMemory?.();
+      const blockPath = parseBlockPath(blockPathStr);
+      const targetPath = parseBlockPath(targetGroupPathStr);
+      const blockResolved = resolveBlockPath(window.knowledgePageData.blocks, blockPath);
+      const targetResolved = resolveBlockPath(window.knowledgePageData.blocks, targetPath);
+      if (!blockResolved?.block || !targetResolved?.block || targetResolved.block.type !== 'group') return;
+      if (isDescendantPath(blockPathStr, targetGroupPathStr)) return;
+
+      const parentPathStr = pathToString(blockPath.slice(0, -1));
+      if (parentPathStr === targetGroupPathStr) return;
+
+      const [block] = blockResolved.list.splice(blockResolved.index, 1);
+      if (!Array.isArray(targetResolved.block.children)) targetResolved.block.children = [];
+      targetResolved.block.children.push(block);
+      renderKnowledgePageAdmin(window.knowledgePageData);
+    },
     nestIntoPreviousGroup(pathStr) {
+      window.saveKnowledgePageStateToMemory?.();
       const path = parseBlockPath(pathStr);
       const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
       if (!resolved || resolved.index <= 0) return;
       const prev = resolved.list[resolved.index - 1];
       if (!prev || prev.type !== 'group') return;
-      window.saveKnowledgePageStateToMemory?.();
       const [block] = resolved.list.splice(resolved.index, 1);
       if (!Array.isArray(prev.children)) prev.children = [];
       prev.children.push(block);
       renderKnowledgePageAdmin(window.knowledgePageData);
     },
     unnestBlock(pathStr) {
+      window.saveKnowledgePageStateToMemory?.();
       const path = parseBlockPath(pathStr);
       if (path.length < 2) return;
       const resolved = resolveBlockPath(window.knowledgePageData.blocks, path);
@@ -563,7 +642,6 @@
       const parentResolved = resolveBlockPath(window.knowledgePageData.blocks, parentPath);
       if (!parentResolved?.block || parentResolved.block.type !== 'group') return;
 
-      window.saveKnowledgePageStateToMemory?.();
       const [block] = resolved.list.splice(resolved.index, 1);
 
       const containerPath = parentPath.slice(0, -1);
