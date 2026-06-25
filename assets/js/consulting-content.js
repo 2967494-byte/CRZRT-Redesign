@@ -103,10 +103,18 @@
       titleColor: rawHero.titleColor || CONSULTING_DEFAULTS.hero.titleColor,
       titleTop: rawHero.titleTop !== undefined ? rawHero.titleTop : CONSULTING_DEFAULTS.hero.titleTop,
       titleLeft: rawHero.titleLeft !== undefined ? rawHero.titleLeft : CONSULTING_DEFAULTS.hero.titleLeft,
+      titleFontSize: rawHero.titleFontSize || '',
+      titleFontWeight: rawHero.titleFontWeight || '',
+      titleItalic: rawHero.titleItalic || false,
+      titleUnderline: rawHero.titleUnderline || false,
       subtitle: rawHero.subtitle !== undefined ? rawHero.subtitle : CONSULTING_DEFAULTS.hero.subtitle,
       subtitleColor: rawHero.subtitleColor || CONSULTING_DEFAULTS.hero.subtitleColor,
       subtitleTop: rawHero.subtitleTop !== undefined ? rawHero.subtitleTop : CONSULTING_DEFAULTS.hero.subtitleTop,
-      subtitleLeft: rawHero.subtitleLeft !== undefined ? rawHero.subtitleLeft : CONSULTING_DEFAULTS.hero.subtitleLeft
+      subtitleLeft: rawHero.subtitleLeft !== undefined ? rawHero.subtitleLeft : CONSULTING_DEFAULTS.hero.subtitleLeft,
+      subtitleFontSize: rawHero.subtitleFontSize || '',
+      subtitleFontWeight: rawHero.subtitleFontWeight || '',
+      subtitleItalic: rawHero.subtitleItalic || false,
+      subtitleUnderline: rawHero.subtitleUnderline || false
     };
 
     const competencies =
@@ -156,6 +164,18 @@
     return null;
   }
 
+  function applyTypographyStyles(el, size, weight, italic, underline) {
+    if (!el) return;
+    if (size) el.style.fontSize = `${size}px`;
+    else el.style.removeProperty('font-size');
+    if (weight) el.style.fontWeight = weight;
+    else el.style.removeProperty('font-weight');
+    if (italic) el.style.fontStyle = 'italic';
+    else el.style.removeProperty('font-style');
+    if (underline) el.style.textDecoration = 'underline';
+    else el.style.removeProperty('text-decoration');
+  }
+
   function renderHero(hero) {
     const banner = document.querySelector('.consulting-hero');
     const contentEl = document.querySelector('.consulting-hero__content');
@@ -173,6 +193,7 @@
       else titleEl.style.removeProperty('color');
       if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
       if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
+      applyTypographyStyles(titleEl, hero?.titleFontSize, hero?.titleFontWeight, hero?.titleItalic, hero?.titleUnderline);
     }
     if (subtitleEl) {
       subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
@@ -180,6 +201,7 @@
       else subtitleEl.style.removeProperty('color');
       if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
       if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
+      applyTypographyStyles(subtitleEl, hero?.subtitleFontSize, hero?.subtitleFontWeight, hero?.subtitleItalic, hero?.subtitleUnderline);
     }
 
     if (banner) {

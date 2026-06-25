@@ -299,6 +299,18 @@
     );
   }
 
+  function applyTypographyStyles(el, size, weight, italic, underline) {
+    if (!el) return;
+    if (size) el.style.fontSize = `${size}px`;
+    else el.style.removeProperty('font-size');
+    if (weight) el.style.fontWeight = weight;
+    else el.style.removeProperty('font-weight');
+    if (italic) el.style.fontStyle = 'italic';
+    else el.style.removeProperty('font-style');
+    if (underline) el.style.textDecoration = 'underline';
+    else el.style.removeProperty('text-decoration');
+  }
+
   function renderHero(data) {
     const slider = document.querySelector('.hero-slider');
     const slideEl = document.querySelector('.hero-slide');
@@ -320,6 +332,7 @@
       else titleEl.style.removeProperty('color');
       if (first.titleTop !== undefined) titleEl.style.top = `${first.titleTop}px`;
       if (first.titleLeft !== undefined) titleEl.style.left = `${first.titleLeft}px`;
+      applyTypographyStyles(titleEl, first.titleFontSize, first.titleFontWeight, first.titleItalic, first.titleUnderline);
     }
     if (subEl) {
       subEl.innerHTML = multilineHtml(first.subtitle);
@@ -327,6 +340,7 @@
       else subEl.style.removeProperty('color');
       if (first.subtitleTop !== undefined) subEl.style.top = `${first.subtitleTop}px`;
       if (first.subtitleLeft !== undefined) subEl.style.left = `${first.subtitleLeft}px`;
+      applyTypographyStyles(subEl, first.subtitleFontSize, first.subtitleFontWeight, first.subtitleItalic, first.subtitleUnderline);
     }
     
     if (first.background) slider.classList.add('hero-slider--custom-bg');
@@ -379,6 +393,7 @@
       else titleEl.style.removeProperty('color');
       if (slide.titleTop !== undefined) titleEl.style.top = `${slide.titleTop}px`;
       if (slide.titleLeft !== undefined) titleEl.style.left = `${slide.titleLeft}px`;
+      applyTypographyStyles(titleEl, slide.titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline);
     }
     if (subEl) {
       subEl.innerHTML = multilineHtml(slide.subtitle);
@@ -386,6 +401,7 @@
       else subEl.style.removeProperty('color');
       if (slide.subtitleTop !== undefined) subEl.style.top = `${slide.subtitleTop}px`;
       if (slide.subtitleLeft !== undefined) subEl.style.left = `${slide.subtitleLeft}px`;
+      applyTypographyStyles(subEl, slide.subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline);
     }
     document.querySelectorAll('.hero-slide__dots .dot').forEach((dot, idx) => {
       dot.classList.toggle('active', idx === i);

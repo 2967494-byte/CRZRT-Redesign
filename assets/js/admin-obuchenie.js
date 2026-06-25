@@ -121,42 +121,39 @@
       </div>`;
   }
 
-  function blockHeaderWithColorHtml(title, colorId, value) {
-    const color = /^#[0-9A-Fa-f]{6}$/.test(value || '') ? value : '#00AE4D';
+  function blockHeaderWithColorHtml(title, colorId, value, defaultColor = '#00AE4D', fontSize = '', fontWeight = '', italic = false, underline = false) {
+    const color = /^#[0-9A-Fa-f]{6}$/.test(value || '') ? value : defaultColor;
+    const sizeId = colorId.replace('_color', '_size');
+    const weightId = colorId.replace('_color', '_weight');
+    const italicId = colorId.replace('_color', '_italic');
+    const underlineId = colorId.replace('_color', '_underline');
     return `
-      <div class="obuchenie-block-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div class="obuchenie-block-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
         <span style="font-weight:600; font-size:0.95rem; color:var(--text-secondary);">${title}</span>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <input type="color" id="${colorId}_picker" value="${escapeAttr(color)}" style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer; background:transparent;" oninput="AdminObuchenie.syncColorField('${colorId}', this.value)">
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <input type="number" id="${sizeId}" value="${escapeAttr(fontSize)}" placeholder="px" title="Размер шрифта" style="width:55px; height:30px; padding:4px 6px; font-size:0.85rem; border:1px solid var(--card-border); border-radius:4px; background:rgba(0,0,0,0.1); color:inherit; text-align:center; margin-bottom:0;">
+          <select id="${weightId}" title="Толщина шрифта" style="height:30px; padding:4px 6px; font-size:0.85rem; border:1px solid var(--card-border); border-radius:4px; background:rgba(0,0,0,0.1); color:inherit; cursor:pointer; margin-bottom:0;">
+            <option value="" ${!fontWeight ? 'selected' : ''}>Толщина</option>
+            <option value="300" ${fontWeight === '300' ? 'selected' : ''}>Тонкий</option>
+            <option value="500" ${fontWeight === '500' ? 'selected' : ''}>Средний</option>
+            <option value="700" ${fontWeight === '700' ? 'selected' : ''}>Толстый</option>
+          </select>
+          <label title="Курсив" style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--card-border); border-radius:4px; cursor:pointer; background:${italic ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'}; margin-bottom:0; font-style:italic; font-weight:bold; user-select:none; font-family:serif;">
+            <input type="checkbox" id="${italicId}" ${italic ? 'checked' : ''} style="display:none;" onchange="this.parentElement.style.background = this.checked ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'">
+            I
+          </label>
+          <label title="Подчеркнутый" style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--card-border); border-radius:4px; cursor:pointer; background:${underline ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'}; margin-bottom:0; text-decoration:underline; font-weight:bold; user-select:none; font-family:serif;">
+            <input type="checkbox" id="${underlineId}" ${underline ? 'checked' : ''} style="display:none;" onchange="this.parentElement.style.background = this.checked ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'">
+            U
+          </label>
+          <input type="color" id="${colorId}_picker" value="${escapeAttr(color)}" style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer; background:transparent; margin-bottom:0;" oninput="AdminObuchenie.syncColorField('${colorId}', this.value)">
           <input type="text" class="form-control" id="${colorId}" value="${escapeAttr(color)}" placeholder="#00AE4D" style="max-width:90px; padding:4px 8px; font-size:0.85rem; font-family:monospace; margin-bottom:0;" oninput="AdminObuchenie.syncColorField('${colorId}', this.value, true)">
         </div>
       </div>`;
   }
 
-  function renderHeroAdmin(data) {
-    const el = document.getElementById('obuchenieHeroAdmin');
-    if (!el) return;
-    const hero = getMigratedData(data).hero || {};
-    el.innerHTML = `
-      <div class="obuchenie-hero-grid">
-        <!-- Left: Banner upload & Preview -->
-        <div class="obuchenie-hero-banner-col">
-          ${heroBgUploadShell('obuchenie_hero_bg', 'Готовый баннер (~1520×420 px)')}
-          
-          <div style="margin-top:20px;">
-            <label style="font-weight:600; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">Предпросмотр готового баннера с наложенным текстом</label>
-            <div class="obuchenie-live-banner-preview" id="obuchenie_live_banner_preview">
-              <div class="obuchenie-live-banner-title" id="obuchenie_live_banner_title"></div>
-              <div class="obuchenie-live-banner-subtitle" id="obuchenie_live_banner_subtitle"></div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Right: Fields -->
-        <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
-          <!-- Block "Заголовок" -->
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'obuchenie_hero_title_color', hero.titleColor || '#00AE4D')}
+            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'obuchenie_hero_title_color', hero.titleColor || '#00AE4D', '#00AE4D', hero.titleFontSize, hero.titleFontWeight, hero.titleItalic, hero.titleUnderline)}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
               <textarea class="form-control" id="obuchenie_hero_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)" oninput="AdminObuchenie.updateLivePreview()">${escapeAttr(hero.title)}</textarea>
             </div>
@@ -174,7 +171,7 @@
           
           <!-- Block "Текст" -->
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Текст', 'obuchenie_hero_subtitle_color', hero.subtitleColor || '#FFFFFF')}
+            ${blockHeaderWithColorHtml('Текст', 'obuchenie_hero_subtitle_color', hero.subtitleColor || '#FFFFFF', '#FFFFFF', hero.subtitleFontSize, hero.subtitleFontWeight, hero.subtitleItalic, hero.subtitleUnderline)}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
               <textarea class="form-control" id="obuchenie_hero_subtitle" rows="3" placeholder="Описание/текст под заголовком" oninput="AdminObuchenie.updateLivePreview()">${escapeAttr(hero.subtitle)}</textarea>
             </div>
@@ -193,7 +190,16 @@
       </div>
     `;
     setImageUploadState('obuchenie_hero_bg', hero.background);
-    setTimeout(() => AdminObuchenie.updateLivePreview(), 50);
+    setTimeout(() => {
+      AdminObuchenie.updateLivePreview();
+      ['title_size', 'title_weight', 'title_italic', 'title_underline', 'subtitle_size', 'subtitle_weight', 'subtitle_italic', 'subtitle_underline'].forEach(prop => {
+        const el = document.getElementById(`obuchenie_hero_${prop}`);
+        if (el) {
+          el.addEventListener('input', () => AdminObuchenie.updateLivePreview());
+          el.addEventListener('change', () => AdminObuchenie.updateLivePreview());
+        }
+      });
+    }, 50);
   }
 
   function navCardAdminHtml(prefix, card, i) {
@@ -369,7 +375,7 @@
         <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
           <!-- Block "Заголовок" -->
           <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'obuchenie_testing_title_color', banner.titleColor || '#ffffff')}
+            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'obuchenie_testing_title_color', banner.titleColor || '#ffffff', '#ffffff', banner.titleFontSize, banner.titleFontWeight, banner.titleItalic, banner.titleUnderline)}
             <div class="form-group" style="margin-bottom:0; margin-top:8px;">
               <textarea class="form-control" id="obuchenie_testing_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)" oninput="AdminObuchenie.updateTestingLivePreview()">${escapeAttr(banner.title)}</textarea>
             </div>
@@ -417,6 +423,13 @@
       const colorInput = document.getElementById('obuchenie_testing_title_color');
       if (colorEnable) colorEnable.addEventListener('change', AdminObuchenie.updateTestingLivePreview);
       if (colorInput) colorInput.addEventListener('input', AdminObuchenie.updateTestingLivePreview);
+      ['title_size', 'title_weight', 'title_italic', 'title_underline'].forEach(prop => {
+        const el = document.getElementById(`obuchenie_testing_${prop}`);
+        if (el) {
+          el.addEventListener('input', () => AdminObuchenie.updateTestingLivePreview());
+          el.addEventListener('change', () => AdminObuchenie.updateTestingLivePreview());
+        }
+      });
     }, 50);
   }
 
@@ -472,8 +485,16 @@
       subtitleColor: readColorVal('obuchenie_hero_subtitle_color', data.hero?.subtitleColor || '#FFFFFF'),
       titleTop: parseInt(document.getElementById('obuchenie_hero_title_top')?.value, 10) || 68,
       titleLeft: parseInt(document.getElementById('obuchenie_hero_title_left')?.value, 10) || 60,
+      titleFontSize: document.getElementById('obuchenie_hero_title_size')?.value || '',
+      titleFontWeight: document.getElementById('obuchenie_hero_title_weight')?.value || '',
+      titleItalic: document.getElementById('obuchenie_hero_title_italic')?.checked || false,
+      titleUnderline: document.getElementById('obuchenie_hero_title_underline')?.checked || false,
       subtitleBottom: parseInt(document.getElementById('obuchenie_hero_subtitle_bottom')?.value, 10) || 40,
-      subtitleLeft: parseInt(document.getElementById('obuchenie_hero_subtitle_left')?.value, 10) || 60
+      subtitleLeft: parseInt(document.getElementById('obuchenie_hero_subtitle_left')?.value, 10) || 60,
+      subtitleFontSize: document.getElementById('obuchenie_hero_subtitle_size')?.value || '',
+      subtitleFontWeight: document.getElementById('obuchenie_hero_subtitle_weight')?.value || '',
+      subtitleItalic: document.getElementById('obuchenie_hero_subtitle_italic')?.checked || false,
+      subtitleUnderline: document.getElementById('obuchenie_hero_subtitle_underline')?.checked || false
     };
 
     data.navCards = [];
@@ -515,6 +536,10 @@
       titleColor: (testingTitleEnable && testingTitleEnable.checked) ? (document.getElementById('obuchenie_testing_title_color')?.value || '#ffffff') : '',
       titleTop: parseFloat(document.getElementById('obuchenie_testing_title_top')?.value) || 68,
       titleLeft: parseFloat(document.getElementById('obuchenie_testing_title_left')?.value) || 60,
+      titleFontSize: document.getElementById('obuchenie_testing_title_size')?.value || '',
+      titleFontWeight: document.getElementById('obuchenie_testing_title_weight')?.value || '',
+      titleItalic: document.getElementById('obuchenie_testing_title_italic')?.checked || false,
+      titleUnderline: document.getElementById('obuchenie_testing_title_underline')?.checked || false,
       btnText: document.getElementById('obuchenie_testing_btn_text')?.value ?? data.testingBanner?.btnText ?? '',
       btnLink: document.getElementById('obuchenie_testing_btn_link')?.value ?? data.testingBanner?.btnLink ?? '#contacts',
       image: readImageVal('obuchenie_testing_image') || data.testingBanner?.image || ''
@@ -621,6 +646,16 @@
       titleEl.style.top = `calc((${titleTop} / 435) * 100%)`;
       titleEl.style.left = `calc((${titleLeft} / 1520) * 100%)`;
 
+      const titleSize = document.getElementById('obuchenie_testing_title_size')?.value || '';
+      const titleWeight = document.getElementById('obuchenie_testing_title_weight')?.value || '';
+      const titleItalic = document.getElementById('obuchenie_testing_title_italic')?.checked || false;
+      const titleUnderline = document.getElementById('obuchenie_testing_title_underline')?.checked || false;
+
+      if (titleSize) titleEl.style.fontSize = `${titleSize}px`; else titleEl.style.removeProperty('font-size');
+      if (titleWeight) titleEl.style.fontWeight = titleWeight; else titleEl.style.removeProperty('font-weight');
+      if (titleItalic) titleEl.style.fontStyle = 'italic'; else titleEl.style.removeProperty('font-style');
+      if (titleUnderline) titleEl.style.textDecoration = 'underline'; else titleEl.style.removeProperty('text-decoration');
+
       btnEl.textContent = btnText;
     },
     updateLivePreview() {
@@ -652,11 +687,31 @@
       titleEl.style.left = `calc((${titleLeft} / 1520) * 100%)`;
       titleEl.style.maxWidth = `calc(100% - ((${titleLeft} / 1520) * 100%) - 10px)`;
 
+      const titleSize = document.getElementById('obuchenie_hero_title_size')?.value || '';
+      const titleWeight = document.getElementById('obuchenie_hero_title_weight')?.value || '';
+      const titleItalic = document.getElementById('obuchenie_hero_title_italic')?.checked || false;
+      const titleUnderline = document.getElementById('obuchenie_hero_title_underline')?.checked || false;
+
+      if (titleSize) titleEl.style.fontSize = `${titleSize}px`; else titleEl.style.removeProperty('font-size');
+      if (titleWeight) titleEl.style.fontWeight = titleWeight; else titleEl.style.removeProperty('font-weight');
+      if (titleItalic) titleEl.style.fontStyle = 'italic'; else titleEl.style.removeProperty('font-style');
+      if (titleUnderline) titleEl.style.textDecoration = 'underline'; else titleEl.style.removeProperty('text-decoration');
+
       subtitleEl.textContent = subtitleText;
       subtitleEl.style.color = subtitleColor;
       subtitleEl.style.bottom = `calc((${subtitleBottom} / 420) * 100%)`;
       subtitleEl.style.left = `calc((${subtitleLeft} / 1520) * 100%)`;
       subtitleEl.style.maxWidth = `calc(100% - ((${subtitleLeft} / 1520) * 100%) - 10px)`;
+
+      const subtitleSize = document.getElementById('obuchenie_hero_subtitle_size')?.value || '';
+      const subtitleWeight = document.getElementById('obuchenie_hero_subtitle_weight')?.value || '';
+      const subtitleItalic = document.getElementById('obuchenie_hero_subtitle_italic')?.checked || false;
+      const subtitleUnderline = document.getElementById('obuchenie_hero_subtitle_underline')?.checked || false;
+
+      if (subtitleSize) subtitleEl.style.fontSize = `${subtitleSize}px`; else subtitleEl.style.removeProperty('font-size');
+      if (subtitleWeight) subtitleEl.style.fontWeight = subtitleWeight; else subtitleEl.style.removeProperty('font-weight');
+      if (subtitleItalic) subtitleEl.style.fontStyle = 'italic'; else subtitleEl.style.removeProperty('font-style');
+      if (subtitleUnderline) subtitleEl.style.textDecoration = 'underline'; else subtitleEl.style.removeProperty('text-decoration');
     },
     addCourseCard() {
       window.saveObucheniePageStateToMemory?.();

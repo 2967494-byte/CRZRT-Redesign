@@ -87,8 +87,16 @@
         subtitleColor: rawHero.subtitleColor || DEFAULT_KNOWLEDGE_PAGE.hero.subtitleColor,
         titleTop: rawHero.titleTop !== undefined ? parseInt(rawHero.titleTop, 10) : DEFAULT_KNOWLEDGE_PAGE.hero.titleTop,
         titleLeft: rawHero.titleLeft !== undefined ? parseInt(rawHero.titleLeft, 10) : DEFAULT_KNOWLEDGE_PAGE.hero.titleLeft,
+        titleFontSize: rawHero.titleFontSize || '',
+        titleFontWeight: rawHero.titleFontWeight || '',
+        titleItalic: rawHero.titleItalic || false,
+        titleUnderline: rawHero.titleUnderline || false,
         subtitleTop: rawHero.subtitleTop !== undefined ? parseInt(rawHero.subtitleTop, 10) : DEFAULT_KNOWLEDGE_PAGE.hero.subtitleTop,
-        subtitleLeft: rawHero.subtitleLeft !== undefined ? parseInt(rawHero.subtitleLeft, 10) : DEFAULT_KNOWLEDGE_PAGE.hero.subtitleLeft
+        subtitleLeft: rawHero.subtitleLeft !== undefined ? parseInt(rawHero.subtitleLeft, 10) : DEFAULT_KNOWLEDGE_PAGE.hero.subtitleLeft,
+        subtitleFontSize: rawHero.subtitleFontSize || '',
+        subtitleFontWeight: rawHero.subtitleFontWeight || '',
+        subtitleItalic: rawHero.subtitleItalic || false,
+        subtitleUnderline: rawHero.subtitleUnderline || false
       },
       blocks: blocks.map((b, index) => {
         return {
@@ -133,6 +141,18 @@
     return null;
   }
 
+  function applyTypographyStyles(el, size, weight, italic, underline) {
+    if (!el) return;
+    if (size) el.style.fontSize = `${size}px`;
+    else el.style.removeProperty('font-size');
+    if (weight) el.style.fontWeight = weight;
+    else el.style.removeProperty('font-weight');
+    if (italic) el.style.fontStyle = 'italic';
+    else el.style.removeProperty('font-style');
+    if (underline) el.style.textDecoration = 'underline';
+    else el.style.removeProperty('text-decoration');
+  }
+
   function renderHero(hero) {
     const banner = document.querySelector('.consulting-hero');
     const titleEl = document.querySelector('.consulting-hero-title');
@@ -146,12 +166,14 @@
       titleEl.style.color = hero?.titleColor || DEFAULT_KNOWLEDGE_PAGE.hero.titleColor;
       if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
       if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
+      applyTypographyStyles(titleEl, hero?.titleFontSize, hero?.titleFontWeight, hero?.titleItalic, hero?.titleUnderline);
     }
     if (subtitleEl) {
       subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
       subtitleEl.style.color = hero?.subtitleColor || DEFAULT_KNOWLEDGE_PAGE.hero.subtitleColor;
       if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
       if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
+      applyTypographyStyles(subtitleEl, hero?.subtitleFontSize, hero?.subtitleFontWeight, hero?.subtitleItalic, hero?.subtitleUnderline);
     }
 
     if (banner) {

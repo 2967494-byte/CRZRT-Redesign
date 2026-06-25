@@ -199,14 +199,33 @@
       </div>`;
   }
 
-  function blockHeaderWithColorHtml(title, colorId, colorValue, defaultColor) {
+  function blockHeaderWithColorHtml(title, colorId, colorValue, defaultColor, fontSize = '', fontWeight = '', italic = false, underline = false) {
     const isEnabled = colorValue && colorValue !== defaultColor && colorValue !== '#000000' && colorValue !== '#333333';
+    const sizeId = colorId.replace('_color', '_size');
+    const weightId = colorId.replace('_color', '_weight');
+    const italicId = colorId.replace('_color', '_italic');
+    const underlineId = colorId.replace('_color', '_underline');
     return `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
         <span style="font-weight:600; font-size:0.95rem;">${title}</span>
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <input type="number" id="${sizeId}" value="${escapeAttr(fontSize)}" placeholder="px" title="Размер шрифта" style="width:55px; height:30px; padding:4px 6px; font-size:0.85rem; border:1px solid var(--card-border); border-radius:4px; background:rgba(0,0,0,0.1); color:inherit; text-align:center; margin-bottom:0;">
+          <select id="${weightId}" title="Толщина шрифта" style="height:30px; padding:4px 6px; font-size:0.85rem; border:1px solid var(--card-border); border-radius:4px; background:rgba(0,0,0,0.1); color:inherit; cursor:pointer; margin-bottom:0;">
+            <option value="" ${!fontWeight ? 'selected' : ''}>Толщина</option>
+            <option value="300" ${fontWeight === '300' ? 'selected' : ''}>Тонкий</option>
+            <option value="500" ${fontWeight === '500' ? 'selected' : ''}>Средний</option>
+            <option value="700" ${fontWeight === '700' ? 'selected' : ''}>Толстый</option>
+          </select>
+          <label title="Курсив" style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--card-border); border-radius:4px; cursor:pointer; background:${italic ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'}; margin-bottom:0; font-style:italic; font-weight:bold; user-select:none; font-family:serif;">
+            <input type="checkbox" id="${italicId}" ${italic ? 'checked' : ''} style="display:none;" onchange="this.parentElement.style.background = this.checked ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'">
+            I
+          </label>
+          <label title="Подчеркнутый" style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--card-border); border-radius:4px; cursor:pointer; background:${underline ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'}; margin-bottom:0; text-decoration:underline; font-weight:bold; user-select:none; font-family:serif;">
+            <input type="checkbox" id="${underlineId}" ${underline ? 'checked' : ''} style="display:none;" onchange="this.parentElement.style.background = this.checked ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'">
+            U
+          </label>
           <input type="checkbox" id="${colorId}_enable" ${isEnabled ? 'checked' : ''} onchange="document.getElementById('${colorId}').disabled = !this.checked">
-          <input type="color" id="${colorId}" value="${colorValue || defaultColor}" ${isEnabled ? '' : 'disabled'} style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer;">
+          <input type="color" id="${colorId}" value="${colorValue || defaultColor}" ${isEnabled ? '' : 'disabled'} style="width:30px; height:30px; padding:0; border:none; border-radius:4px; cursor:pointer; margin-bottom:0;">
         </div>
       </div>
     `;
@@ -238,8 +257,9 @@
             <!-- Right: Fields -->
             <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
               <!-- Block "Заголовок" -->
+              <!-- Block "Заголовок" -->
               <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-                ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', `m_hero_title_color_${i}`, slide.titleColor, '#ffffff')}
+                ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', `m_hero_title_color_${i}`, slide.titleColor, '#ffffff', slide.titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline)}
                 <div class="form-group" style="margin-bottom:0; margin-top:8px;">
                   <textarea class="form-control" id="m_hero_title_${i}" rows="2" placeholder="Заголовок баннера">${escapeAttr(slide.title)}</textarea>
                 </div>
@@ -257,7 +277,7 @@
               
               <!-- Block "Текст" -->
               <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-                ${blockHeaderWithColorHtml('Текст', `m_hero_subtitle_color_${i}`, slide.subtitleColor, '#ffffff')}
+                ${blockHeaderWithColorHtml('Текст', `m_hero_subtitle_color_${i}`, slide.subtitleColor, '#ffffff', slide.subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline)}
                 <div class="form-group" style="margin-bottom:0; margin-top:8px;">
                   <textarea class="form-control" id="m_hero_subtitle_${i}" rows="3" placeholder="Описание/текст под заголовком">${escapeAttr(slide.subtitle)}</textarea>
                 </div>
@@ -285,6 +305,10 @@
             const top = document.getElementById(`m_hero_${field}_top_${i}`);
             const left = document.getElementById(`m_hero_${field}_left_${i}`);
             const live = document.getElementById(`m_hero_live_${field}_${i}`);
+            const size = document.getElementById(`m_hero_${field}_size_${i}`);
+            const weight = document.getElementById(`m_hero_${field}_weight_${i}`);
+            const italic = document.getElementById(`m_hero_${field}_italic_${i}`);
+            const underline = document.getElementById(`m_hero_${field}_underline_${i}`);
 
             if(input && live) input.addEventListener('input', e => live.innerText = e.target.value);
             if(color && live) color.addEventListener('input', e => live.style.color = e.target.value);
@@ -295,6 +319,10 @@
             }
             if(top && live) top.addEventListener('input', e => live.style.top = `${(e.target.value / 420) * 100}%`);
             if(left && live) left.addEventListener('input', e => live.style.left = `${(e.target.value / 1520) * 100}%`);
+            if(size && live) size.addEventListener('input', e => { if(e.target.value) live.style.fontSize = `${e.target.value}px`; else live.style.removeProperty('font-size'); });
+            if(weight && live) weight.addEventListener('change', e => { if(e.target.value) live.style.fontWeight = e.target.value; else live.style.removeProperty('font-weight'); });
+            if(italic && live) italic.addEventListener('change', e => { if(e.target.checked) live.style.fontStyle = 'italic'; else live.style.removeProperty('font-style'); });
+            if(underline && live) underline.addEventListener('change', e => { if(e.target.checked) live.style.textDecoration = 'underline'; else live.style.removeProperty('text-decoration'); });
         });
 
         setImageUploadState(`m_hero_bg_${i}`, slide.background);
@@ -304,12 +332,20 @@
           liveTitle.style.color = slide.titleColor || '#ffffff';
           liveTitle.style.top = `${((slide.titleTop !== undefined ? slide.titleTop : 122) / 420) * 100}%`;
           liveTitle.style.left = `${((slide.titleLeft !== undefined ? slide.titleLeft : 70) / 1520) * 100}%`;
+          if(slide.titleFontSize) liveTitle.style.fontSize = `${slide.titleFontSize}px`;
+          if(slide.titleFontWeight) liveTitle.style.fontWeight = slide.titleFontWeight;
+          if(slide.titleItalic) liveTitle.style.fontStyle = 'italic';
+          if(slide.titleUnderline) liveTitle.style.textDecoration = 'underline';
         }
         const liveSubtitle = document.getElementById(`m_hero_live_subtitle_${i}`);
         if(liveSubtitle) {
           liveSubtitle.style.color = slide.subtitleColor || '#ffffff';
           liveSubtitle.style.top = `${((slide.subtitleTop !== undefined ? slide.subtitleTop : 213) / 420) * 100}%`;
           liveSubtitle.style.left = `${((slide.subtitleLeft !== undefined ? slide.subtitleLeft : 70) / 1520) * 100}%`;
+          if(slide.subtitleFontSize) liveSubtitle.style.fontSize = `${slide.subtitleFontSize}px`;
+          if(slide.subtitleFontWeight) liveSubtitle.style.fontWeight = slide.subtitleFontWeight;
+          if(slide.subtitleItalic) liveSubtitle.style.fontStyle = 'italic';
+          if(slide.subtitleUnderline) liveSubtitle.style.textDecoration = 'underline';
         }
       }, 0);
     });
@@ -545,10 +581,18 @@
         titleColor: (titleColorEnable && titleColorEnable.checked) ? (document.getElementById(`m_hero_title_color_${i}`)?.value || '#ffffff') : '',
         titleTop: parseInt(document.getElementById(`m_hero_title_top_${i}`)?.value || 122, 10),
         titleLeft: parseInt(document.getElementById(`m_hero_title_left_${i}`)?.value || 70, 10),
+        titleFontSize: document.getElementById(`m_hero_title_size_${i}`)?.value || '',
+        titleFontWeight: document.getElementById(`m_hero_title_weight_${i}`)?.value || '',
+        titleItalic: document.getElementById(`m_hero_title_italic_${i}`)?.checked || false,
+        titleUnderline: document.getElementById(`m_hero_title_underline_${i}`)?.checked || false,
         subtitle: document.getElementById(`m_hero_subtitle_${i}`)?.value || '',
         subtitleColor: (subtitleColorEnable && subtitleColorEnable.checked) ? (document.getElementById(`m_hero_subtitle_color_${i}`)?.value || '#ffffff') : '',
         subtitleTop: parseInt(document.getElementById(`m_hero_subtitle_top_${i}`)?.value || 213, 10),
         subtitleLeft: parseInt(document.getElementById(`m_hero_subtitle_left_${i}`)?.value || 70, 10),
+        subtitleFontSize: document.getElementById(`m_hero_subtitle_size_${i}`)?.value || '',
+        subtitleFontWeight: document.getElementById(`m_hero_subtitle_weight_${i}`)?.value || '',
+        subtitleItalic: document.getElementById(`m_hero_subtitle_italic_${i}`)?.checked || false,
+        subtitleUnderline: document.getElementById('m_hero_subtitle_underline_' + i)?.checked || false,
         background: readImageVal(`m_hero_bg_${i}`)
       });
     }

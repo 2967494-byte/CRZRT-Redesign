@@ -411,8 +411,16 @@
         subtitleColor: rawHero.subtitleColor || OBUCHENIE_DEFAULTS.hero.subtitleColor,
         titleTop: rawHero.titleTop !== undefined ? parseInt(rawHero.titleTop, 10) : OBUCHENIE_DEFAULTS.hero.titleTop,
         titleLeft: rawHero.titleLeft !== undefined ? parseInt(rawHero.titleLeft, 10) : OBUCHENIE_DEFAULTS.hero.titleLeft,
+        titleFontSize: rawHero.titleFontSize || '',
+        titleFontWeight: rawHero.titleFontWeight || '',
+        titleItalic: rawHero.titleItalic || false,
+        titleUnderline: rawHero.titleUnderline || false,
         subtitleBottom: rawHero.subtitleBottom !== undefined ? parseInt(rawHero.subtitleBottom, 10) : OBUCHENIE_DEFAULTS.hero.subtitleBottom,
-        subtitleLeft: rawHero.subtitleLeft !== undefined ? parseInt(rawHero.subtitleLeft, 10) : OBUCHENIE_DEFAULTS.hero.subtitleLeft
+        subtitleLeft: rawHero.subtitleLeft !== undefined ? parseInt(rawHero.subtitleLeft, 10) : OBUCHENIE_DEFAULTS.hero.subtitleLeft,
+        subtitleFontSize: rawHero.subtitleFontSize || '',
+        subtitleFontWeight: rawHero.subtitleFontWeight || '',
+        subtitleItalic: rawHero.subtitleItalic || false,
+        subtitleUnderline: rawHero.subtitleUnderline || false
       },
       navCards,
       courseSearch: {
@@ -448,8 +456,17 @@
       courseRegistry,
       testingBanner: {
         title: raw?.testingBanner?.title || OBUCHENIE_DEFAULTS.testingBanner.title,
+        titleColor: raw?.testingBanner?.titleColor || '',
+        titleTop: raw?.testingBanner?.titleTop,
+        titleLeft: raw?.testingBanner?.titleLeft,
+        titleFontSize: raw?.testingBanner?.titleFontSize || '',
+        titleFontWeight: raw?.testingBanner?.titleFontWeight || '',
+        titleItalic: raw?.testingBanner?.titleItalic || false,
+        titleUnderline: raw?.testingBanner?.titleUnderline || false,
         btnText: raw?.testingBanner?.btnText || OBUCHENIE_DEFAULTS.testingBanner.btnText,
         btnLink: raw?.testingBanner?.btnLink || OBUCHENIE_DEFAULTS.testingBanner.btnLink,
+        btnBottom: raw?.testingBanner?.btnBottom,
+        btnLeft: raw?.testingBanner?.btnLeft,
         image: raw?.testingBanner?.image || OBUCHENIE_DEFAULTS.testingBanner.image
       }
     };
@@ -703,6 +720,18 @@
     return null;
   }
 
+  function applyTypographyStyles(el, size, weight, italic, underline) {
+    if (!el) return;
+    if (size) el.style.fontSize = `${size}px`;
+    else el.style.removeProperty('font-size');
+    if (weight) el.style.fontWeight = weight;
+    else el.style.removeProperty('font-weight');
+    if (italic) el.style.fontStyle = 'italic';
+    else el.style.removeProperty('font-style');
+    if (underline) el.style.textDecoration = 'underline';
+    else el.style.removeProperty('text-decoration');
+  }
+
   function renderHero(hero) {
     const banner = document.querySelector('.consulting-hero');
     const titleEl = document.querySelector('.consulting-hero-title');
@@ -717,12 +746,14 @@
       titleEl.style.color = hero?.titleColor || OBUCHENIE_DEFAULTS.hero.titleColor;
       if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
       if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
+      applyTypographyStyles(titleEl, hero?.titleFontSize, hero?.titleFontWeight, hero?.titleItalic, hero?.titleUnderline);
     }
     if (subtitleEl) {
       subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
       subtitleEl.style.color = hero?.subtitleColor || OBUCHENIE_DEFAULTS.hero.subtitleColor;
       if (hero?.subtitleBottom !== undefined) subtitleEl.style.bottom = `${hero.subtitleBottom}px`;
       if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
+      applyTypographyStyles(subtitleEl, hero?.subtitleFontSize, hero?.subtitleFontWeight, hero?.subtitleItalic, hero?.subtitleUnderline);
     }
     if (gavelEl && hero?.gavelImage) gavelEl.src = hero.gavelImage;
 
@@ -1016,6 +1047,7 @@
         titleEl.style.top = '';
         titleEl.style.left = '';
       }
+      applyTypographyStyles(titleEl, data.titleFontSize, data.titleFontWeight, data.titleItalic, data.titleUnderline);
     }
     
     if (btnEl) {
