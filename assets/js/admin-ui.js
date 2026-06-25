@@ -2023,9 +2023,6 @@
             return data;
         }
 
-            return data;
-        }
-
         async function replaceNewsBase64WithUploads(data) {
             const cache = new Map();
             const uploadOrReuse = (src, slot, maxWidth, maxHeight) => {
