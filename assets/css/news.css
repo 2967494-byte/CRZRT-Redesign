@@ -168,6 +168,100 @@ body[data-page="news"] .news-item__text {
   line-height: 140%;
   letter-spacing: 0;
   color: #575B6D;
+  position: relative;
+}
+
+body[data-page="news"] .news-item__text-wrap {
+  position: relative;
+  overflow: hidden;
+  max-height: 140px;
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+body[data-page="news"] .news-item__text-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(180deg, rgba(238, 238, 250, 0) 0%, #EEEEFA 100%);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  opacity: 1;
+  cursor: pointer;
+}
+
+body[data-page="news"] .news-item__more-btn {
+  display: inline-block;
+  margin-top: 12px;
+  border: none;
+  background: none;
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #FF5512;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+body[data-page="news"] .news-item__more-btn:hover {
+  color: #E64A10;
+  transform: translateY(-1px);
+}
+
+body[data-page="news"] .news-item__more-btn:active {
+  transform: translateY(0);
+}
+
+/* Pagination */
+body[data-page="news"] .news-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 40px;
+}
+
+body[data-page="news"] .news-pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(87, 91, 109, 0.2);
+  background-color: #FFFFFF;
+  color: #575B6D;
+  font-family: 'Google Sans', 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body[data-page="news"] .news-pagination__btn:hover:not(:disabled) {
+  background-color: #FF5512;
+  color: #FFFFFF;
+  border-color: #FF5512;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 85, 18, 0.2);
+}
+
+body[data-page="news"] .news-pagination__btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+body[data-page="news"] .news-pagination__btn--active {
+  background-color: #FF5512;
+  color: #FFFFFF;
+  border-color: #FF5512;
+}
+
+body[data-page="news"] .news-pagination__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 body[data-page="news"] .news-item__text p {

@@ -42,6 +42,10 @@
 
   const isNewsPage = document.body.dataset.page === 'news';
 
+  let currentNewsItems = [];
+  let currentNewsPage = 1;
+  const ITEMS_PER_PAGE = 4;
+
   if (isNewsPage) {
     document.documentElement.classList.add(CONTENT_PENDING_CLASS);
   }
@@ -239,7 +243,17 @@
       return;
     }
 
-    container.innerHTML = active
+    const totalPages = Math.ceil(active.length / ITEMS_PER_PAGE);
+    if (currentNewsPage > totalPages) {
+      currentNewsPage = totalPages;
+    }
+    if (currentNewsPage < 1) {
+      currentNewsPage = 1;
+    }
+
+    const pageItems = active.slice((currentNewsPage - 1) * ITEMS_PER_PAGE, currentNewsPage * ITEMS_PER_PAGE);
+
+    const itemsHtml = pageItems
       .map((item) => {
         const imageHtml = item.image
           ? `<img src="${escapeHtml(item.image)}" alt="" class="news-item__image" width="511" height="474" loading="lazy" decoding="async">`
@@ -250,11 +264,93 @@
           <div class="news-item__body">
             <time class="news-item__date" datetime="${escapeHtml(item.date)}">${escapeHtml(formatNewsDateDisplay(item.date))}</time>
             <h2 class="news-item__title">${escapeHtml(item.title)}</h2>
-            <div class="news-item__text">${item.text || ''}</div>
+            <div class="news-item__text">
+              <div class="news-item__text-wrap" id="news_text_wrap_${item.id}" onclick="NewsContent.toggleExpandNews('${item.id}')">
+                ${item.text || ''}
+              </div>
+              <div class="news-item__text-fade" id="news_text_fade_${item.id}" style="display: none;" onclick="NewsContent.toggleExpandNews('${item.id}')"></div>
+              <button type="button" class="news-item__more-btn" id="news_more_btn_${item.id}" style="display: none;" onclick="NewsContent.toggleExpandNews('${item.id}')">Читать далее</button>
+            </div>
           </div>
         </article>`;
       })
       .join('');
+
+    let paginationHtml = '';
+    if (totalPages > 1) {
+      const prevDisabled = currentNewsPage === 1 ? 'disabled' : '';
+      const nextDisabled = currentNewsPage === totalPages ? 'disabled' : '';
+
+      let buttonsHtml = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const activeClass = i === currentNewsPage ? ' news-pagination__btn--active' : '';
+        buttonsHtml += `<button type="button" class="news-pagination__btn${activeClass}" onclick="NewsContent.changeNewsPage(${i})">${i}</button>`;
+      }
+
+      paginationHtml = `
+        <div class="news-pagination">
+          <button type="button" class="news-pagination__btn" ${prevDisabled} onclick="NewsContent.changeNewsPage(${currentNewsPage - 1})" aria-label="Предыдущая страница">←</button>
+          ${buttonsHtml}
+          <button type="button" class="news-pagination__btn" ${nextDisabled} onclick="NewsContent.changeNewsPage(${currentNewsPage + 1})" aria-label="Следующая страница">→</button>
+        </div>`;
+    }
+
+    container.innerHTML = `<div style="display:flex; flex-direction:column; gap:60px;">${itemsHtml}</div>${paginationHtml}`;
+
+    // After adding HTML to container, check heights to show/hide "Read more" buttons
+    pageItems.forEach((item) => {
+      const wrapEl = document.getElementById(`news_text_wrap_${item.id}`);
+      const fadeEl = document.getElementById(`news_text_fade_${item.id}`);
+      const btnEl = document.getElementById(`news_more_btn_${item.id}`);
+      if (wrapEl && wrapEl.scrollHeight > 140) {
+        if (fadeEl) fadeEl.style.display = 'block';
+        if (btnEl) btnEl.style.display = 'inline-block';
+      }
+    });
+  }
+
+  function changeNewsPage(pageNum) {
+    currentNewsPage = pageNum;
+    renderNewsList(currentNewsItems);
+
+    const listSection = document.querySelector('.news-list-section');
+    if (listSection) {
+      listSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  function toggleExpandNews(id) {
+    const wrapEl = document.getElementById(`news_text_wrap_${id}`);
+    const fadeEl = document.getElementById(`news_text_fade_${id}`);
+    const btnEl = document.getElementById(`news_more_btn_${id}`);
+    if (!wrapEl) return;
+
+    if (wrapEl.classList.contains('is-expanded')) {
+      // Collapse
+      wrapEl.style.maxHeight = wrapEl.scrollHeight + 'px';
+      wrapEl.offsetHeight; // force reflow
+      wrapEl.classList.remove('is-expanded');
+      wrapEl.style.maxHeight = '140px';
+      if (fadeEl) {
+        fadeEl.style.display = 'block';
+        fadeEl.offsetHeight; // force reflow
+        fadeEl.style.opacity = '1';
+      }
+      if (btnEl) btnEl.textContent = 'Читать далее';
+    } else {
+      // Expand
+      wrapEl.classList.add('is-expanded');
+      wrapEl.style.maxHeight = wrapEl.scrollHeight + 'px';
+      if (fadeEl) {
+        fadeEl.style.opacity = '0';
+        setTimeout(() => {
+          if (wrapEl.classList.contains('is-expanded')) {
+            fadeEl.style.display = 'none';
+          }
+        }, 300);
+      }
+      if (btnEl) btnEl.textContent = 'Свернуть';
+    }
   }
 
   function renderLandingNewsPreview(items, options) {
@@ -279,8 +375,9 @@
   }
 
   function renderNewsPage(data) {
+    currentNewsItems = data.items || [];
     renderHero(data.hero);
-    renderNewsList(data.items);
+    renderNewsList(currentNewsItems);
   }
 
   async function initNewsContent() {
@@ -321,7 +418,9 @@
     renderLandingNewsPreview,
     formatNewsDateDisplay,
     getActiveNewsItems,
-    excerptFromHtml
+    excerptFromHtml,
+    changeNewsPage,
+    toggleExpandNews
   };
 
   if (isNewsPage) {
