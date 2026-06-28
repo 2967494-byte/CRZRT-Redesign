@@ -649,8 +649,9 @@ body[data-page="obuchenie"] .consultation-card {
 }
 
 body[data-page="obuchenie"] .social-banner {
-  height: 132px;
+  height: auto;
   min-height: 132px;
+  padding: 24px 48px;
 }
 
 body[data-page="obuchenie"] .consultation-card {

@@ -1,7 +1,7 @@
 (function () {
   var STORAGE_KEY = 'crzrt_page_zoom';
   var WINDOW_NAME_PREFIX = 'crzrt_zoom:';
-  var DESKTOP_BREAKPOINT = 1100;
+  var DESKTOP_BREAKPOINT = 992;
   var DEFAULT_DESKTOP_ZOOM = 0.8;
   var DEFAULT_MOBILE_ZOOM = 1;
   var MIN_ZOOM = 0.25;
