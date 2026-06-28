@@ -260,6 +260,7 @@
 
     if (data && !data._isInternalReRender) {
       window.obuchenieSearchBlocks = Array.isArray(search.blocks) ? JSON.parse(JSON.stringify(search.blocks)) : [];
+      window.obuchenieSearchTags = Array.isArray(search.tags) ? JSON.parse(JSON.stringify(search.tags)) : [];
     }
 
     const blocks = window.obuchenieSearchBlocks || [];
@@ -302,11 +303,50 @@
          </button>`
       : '';
 
+    // Collect all unique non-empty filter values
+    const allValues = [];
+    blocks.forEach(block => {
+      if (Array.isArray(block.values)) {
+        block.values.forEach(val => {
+          const trimmed = String(val || '').trim();
+          if (trimmed && !allValues.includes(trimmed)) {
+            allValues.push(trimmed);
+          }
+        });
+      }
+    });
+
+    // Sync tags list to exclude deleted values
+    window.obuchenieSearchTags = (window.obuchenieSearchTags || []).filter(t => allValues.includes(t));
+
+    let tagsHtml = '';
+    if (allValues.length > 0) {
+      const checkboxes = allValues.map((val) => {
+        const isChecked = window.obuchenieSearchTags.includes(val) ? 'checked' : '';
+        return `
+          <label style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px; border:1px solid var(--card-border); cursor:pointer; font-size:0.9rem; user-select:none; transition: background-color 0.2s;">
+            <input type="checkbox" class="obuchenie-tag-checkbox" value="${escapeAttr(val)}" ${isChecked} style="width:16px; height:16px; margin:0; cursor:pointer;" onchange="AdminObuchenie.toggleTagCheckbox(this)">
+            <span>${escapeAttr(val)}</span>
+          </label>
+        `;
+      }).join('');
+
+      tagsHtml = `
+        <div style="margin-top:24px; border-top:1px solid var(--card-border); padding-top:20px;">
+          <label style="font-weight:600; display:block; margin-bottom:12px; font-size:0.95rem; color:var(--text-secondary);">Отображаемые теги под поиском (выберите значения из справочников):</label>
+          <div style="display:flex; flex-wrap:wrap; gap:10px;">
+            ${checkboxes}
+          </div>
+        </div>
+      `;
+    }
+
     el.innerHTML = `
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
         ${blocksHtml}
       </div>
-      ${addBlockBtn}`;
+      ${addBlockBtn}
+      ${tagsHtml}`;
   }
 
   function getRegistryApi() {
@@ -571,7 +611,7 @@
       cta: data.courseSearch?.cta || 'Оставьте заявку, мы поможем',
       phone: data.courseSearch?.phone || '88001017892',
       phoneDisplay: data.courseSearch?.phoneDisplay || '8 800 101-78-92',
-      tags: data.courseSearch?.tags || [],
+      tags: window.obuchenieSearchTags || data.courseSearch?.tags || [],
       showAllLabel: data.courseSearch?.showAllLabel || 'Показать все',
       blocks: window.obuchenieSearchBlocks || data.courseSearch?.blocks || []
     };
@@ -662,7 +702,7 @@
     deleteSearchBlock(bIdx) {
       if (window.obuchenieSearchBlocks) {
         window.obuchenieSearchBlocks.splice(bIdx, 1);
-        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks }, _isInternalReRender: true });
+        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks, tags: window.obuchenieSearchTags }, _isInternalReRender: true });
       }
     },
     addSearchBlock() {
@@ -672,13 +712,13 @@
           title: 'Новый фильтр',
           values: []
         });
-        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks }, _isInternalReRender: true });
+        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks, tags: window.obuchenieSearchTags }, _isInternalReRender: true });
       }
     },
     deleteSearchBlockValue(bIdx, vIdx) {
       if (window.obuchenieSearchBlocks && window.obuchenieSearchBlocks[bIdx]) {
         window.obuchenieSearchBlocks[bIdx].values.splice(vIdx, 1);
-        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks }, _isInternalReRender: true });
+        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks, tags: window.obuchenieSearchTags }, _isInternalReRender: true });
       }
     },
     addSearchBlockValue(bIdx) {
@@ -688,9 +728,26 @@
         if (!window.obuchenieSearchBlocks[bIdx].values.includes(val)) {
           window.obuchenieSearchBlocks[bIdx].values.push(val);
         }
-        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks }, _isInternalReRender: true });
+        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks, tags: window.obuchenieSearchTags }, _isInternalReRender: true });
       }
     },
+    toggleTagCheckbox(input) {
+      const val = input.value;
+      if (!window.obuchenieSearchTags) {
+        window.obuchenieSearchTags = [];
+      }
+      if (input.checked) {
+        if (!window.obuchenieSearchTags.includes(val)) {
+          window.obuchenieSearchTags.push(val);
+        }
+      } else {
+        const idx = window.obuchenieSearchTags.indexOf(val);
+        if (idx !== -1) {
+          window.obuchenieSearchTags.splice(idx, 1);
+        }
+      }
+    },
+
     pickFile(inputId) {
       window.fileUploadTarget = inputId;
       document.getElementById('docFileInput')?.click();

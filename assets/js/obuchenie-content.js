@@ -409,7 +409,7 @@
     } else if (typeof rawSearch.tags === 'string') {
       tags = rawSearch.tags.split('\n').map((tag) => tag.trim()).filter(Boolean);
     }
-    if (!tags.length) tags = [...OBUCHENIE_DEFAULTS.courseSearch.tags];
+    if (!tags.length && (!raw || rawSearch.tags === undefined)) tags = [...OBUCHENIE_DEFAULTS.courseSearch.tags];
 
     const rawCalendar = raw?.calendar && typeof raw.calendar === 'object' ? raw.calendar : {};
     const courseRegistry = Array.isArray(raw?.courseRegistry)

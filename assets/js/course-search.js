@@ -211,6 +211,15 @@
 
   // ─── Init ─────────────────────────────────────────────────────────────────────
 
+  function isMatching(tagText, optionText) {
+    var t = String(tagText || '').toLowerCase().trim();
+    var o = String(optionText || '').toLowerCase().trim();
+    if (t === o) return true;
+    if (t.indexOf(o) !== -1 || o.indexOf(t) !== -1) return true;
+    if (t.substring(0, 3) === o.substring(0, 3)) return true;
+    return false;
+  }
+
   function init() {
     // Store placeholders in data attributes
     document.querySelectorAll('.csr-dropdown').forEach(function (dd) {
@@ -224,6 +233,47 @@
     document.addEventListener('click', function (e) {
       if (e.target.closest('.csr-dropdown__option')) {
         setTimeout(renderResults, 50);
+      }
+    });
+
+    // Hook into course search tags clicks
+    document.addEventListener('click', function (e) {
+      var tagBtn = e.target.closest('.obuchenie-course-search-tag');
+      if (!tagBtn) return;
+      
+      e.preventDefault();
+      
+      // If it is the "Show all" / "Показать все" button
+      if (tagBtn.classList.contains('obuchenie-course-search-tag--more')) {
+        resetFilters();
+        renderResults();
+        return;
+      }
+      
+      var tagText = tagBtn.textContent.trim();
+      var matched = false;
+      
+      document.querySelectorAll('.csr-dropdown').forEach(function (dd) {
+        var options = dd.querySelectorAll('.csr-dropdown__option');
+        options.forEach(function (opt) {
+          var optText = opt.textContent.trim();
+          if (isMatching(tagText, optText)) {
+            dd.dataset.value = opt.getAttribute('data-value') || optText;
+            dd.classList.add('has-value');
+            
+            var label = dd.querySelector('.csr-dropdown__label');
+            if (label) label.textContent = optText;
+            
+            options.forEach(function (o) {
+              o.classList.toggle('is-selected', o === opt);
+            });
+            matched = true;
+          }
+        });
+      });
+      
+      if (matched) {
+        renderResults();
       }
     });
 
