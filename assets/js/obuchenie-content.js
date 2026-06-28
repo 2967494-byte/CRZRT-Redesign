@@ -256,7 +256,13 @@
   }
 
   function parseBitrixFormRef(value) {
-    const match = String(value || '').trim().match(/^(\d+)\s*[/:]\s*([a-z0-9]+)$/i);
+    const str = String(value || '').trim();
+    const scriptMatch = str.match(/data-b24-form="click\/(\d+)\/([a-z0-9]+)"/i) 
+      || str.match(/click\/(\d+)\/([a-z0-9]+)/i);
+    if (scriptMatch) {
+      return { id: scriptMatch[1], sec: scriptMatch[2] };
+    }
+    const match = str.match(/^(\d+)\s*[/:]\s*([a-z0-9]+)$/i);
     if (!match) return null;
     return { id: match[1], sec: match[2] };
   }
