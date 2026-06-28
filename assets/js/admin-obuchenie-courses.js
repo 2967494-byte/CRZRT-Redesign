@@ -375,6 +375,14 @@
     });
   }
 
+  function handleBitrixInputBlur(input) {
+    if (!input || !api.parseBitrixFormRef) return;
+    const parsed = api.parseBitrixFormRef(input.value);
+    if (parsed) {
+      input.value = api.formatBitrixFormRef ? api.formatBitrixFormRef(parsed) : `${parsed.id} / ${parsed.sec}`;
+    }
+  }
+
   function bindEvents() {
     $('btnAddCourse')?.addEventListener('click', () => openModal(null));
     $('courseModalClose')?.addEventListener('click', closeModal);
@@ -423,6 +431,11 @@
         setAudienceFormError(false);
       }
     });
+
+    els.formBitrixFl?.addEventListener('blur', () => handleBitrixInputBlur(els.formBitrixFl));
+    els.formBitrixUr?.addEventListener('blur', () => handleBitrixInputBlur(els.formBitrixUr));
+    els.formBitrixFl?.addEventListener('change', () => handleBitrixInputBlur(els.formBitrixFl));
+    els.formBitrixUr?.addEventListener('change', () => handleBitrixInputBlur(els.formBitrixUr));
 
     els.tableBody?.addEventListener('click', (event) => {
       const button = event.target.closest('[data-action]');
