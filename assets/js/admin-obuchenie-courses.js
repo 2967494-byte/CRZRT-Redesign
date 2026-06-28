@@ -38,20 +38,37 @@
   function formatCourseAudience(course) {
     const forIndividuals = course?.forIndividuals !== false;
     const forLegalEntities = course?.forLegalEntities !== false;
-    if (forIndividuals && forLegalEntities) return 'Физ. и юр.';
-    if (forIndividuals) return 'Физ. лица';
-    if (forLegalEntities) return 'Юр. лица';
-    return '—';
+    let label = '';
+    if (forIndividuals && forLegalEntities) label = 'Физ. и юр.';
+    else if (forIndividuals) label = 'Физ. лица';
+    else if (forLegalEntities) label = 'Юр. лица';
+    else label = '—';
+
+    if (Array.isArray(course?.options) && course.options.length) {
+      label += ` (${course.options.join(', ')})`;
+    }
+    return label;
   }
 
   function readAudienceFromForm() {
+    const options = [];
+    const container = document.getElementById('courseFormDynamicOptions');
+    if (container) {
+      container.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+        if (cb.checked) {
+          options.push(cb.value);
+        }
+      });
+    }
+
     return {
       forIndividuals: Boolean(els.formForIndividuals?.checked),
       forLegalEntities: Boolean(els.formForLegalEntities?.checked),
-      forCustomers: Boolean(els.formForCustomers?.checked),
-      forSuppliers: Boolean(els.formForSuppliers?.checked),
-      is44fz: Boolean(els.form44fz?.checked),
-      is223fz: Boolean(els.form223fz?.checked)
+      forCustomers: options.includes('Заказчик'),
+      forSuppliers: options.includes('Поставщик'),
+      is44fz: options.includes('44-ФЗ'),
+      is223fz: options.includes('223-ФЗ'),
+      options
     };
   }
 
@@ -231,10 +248,35 @@
     els.formPrice.value = course?.price || '';
     els.formForIndividuals.checked = course ? course.forIndividuals !== false : true;
     els.formForLegalEntities.checked = course ? course.forLegalEntities !== false : true;
-    if (els.formForCustomers) els.formForCustomers.checked = Boolean(course?.forCustomers);
-    if (els.formForSuppliers) els.formForSuppliers.checked = Boolean(course?.forSuppliers);
-    if (els.form44fz) els.form44fz.checked = Boolean(course?.is44fz);
-    if (els.form223fz) els.form223fz.checked = Boolean(course?.is223fz);
+
+    // Render dynamic checkboxes
+    const dynamicContainer = document.getElementById('courseFormDynamicOptions');
+    if (dynamicContainer) {
+      dynamicContainer.innerHTML = '';
+      const blocks = pageData?.courseSearch?.blocks || [];
+      blocks.forEach((block) => {
+        if (Array.isArray(block.values)) {
+          block.values.forEach((val) => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-group';
+            
+            const isChecked = course?.options
+              ? course.options.includes(val)
+              : (
+                  (val === 'Заказчик' && course?.forCustomers) ||
+                  (val === 'Поставщик' && course?.forSuppliers) ||
+                  (val === '44-ФЗ' && course?.is44fz) ||
+                  (val === '223-ФЗ' && course?.is223fz) ||
+                  (val === 'Очно' && course?.format === 'och') ||
+                  (val === 'Дистанционно' && course?.format === 'dist')
+                );
+
+            label.innerHTML = `<input type="checkbox" value="${escapeHtml(val)}" ${isChecked ? 'checked' : ''}> ${escapeHtml(val)}`;
+            dynamicContainer.appendChild(label);
+          });
+        }
+      });
+    }
     if (els.formBitrixFl) {
       els.formBitrixFl.value = api.formatBitrixFormRef
         ? api.formatBitrixFormRef(course?.bitrixFormFl)
@@ -260,10 +302,8 @@
     els.formId.value = '';
     if (els.formForIndividuals) els.formForIndividuals.checked = true;
     if (els.formForLegalEntities) els.formForLegalEntities.checked = true;
-    if (els.formForCustomers) els.formForCustomers.checked = false;
-    if (els.formForSuppliers) els.formForSuppliers.checked = false;
-    if (els.form44fz) els.form44fz.checked = false;
-    if (els.form223fz) els.form223fz.checked = false;
+    const dynamicContainer = document.getElementById('courseFormDynamicOptions');
+    if (dynamicContainer) dynamicContainer.innerHTML = '';
     if (els.formBitrixFl) els.formBitrixFl.value = '';
     if (els.formBitrixUr) els.formBitrixUr.value = '';
     syncBitrixFieldsVisibility();
@@ -293,6 +333,7 @@
       bitrixFormFl: api.parseBitrixFormRef ? api.parseBitrixFormRef(els.formBitrixFl?.value) : null,
       bitrixFormUr: api.parseBitrixFormRef ? api.parseBitrixFormRef(els.formBitrixUr?.value) : null,
       speakers: [],
+      options: audience.options,
       active: true
     };
 
@@ -509,10 +550,6 @@
     els.formPrice = $('courseFormPrice');
     els.formForIndividuals = $('courseFormForIndividuals');
     els.formForLegalEntities = $('courseFormForLegalEntities');
-    els.formForCustomers = $('courseFormForCustomers');
-    els.formForSuppliers = $('courseFormForSuppliers');
-    els.form44fz = $('courseForm44fz');
-    els.form223fz = $('courseForm223fz');
     els.formAudienceGroup = $('courseFormAudienceGroup');
     els.formAudienceError = $('courseFormAudienceError');
     els.formBitrixFl = $('courseFormBitrixFl');

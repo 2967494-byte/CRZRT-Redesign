@@ -122,6 +122,9 @@
     });
   }
 
+  // Expose to window for dynamic rendering
+  window.initDropdowns = initDropdowns;
+
   // Init after DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initDropdowns);

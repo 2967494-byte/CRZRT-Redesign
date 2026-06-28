@@ -21,27 +21,24 @@
     return p[2] + ' ' + MONTH_NAMES_GENITIVE[parseInt(p[1], 10) - 1] + ' ' + p[0];
   }
 
-  function getDropdownValue(ariaLabel) {
-    var el = document.querySelector('.csr-dropdown[aria-label="' + ariaLabel + '"]');
-    return el ? (el.dataset.value || '') : '';
-  }
-
   function hasActiveFilters() {
-    return !!(
-      getDropdownValue('Заказчик или поставщик') ||
-      getDropdownValue('Закон о закупках') ||
-      getDropdownValue('Формат обучения') ||
-      getDropdownValue('Тип курса')
-    );
+    var active = false;
+    document.querySelectorAll('.csr-dropdown').forEach(function (dd) {
+      if (dd.dataset.value) active = true;
+    });
+    return active;
   }
 
   // ─── Filter Logic ─────────────────────────────────────────────────────────────
 
   function filterCourses() {
-    var audience = getDropdownValue('Заказчик или поставщик'); // 'customer' | 'supplier' | ''
-    var law      = getDropdownValue('Закон о закупках');        // '44' | '223' | ''
-    var format   = getDropdownValue('Формат обучения');         // 'offline' | 'online' | ''
-    var type     = getDropdownValue('Тип курса');               // 'qualification' | 'retraining' | ''
+    var activeFilters = [];
+    document.querySelectorAll('.csr-dropdown').forEach(function (dd) {
+      var val = dd.dataset.value;
+      if (val) {
+        activeFilters.push(val);
+      }
+    });
 
     return COURSE_REGISTRY.filter(function (c) {
       if (!c.active) return false;
@@ -57,21 +54,13 @@
         }
       }
 
-      // Audience: customer → forCustomers, supplier → forSuppliers
-      if (audience === 'customer' && !c.forCustomers) return false;
-      if (audience === 'supplier' && !c.forSuppliers) return false;
-
-      // Law
-      if (law === '44' && !c.is44fz) return false;
-      if (law === '223' && !c.is223fz) return false;
-
-      // Format: online → dist, offline → och
-      if (format === 'online'  && c.format !== 'dist') return false;
-      if (format === 'offline' && c.format !== 'och')  return false;
-
-      // Type (simple keyword match in title for now; extend later if needed)
-      if (type === 'qualification' && !/квалификац/i.test(c.title || '')) return false;
-      if (type === 'retraining'    && !/переподготовк/i.test(c.title || '')) return false;
+      // Dynamic check for selected options
+      for (var i = 0; i < activeFilters.length; i++) {
+        var filterVal = activeFilters[i];
+        if (!c.options || c.options.indexOf(filterVal) === -1) {
+          return false;
+        }
+      }
 
       return true;
     });
@@ -231,12 +220,11 @@
       }
     });
 
-    // Hook into option clicks to trigger search
-    document.querySelectorAll('.csr-dropdown__option').forEach(function (option) {
-      option.addEventListener('click', function () {
-        // small delay to let csr-dropdown.js update the value first
+    // Hook into option clicks to trigger search via event delegation
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('.csr-dropdown__option')) {
         setTimeout(renderResults, 50);
-      });
+      }
     });
 
     // Reset button

@@ -147,7 +147,13 @@
       phone: '88001017892',
       phoneDisplay: '8 800 101-78-92',
       tags: [...DEFAULT_TAGS],
-      showAllLabel: 'Показать все'
+      showAllLabel: 'Показать все',
+      blocks: [
+        { id: 'block_audience', title: 'заказчик/поставщик', values: ['Заказчик', 'Поставщик'] },
+        { id: 'block_law', title: '44-ФЗ / 223-ФЗ', values: ['44-ФЗ', '223-ФЗ'] },
+        { id: 'block_format', title: 'очно / дистанционно', values: ['Очно', 'Дистанционно'] },
+        { id: 'block_type', title: 'Курсы повышения ...', values: ['Курсы повышения квалификации', 'Курсы профессиональной переподготовки'] }
+      ]
     },
     calendar: {
       promoTitle: 'Защищаем\nваши интересы',
@@ -301,6 +307,16 @@
       : [];
     const audience = normalizeCourseAudience(raw);
 
+    let options = Array.isArray(raw?.options) ? [...raw.options] : [];
+    if (!raw?.options) {
+      if (raw?.forCustomers) options.push('Заказчик');
+      if (raw?.forSuppliers) options.push('Поставщик');
+      if (raw?.is44fz) options.push('44-ФЗ');
+      if (raw?.is223fz) options.push('223-ФЗ');
+      if (format === 'och') options.push('Очно');
+      if (format === 'dist') options.push('Дистанционно');
+    }
+
     return {
       id: String(raw?.id || createCourseId() || `course_${index}`),
       title: String(raw?.title || '').trim(),
@@ -319,6 +335,7 @@
       bitrixFormFl: normalizeBitrixForm(raw?.bitrixFormFl),
       bitrixFormUr: normalizeBitrixForm(raw?.bitrixFormUr),
       speakers,
+      options,
       active: raw?.active !== false
     };
   }
@@ -432,7 +449,8 @@
         phone: rawSearch.phone || OBUCHENIE_DEFAULTS.courseSearch.phone,
         phoneDisplay: rawSearch.phoneDisplay || OBUCHENIE_DEFAULTS.courseSearch.phoneDisplay,
         tags,
-        showAllLabel: rawSearch.showAllLabel || OBUCHENIE_DEFAULTS.courseSearch.showAllLabel
+        showAllLabel: rawSearch.showAllLabel || OBUCHENIE_DEFAULTS.courseSearch.showAllLabel,
+        blocks: Array.isArray(rawSearch.blocks) ? rawSearch.blocks : [...OBUCHENIE_DEFAULTS.courseSearch.blocks]
       },
       calendar: {
         promoTitle: rawCalendar.promoTitle || OBUCHENIE_DEFAULTS.calendar.promoTitle,
@@ -811,6 +829,36 @@
       const phone = (data.phone || OBUCHENIE_DEFAULTS.courseSearch.phone).replace(/\D/g, '');
       phoneEl.href = phone ? `tel:${phone}` : '#';
       phoneEl.textContent = data.phoneDisplay || OBUCHENIE_DEFAULTS.courseSearch.phoneDisplay;
+    }
+
+    // Render dynamic select dropdown filters
+    const filtersEl = document.querySelector('.obuchenie-course-search-panel__filters');
+    if (filtersEl && Array.isArray(data.blocks)) {
+      filtersEl.innerHTML = data.blocks
+        .map((block) => {
+          const title = escapeHtml(block.title);
+          const isWide = block.title.length > 20 ? ' csr-dropdown--wide' : '';
+          const optionsHtml = Array.isArray(block.values)
+            ? block.values
+                .map((val) => `<button type="button" class="csr-dropdown__option" data-value="${escapeAttr(val)}" role="option">${escapeHtml(val)}</button>`)
+                .join('')
+            : '';
+          return `
+            <div class="csr-dropdown${isWide}" data-value="" aria-label="${escapeAttr(block.title)}">
+              <button type="button" class="csr-dropdown__trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="csr-dropdown__label">${title}</span>
+                <svg class="csr-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="csr-dropdown__panel" role="listbox">
+                ${optionsHtml}
+              </div>
+            </div>`;
+        })
+        .join('');
+
+      if (typeof window.initDropdowns === 'function') {
+        window.initDropdowns();
+      }
     }
 
     if (!tagsEl) return;

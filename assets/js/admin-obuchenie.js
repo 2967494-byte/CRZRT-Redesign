@@ -5,7 +5,7 @@
   const DEFAULT_OBUCHENIE_PAGE = window.ObuchenieContent?.OBUCHENIE_DEFAULTS || {
     hero: { background: '', title: '', subtitle: '', gavelImage: '', titleColor: '#00AE4D', subtitleColor: '#FFFFFF', titleTop: 68, titleLeft: 60, subtitleBottom: 40, subtitleLeft: 60 },
     navCards: [],
-    courseSearch: { title: '', cta: '', phone: '', phoneDisplay: '', tags: [], showAllLabel: '' },
+    courseSearch: { title: '', cta: '', phone: '', phoneDisplay: '', tags: [], showAllLabel: '', blocks: [] },
     calendar: { promoTitle: '', promoTitleColor: '', promoImage: '', allCoursesLink: '', courseDaysByMonth: {} },
     courseRegistry: [],
     courseCards: [],
@@ -257,32 +257,56 @@
     const el = document.getElementById('obuchenieCourseSearchAdmin');
     if (!el) return;
     const search = getMigratedData(data).courseSearch || {};
-    const tagsText = Array.isArray(search.tags) ? search.tags.join('\n') : '';
+
+    if (data && !data._isInternalReRender) {
+      window.obuchenieSearchBlocks = Array.isArray(search.blocks) ? JSON.parse(JSON.stringify(search.blocks)) : [];
+    }
+
+    const blocks = window.obuchenieSearchBlocks || [];
+
+    let blocksHtml = blocks.map((block, bIdx) => {
+      const valuesHtml = Array.isArray(block.values)
+        ? block.values
+            .map((val, vIdx) => `
+              <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card-border); padding:6px 10px; border-radius:6px; margin-bottom:6px; font-size:0.9rem;">
+                <span style="word-break: break-all;">${escapeAttr(val)}</span>
+                <button type="button" class="btn-delete" style="padding:2px 6px; font-size:0.8rem; min-height:auto; margin-left:8px; line-height:1;" onclick="AdminObuchenie.deleteSearchBlockValue(${bIdx}, ${vIdx})">×</button>
+              </div>`)
+            .join('')
+        : '';
+        
+      return `
+        <div class="search-block-card" style="border: 1px solid var(--card-border); padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.02); display: flex; flex-direction: column; justify-content: space-between; min-height: 280px;">
+          <div>
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+              <input type="text" class="form-control" value="${escapeAttr(block.title)}" placeholder="Название списка" style="margin-bottom: 0; font-weight: bold; font-size: 0.95rem; padding: 6px 10px;" oninput="AdminObuchenie.updateSearchBlockTitle(${bIdx}, this.value)">
+              <button type="button" class="btn-delete" style="padding: 6px 10px; font-size: 0.85rem; min-height:auto;" onclick="AdminObuchenie.deleteSearchBlock(${bIdx})">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+            <div class="search-block-values" style="max-height: 180px; overflow-y: auto; margin-bottom: 12px; padding-right: 4px;">
+              ${valuesHtml}
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px; margin-top: auto;">
+            <input type="text" class="form-control" id="new_val_input_${bIdx}" placeholder="Новое значение" style="margin-bottom: 0; padding: 6px 10px; font-size: 0.85rem;" onkeydown="if(event.key==='Enter'){event.preventDefault(); AdminObuchenie.addSearchBlockValue(${bIdx});}">
+            <button type="button" class="btn-save" style="padding: 6px 12px;" onclick="AdminObuchenie.addSearchBlockValue(${bIdx})">+</button>
+          </div>
+        </div>`;
+    }).join('');
+
+    const addBlockBtn = blocks.length < 4
+      ? `<button type="button" class="btn-save" style="margin-top: 16px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; border: 1px dashed var(--accent-color); background: transparent; color: var(--accent-color); padding: 12px;" onclick="AdminObuchenie.addSearchBlock()">
+           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+           Добавить колонку поиска
+         </button>`
+      : '';
+
     el.innerHTML = `
-      <div class="form-group">
-        <label>Заголовок секции</label>
-        <input type="text" class="form-control" id="obuchenie_search_title" value="${escapeAttr(search.title)}">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+        ${blocksHtml}
       </div>
-      <div class="form-group">
-        <label>Текст призыва</label>
-        <input type="text" class="form-control" id="obuchenie_search_cta" value="${escapeAttr(search.cta)}">
-      </div>
-      <div class="form-group">
-        <label>Телефон (только цифры, для tel:)</label>
-        <input type="text" class="form-control" id="obuchenie_search_phone" value="${escapeAttr(search.phone)}">
-      </div>
-      <div class="form-group">
-        <label>Телефон (отображение)</label>
-        <input type="text" class="form-control" id="obuchenie_search_phone_display" value="${escapeAttr(search.phoneDisplay)}">
-      </div>
-      <div class="form-group">
-        <label>Теги (каждый с новой строки, по 7 в ряд)</label>
-        <textarea class="form-control" id="obuchenie_search_tags" rows="8">${escapeAttr(tagsText)}</textarea>
-      </div>
-      <div class="form-group">
-        <label>Текст кнопки «Показать все»</label>
-        <input type="text" class="form-control" id="obuchenie_search_show_all" value="${escapeAttr(search.showAllLabel)}">
-      </div>`;
+      ${addBlockBtn}`;
   }
 
   function getRegistryApi() {
@@ -542,14 +566,14 @@
       });
     }
 
-    const tagsRaw = document.getElementById('obuchenie_search_tags')?.value || '';
     data.courseSearch = {
-      title: document.getElementById('obuchenie_search_title')?.value ?? data.courseSearch?.title ?? '',
-      cta: document.getElementById('obuchenie_search_cta')?.value ?? data.courseSearch?.cta ?? '',
-      phone: document.getElementById('obuchenie_search_phone')?.value ?? data.courseSearch?.phone ?? '',
-      phoneDisplay: document.getElementById('obuchenie_search_phone_display')?.value ?? data.courseSearch?.phoneDisplay ?? '',
-      tags: tagsRaw.split('\n').map((tag) => tag.trim()).filter(Boolean),
-      showAllLabel: document.getElementById('obuchenie_search_show_all')?.value ?? data.courseSearch?.showAllLabel ?? ''
+      title: data.courseSearch?.title || 'Поиск курсов',
+      cta: data.courseSearch?.cta || 'Оставьте заявку, мы поможем',
+      phone: data.courseSearch?.phone || '88001017892',
+      phoneDisplay: data.courseSearch?.phoneDisplay || '8 800 101-78-92',
+      tags: data.courseSearch?.tags || [],
+      showAllLabel: data.courseSearch?.showAllLabel || 'Показать все',
+      blocks: window.obuchenieSearchBlocks || data.courseSearch?.blocks || []
     };
 
     data.courseRegistry = window.obucheniePageData?.courseRegistry || data.courseRegistry || [];
@@ -629,9 +653,44 @@
     migrateObucheniePageData,
     renderObucheniePageAdmin,
     collectObucheniePageFromForm,
-    setImageUploadState,
-    pickImage,
     clearImage,
+    updateSearchBlockTitle(bIdx, value) {
+      if (window.obuchenieSearchBlocks && window.obuchenieSearchBlocks[bIdx]) {
+        window.obuchenieSearchBlocks[bIdx].title = value;
+      }
+    },
+    deleteSearchBlock(bIdx) {
+      if (window.obuchenieSearchBlocks) {
+        window.obuchenieSearchBlocks.splice(bIdx, 1);
+        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks }, _isInternalReRender: true });
+      }
+    },
+    addSearchBlock() {
+      if (window.obuchenieSearchBlocks && window.obuchenieSearchBlocks.length < 4) {
+        window.obuchenieSearchBlocks.push({
+          id: 'block_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          title: 'Новый фильтр',
+          values: []
+        });
+        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks }, _isInternalReRender: true });
+      }
+    },
+    deleteSearchBlockValue(bIdx, vIdx) {
+      if (window.obuchenieSearchBlocks && window.obuchenieSearchBlocks[bIdx]) {
+        window.obuchenieSearchBlocks[bIdx].values.splice(vIdx, 1);
+        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks }, _isInternalReRender: true });
+      }
+    },
+    addSearchBlockValue(bIdx) {
+      const input = document.getElementById(`new_val_input_${bIdx}`);
+      const val = input ? input.value.trim() : '';
+      if (val && window.obuchenieSearchBlocks && window.obuchenieSearchBlocks[bIdx]) {
+        if (!window.obuchenieSearchBlocks[bIdx].values.includes(val)) {
+          window.obuchenieSearchBlocks[bIdx].values.push(val);
+        }
+        AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks }, _isInternalReRender: true });
+      }
+    },
     pickFile(inputId) {
       window.fileUploadTarget = inputId;
       document.getElementById('docFileInput')?.click();
