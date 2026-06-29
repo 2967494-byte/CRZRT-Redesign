@@ -278,14 +278,14 @@
       });
     }
     if (els.formBitrixFl) {
-      els.formBitrixFl.value = api.formatBitrixFormRef
-        ? api.formatBitrixFormRef(course?.bitrixFormFl)
-        : '';
+      const ref = api.formatBitrixFormRef ? api.formatBitrixFormRef(course?.bitrixFormFl) : '';
+      els.formBitrixFl.value = ref;
+      updateBitrixDisplay('fl', ref);
     }
     if (els.formBitrixUr) {
-      els.formBitrixUr.value = api.formatBitrixFormRef
-        ? api.formatBitrixFormRef(course?.bitrixFormUr)
-        : '';
+      const ref = api.formatBitrixFormRef ? api.formatBitrixFormRef(course?.bitrixFormUr) : '';
+      els.formBitrixUr.value = ref;
+      updateBitrixDisplay('ur', ref);
     }
     syncBitrixFieldsVisibility();
     setAudienceFormError(false);
@@ -304,8 +304,8 @@
     if (els.formForLegalEntities) els.formForLegalEntities.checked = true;
     const dynamicContainer = document.getElementById('courseFormDynamicOptions');
     if (dynamicContainer) dynamicContainer.innerHTML = '';
-    if (els.formBitrixFl) els.formBitrixFl.value = '';
-    if (els.formBitrixUr) els.formBitrixUr.value = '';
+    if (els.formBitrixFl) { els.formBitrixFl.value = ''; updateBitrixDisplay('fl', ''); }
+    if (els.formBitrixUr) { els.formBitrixUr.value = ''; updateBitrixDisplay('ur', ''); }
     syncBitrixFieldsVisibility();
     setAudienceFormError(false);
   }
@@ -375,12 +375,107 @@
     });
   }
 
-  function handleBitrixInputBlur(input) {
-    if (!input || !api.parseBitrixFormRef) return;
-    const parsed = api.parseBitrixFormRef(input.value);
-    if (parsed) {
-      input.value = api.formatBitrixFormRef ? api.formatBitrixFormRef(parsed) : `${parsed.id} / ${parsed.sec}`;
+  function updateBitrixDisplay(type, ref) {
+    const valueEl = $(`courseFormBitrix${type === 'fl' ? 'Fl' : 'Ur'}Value`);
+    if (!valueEl) return;
+    if (ref && ref.trim()) {
+      valueEl.textContent = ref;
+      valueEl.classList.add('bitrix-field-display__value--set');
+    } else {
+      valueEl.textContent = 'Не задано';
+      valueEl.classList.remove('bitrix-field-display__value--set');
     }
+  }
+
+  function bindBitrixPasteModal() {
+    const modal = $('bitrixPasteModal');
+    const textarea = $('bitrixPasteInput');
+    const preview = $('bitrixPastePreview');
+    const result = $('bitrixPasteResult');
+    const errorEl = $('bitrixPasteError');
+    const subtitle = $('bitrixPasteModalSubtitle');
+    if (!modal || !textarea) return;
+
+    let currentType = 'fl'; // 'fl' or 'ur'
+    let parsedRef = null;
+
+    function parseInput() {
+      const val = textarea.value;
+      if (!val.trim()) {
+        preview.hidden = true;
+        errorEl.hidden = true;
+        parsedRef = null;
+        return;
+      }
+      parsedRef = api.parseBitrixFormRef ? api.parseBitrixFormRef(val) : null;
+      if (parsedRef) {
+        const formatted = api.formatBitrixFormRef ? api.formatBitrixFormRef(parsedRef) : `${parsedRef.id} / ${parsedRef.sec}`;
+        result.textContent = formatted;
+        preview.hidden = false;
+        errorEl.hidden = true;
+      } else {
+        preview.hidden = true;
+        errorEl.hidden = false;
+      }
+    }
+
+    function openPasteModal(type) {
+      currentType = type;
+      parsedRef = null;
+      const hiddenInput = $(`courseFormBitrix${type === 'fl' ? 'Fl' : 'Ur'}`);
+      const existingVal = hiddenInput?.value || '';
+      textarea.value = existingVal;
+      subtitle.textContent = type === 'fl' ? 'Физические лица' : 'Юридические лица';
+      preview.hidden = true;
+      errorEl.hidden = true;
+      if (existingVal) parseInput();
+      modal.style.display = 'flex';
+      setTimeout(() => textarea.focus(), 50);
+    }
+
+    function closePasteModal() {
+      modal.style.display = 'none';
+      textarea.value = '';
+      preview.hidden = true;
+      errorEl.hidden = true;
+      parsedRef = null;
+    }
+
+    function savePasteModal() {
+      const val = textarea.value.trim();
+      const ref = parsedRef;
+      const formatted = ref && api.formatBitrixFormRef ? api.formatBitrixFormRef(ref) : (ref ? `${ref.id} / ${ref.sec}` : val);
+      const hiddenInput = $(`courseFormBitrix${currentType === 'fl' ? 'Fl' : 'Ur'}`);
+      if (hiddenInput) hiddenInput.value = formatted || val;
+      updateBitrixDisplay(currentType, formatted || val);
+      closePasteModal();
+    }
+
+    textarea.addEventListener('input', parseInput);
+    textarea.addEventListener('paste', () => setTimeout(parseInput, 0));
+
+    $('bitrixPasteModalClose')?.addEventListener('click', closePasteModal);
+    $('bitrixPasteCancel')?.addEventListener('click', closePasteModal);
+    $('bitrixPasteSave')?.addEventListener('click', savePasteModal);
+    $('bitrixPasteClear')?.addEventListener('click', () => {
+      const hiddenInput = $(`courseFormBitrix${currentType === 'fl' ? 'Fl' : 'Ur'}`);
+      if (hiddenInput) hiddenInput.value = '';
+      updateBitrixDisplay(currentType, '');
+      closePasteModal();
+    });
+
+    modal.addEventListener('click', (e) => { if (e.target === modal) closePasteModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.style.display !== 'none') closePasteModal(); });
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-bitrix-open]');
+      if (!btn) return;
+      openPasteModal(btn.getAttribute('data-bitrix-open'));
+    });
+  }
+
+  function handleBitrixInputBlur(input) {
+    // no-op: kept for compatibility, parsing now handled in paste modal
   }
 
   function bindEvents() {
@@ -432,10 +527,7 @@
       }
     });
 
-    els.formBitrixFl?.addEventListener('blur', () => handleBitrixInputBlur(els.formBitrixFl));
-    els.formBitrixUr?.addEventListener('blur', () => handleBitrixInputBlur(els.formBitrixUr));
-    els.formBitrixFl?.addEventListener('change', () => handleBitrixInputBlur(els.formBitrixFl));
-    els.formBitrixUr?.addEventListener('change', () => handleBitrixInputBlur(els.formBitrixUr));
+    bindBitrixPasteModal();
 
     els.tableBody?.addEventListener('click', (event) => {
       const button = event.target.closest('[data-action]');

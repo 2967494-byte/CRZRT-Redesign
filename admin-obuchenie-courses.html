@@ -8,7 +8,7 @@
     <title>Календарь курсов | Админ-панель</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="assets/css/admin.css?v=14">
+    <link rel="stylesheet" href="assets/css/admin.css?v=15">
 </head>
 
 <body>
@@ -116,14 +116,26 @@
 
                 <div class="admin-courses-modal__row" id="courseFormBitrixRow">
                     <div class="form-group" id="courseFormBitrixFlGroup">
-                        <label for="courseFormBitrixFl">Bitrix24 — физ. лица</label>
-                        <input type="text" class="form-control" id="courseFormBitrixFl" placeholder="886 / a7wdlg" autocomplete="off">
-                        <p class="form-hint">ID и sec из <code>data-b24-form</code> на странице курса старого сайта</p>
+                        <label>Bitrix24 — физ. лица</label>
+                        <input type="hidden" id="courseFormBitrixFl">
+                        <div class="bitrix-field-display" id="courseFormBitrixFlDisplay">
+                            <span class="bitrix-field-display__value" id="courseFormBitrixFlValue">Не задано</span>
+                            <button type="button" class="bitrix-field-display__btn" data-bitrix-open="fl">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                Настроить
+                            </button>
+                        </div>
                     </div>
                     <div class="form-group" id="courseFormBitrixUrGroup">
-                        <label for="courseFormBitrixUr">Bitrix24 — юр. лица</label>
-                        <input type="text" class="form-control" id="courseFormBitrixUr" placeholder="888 / 6wx7xd" autocomplete="off">
-                        <p class="form-hint">Формат: <code>884 / 4lv6be</code></p>
+                        <label>Bitrix24 — юр. лица</label>
+                        <input type="hidden" id="courseFormBitrixUr">
+                        <div class="bitrix-field-display" id="courseFormBitrixUrDisplay">
+                            <span class="bitrix-field-display__value" id="courseFormBitrixUrValue">Не задано</span>
+                            <button type="button" class="bitrix-field-display__btn" data-bitrix-open="ur">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                Настроить
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -183,6 +195,56 @@
         </div>
     </div>
 
+    <!-- Bitrix Script Paste Modal -->
+    <div class="modal-overlay bitrix-paste-modal" id="bitrixPasteModal" style="display:none;">
+        <div class="modal-content bitrix-paste-modal__dialog">
+            <button type="button" class="btn-modal-close" id="bitrixPasteModalClose" aria-label="Закрыть">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="bitrix-paste-modal__header">
+                <div class="bitrix-paste-modal__icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                </div>
+                <div>
+                    <h2 class="modal-title bitrix-paste-modal__title" id="bitrixPasteModalTitle">Настройка Bitrix24-формы</h2>
+                    <p class="bitrix-paste-modal__subtitle" id="bitrixPasteModalSubtitle">Физические лица</p>
+                </div>
+            </div>
+
+            <div class="bitrix-paste-modal__body">
+                <label class="bitrix-paste-modal__label" for="bitrixPasteInput">
+                    Вставьте скрипт из Bitrix24 (inline или click) или введите формат <code>ID / sec</code>
+                </label>
+                <textarea
+                    id="bitrixPasteInput"
+                    class="bitrix-paste-modal__textarea"
+                    placeholder="Вставьте сюда скрипт Bitrix24 или введите: 938 / qeo3f2"
+                    spellcheck="false"
+                    autocomplete="off"
+                ></textarea>
+
+                <div class="bitrix-paste-modal__preview" id="bitrixPastePreview" hidden>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Распознано: <strong id="bitrixPasteResult"></strong></span>
+                </div>
+                <div class="bitrix-paste-modal__error" id="bitrixPasteError" hidden>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Не удалось распознать форму. Проверьте скрипт или формат.
+                </div>
+            </div>
+
+            <div class="bitrix-paste-modal__footer">
+                <button type="button" class="btn-secondary" id="bitrixPasteClear">Очистить</button>
+                <div style="flex:1"></div>
+                <button type="button" class="btn-secondary" id="bitrixPasteCancel">Отмена</button>
+                <button type="button" class="btn-save" id="bitrixPasteSave">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="authModal" style="display: none;">
         <div class="modal-content">
             <h2 class="modal-title" style="color: #00AE4D;">Вход в систему</h2>
@@ -201,7 +263,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
-    <script src="assets/js/obuchenie-content.js?v=22"></script>
+    <script src="assets/js/obuchenie-content.js?v=23"></script>
     <script src="assets/js/admin-obuchenie-courses.js?v=7"></script>
 </body>
 

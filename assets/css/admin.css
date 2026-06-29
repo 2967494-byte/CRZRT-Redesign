@@ -1845,6 +1845,247 @@ body {
             border-top: 1px dashed var(--card-border);
         }
 
+        /* ---- Bitrix field display widget ---- */
+        .bitrix-field-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 44px;
+            padding: 8px 14px;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            box-sizing: border-box;
+        }
+
+        .bitrix-field-display__value {
+            flex: 1 1 0;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .bitrix-field-display__value--set {
+            color: #00AE4D;
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .bitrix-field-display__value--set {
+            color: #10B981;
+        }
+
+        .bitrix-field-display__btn {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 7px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            white-space: nowrap;
+        }
+
+        .bitrix-field-display__btn:hover {
+            border-color: #00AE4D;
+            color: #00AE4D;
+            background: rgba(0, 174, 77, 0.06);
+        }
+
+        [data-theme="dark"] .bitrix-field-display__btn:hover {
+            border-color: #10B981;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        /* ---- Bitrix paste modal ---- */
+        .bitrix-paste-modal__dialog {
+            width: min(540px, 95vw);
+            padding: 28px 28px 24px;
+            border-radius: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .bitrix-paste-modal__header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-right: 36px;
+        }
+
+        .bitrix-paste-modal__icon {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(0,174,77,0.12), rgba(0,174,77,0.06));
+            border: 1px solid rgba(0,174,77,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00AE4D;
+        }
+
+        [data-theme="dark"] .bitrix-paste-modal__icon {
+            background: rgba(16,185,129,0.1);
+            border-color: rgba(16,185,129,0.2);
+            color: #10B981;
+        }
+
+        .bitrix-paste-modal__title {
+            margin: 0 0 4px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .bitrix-paste-modal__subtitle {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .bitrix-paste-modal__body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .bitrix-paste-modal__label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .bitrix-paste-modal__label code {
+            font-size: 0.8rem;
+            background: rgba(0,174,77,0.08);
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #00AE4D;
+        }
+
+        [data-theme="dark"] .bitrix-paste-modal__label code {
+            background: rgba(16,185,129,0.1);
+            color: #10B981;
+        }
+
+        .bitrix-paste-modal__textarea {
+            width: 100%;
+            min-height: 120px;
+            max-height: 260px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            color: #1D1D1F;
+            font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+            font-size: 0.82rem;
+            line-height: 1.55;
+            resize: vertical;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .bitrix-paste-modal__textarea:focus {
+            border-color: #00AE4D;
+            box-shadow: 0 0 0 3px rgba(0,174,77,0.15);
+        }
+
+        [data-theme="dark"] .bitrix-paste-modal__textarea {
+            background: rgba(0,0,0,0.2);
+            border-color: var(--card-border);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .bitrix-paste-modal__textarea:focus {
+            border-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+        }
+
+        .bitrix-paste-modal__preview {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: rgba(0,174,77,0.08);
+            border: 1px solid rgba(0,174,77,0.2);
+            color: #00AE4D;
+            font-size: 0.88rem;
+        }
+
+        [data-theme="dark"] .bitrix-paste-modal__preview {
+            background: rgba(16,185,129,0.08);
+            border-color: rgba(16,185,129,0.2);
+            color: #10B981;
+        }
+
+        .bitrix-paste-modal__preview strong {
+            font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+        }
+
+        .bitrix-paste-modal__error {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: rgba(239,68,68,0.06);
+            border: 1px solid rgba(239,68,68,0.2);
+            color: #ef4444;
+            font-size: 0.88rem;
+        }
+
+        .bitrix-paste-modal__footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-top: 16px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .bitrix-paste-modal__footer .btn-secondary {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .bitrix-paste-modal__footer .btn-secondary:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .bitrix-paste-modal__footer .btn-save {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
         .wysiwyg-container {
             border: 1px solid #D0D5DD;
             border-radius: 10px;

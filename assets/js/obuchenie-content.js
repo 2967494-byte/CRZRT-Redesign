@@ -257,8 +257,8 @@
 
   function parseBitrixFormRef(value) {
     const str = String(value || '').trim();
-    const scriptMatch = str.match(/data-b24-form="click\/(\d+)\/([a-z0-9]+)"/i) 
-      || str.match(/click\/(\d+)\/([a-z0-9]+)/i);
+    const scriptMatch = str.match(/data-b24-form="[\w-]+\/(\d+)\/([a-z0-9]+)"/i)
+      || str.match(/(?:click|inline)\/(\d+)\/([a-z0-9]+)/i);
     if (scriptMatch) {
       return { id: scriptMatch[1], sec: scriptMatch[2] };
     }
