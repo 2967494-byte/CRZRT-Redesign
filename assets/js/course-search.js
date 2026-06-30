@@ -316,7 +316,7 @@
 
     // Handle incoming hash on page load or hashchange
     function handleHash(hashString) {
-      var cleanHash = (hashString || window.location.hash || '').replace('#', '');
+      var cleanHash = (hashString || window.location.hash || '').replace('#', '').split('?')[0];
       if (!cleanHash) return;
 
       if (cleanHash === 'suppliers') {
@@ -339,8 +339,8 @@
       var link = e.target.closest('a[href*="#"]');
       if (!link) return;
 
-      var currentUrl = window.location.href.split('#')[0];
-      var linkUrl = link.href.split('#')[0];
+      var currentUrl = window.location.href.split('?')[0].split('#')[0];
+      var linkUrl = link.href.split('?')[0].split('#')[0];
       if (currentUrl !== linkUrl) return;
 
       var hash = link.hash;
