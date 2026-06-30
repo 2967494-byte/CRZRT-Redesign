@@ -197,3 +197,200 @@ loginForm?.addEventListener('submit', async (e) => {
     submitBtn.disabled = false;
   }
 });
+
+// --- DYNAMIC CHAT WIDGET INITIALIZATION ---
+function initChatWidget() {
+  if (document.querySelector('.crzrt-chat-container')) return;
+
+  // Read initial cached values
+  let operatorName = 'Анна';
+  let operatorAvatar = 'assets/img/chat-avatar.png';
+  try {
+    const cached = localStorage.getItem('crzrt_main_page_data');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (parsed?.chatWidget?.operatorName) operatorName = parsed.chatWidget.operatorName;
+      if (parsed?.chatWidget?.operatorAvatar) operatorAvatar = parsed.chatWidget.operatorAvatar;
+    }
+  } catch (e) {}
+
+  const chatHTML = `
+    <div class="crzrt-chat-container">
+      <button class="crzrt-chat-trigger" aria-label="Открыть чат">
+        <img src="${operatorAvatar}" alt="Оператор" class="crzrt-chat-trigger__avatar">
+        <span class="crzrt-chat-trigger__badge"></span>
+        <span class="crzrt-chat-trigger__pulse"></span>
+      </button>
+
+      <div class="crzrt-chat-window">
+        <div class="crzrt-chat-header">
+          <div class="crzrt-chat-header__avatar-container">
+            <img src="${operatorAvatar}" alt="${operatorName}" class="crzrt-chat-header__avatar">
+            <span class="crzrt-chat-header__status-dot"></span>
+          </div>
+          <div class="crzrt-chat-header__info">
+            <div class="crzrt-chat-header__name">${operatorName}</div>
+            <div class="crzrt-chat-header__status">Консультант ЦРЗ РТ • Онлайн</div>
+          </div>
+          <button class="crzrt-chat-header__close" aria-label="Закрыть чат">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="crzrt-chat-messages">
+          <div class="crzrt-chat-msg crzrt-chat-msg--operator">
+            <div class="crzrt-chat-msg__bubble">
+              Здравствуйте! 👋 Я специалист Центра развития закупок РТ.
+            </div>
+          </div>
+          <div class="crzrt-chat-msg crzrt-chat-msg--operator">
+            <div class="crzrt-chat-msg__bubble">
+              Чем я могу вам помочь? Вы можете задать любой вопрос по обучению, тендерному сопровождению или работе на нашей ЭТП.
+            </div>
+          </div>
+        </div>
+
+        <div class="crzrt-chat-typing" style="display: none;">
+          <div class="crzrt-chat-typing__dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <span class="crzrt-chat-typing__label">${operatorName} печатает...</span>
+        </div>
+
+        <form class="crzrt-chat-footer">
+          <input type="text" class="crzrt-chat-input" placeholder="Напишите сообщение..." required autocomplete="off">
+          <button type="submit" class="crzrt-chat-send-btn" aria-label="Отправить">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  `;
+
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = chatHTML;
+  const container = wrapper.firstElementChild;
+  document.body.appendChild(container);
+
+  const trigger = container.querySelector('.crzrt-chat-trigger');
+  const windowEl = container.querySelector('.crzrt-chat-window');
+  const closeBtn = container.querySelector('.crzrt-chat-header__close');
+  const form = container.querySelector('.crzrt-chat-footer');
+  const input = container.querySelector('.crzrt-chat-input');
+  const msgArea = container.querySelector('.crzrt-chat-messages');
+  const typingIndicator = container.querySelector('.crzrt-chat-typing');
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    windowEl.classList.toggle('crzrt-chat-window--open');
+    if (windowEl.classList.contains('crzrt-chat-window--open')) {
+      input.focus();
+      scrollToBottom();
+    }
+  });
+
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    windowEl.classList.remove('crzrt-chat-window--open');
+  });
+
+  windowEl.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  document.addEventListener('click', () => {
+    windowEl.classList.remove('crzrt-chat-window--open');
+  });
+
+  function scrollToBottom() {
+    msgArea.scrollTop = msgArea.scrollHeight;
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+
+    appendMessage(text, 'user');
+    input.value = '';
+    scrollToBottom();
+
+    showTyping(true);
+    scrollToBottom();
+
+    setTimeout(() => {
+      showTyping(false);
+      appendMessage(
+        'Спасибо за ваше обращение! Ваше сообщение отправлено в отдел поддержки. Наш специалист свяжется с вами в ближайшее время. Если хотите ускорить процесс, оставьте ваши контактные данные.',
+        'operator'
+      );
+      scrollToBottom();
+    }, 1500);
+  });
+
+  function appendMessage(text, sender) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `crzrt-chat-msg crzrt-chat-msg--${sender}`;
+    msgDiv.innerHTML = `
+      <div class="crzrt-chat-msg__bubble">
+        ${escapeHTML(text)}
+      </div>
+    `;
+    msgArea.appendChild(msgDiv);
+  }
+
+  function showTyping(show) {
+    typingIndicator.style.display = show ? 'flex' : 'none';
+  }
+
+  function escapeHTML(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // Listen for dynamic updates from landing content
+  document.addEventListener('landingContentReady', (e) => {
+    const data = e.detail;
+    if (data?.chatWidget) {
+      const name = data.chatWidget.operatorName || 'Анна';
+      const avatar = data.chatWidget.operatorAvatar || 'assets/img/chat-avatar.png';
+
+      const triggerAvatar = container.querySelector('.crzrt-chat-trigger__avatar');
+      if (triggerAvatar) triggerAvatar.src = avatar;
+
+      const headerAvatar = container.querySelector('.crzrt-chat-header__avatar');
+      if (headerAvatar) {
+        headerAvatar.src = avatar;
+        headerAvatar.alt = name;
+      }
+
+      const headerName = container.querySelector('.crzrt-chat-header__name');
+      if (headerName) headerName.textContent = name;
+
+      const typingLabel = container.querySelector('.crzrt-chat-typing__label');
+      if (typingLabel) typingLabel.textContent = `${name} печатает...`;
+
+      operatorName = name;
+      operatorAvatar = avatar;
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChatWidget);
+} else {
+  initChatWidget();
+}
+

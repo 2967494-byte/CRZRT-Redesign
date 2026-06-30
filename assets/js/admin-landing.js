@@ -77,7 +77,11 @@
       { id: 'max', label: 'Max', href: '#' },
       { id: 'tg', label: 'Телеграм', href: '#' },
       { id: 'vk', label: 'В контакте', href: '#' }
-    ]
+    ],
+    chatWidget: {
+      operatorName: 'Анна',
+      operatorAvatar: 'assets/img/chat-avatar.png'
+    }
   };
 
   function escapeAttr(s) {
@@ -88,7 +92,12 @@
     if (window.LandingContent?.migrateLandingData) {
       return window.LandingContent.migrateLandingData(raw);
     }
-    return { ...DEFAULT_LANDING_MAIN, ...(raw || {}) };
+    const data = { ...DEFAULT_LANDING_MAIN, ...(raw || {}) };
+    data.chatWidget = {
+      operatorName: raw?.chatWidget?.operatorName || DEFAULT_LANDING_MAIN.chatWidget.operatorName,
+      operatorAvatar: raw?.chatWidget?.operatorAvatar || DEFAULT_LANDING_MAIN.chatWidget.operatorAvatar
+    };
+    return data;
   }
 
   /** Заполняет превью/hidden без вставки base64 в HTML-разметку (иначе браузер обрезает длинные value/src). */
@@ -520,6 +529,11 @@
     renderReviews(document.getElementById('mReviewsAdmin'), mainPageData.reviews || []);
     renderSocialLinksAdmin(document.getElementById('mSocialAdmin'), mainPageData.socialLinks || []);
     renderConsultPhotos(document.getElementById('mConsultPhotosAdmin'), mainPageData.consultation?.photos || []);
+
+    const chatWidget = mainPageData.chatWidget || DEFAULT_LANDING_MAIN.chatWidget || {};
+    const chatNameInput = document.getElementById('m_chat_operator_name');
+    if (chatNameInput) chatNameInput.value = chatWidget.operatorName || 'Анна';
+    setImageUploadState('m_chat_operator_avatar', chatWidget.operatorAvatar || '');
   }
 
   function readImageVal(id) {
@@ -642,6 +656,10 @@
     mainPageData.reviews = reviews;
     mainPageData.socialLinks = collectSocialLinksFromForm();
     mainPageData.consultation = { photos: consultationPhotosForSave() };
+    mainPageData.chatWidget = {
+      operatorName: document.getElementById('m_chat_operator_name')?.value || 'Анна',
+      operatorAvatar: readImageVal('m_chat_operator_avatar')
+    };
     return mainPageData;
   }
 
@@ -844,6 +862,7 @@
     if (uploadId.startsWith('m_consult_photo_')) return 396 / 509;
     if (uploadId.startsWith('m_partner_img_')) return 1;
     if (uploadId.startsWith('m_svc_icon_')) return 1;
+    if (uploadId === 'm_chat_operator_avatar') return 1;
     return 16 / 9;
   }
 
@@ -853,6 +872,7 @@
     if (uploadId.startsWith('m_consult_photo_')) return [396, 509];
     if (uploadId.startsWith('m_partner_img_')) return [PARTNER_LOGO_CROP.width, PARTNER_LOGO_CROP.height];
     if (uploadId.startsWith('m_svc_icon_')) return [400, 400];
+    if (uploadId === 'm_chat_operator_avatar') return [400, 400];
     return [1200, 675];
   }
 

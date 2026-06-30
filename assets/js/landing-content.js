@@ -89,7 +89,11 @@
       { id: 'max', label: 'Max', href: '#' },
       { id: 'tg', label: 'Телеграм', href: '#' },
       { id: 'vk', label: 'В контакте', href: '#' }
-    ]
+    ],
+    chatWidget: {
+      operatorName: 'Анна',
+      operatorAvatar: 'assets/img/chat-avatar.png'
+    }
   };
 
   const SOCIAL_ICON_ASSETS = {
@@ -253,6 +257,11 @@
         })
         .filter((link) => SOCIAL_ICON_ASSETS[link.id]);
     }
+
+    data.chatWidget = {
+      operatorName: raw?.chatWidget?.operatorName || LANDING_DEFAULTS.chatWidget.operatorName,
+      operatorAvatar: raw?.chatWidget?.operatorAvatar || LANDING_DEFAULTS.chatWidget.operatorAvatar
+    };
 
     return data;
   }

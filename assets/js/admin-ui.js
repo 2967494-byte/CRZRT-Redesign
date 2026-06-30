@@ -1297,6 +1297,11 @@
 
                     const uploadId = window.cropTarget?.uploadId;
                     const isPartner = AdminLanding?.isPartnerUploadId?.(uploadId);
+                    const isCircle = uploadId === 'm_chat_operator_avatar';
+
+                    if (cropperWrapper) {
+                        cropperWrapper.classList.toggle('cropper-wrapper--circle', isCircle);
+                    }
 
                     if (AdminLanding?.setPartnerCropperMode) {
                         AdminLanding.setPartnerCropperMode(isPartner, cropperWrapper);
@@ -1527,6 +1532,7 @@
                 cropper.destroy();
                 cropper = null;
                 setCropperWrapperLayout(NaN);
+                if (cropperWrapper) cropperWrapper.classList.remove('cropper-wrapper--circle');
                 if (AdminLanding?.unmountPartnerCropGuides) AdminLanding.unmountPartnerCropGuides();
                 if (AdminLanding?.setPartnerCropperMode) AdminLanding.setPartnerCropperMode(false, cropperWrapper);
             }
@@ -1538,6 +1544,7 @@
                 cropper = null;
             }
             setCropperWrapperLayout(NaN);
+            if (cropperWrapper) cropperWrapper.classList.remove('cropper-wrapper--circle');
             if (AdminLanding?.unmountPartnerCropGuides) AdminLanding.unmountPartnerCropGuides();
             if (AdminLanding?.setPartnerCropperMode) AdminLanding.setPartnerCropperMode(false, cropperWrapper);
             document.getElementById('cropperGlobalContainer').style.display = 'none';
@@ -1847,6 +1854,15 @@
                         509
                     );
                 }
+            }
+
+            if (data.chatWidget) {
+                data.chatWidget.operatorAvatar = await uploadOrReuse(
+                    data.chatWidget.operatorAvatar,
+                    'chat_operator_avatar',
+                    400,
+                    400
+                );
             }
 
             return data;
