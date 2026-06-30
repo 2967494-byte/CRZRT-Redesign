@@ -926,7 +926,7 @@ body[data-page="consulting"] .consultation-card__title {
 }
 
 /* RESPONSIVE DESIGN FOR CONSULTING PAGE */
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
   .consulting-why-section {
     padding: 64px 0 80px;
   }
@@ -1055,7 +1055,7 @@ body[data-page="consulting"] .consultation-card__title {
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
   body.theme-purple .hero-slider {
     height: auto;
     min-height: auto;
@@ -2113,7 +2113,7 @@ body.theme-purple .review-card {
 }
 
 /* Responsive adjustment for support banner */
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
   .ecp-support-banner {
     height: auto;
     min-height: 435px;
@@ -2312,6 +2312,19 @@ body.theme-purple .review-card {
   }
   .comp-public-title {
     font-size: 22px;
+  }
+}
+
+@media (max-width: 1200px) and (min-width: 993px) {
+  body.theme-purple .consulting-banner__graphic,
+  body.theme-purple .ecp-banner__graphic {
+    width: 280px;
+    height: 280px;
+    right: 24px;
+    top: 60px;
+  }
+  body.theme-purple .hero-slide__title {
+    font-size: 42px;
   }
 }
 

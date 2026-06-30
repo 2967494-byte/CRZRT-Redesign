@@ -1615,7 +1615,7 @@ body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consult
   color: #00AE4D;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
   body[data-page="obuchenie"] .consulting-hero {
     height: auto;
     min-height: 420px;
@@ -1979,7 +1979,7 @@ body[data-page="obuchenie"] .first-screen {
 }
 
 /* RESPONSIVE DESIGN FOR CONSULTING PAGE */
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
   .consulting-why-section {
     padding: 64px 0 80px;
   }
@@ -2113,7 +2113,7 @@ body[data-page="obuchenie"] .first-screen {
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
   body.theme-purple .hero-slider {
     height: auto;
     min-height: auto;
@@ -3183,7 +3183,7 @@ body.theme-purple .review-card {
 }
 
 /* Responsive adjustment for support banner */
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
   .ecp-support-banner {
     height: auto;
     min-height: 435px;
@@ -4084,4 +4084,17 @@ body[data-page="obuchenie"] .obuchenie-calendar-day--today::after {
   border: 4px solid rgba(255, 128, 128, 0.4); /* Softer, thicker line */
   border-radius: 50%;
   pointer-events: none;
+}
+
+@media (max-width: 1200px) and (min-width: 993px) {
+  body.theme-purple .consulting-banner__graphic,
+  body.theme-purple .ecp-banner__graphic {
+    width: 280px;
+    height: 280px;
+    right: 24px;
+    top: 60px;
+  }
+  body.theme-purple .hero-slide__title {
+    font-size: 42px;
+  }
 }

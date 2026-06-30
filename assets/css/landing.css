@@ -1334,7 +1334,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .consultation-card {
-  grid-template-columns: repeat(2, calc((var(--landing-content-width) - 24px) / 2));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   overflow-x: clip;
 }
 
@@ -1383,7 +1383,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   }
 
   .consultation-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .social-btn {
@@ -1719,22 +1719,26 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
   .social-banner {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
+    text-align: center;
     height: auto;
     min-height: 0;
-    padding: 24px 28px;
-    gap: 20px;
+    padding: 32px 28px;
+    gap: 24px;
   }
 
   .social-banner__links {
-    justify-content: flex-start;
-    flex-direction: column;
-    align-items: stretch;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
   }
 
   .social-btn {
-    width: 100%;
-    max-width: 260px;
+    width: 230px;
+    flex: 0 1 230px;
   }
 
   .footer__inner {
@@ -1843,6 +1847,17 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
   .social-banner__title {
     font-size: 26px;
+  }
+
+  .social-banner__links {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .social-btn {
+    width: 100%;
+    max-width: 260px;
+    margin-inline: auto;
   }
 
   .consult-form__row {

@@ -277,6 +277,94 @@
       }
     });
 
+    // Helper to select an option in a specific dropdown
+    function setDropdownValue(ariaLabel, val) {
+      var dd = document.querySelector('.csr-dropdown[aria-label="' + ariaLabel + '"]');
+      if (!dd) return;
+      var opt = dd.querySelector('.csr-dropdown__option[data-value="' + val + '"]');
+      if (!opt) return;
+
+      dd.dataset.value = val;
+      dd.classList.add('has-value');
+      
+      var label = dd.querySelector('.csr-dropdown__label');
+      if (label) label.textContent = opt.textContent.trim();
+      
+      dd.querySelectorAll('.csr-dropdown__option').forEach(function (o) {
+        o.classList.toggle('is-selected', o === opt);
+      });
+    }
+
+    // Scroll helper with header offset
+    function scrollToTarget(targetId) {
+      var el = document.getElementById(targetId);
+      if (!el) return;
+
+      var header = document.querySelector('.header');
+      var headerHeight = header ? header.getBoundingClientRect().height : 100;
+      var offset = headerHeight + 20;
+
+      setTimeout(function () {
+        var rect = el.getBoundingClientRect();
+        var targetPosition = window.scrollY + rect.top - offset;
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+      }, 50);
+    }
+
+    // Handle incoming hash on page load or hashchange
+    function handleHash(hashString) {
+      var cleanHash = (hashString || window.location.hash || '').replace('#', '');
+      if (!cleanHash) return;
+
+      if (cleanHash === 'suppliers') {
+        setDropdownValue('Заказчик или поставщик', 'supplier');
+        renderResults();
+        scrollToTarget('courses');
+      } else if (cleanHash === 'customers') {
+        setDropdownValue('Заказчик или поставщик', 'customer');
+        renderResults();
+        scrollToTarget('courses');
+      } else if (cleanHash === 'help') {
+        scrollToTarget('contacts');
+      } else {
+        scrollToTarget(cleanHash);
+      }
+    }
+
+    // Intercept clicks on links that have hash hrefs
+    document.addEventListener('click', function (e) {
+      var link = e.target.closest('a[href*="#"]');
+      if (!link) return;
+
+      var currentUrl = window.location.href.split('#')[0];
+      var linkUrl = link.href.split('#')[0];
+      if (currentUrl !== linkUrl) return;
+
+      var hash = link.hash;
+      if (!hash) return;
+
+      e.preventDefault();
+
+      if (history.pushState) {
+        history.pushState(null, null, hash);
+      } else {
+        window.location.hash = hash;
+      }
+
+      handleHash(hash);
+    });
+
+    // Check hash on initialization
+    if (window.location.hash) {
+      window.scrollTo(0, 0);
+      setTimeout(function () {
+        handleHash(window.location.hash);
+      }, 100);
+    }
+
     // Reset button
     var resetBtn = document.getElementById('courseSearchReset');
     if (resetBtn) resetBtn.addEventListener('click', resetFilters);

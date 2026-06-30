@@ -2002,7 +2002,7 @@ body[data-page="support"] .support-calculator__title {
 }
 
 /* RESPONSIVE DESIGN FOR CONSULTING PAGE */
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
   .consulting-why-section {
     padding: 64px 0 80px;
   }
@@ -2131,7 +2131,7 @@ body[data-page="support"] .support-calculator__title {
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
   body.theme-purple .hero-slider {
     height: auto;
     min-height: auto;
@@ -2372,7 +2372,7 @@ body[data-page="support"] .support-calculator__title {
     margin-bottom: 30px;
   }
   .ecp-tariffs__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 0 24px;
     gap: 24px;
   }
@@ -2520,7 +2520,7 @@ body[data-page="support"] .support-calculator__title {
     margin-bottom: 24px;
   }
   .ecp-blanks__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 0 24px;
     gap: 24px;
   }
@@ -2688,15 +2688,16 @@ body[data-page="support"] .support-calculator__title {
     position: static;
     height: auto;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: row-reverse;
     align-items: center;
+    justify-content: space-between;
     gap: 40px;
     padding: 0 24px;
   }
   .ecp-manual__content {
-    width: 100%;
-    align-items: center;
-    text-align: center;
+    width: 53%;
+    align-items: flex-start;
+    text-align: left;
   }
   .ecp-manual__title {
     position: static;
@@ -2704,7 +2705,7 @@ body[data-page="support"] .support-calculator__title {
     height: auto;
     font-size: 36px;
     margin-bottom: 40px;
-    text-align: center;
+    text-align: left;
   }
   .ecp-manual__list {
     display: flex;
@@ -2719,7 +2720,7 @@ body[data-page="support"] .support-calculator__title {
   }
   .ecp-manual__graphic {
     position: static;
-    width: 100%;
+    width: 42%;
     max-width: 500px;
     height: auto;
     aspect-ratio: 1/1;
@@ -2998,6 +2999,27 @@ body[data-page="support"] .reviews-grid {
     justify-content: stretch;
     justify-items: center;
   }
+  .ecp-tariffs__grid {
+    grid-template-columns: 1fr;
+  }
+  .ecp-blanks__grid {
+    grid-template-columns: 1fr;
+  }
+  .ecp-manual__inner {
+    flex-direction: column-reverse;
+  }
+  .ecp-manual__content {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  .ecp-manual__title {
+    text-align: center;
+  }
+  .ecp-manual__graphic {
+    width: 100%;
+    max-width: 320px;
+  }
 }
 
 /* ==========================================================================
@@ -3216,7 +3238,7 @@ body[data-page="support"] .reviews-grid {
 }
 
 /* Responsive adjustment for support banner */
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
   .ecp-support-banner {
     height: auto;
     min-height: 435px;
@@ -3238,5 +3260,18 @@ body[data-page="support"] .reviews-grid {
     width: 100%;
     max-width: 314px;
     height: 60px;
+  }
+}
+
+@media (max-width: 1200px) and (min-width: 993px) {
+  body.theme-purple .consulting-banner__graphic,
+  body.theme-purple .ecp-banner__graphic {
+    width: 280px;
+    height: 280px;
+    right: 24px;
+    top: 60px;
+  }
+  body.theme-purple .hero-slide__title {
+    font-size: 42px;
   }
 }
