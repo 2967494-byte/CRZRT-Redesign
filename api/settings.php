@@ -8,7 +8,9 @@ header('Content-Type: application/json; charset=utf-8');
 // ==== 1. ЧТЕНИЕ НАСТРОЕК (GET запрос) ====
 // Публично: сайт или админка будет запрашивать данные отсюда
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    header('Cache-Control: public, max-age=60, stale-while-revalidate=120');
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: 0');
     $key = $_GET['key'] ?? '';
     
     try {
