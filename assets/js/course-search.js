@@ -209,7 +209,64 @@
     if (wrapper) wrapper.hidden = true;
   }
 
-  // ─── Init ─────────────────────────────────────────────────────────────────────
+  var isInitialized = false;
+
+  // Helper to select an option in a specific dropdown by its value
+  function selectOptionByValue(val) {
+    var opt = document.querySelector('.csr-dropdown__option[data-value="' + val + '"]');
+    if (!opt) return;
+    var dd = opt.closest('.csr-dropdown');
+    if (!dd) return;
+
+    dd.dataset.value = val;
+    dd.classList.add('has-value');
+    
+    var label = dd.querySelector('.csr-dropdown__label');
+    if (label) label.textContent = opt.textContent.trim();
+    
+    dd.querySelectorAll('.csr-dropdown__option').forEach(function (o) {
+      o.classList.toggle('is-selected', o === opt);
+    });
+  }
+
+  // Scroll helper with header offset
+  function scrollToTarget(targetId) {
+    var el = document.getElementById(targetId);
+    if (!el) return;
+
+    var header = document.querySelector('.header');
+    var headerHeight = header ? header.getBoundingClientRect().height : 100;
+    var offset = headerHeight + 20;
+
+    setTimeout(function () {
+      var rect = el.getBoundingClientRect();
+      var targetPosition = window.scrollY + rect.top - offset;
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+    }, 50);
+  }
+
+  // Handle incoming hash on page load or hashchange
+  function handleHash(hashString) {
+    var cleanHash = (hashString || window.location.hash || '').replace('#', '').split('?')[0];
+    if (!cleanHash) return;
+
+    if (cleanHash === 'suppliers') {
+      selectOptionByValue('supplier');
+      renderResults();
+      scrollToTarget('courses');
+    } else if (cleanHash === 'customers') {
+      selectOptionByValue('customer');
+      renderResults();
+      scrollToTarget('courses');
+    } else if (cleanHash === 'help') {
+      scrollToTarget('contacts');
+    } else {
+      scrollToTarget(cleanHash);
+    }
+  }
 
   function isMatching(tagText, optionText) {
     var t = String(tagText || '').toLowerCase().trim();
@@ -221,6 +278,8 @@
   }
 
   function init() {
+    if (isInitialized) return;
+    isInitialized = true;
     // Store placeholders in data attributes
     document.querySelectorAll('.csr-dropdown').forEach(function (dd) {
       var label = dd.querySelector('.csr-dropdown__label');
@@ -277,63 +336,6 @@
       }
     });
 
-    // Helper to select an option in a specific dropdown
-    function setDropdownValue(ariaLabel, val) {
-      var dd = document.querySelector('.csr-dropdown[aria-label="' + ariaLabel + '"]');
-      if (!dd) return;
-      var opt = dd.querySelector('.csr-dropdown__option[data-value="' + val + '"]');
-      if (!opt) return;
-
-      dd.dataset.value = val;
-      dd.classList.add('has-value');
-      
-      var label = dd.querySelector('.csr-dropdown__label');
-      if (label) label.textContent = opt.textContent.trim();
-      
-      dd.querySelectorAll('.csr-dropdown__option').forEach(function (o) {
-        o.classList.toggle('is-selected', o === opt);
-      });
-    }
-
-    // Scroll helper with header offset
-    function scrollToTarget(targetId) {
-      var el = document.getElementById(targetId);
-      if (!el) return;
-
-      var header = document.querySelector('.header');
-      var headerHeight = header ? header.getBoundingClientRect().height : 100;
-      var offset = headerHeight + 20;
-
-      setTimeout(function () {
-        var rect = el.getBoundingClientRect();
-        var targetPosition = window.scrollY + rect.top - offset;
-        window.scrollTo({
-          top: targetPosition,
-          behavior: 'smooth'
-        });
-      }, 50);
-    }
-
-    // Handle incoming hash on page load or hashchange
-    function handleHash(hashString) {
-      var cleanHash = (hashString || window.location.hash || '').replace('#', '').split('?')[0];
-      if (!cleanHash) return;
-
-      if (cleanHash === 'suppliers') {
-        setDropdownValue('Заказчик или поставщик', 'supplier');
-        renderResults();
-        scrollToTarget('courses');
-      } else if (cleanHash === 'customers') {
-        setDropdownValue('Заказчик или поставщик', 'customer');
-        renderResults();
-        scrollToTarget('courses');
-      } else if (cleanHash === 'help') {
-        scrollToTarget('contacts');
-      } else {
-        scrollToTarget(cleanHash);
-      }
-    }
-
     // Intercept clicks on links that have hash hrefs
     document.addEventListener('click', function (e) {
       var link = e.target.closest('a[href*="#"]');
@@ -359,10 +361,9 @@
 
     // Check hash on initialization
     if (window.location.hash) {
-      window.scrollTo(0, 0);
       setTimeout(function () {
         handleHash(window.location.hash);
-      }, 100);
+      }, 150);
     }
 
     // Reset button
@@ -375,7 +376,11 @@
     if (ev.detail && ev.detail.courseRegistry) {
       COURSE_REGISTRY = ev.detail.courseRegistry;
     }
-    init();
+    if (!isInitialized) {
+      init();
+    } else {
+      handleHash(window.location.hash);
+    }
   });
 
   // Also init if DOM is already ready (fallback)
