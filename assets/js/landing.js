@@ -198,21 +198,45 @@ loginForm?.addEventListener('submit', async (e) => {
   }
 });
 
+const DEFAULT_CHAT_WELCOME_MESSAGES = [
+  'Здравствуйте! 👋 Я специалист Центра развития закупок РТ.',
+  'Чем я могу вам помочь? Вы можете задать любой вопрос по обучению, тендерному сопровождению или работе на нашей ЭТП.'
+];
+
+const DEFAULT_CHAT_AUTO_REPLIES = [
+  'Спасибо за ваше обращение! Ваше сообщение отправлено в отдел поддержки. Наш специалист свяжется с вами в ближайшее время. Если хотите ускорить процесс, оставьте ваши контактные данные.'
+];
+
+function normalizeChatTextList(raw, fallback) {
+  const source = Array.isArray(raw) ? raw : (typeof raw === 'string' && raw.trim() ? [raw] : []);
+  const items = source.map((item) => String(item || '').trim()).filter(Boolean);
+  if (items.length) return items;
+  return Array.isArray(fallback) ? [...fallback] : [];
+}
+
+function readChatWidgetFromStorage() {
+  try {
+    const cached = localStorage.getItem('crzrt_main_page_data');
+    if (!cached) return null;
+    const parsed = JSON.parse(cached);
+    return parsed?.chatWidget || null;
+  } catch (e) {
+    return null;
+  }
+}
+
 // --- DYNAMIC CHAT WIDGET INITIALIZATION ---
 function initChatWidget() {
   if (document.querySelector('.crzrt-chat-container')) return;
 
-  // Read initial cached values
-  let operatorName = 'Анна';
-  let operatorAvatar = 'assets/img/chat-avatar.png';
-  try {
-    const cached = localStorage.getItem('crzrt_main_page_data');
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      if (parsed?.chatWidget?.operatorName) operatorName = parsed.chatWidget.operatorName;
-      if (parsed?.chatWidget?.operatorAvatar) operatorAvatar = parsed.chatWidget.operatorAvatar;
-    }
-  } catch (e) {}
+  const initialChat = readChatWidgetFromStorage();
+  let operatorName = initialChat?.operatorName || 'Анна';
+  let operatorAvatar = initialChat?.operatorAvatar || 'assets/img/chat-avatar.png';
+  let welcomeMessages = normalizeChatTextList(initialChat?.welcomeMessages, DEFAULT_CHAT_WELCOME_MESSAGES);
+  let autoReplies = normalizeChatTextList(
+    initialChat?.autoReplies ?? initialChat?.autoReply,
+    DEFAULT_CHAT_AUTO_REPLIES
+  );
 
   const chatHTML = `
     <div class="crzrt-chat-container">
@@ -240,18 +264,7 @@ function initChatWidget() {
           </button>
         </div>
 
-        <div class="crzrt-chat-messages">
-          <div class="crzrt-chat-msg crzrt-chat-msg--operator">
-            <div class="crzrt-chat-msg__bubble">
-              Здравствуйте! 👋 Я специалист Центра развития закупок РТ.
-            </div>
-          </div>
-          <div class="crzrt-chat-msg crzrt-chat-msg--operator">
-            <div class="crzrt-chat-msg__bubble">
-              Чем я могу вам помочь? Вы можете задать любой вопрос по обучению, тендерному сопровождению или работе на нашей ЭТП.
-            </div>
-          </div>
-        </div>
+        <div class="crzrt-chat-messages"></div>
 
         <div class="crzrt-chat-typing" style="display: none;">
           <div class="crzrt-chat-typing__dots">
@@ -314,27 +327,14 @@ function initChatWidget() {
     msgArea.scrollTop = msgArea.scrollHeight;
   }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const text = input.value.trim();
-    if (!text) return;
-
-    appendMessage(text, 'user');
-    input.value = '';
-    scrollToBottom();
-
-    showTyping(true);
-    scrollToBottom();
-
-    setTimeout(() => {
-      showTyping(false);
-      appendMessage(
-        'Спасибо за ваше обращение! Ваше сообщение отправлено в отдел поддержки. Наш специалист свяжется с вами в ближайшее время. Если хотите ускорить процесс, оставьте ваши контактные данные.',
-        'operator'
-      );
-      scrollToBottom();
-    }, 1500);
-  });
+  function escapeHTML(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
   function appendMessage(text, sender) {
     const msgDiv = document.createElement('div');
@@ -347,44 +347,74 @@ function initChatWidget() {
     msgArea.appendChild(msgDiv);
   }
 
+  function renderWelcomeMessages() {
+    const hasUserMessages = msgArea.querySelector('.crzrt-chat-msg--user');
+    if (hasUserMessages) return;
+    msgArea.innerHTML = '';
+    welcomeMessages.forEach((text) => appendMessage(text, 'operator'));
+  }
+
   function showTyping(show) {
     typingIndicator.style.display = show ? 'flex' : 'none';
   }
 
-  function escapeHTML(str) {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+  function playAutoReplies(replies, index = 0) {
+    if (!replies[index]) return;
+    showTyping(true);
+    scrollToBottom();
+    window.setTimeout(() => {
+      showTyping(false);
+      appendMessage(replies[index], 'operator');
+      scrollToBottom();
+      if (replies[index + 1]) {
+        window.setTimeout(() => playAutoReplies(replies, index + 1), 400);
+      }
+    }, 1500);
   }
 
-  // Listen for dynamic updates from landing content
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+
+    appendMessage(text, 'user');
+    input.value = '';
+    scrollToBottom();
+    playAutoReplies(autoReplies);
+  });
+
+  renderWelcomeMessages();
+
   document.addEventListener('landingContentReady', (e) => {
     const data = e.detail;
-    if (data?.chatWidget) {
-      const name = data.chatWidget.operatorName || 'Анна';
-      const avatar = data.chatWidget.operatorAvatar || 'assets/img/chat-avatar.png';
+    if (!data?.chatWidget) return;
 
-      const triggerAvatar = container.querySelector('.crzrt-chat-trigger__avatar');
-      if (triggerAvatar) triggerAvatar.src = avatar;
+    const name = data.chatWidget.operatorName || 'Анна';
+    const avatar = data.chatWidget.operatorAvatar || 'assets/img/chat-avatar.png';
+    welcomeMessages = normalizeChatTextList(data.chatWidget.welcomeMessages, DEFAULT_CHAT_WELCOME_MESSAGES);
+    autoReplies = normalizeChatTextList(
+      data.chatWidget.autoReplies ?? data.chatWidget.autoReply,
+      DEFAULT_CHAT_AUTO_REPLIES
+    );
 
-      const headerAvatar = container.querySelector('.crzrt-chat-header__avatar');
-      if (headerAvatar) {
-        headerAvatar.src = avatar;
-        headerAvatar.alt = name;
-      }
+    const triggerAvatar = container.querySelector('.crzrt-chat-trigger__avatar');
+    if (triggerAvatar) triggerAvatar.src = avatar;
 
-      const headerName = container.querySelector('.crzrt-chat-header__name');
-      if (headerName) headerName.textContent = name;
-
-      const typingLabel = container.querySelector('.crzrt-chat-typing__label');
-      if (typingLabel) typingLabel.textContent = `${name} печатает...`;
-
-      operatorName = name;
-      operatorAvatar = avatar;
+    const headerAvatar = container.querySelector('.crzrt-chat-header__avatar');
+    if (headerAvatar) {
+      headerAvatar.src = avatar;
+      headerAvatar.alt = name;
     }
+
+    const headerName = container.querySelector('.crzrt-chat-header__name');
+    if (headerName) headerName.textContent = name;
+
+    const typingLabel = container.querySelector('.crzrt-chat-typing__label');
+    if (typingLabel) typingLabel.textContent = `${name} печатает...`;
+
+    operatorName = name;
+    operatorAvatar = avatar;
+    renderWelcomeMessages();
   });
 }
 

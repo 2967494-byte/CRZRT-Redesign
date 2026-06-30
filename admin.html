@@ -8,7 +8,7 @@
     <title>Админ-панель | Центр Развития Закупок РТ</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/admin.css?v=18">
+    <link rel="stylesheet" href="assets/css/admin.css?v=19">
 </head>
 
 <body>
@@ -234,6 +234,22 @@
                             </div>
                         </div>
                         <input type="hidden" id="m_chat_operator_avatar_val" value="">
+                    </div>
+                    <div class="form-group">
+                        <div class="admin-section-toolbar">
+                            <label>Приветственные сообщения</label>
+                            <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="AdminLanding.addChatWelcome()">+ Сообщение</button>
+                        </div>
+                        <p class="admin-field-hint">Показываются в чате при открытии, по одному пузырьку на сообщение.</p>
+                        <div id="mChatWelcomeAdmin" class="chat-text-admin-list"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="admin-section-toolbar">
+                            <label>Автоответы</label>
+                            <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="AdminLanding.addChatAutoReply()">+ Автоответ</button>
+                        </div>
+                        <p class="admin-field-hint">Отправляются по очереди после сообщения пользователя.</p>
+                        <div id="mChatAutoReplyAdmin" class="chat-text-admin-list"></div>
                     </div>
                 </div>
 
@@ -955,14 +971,14 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="assets/js/landing-content.js?v=15"></script>
+    <script src="assets/js/landing-content.js?v=16"></script>
     <script src="assets/js/knowledge-content.js?v=2"></script>
     <script src="assets/js/news-content.js?v=1"></script>
     <script src="assets/js/ecp-content.js?v=12"></script>
     <script src="assets/js/consulting-content.js?v=6"></script>
     <script src="assets/js/support-content.js?v=5"></script>
     <script src="assets/js/obuchenie-content.js?v=12"></script>
-    <script src="assets/js/admin-landing.js?v=3"></script>
+    <script src="assets/js/admin-landing.js?v=4"></script>
     <script src="assets/js/admin-ecp.js?v=9"></script>
     <script src="assets/js/admin-consulting-page.js?v=6"></script>
     <script src="assets/js/admin-support.js?v=7"></script>

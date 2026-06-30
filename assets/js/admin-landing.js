@@ -80,12 +80,28 @@
     ],
     chatWidget: {
       operatorName: 'Анна',
-      operatorAvatar: 'assets/img/chat-avatar.png'
+      operatorAvatar: 'assets/img/chat-avatar.png',
+      welcomeMessages: [
+        'Здравствуйте! 👋 Я специалист Центра развития закупок РТ.',
+        'Чем я могу вам помочь? Вы можете задать любой вопрос по обучению, тендерному сопровождению или работе на нашей ЭТП.'
+      ],
+      autoReplies: [
+        'Спасибо за ваше обращение! Ваше сообщение отправлено в отдел поддержки. Наш специалист свяжется с вами в ближайшее время. Если хотите ускорить процесс, оставьте ваши контактные данные.'
+      ]
     }
   };
 
   function escapeAttr(s) {
     return String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  }
+
+  const CHAT_TEXT_MAX_LENGTH = 600;
+
+  function normalizeChatTextList(raw, fallback) {
+    const source = Array.isArray(raw) ? raw : (typeof raw === 'string' && raw.trim() ? [raw] : []);
+    const items = source.map((item) => String(item || '').trim()).filter(Boolean);
+    if (items.length) return items;
+    return Array.isArray(fallback) ? [...fallback] : [];
   }
 
   function migrateMainPageData(raw) {
@@ -95,7 +111,15 @@
     const data = { ...DEFAULT_LANDING_MAIN, ...(raw || {}) };
     data.chatWidget = {
       operatorName: raw?.chatWidget?.operatorName || DEFAULT_LANDING_MAIN.chatWidget.operatorName,
-      operatorAvatar: raw?.chatWidget?.operatorAvatar || DEFAULT_LANDING_MAIN.chatWidget.operatorAvatar
+      operatorAvatar: raw?.chatWidget?.operatorAvatar || DEFAULT_LANDING_MAIN.chatWidget.operatorAvatar,
+      welcomeMessages: normalizeChatTextList(
+        raw?.chatWidget?.welcomeMessages,
+        DEFAULT_LANDING_MAIN.chatWidget.welcomeMessages
+      ),
+      autoReplies: normalizeChatTextList(
+        raw?.chatWidget?.autoReplies ?? raw?.chatWidget?.autoReply,
+        DEFAULT_LANDING_MAIN.chatWidget.autoReplies
+      )
     };
     return data;
   }
@@ -462,6 +486,36 @@
     bindReviewTextLimits(container);
   }
 
+  function renderChatTextList(container, items, prefix, labelPrefix) {
+    if (!container) return;
+    container.innerHTML = '';
+    const list = Array.isArray(items) && items.length ? items : [''];
+    list.forEach((text, i) => {
+      const num = i + 1;
+      container.insertAdjacentHTML(
+        'beforeend',
+        `<div class="review-admin-card chat-text-admin-card">
+          <div class="review-admin-card__head">
+            <span class="review-admin-card__title">${labelPrefix} №${num}</span>
+            <button type="button" class="btn-delete review-admin-card__remove" onclick="AdminLanding.removeChatText('${prefix}', ${i})" aria-label="Удалить ${labelPrefix.toLowerCase()} №${num}">×</button>
+          </div>
+          <div class="form-group review-admin-card__text-field">
+            <textarea class="form-control review-admin-card__textarea" id="m_chat_${prefix}_${i}" rows="4" maxlength="${CHAT_TEXT_MAX_LENGTH}">${escapeAttr(text)}</textarea>
+          </div>
+        </div>`
+      );
+    });
+  }
+
+  function collectChatTextList(prefix) {
+    const inputs = Array.from(document.querySelectorAll(`textarea[id^="m_chat_${prefix}_"]`))
+      .sort((a, b) => {
+        const indexFromId = (el) => parseInt(el.id.replace(`m_chat_${prefix}_`, ''), 10);
+        return indexFromId(a) - indexFromId(b);
+      });
+    return inputs.map((input) => (input.value || '').trim()).filter(Boolean);
+  }
+
   function renderConsultPhotos(container, photos) {
     container.innerHTML = '';
     const list = Array.isArray(photos) && photos.length ? photos : [''];
@@ -534,6 +588,18 @@
     const chatNameInput = document.getElementById('m_chat_operator_name');
     if (chatNameInput) chatNameInput.value = chatWidget.operatorName || 'Анна';
     setImageUploadState('m_chat_operator_avatar', chatWidget.operatorAvatar || '');
+    renderChatTextList(
+      document.getElementById('mChatWelcomeAdmin'),
+      chatWidget.welcomeMessages || DEFAULT_LANDING_MAIN.chatWidget.welcomeMessages,
+      'welcome',
+      'Приветствие'
+    );
+    renderChatTextList(
+      document.getElementById('mChatAutoReplyAdmin'),
+      chatWidget.autoReplies || DEFAULT_LANDING_MAIN.chatWidget.autoReplies,
+      'autoreply',
+      'Автоответ'
+    );
   }
 
   function readImageVal(id) {
@@ -658,7 +724,15 @@
     mainPageData.consultation = { photos: consultationPhotosForSave() };
     mainPageData.chatWidget = {
       operatorName: document.getElementById('m_chat_operator_name')?.value || 'Анна',
-      operatorAvatar: readImageVal('m_chat_operator_avatar')
+      operatorAvatar: readImageVal('m_chat_operator_avatar'),
+      welcomeMessages: (() => {
+        const items = collectChatTextList('welcome');
+        return items.length ? items : [...DEFAULT_LANDING_MAIN.chatWidget.welcomeMessages];
+      })(),
+      autoReplies: (() => {
+        const items = collectChatTextList('autoreply');
+        return items.length ? items : [...DEFAULT_LANDING_MAIN.chatWidget.autoReplies];
+      })()
     };
     return mainPageData;
   }
@@ -939,6 +1013,41 @@
       const main = window.mainPageData;
       window.saveMainPageStateToMemory?.();
       main.reviews.splice(i, 1);
+      renderMainPageAdmin(main);
+    },
+    addChatWelcome() {
+      const main = window.mainPageData;
+      window.saveMainPageStateToMemory?.();
+      if (!main.chatWidget) main.chatWidget = { ...DEFAULT_LANDING_MAIN.chatWidget };
+      if (!Array.isArray(main.chatWidget.welcomeMessages)) {
+        main.chatWidget.welcomeMessages = [...DEFAULT_LANDING_MAIN.chatWidget.welcomeMessages];
+      }
+      main.chatWidget.welcomeMessages.push('');
+      renderMainPageAdmin(main);
+    },
+    addChatAutoReply() {
+      const main = window.mainPageData;
+      window.saveMainPageStateToMemory?.();
+      if (!main.chatWidget) main.chatWidget = { ...DEFAULT_LANDING_MAIN.chatWidget };
+      if (!Array.isArray(main.chatWidget.autoReplies)) {
+        main.chatWidget.autoReplies = [...DEFAULT_LANDING_MAIN.chatWidget.autoReplies];
+      }
+      main.chatWidget.autoReplies.push('');
+      renderMainPageAdmin(main);
+    },
+    removeChatText(prefix, i) {
+      const main = window.mainPageData;
+      window.saveMainPageStateToMemory?.();
+      if (!main.chatWidget) main.chatWidget = { ...DEFAULT_LANDING_MAIN.chatWidget };
+      const key = prefix === 'welcome' ? 'welcomeMessages' : 'autoReplies';
+      const fallback = DEFAULT_LANDING_MAIN.chatWidget[key];
+      if (!Array.isArray(main.chatWidget[key])) {
+        main.chatWidget[key] = collectChatTextList(prefix);
+      }
+      main.chatWidget[key].splice(i, 1);
+      if (!main.chatWidget[key].length) {
+        main.chatWidget[key] = [...fallback];
+      }
       renderMainPageAdmin(main);
     },
     addConsultPhoto() {

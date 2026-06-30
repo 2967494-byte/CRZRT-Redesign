@@ -587,6 +587,34 @@ body {
             gap: 8px;
         }
 
+        .admin-section-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .admin-section-toolbar label {
+            margin: 0;
+        }
+
+        .admin-field-hint {
+            color: var(--text-secondary);
+            margin: -4px 0 12px;
+            font-size: 0.9rem;
+        }
+
+        .chat-text-admin-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-text-admin-card .review-admin-card__textarea {
+            min-height: 96px;
+        }
+
         /* Hero-слайдер: превью фона 1520×420 */
         .hero-slide-upload-group label {
             display: block;

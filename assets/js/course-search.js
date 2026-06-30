@@ -213,12 +213,23 @@
 
   // Helper to select an option in a specific dropdown by its value
   function selectOptionByValue(val) {
-    var opt = document.querySelector('.csr-dropdown__option[data-value="' + val + '"]');
+    var selector = '';
+    if (val === 'supplier' || val === 'Поставщик') {
+      selector = '.csr-dropdown__option[data-value="supplier"], .csr-dropdown__option[data-value="Поставщик"]';
+    } else if (val === 'customer' || val === 'Заказчик') {
+      selector = '.csr-dropdown__option[data-value="customer"], .csr-dropdown__option[data-value="Заказчик"]';
+    } else {
+      selector = '.csr-dropdown__option[data-value="' + val + '"]';
+    }
+
+    var opt = document.querySelector(selector);
     if (!opt) return;
     var dd = opt.closest('.csr-dropdown');
     if (!dd) return;
 
-    dd.dataset.value = val;
+    var actualVal = opt.getAttribute('data-value') || opt.textContent.trim();
+
+    dd.dataset.value = actualVal;
     dd.classList.add('has-value');
     
     var label = dd.querySelector('.csr-dropdown__label');

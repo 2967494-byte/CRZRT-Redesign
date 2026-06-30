@@ -92,7 +92,14 @@
     ],
     chatWidget: {
       operatorName: 'Анна',
-      operatorAvatar: 'assets/img/chat-avatar.png'
+      operatorAvatar: 'assets/img/chat-avatar.png',
+      welcomeMessages: [
+        'Здравствуйте! 👋 Я специалист Центра развития закупок РТ.',
+        'Чем я могу вам помочь? Вы можете задать любой вопрос по обучению, тендерному сопровождению или работе на нашей ЭТП.'
+      ],
+      autoReplies: [
+        'Спасибо за ваше обращение! Ваше сообщение отправлено в отдел поддержки. Наш специалист свяжется с вами в ближайшее время. Если хотите ускорить процесс, оставьте ваши контактные данные.'
+      ]
     }
   };
 
@@ -156,6 +163,13 @@
       photos = [...LANDING_DEFAULTS.consultation.photos];
     }
     return { photos };
+  }
+
+  function normalizeChatTextList(raw, fallback) {
+    const source = Array.isArray(raw) ? raw : (typeof raw === 'string' && raw.trim() ? [raw] : []);
+    const items = source.map((item) => String(item || '').trim()).filter(Boolean);
+    if (items.length) return items;
+    return Array.isArray(fallback) ? [...fallback] : [];
   }
 
   function migrateLandingData(raw) {
@@ -260,7 +274,15 @@
 
     data.chatWidget = {
       operatorName: raw?.chatWidget?.operatorName || LANDING_DEFAULTS.chatWidget.operatorName,
-      operatorAvatar: raw?.chatWidget?.operatorAvatar || LANDING_DEFAULTS.chatWidget.operatorAvatar
+      operatorAvatar: raw?.chatWidget?.operatorAvatar || LANDING_DEFAULTS.chatWidget.operatorAvatar,
+      welcomeMessages: normalizeChatTextList(
+        raw?.chatWidget?.welcomeMessages,
+        LANDING_DEFAULTS.chatWidget.welcomeMessages
+      ),
+      autoReplies: normalizeChatTextList(
+        raw?.chatWidget?.autoReplies ?? raw?.chatWidget?.autoReply,
+        LANDING_DEFAULTS.chatWidget.autoReplies
+      )
     };
 
     return data;
