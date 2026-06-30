@@ -3747,6 +3747,10 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
   gap: 16px;
 }
 
+.enroll-modal__form[hidden] {
+  display: none !important;
+}
+
 .enroll-modal__field {
   width: 100%;
 }
@@ -3867,6 +3871,20 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
 .enroll-modal__submit:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.enroll-bitrix-embed {
+  min-height: 120px;
+  margin-top: 8px;
+}
+
+.enroll-bitrix-embed[hidden] {
+  display: none !important;
+}
+
+.enroll-bitrix-embed .b24-form,
+.enroll-bitrix-embed iframe {
+  max-width: 100%;
 }
 
 @keyframes modalPopOut {

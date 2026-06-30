@@ -28,6 +28,7 @@ if (!is_array($payload)) {
 $formId = (int)($payload['formId'] ?? 0);
 $sec = preg_replace('/[^a-z0-9]/i', '', (string)($payload['sec'] ?? ''));
 $values = $payload['values'] ?? null;
+$required = $payload['required'] ?? null;
 
 if ($formId <= 0 || $sec === '' || !is_array($values)) {
     http_response_code(400);
@@ -35,41 +36,58 @@ if ($formId <= 0 || $sec === '' || !is_array($values)) {
     exit;
 }
 
-$allowedFields = [
-    'LEAD_NAME',
-    'LEAD_LAST_NAME',
-    'LEAD_SECOND_NAME',
-    'LEAD_PHONE',
-    'LEAD_EMAIL',
-    'LEAD_COMPANY_TITLE',
-    'LEAD_UF_CRM_1669365821',
-    'AGREEMENT_24',
-];
-
 $filtered = [];
-foreach ($allowedFields as $field) {
-    if (!array_key_exists($field, $values)) {
+foreach ($values as $field => $value) {
+    $field = (string)$field;
+    if (!preg_match('/^[A-Z][A-Z0-9_]+$/', $field)) {
         continue;
     }
-    $value = trim((string)$values[$field]);
+    $value = trim((string)$value);
     if ($value !== '') {
         $filtered[$field] = $value;
     }
 }
 
-if (empty($filtered['LEAD_NAME']) || empty($filtered['LEAD_PHONE']) || empty($filtered['LEAD_EMAIL'])) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Заполните имя, телефон и e-mail'], JSON_UNESCAPED_UNICODE);
-    exit;
+$requiredFields = is_array($required) ? $required : [];
+if (!$requiredFields) {
+    $requiredFields = [];
+    foreach (['LEAD_NAME', 'CONTACT_NAME'] as $nameField) {
+        if (array_key_exists($nameField, $values)) {
+            $requiredFields[] = $nameField;
+            break;
+        }
+    }
+    foreach (['LEAD_PHONE', 'CONTACT_PHONE'] as $phoneField) {
+        if (array_key_exists($phoneField, $values)) {
+            $requiredFields[] = $phoneField;
+            break;
+        }
+    }
+    foreach (['LEAD_EMAIL', 'CONTACT_EMAIL'] as $emailField) {
+        if (array_key_exists($emailField, $values)) {
+            $requiredFields[] = $emailField;
+            break;
+        }
+    }
+    foreach (['LEAD_UF_CRM_1669365821', 'DEAL_UF_CRM_1668275563824'] as $sourceField) {
+        if (array_key_exists($sourceField, $values)) {
+            $requiredFields[] = $sourceField;
+            break;
+        }
+    }
 }
 
-if (empty($filtered['LEAD_UF_CRM_1669365821'])) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Укажите источник заявки'], JSON_UNESCAPED_UNICODE);
-    exit;
+foreach ($requiredFields as $field) {
+    if (empty($filtered[$field])) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Заполните все обязательные поля формы'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 }
 
-$filtered['AGREEMENT_24'] = 'Y';
+if (array_key_exists('AGREEMENT_24', $values)) {
+    $filtered['AGREEMENT_24'] = 'Y';
+}
 
 $portal = 'aotsentrrazvitiyazakupokrt.bitrix24.ru';
 $url = "https://{$portal}/bitrix/services/main/ajax.php?action=crm.site.form.fill";
@@ -106,19 +124,29 @@ if ($response === false) {
 
 $result = json_decode($response, true);
 $resultId = (int)($result['result']['resultId'] ?? 0);
+$bitrixMessage = trim((string)($result['result']['message'] ?? $result['error_description'] ?? ''));
 
 if ($resultId > 0) {
     echo json_encode([
         'success' => true,
         'resultId' => $resultId,
-        'message' => $result['result']['message'] ?? 'Заявка принята',
+        'message' => $bitrixMessage ?: 'Заявка принята',
     ], JSON_UNESCAPED_UNICODE);
     exit;
+}
+
+$errorMessage = 'Bitrix24 не принял заявку';
+if ($bitrixMessage !== '') {
+    $errorMessage = $bitrixMessage;
+} elseif (!empty($result['error_description'])) {
+    $errorMessage = (string)$result['error_description'];
 }
 
 http_response_code(422);
 echo json_encode([
     'success' => false,
-    'error' => 'Bitrix24 не принял заявку',
+    'error' => $errorMessage,
     'details' => $result,
+    'formId' => $formId,
+    'sec' => $sec,
 ], JSON_UNESCAPED_UNICODE);

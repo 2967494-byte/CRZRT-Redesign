@@ -316,6 +316,27 @@
     if (!validateAudienceForm()) return;
 
     const audience = readAudienceFromForm();
+    let bitrixFormFl = api.normalizeBitrixForm
+      ? api.normalizeBitrixForm(els.formBitrixFl?.value)
+      : (api.parseBitrixFormRef ? api.parseBitrixFormRef(els.formBitrixFl?.value) : null);
+    let bitrixFormUr = api.normalizeBitrixForm
+      ? api.normalizeBitrixForm(els.formBitrixUr?.value)
+      : (api.parseBitrixFormRef ? api.parseBitrixFormRef(els.formBitrixUr?.value) : null);
+
+    if (els.formBitrixFl?.value?.trim() && !bitrixFormFl) {
+      window.alert('Не удалось распознать Bitrix24-форму для физ. лиц. Укажите формат: 1048 / 6zzb7x');
+      return;
+    }
+    if (els.formBitrixUr?.value?.trim() && !bitrixFormUr) {
+      window.alert('Не удалось распознать Bitrix24-форму для юр. лиц. Укажите формат: ID / sec');
+      return;
+    }
+
+    if (api.enrichBitrixFormRef) {
+      if (bitrixFormFl) bitrixFormFl = await api.enrichBitrixFormRef(bitrixFormFl);
+      if (bitrixFormUr) bitrixFormUr = await api.enrichBitrixFormRef(bitrixFormUr);
+    }
+
     const payload = {
       id: els.formId.value || (api.createCourseId ? api.createCourseId() : `course_${Date.now()}`),
       title: els.formTitle.value.trim(),
@@ -330,8 +351,8 @@
       forSuppliers: audience.forSuppliers,
       is44fz: audience.is44fz,
       is223fz: audience.is223fz,
-      bitrixFormFl: api.parseBitrixFormRef ? api.parseBitrixFormRef(els.formBitrixFl?.value) : null,
-      bitrixFormUr: api.parseBitrixFormRef ? api.parseBitrixFormRef(els.formBitrixUr?.value) : null,
+      bitrixFormFl,
+      bitrixFormUr,
       speakers: [],
       options: audience.options,
       active: true
@@ -413,6 +434,16 @@
         result.textContent = formatted;
         preview.hidden = false;
         errorEl.hidden = true;
+        if (api.fetchBitrixFormMeta) {
+          api.fetchBitrixFormMeta(parsedRef.id).then((meta) => {
+            if (!meta || textarea.value !== val) return;
+            if (meta.captchaEnabled) {
+              result.textContent = `${formatted} — капча включена (на сайте откроется форма Bitrix24)`;
+            } else if (meta.title) {
+              result.textContent = `${formatted} — ${meta.title}`;
+            }
+          });
+        }
       } else {
         preview.hidden = true;
         errorEl.hidden = false;
@@ -443,11 +474,25 @@
 
     function savePasteModal() {
       const val = textarea.value.trim();
-      const ref = parsedRef;
-      const formatted = ref && api.formatBitrixFormRef ? api.formatBitrixFormRef(ref) : (ref ? `${ref.id} / ${ref.sec}` : val);
+      if (!val) {
+        const hiddenInput = $(`courseFormBitrix${currentType === 'fl' ? 'Fl' : 'Ur'}`);
+        if (hiddenInput) hiddenInput.value = '';
+        updateBitrixDisplay(currentType, '');
+        closePasteModal();
+        return;
+      }
+
+      const ref = parsedRef || (api.parseBitrixFormRef ? api.parseBitrixFormRef(val) : null);
+      if (!ref?.id || !ref?.sec) {
+        errorEl.hidden = false;
+        preview.hidden = true;
+        return;
+      }
+
+      const formatted = api.formatBitrixFormRef ? api.formatBitrixFormRef(ref) : `${ref.id} / ${ref.sec}`;
       const hiddenInput = $(`courseFormBitrix${currentType === 'fl' ? 'Fl' : 'Ur'}`);
-      if (hiddenInput) hiddenInput.value = formatted || val;
-      updateBitrixDisplay(currentType, formatted || val);
+      if (hiddenInput) hiddenInput.value = formatted;
+      updateBitrixDisplay(currentType, formatted);
       closePasteModal();
     }
 

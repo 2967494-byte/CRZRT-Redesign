@@ -255,12 +255,30 @@
     };
   }
 
+  const DEFAULT_BITRIX_FIELD_MAP = {
+    name: 'LEAD_NAME',
+    phone: 'LEAD_PHONE',
+    email: 'LEAD_EMAIL',
+    company: 'LEAD_COMPANY_TITLE',
+    source: 'LEAD_UF_CRM_1669365821',
+    agreement: 'AGREEMENT_24'
+  };
+
+  const BITRIX_FORM_CDN_MEMBER = 'b12905608';
+  const BITRIX_FORM_LOADER_BASE = `https://cdn-ru.bitrix24.ru/${BITRIX_FORM_CDN_MEMBER}/crm/form`;
+
   function parseBitrixFormRef(value) {
     const str = String(value || '').trim();
     const scriptMatch = str.match(/data-b24-form="[\w-]+\/(\d+)\/([a-z0-9]+)"/i)
-      || str.match(/(?:click|inline)\/(\d+)\/([a-z0-9]+)/i);
+      || str.match(/(?:click|inline)\/(\d+)\/([a-z0-9]+)/i)
+      || str.match(/loader_(\d+)\.js[\s\S]*?data-b24-form="[\w-]+\/\1\/([a-z0-9]+)"/i);
     if (scriptMatch) {
       return { id: scriptMatch[1], sec: scriptMatch[2] };
+    }
+    const loaderMatch = str.match(/loader_(\d+)\.js/i);
+    const secFromScript = str.match(/data-b24-form="[\w-]+\/\d+\/([a-z0-9]+)"/i);
+    if (loaderMatch && secFromScript) {
+      return { id: loaderMatch[1], sec: secFromScript[1] };
     }
     const match = str.match(/^(\d+)\s*[/:]\s*([a-z0-9]+)$/i);
     if (!match) return null;
@@ -276,12 +294,182 @@
     if (raw && typeof raw === 'object' && raw.id && raw.sec) {
       const id = String(raw.id).trim();
       const sec = String(raw.sec).trim();
-      if (/^\d+$/.test(id) && /^[a-z0-9]+$/i.test(sec)) {
-        return { id, sec };
+      if (!/^\d+$/.test(id) || !/^[a-z0-9]+$/i.test(sec)) {
+        return null;
       }
-      return null;
+      const normalized = { id, sec };
+      if (raw.fieldMap && typeof raw.fieldMap === 'object') {
+        normalized.fieldMap = { ...DEFAULT_BITRIX_FIELD_MAP, ...raw.fieldMap };
+      }
+      if (Array.isArray(raw.sourceOptions)) {
+        normalized.sourceOptions = raw.sourceOptions.map((item) => ({
+          label: String(item?.label || '').trim(),
+          value: String(item?.value || '').trim()
+        })).filter((item) => item.label && item.value);
+      }
+      if (raw.emailRequired !== undefined) normalized.emailRequired = Boolean(raw.emailRequired);
+      if (raw.captchaEnabled !== undefined) normalized.captchaEnabled = Boolean(raw.captchaEnabled);
+      if (raw.title) normalized.title = String(raw.title);
+      return normalized;
     }
     return parseBitrixFormRef(raw);
+  }
+
+  async function fetchBitrixFormMeta(formId) {
+    const id = parseInt(formId, 10);
+    if (!id) return null;
+    try {
+      const response = await fetch(`api/bitrix-form-meta.php?id=${id}`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) return null;
+      return {
+        fieldMap: { ...DEFAULT_BITRIX_FIELD_MAP, ...(data.fieldMap || {}) },
+        sourceOptions: Array.isArray(data.sourceOptions) ? data.sourceOptions : [],
+        emailRequired: Boolean(data.emailRequired),
+        captchaEnabled: Boolean(data.captchaEnabled),
+        title: data.title || ''
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async function enrichBitrixFormRef(formRef) {
+    const base = normalizeBitrixForm(formRef);
+    if (!base?.id || !base?.sec) return null;
+    if (base.fieldMap && base.sourceOptions?.length) return base;
+    const meta = await fetchBitrixFormMeta(base.id);
+    if (!meta) return base;
+    return {
+      ...base,
+      ...meta,
+      id: base.id,
+      sec: base.sec
+    };
+  }
+
+  function getBitrixFieldMap(formRef) {
+    return { ...DEFAULT_BITRIX_FIELD_MAP, ...(formRef?.fieldMap || {}) };
+  }
+
+  function buildBitrixEnrollPayload(bitrixForm, audienceType) {
+    const map = getBitrixFieldMap(bitrixForm);
+    const name = document.getElementById('enroll-name')?.value.trim() || '';
+    const phone = document.getElementById('enroll-phone')?.value.trim() || '';
+    const email = document.getElementById('enroll-email')?.value.trim() || '';
+    const source = document.getElementById('enroll-source')?.value || '';
+    const company = document.getElementById('enroll-company')?.value.trim() || '';
+
+    const values = {};
+    const required = [];
+    if (map.name) {
+      values[map.name] = name;
+      required.push(map.name);
+    }
+    if (map.phone) {
+      values[map.phone] = phone;
+      required.push(map.phone);
+    }
+    if (map.email) {
+      values[map.email] = email;
+      if (bitrixForm?.emailRequired !== false) required.push(map.email);
+    }
+    if (map.source && source) {
+      values[map.source] = source;
+      required.push(map.source);
+    }
+    if (map.agreement) {
+      values[map.agreement] = 'Y';
+    }
+    if (audienceType === 'legal' && map.company) {
+      values[map.company] = company;
+      required.push(map.company);
+    }
+
+    return { values, required };
+  }
+
+  function configureEnrollSourceSelect(bitrixForm) {
+    const select = document.getElementById('enroll-source');
+    if (!select) return;
+
+    const options = bitrixForm?.sourceOptions?.length
+      ? bitrixForm.sourceOptions
+      : [
+          { label: 'Реклама', value: '1156' },
+          { label: 'Поисковая система', value: '1158' },
+          { label: 'Рассылка по ЭДО', value: '1160' },
+          { label: 'Рассылка по эл. почте', value: '1162' },
+          { label: 'Звонок от АО ЦРЗ РТ', value: '1164' },
+          { label: 'От коллег', value: '1166' },
+          { label: 'Обучался ранее', value: '1168' },
+          { label: 'Телеграм', value: '1170' },
+          { label: 'ВКонтакте', value: '1172' },
+          { label: 'Другие соц сети', value: '1174' }
+        ];
+
+    select.innerHTML = `
+      <option value="" disabled selected hidden>Откуда узнали о мероприятии *</option>
+      ${options.map((item) => `<option value="${escapeAttr(item.value)}">${escapeHtml(item.label)}</option>`).join('')}
+    `;
+  }
+
+  function clearBitrixEnrollEmbed() {
+    const embed = document.getElementById('enroll-bitrix-embed');
+    if (embed) {
+      embed.innerHTML = '';
+      embed.hidden = true;
+    }
+    const customForm = document.getElementById('enroll-form');
+    if (customForm) customForm.hidden = false;
+  }
+
+  function mountBitrixInlineForm(container, formId, sec) {
+    if (!container || !formId || !sec) return;
+    container.innerHTML = '';
+    const script = document.createElement('script');
+    script.setAttribute('data-b24-form', `inline/${formId}/${sec}`);
+    script.setAttribute('data-skip-moving', 'true');
+    script.textContent = `(function(w,d,u){var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})(window,document,'${BITRIX_FORM_LOADER_BASE}/loader_${formId}.js');`;
+    container.appendChild(script);
+  }
+
+  async function getCourseBitrixForm(course, audienceType) {
+    if (!course) return null;
+    const raw = audienceType === 'legal' ? course.bitrixFormUr : course.bitrixFormFl;
+    const normalized = normalizeBitrixForm(raw);
+    if (!normalized) return null;
+    if (normalized.captchaEnabled === undefined && enrichBitrixFormRef) {
+      return enrichBitrixFormRef(normalized);
+    }
+    return normalized;
+  }
+
+  async function refreshEnrollBitrixView() {
+    const form = document.getElementById('enroll-form');
+    const embed = document.getElementById('enroll-bitrix-embed');
+    const courseId = form?.dataset?.courseId || '';
+    const course = activeCourseRegistry.find((item) => item.id === courseId);
+    const audienceType = document.getElementById('enroll-audience-type')?.value === 'legal' ? 'legal' : 'individual';
+    const bitrixForm = course ? await getCourseBitrixForm(course, audienceType) : null;
+    const useEmbed = Boolean(bitrixForm?.captchaEnabled);
+
+    if (form) form.hidden = useEmbed;
+    if (embed) {
+      embed.hidden = !useEmbed;
+      embed.innerHTML = '';
+      if (useEmbed && bitrixForm) {
+        mountBitrixInlineForm(embed, bitrixForm.id, bitrixForm.sec);
+      }
+    }
+
+    if (!useEmbed) {
+      configureEnrollSourceSelect(bitrixForm);
+      const emailInput = document.getElementById('enroll-email');
+      if (emailInput) emailInput.required = bitrixForm?.emailRequired !== false;
+    }
+
+    return { bitrixForm, useEmbed };
   }
 
   function normalizeCourseAudience(raw) {
@@ -526,20 +714,11 @@
       throw new Error('Для этого курса не настроена CRM-форма Bitrix24. Укажите ID формы в админке.');
     }
 
-    const values = {
-      LEAD_NAME: document.getElementById('enroll-name')?.value.trim() || '',
-      LEAD_PHONE: document.getElementById('enroll-phone')?.value.trim() || '',
-      LEAD_EMAIL: document.getElementById('enroll-email')?.value.trim() || '',
-      LEAD_UF_CRM_1669365821: document.getElementById('enroll-source')?.value || '',
-      AGREEMENT_24: 'Y'
-    };
-
-    if (audienceType === 'legal') {
-      values.LEAD_COMPANY_TITLE = document.getElementById('enroll-company')?.value.trim() || '';
-      if (!values.LEAD_COMPANY_TITLE) {
-        throw new Error('Укажите название компании');
-      }
+    if (bitrixForm.captchaEnabled) {
+      throw new Error('Эта форма отправляется через встроенный виджет Bitrix24.');
     }
+
+    const { values, required } = buildBitrixEnrollPayload(bitrixForm, audienceType);
 
     const response = await fetch('api/bitrix-enroll.php', {
       method: 'POST',
@@ -547,13 +726,15 @@
       body: JSON.stringify({
         formId: parseInt(bitrixForm.id, 10),
         sec: bitrixForm.sec,
-        values
+        values,
+        required
       })
     });
 
     const result = await response.json().catch(() => ({}));
     if (!response.ok || !result.success) {
-      throw new Error(result.error || 'Не удалось отправить заявку в Bitrix24');
+      const details = result.details?.result?.message || result.error || 'Не удалось отправить заявку в Bitrix24';
+      throw new Error(details);
     }
 
     return result;
@@ -603,7 +784,7 @@
     setEnrollAudienceMode(mode);
   }
 
-  function openEnrollModal(options) {
+  async function openEnrollModal(options) {
     const modal = document.getElementById('enroll-modal');
     if (!modal) return;
 
@@ -630,6 +811,7 @@
     }
 
     modal.style.display = 'flex';
+    await refreshEnrollBitrixView();
   }
 
   function setupEnrollModal() {
@@ -650,6 +832,7 @@
         form.reset();
         delete form.dataset.courseId;
       }
+      clearBitrixEnrollEmbed();
       setEnrollFormStatus('');
       configureEnrollModalAudience({ forIndividuals: true, forLegalEntities: true });
     }
@@ -658,8 +841,9 @@
     if (overlay) overlay.addEventListener('click', closeEnrollModal);
 
     if (audienceToggle) {
-      audienceToggle.addEventListener('change', function () {
+      audienceToggle.addEventListener('change', async function () {
         setEnrollAudienceMode(audienceToggle.checked ? 'legal' : 'individual');
+        await refreshEnrollBitrixView();
       });
     }
 
@@ -693,6 +877,7 @@
       const submitBtn = form.querySelector('.enroll-modal__submit');
       form.addEventListener('submit', async function (e) {
         e.preventDefault();
+        if (form.hidden) return;
         setEnrollFormStatus('');
 
         const originalText = submitBtn?.textContent || 'Отправить';
@@ -1303,6 +1488,9 @@
     parseBitrixFormRef,
     formatBitrixFormRef,
     normalizeBitrixForm,
+    fetchBitrixFormMeta,
+    enrichBitrixFormRef,
+    getBitrixFieldMap,
     configureEnrollModalAudience,
     openEnrollModal,
     setEnrollAudienceMode,

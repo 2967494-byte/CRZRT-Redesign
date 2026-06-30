@@ -1332,6 +1332,10 @@ body {
             display: block;
         }
 
+        .admin-courses-audience__error[hidden] {
+            display: none !important;
+        }
+
         .modal-error {
             color: #ff4d4d;
             font-size: 0.9rem;
