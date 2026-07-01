@@ -1461,6 +1461,7 @@
                 }
                 const canvas = cropper.getCroppedCanvas(canvasOpts);
                 const isPartner = AdminLanding?.isPartnerUploadId?.(uploadId);
+                const isLandingMainHero = AdminLanding?.isLandingMainHeroUploadId?.(uploadId);
                 const isHeroSlide = Boolean(
                     uploadId
                     && (uploadId.startsWith('m_hero_bg_')
@@ -1479,9 +1480,11 @@
                     ? canvas.toDataURL('image/png')
                     : isPromoCover
                         ? makePromoCoverDataUrlWithinLimit(canvas)
-                        : isHeroSlide
-                            ? makeHeroDataUrlWithinLimit(canvas)
-                            : canvas.toDataURL('image/jpeg', 0.85);
+                        : isLandingMainHero
+                            ? canvas.toDataURL('image/jpeg', 0.95)
+                            : isHeroSlide
+                                ? makeHeroDataUrlWithinLimit(canvas)
+                                : canvas.toDataURL('image/jpeg', 0.85);
 
                 if (window.activeAuthorIndex !== null) {
                     const idx = window.activeAuthorIndex;
@@ -1787,11 +1790,17 @@
             return typeof value === 'string' && /^data:image\/[a-zA-Z0-9.+-]+;base64,/.test(value);
         }
 
-        async function uploadDataUrlImage(dataUrl, slot, maxWidth, maxHeight) {
+        async function uploadDataUrlImage(dataUrl, slot, maxWidth, maxHeight, options = {}) {
             const response = await fetch('api/upload.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ dataUrl, slot, maxWidth, maxHeight })
+                body: JSON.stringify({
+                    dataUrl,
+                    slot,
+                    maxWidth,
+                    maxHeight,
+                    preserveSize: Boolean(options.preserveSize)
+                })
             });
             const raw = await response.text();
             let payload = null;
@@ -1808,11 +1817,11 @@
 
         async function replaceMainPageBase64WithUploads(data) {
             const cache = new Map();
-            const uploadOrReuse = (src, slot, maxWidth, maxHeight) => {
+            const uploadOrReuse = (src, slot, maxWidth, maxHeight, options = {}) => {
                 if (!isImageDataUrl(src)) return Promise.resolve(src);
-                const key = `${slot}:${src.slice(0, 64)}:${src.length}`;
+                const key = `${slot}:${src.slice(0, 64)}:${src.length}:${options.preserveSize ? '1' : '0'}`;
                 if (!cache.has(key)) {
-                    cache.set(key, uploadDataUrlImage(src, slot, maxWidth, maxHeight));
+                    cache.set(key, uploadDataUrlImage(src, slot, maxWidth, maxHeight, options));
                 }
                 return cache.get(key);
             };
@@ -1821,7 +1830,7 @@
                 for (let i = 0; i < data.heroSlides.length; i++) {
                     const slide = data.heroSlides[i];
                     if (!slide) continue;
-                    slide.background = await uploadOrReuse(slide.background, `hero_${i}`, 1520, 420);
+                    slide.background = await uploadOrReuse(slide.background, `hero_${i}`, 8192, 8192, { preserveSize: true });
                 }
             }
 

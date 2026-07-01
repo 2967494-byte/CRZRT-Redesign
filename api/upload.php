@@ -22,6 +22,7 @@ $dataUrl = $data['dataUrl'] ?? '';
 $slot = preg_replace('/[^a-z0-9_-]+/i', '_', (string)($data['slot'] ?? 'image'));
 $maxWidth = (int)($data['maxWidth'] ?? 1920);
 $maxHeight = (int)($data['maxHeight'] ?? 1080);
+$preserveSize = !empty($data['preserveSize']) || preg_match('/^hero_\d+$/', $slot);
 $targetMaxBytes = 300 * 1024;
 if (strpos($slot, 'obuchenie_cal_promo') !== false
     || strpos($slot, 'obuchenie_testing') !== false
@@ -34,6 +35,9 @@ if (strpos($slot, 'hero') !== false
     || strpos($slot, 'banner') !== false
     || strpos($slot, 'promo') !== false) {
     $targetMaxBytes = 1.2 * 1024 * 1024; // 1.2 MB
+}
+if ($preserveSize) {
+    $targetMaxBytes = 8 * 1024 * 1024; // 8 MB for landing hero banners
 }
 
 if (!is_string($dataUrl) || strpos($dataUrl, 'data:image/') !== 0) {
@@ -80,8 +84,20 @@ if ($srcW <= 0 || $srcH <= 0) {
 
 $maxWidth = max(1, min($maxWidth, 3840));
 $maxHeight = max(1, min($maxHeight, 3840));
+$hardMaxDimension = $preserveSize ? 8192 : 3840;
+if ($preserveSize) {
+    $maxWidth = min($maxWidth, $hardMaxDimension);
+    $maxHeight = min($maxHeight, $hardMaxDimension);
+}
 
-$ratio = min($maxWidth / $srcW, $maxHeight / $srcH, 1.0);
+if ($preserveSize) {
+    $ratio = 1.0;
+    if ($srcW > $hardMaxDimension || $srcH > $hardMaxDimension) {
+        $ratio = min($hardMaxDimension / $srcW, $hardMaxDimension / $srcH);
+    }
+} else {
+    $ratio = min($maxWidth / $srcW, $maxHeight / $srcH, 1.0);
+}
 $dstW = max(1, (int)round($srcW * $ratio));
 $dstH = max(1, (int)round($srcH * $ratio));
 
@@ -101,7 +117,7 @@ if (!is_dir($uploadDir) && !mkdir($uploadDir, 0775, true) && !is_dir($uploadDir)
     exit;
 }
 
-$quality = 82;
+$quality = $preserveSize ? 92 : 82;
 $tries = 0;
 $savedPath = null;
 $filename = '';
@@ -109,7 +125,7 @@ $publicUrl = '';
 $currentW = $dstW;
 $currentH = $dstH;
 
-while ($tries < 10) {
+while ($tries < 12) {
     $tries++;
     $filename = sprintf('%s_%s_%s.webp', $slot, date('YmdHis'), bin2hex(random_bytes(3)));
     $savedPath = $uploadDir . '/' . $filename;
@@ -129,6 +145,14 @@ while ($tries < 10) {
     }
 
     @unlink($savedPath);
+    if ($preserveSize) {
+        if ($quality > 78) {
+            $quality = max(78, $quality - 4);
+            continue;
+        }
+        break;
+    }
+
     if ($quality > 52) {
         $quality = max(52, $quality - 8);
         continue;
@@ -155,7 +179,8 @@ imagedestroy($work);
 
 if (!$publicUrl) {
     http_response_code(413);
-    echo json_encode(['success' => false, 'error' => 'Не удалось ужать изображение до 300 КБ']);
+    $limitLabel = $preserveSize ? '8 МБ' : '300 КБ';
+    echo json_encode(['success' => false, 'error' => "Не удалось ужать изображение до {$limitLabel}"]);
     exit;
 }
 

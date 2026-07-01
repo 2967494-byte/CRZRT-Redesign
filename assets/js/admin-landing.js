@@ -196,7 +196,7 @@
       <div class="form-group hero-slide-upload-group" style="margin-bottom:0;">
         <label>${label}</label>
         <div class="hero-slide-frame hero-slide-frame--empty" data-upload-frame-for="${id}">
-          <span class="hero-slide-frame__empty">1520×420</span>
+          <span class="hero-slide-frame__empty">пропорции 1520×420</span>
           <img id="${id}_preview" class="hero-slide-frame__img" src="" alt="">
         </div>
         <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}">
@@ -276,7 +276,7 @@
           <div class="obuchenie-hero-grid" style="margin-top: 15px;">
             <!-- Left: Banner upload & Preview -->
             <div class="obuchenie-hero-banner-col">
-              ${heroBgUploadShell(`m_hero_bg_${i}`, 'Фон слайда (как hero_section.png, ~1520×420)')}
+              ${heroBgUploadShell(`m_hero_bg_${i}`, 'Фон слайда (пропорции ~1520×420, сохраняется исходное разрешение)')}
               
               <div style="margin-top:20px;">
                 <label style="font-weight:600; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">Предпросмотр готового баннера с наложенным текстом</label>
@@ -915,6 +915,9 @@
   }
 
   function getCroppedCanvasOptions(uploadId) {
+    if (uploadId.startsWith('m_hero_bg_')) {
+      return { imageSmoothingEnabled: true, imageSmoothingQuality: 'high' };
+    }
     const [width, height] = getCropSize(uploadId);
     const opts = { width, height, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' };
     if (isPartnerUploadId(uploadId)) {
@@ -950,6 +953,10 @@
     return [1200, 675];
   }
 
+  function isLandingMainHeroUploadId(uploadId) {
+    return Boolean(uploadId && uploadId.startsWith('m_hero_bg_'));
+  }
+
   window.AdminLanding = {
     DEFAULT_LANDING_MAIN,
     migrateMainPageData,
@@ -958,6 +965,7 @@
     pickImage,
     clearImage,
     applyCroppedImage,
+    isLandingMainHeroUploadId,
     getAspect,
     getCropSize,
     PARTNER_LOGO_CROP,
