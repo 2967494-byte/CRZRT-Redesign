@@ -176,22 +176,21 @@
     });
   }
 
+  function formatIsoDate(year, monthIndex, day) {
+    return year + '-' + String(monthIndex + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+  }
+
   function openCalendarModal(year, monthIndex, day) {
     var modal = document.getElementById('calendar-course-modal');
     if (!modal) return;
 
-    var targetDate = new Date(year, monthIndex, day);
+    var targetIso = formatIsoDate(year, monthIndex, day);
     var dateLabel = day + ' ' + MONTH_NAMES_GENITIVE[monthIndex] + ' ' + year;
 
     var coursesOnDate = COURSE_REGISTRY.filter(function (course) {
-      if (!course.active) return false;
+      if (!course || course.active === false) return false;
       if (!course.dateFrom) return false;
-
-      var parts = course.dateFrom.split('-');
-      if (parts.length !== 3) return false;
-      var start = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-
-      return targetDate.getTime() === start.getTime();
+      return String(course.dateFrom).trim() === targetIso;
     });
 
     renderCoursesInModal(coursesOnDate, dateLabel);
@@ -329,11 +328,15 @@
   }
 
   document.addEventListener('obuchenieContentReady', function (ev) {
-    var days = ev.detail && ev.detail.calendar && ev.detail.calendar.courseDaysByMonth;
-    if (days) setCourseDays(days);
+    var data = ev.detail && ev.detail.data;
+    if (!data) return;
 
-    if (ev.detail && ev.detail.courseRegistry) {
-      COURSE_REGISTRY = ev.detail.courseRegistry;
+    if (data.calendar && data.calendar.courseDaysByMonth) {
+      setCourseDays(data.calendar.courseDaysByMonth);
+    }
+
+    if (Array.isArray(data.courseRegistry)) {
+      COURSE_REGISTRY = data.courseRegistry;
     }
   });
 

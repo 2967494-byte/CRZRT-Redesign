@@ -2392,4 +2392,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   background: rgba(28, 28, 30, 0.3);
 }
 
+/* Bitrix24 online chat / site button widget */
+.b24-widget-button-shadow,
+.b24-widget-button-wrapper,
+.b24-widget-button-position-fixed,
+[data-b24-crm-button-cont] {
+  z-index: 9998 !important;
+}
 
