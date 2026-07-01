@@ -282,17 +282,21 @@
                 }
             }
                 // Refresh appropriate views
-                if (currentTarget === 'main-page') renderMainPageAdmin();
-                else if (currentTarget === 'ecp-page') renderEcpPageAdmin();
-                else if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
-                else if (currentTarget === 'support-page') renderSupportPageAdmin();
-                else if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
-                else if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();
-                else if (currentTarget === 'news-page') renderNewsPageAdmin();
-                else if (currentTarget === 'about-us') renderAboutUsAdmin();
-                else if (currentTarget === 'contacts') renderContactsAdmin();
-                else if (currentTarget === 'education') renderEducationAdmin();
-                else if (currentTarget === 'consulting') renderConsultingAdmin();
+                try {
+                    if (currentTarget === 'main-page') renderMainPageAdmin();
+                    else if (currentTarget === 'ecp-page') renderEcpPageAdmin();
+                    else if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
+                    else if (currentTarget === 'support-page') renderSupportPageAdmin();
+                    else if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
+                    else if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();
+                    else if (currentTarget === 'news-page') renderNewsPageAdmin();
+                    else if (currentTarget === 'about-us') renderAboutUsAdmin();
+                    else if (currentTarget === 'contacts') renderContactsAdmin();
+                    else if (currentTarget === 'education') renderEducationAdmin();
+                    else if (currentTarget === 'consulting') renderConsultingAdmin();
+                } catch (e) {
+                    console.error('Error rendering current target in syncAllDataFromServer:', currentTarget, e);
+                }
         }
 
         // Миграция со старой версии или инициализация по умолчанию
@@ -930,18 +934,23 @@
                 targetBlock.classList.add('active');
                 permissionDenied.style.display = 'none';
 
-                if (currentTarget === 'main-page') renderMainPageAdmin();
-                if (currentTarget === 'ecp-page') renderEcpPageAdmin();
-                if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
-                if (currentTarget === 'support-page') renderSupportPageAdmin();
-                if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
-                if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();
-                if (currentTarget === 'news-page') renderNewsPageAdmin();
-                if (currentTarget === 'consulting') renderConsultingAdmin();
-                if (currentTarget === 'education') renderEducationAdmin();
-                if (currentTarget === 'users') renderUsers();
-                if (currentTarget === 'about-us') renderAboutUsAdmin();
-                if (currentTarget === 'contacts') renderContactsAdmin();
+                try {
+                    if (currentTarget === 'main-page') renderMainPageAdmin();
+                    else if (currentTarget === 'ecp-page') renderEcpPageAdmin();
+                    else if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
+                    else if (currentTarget === 'support-page') renderSupportPageAdmin();
+                    else if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
+                    else if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();
+                    else if (currentTarget === 'news-page') renderNewsPageAdmin();
+                    else if (currentTarget === 'consulting') renderConsultingAdmin();
+                    else if (currentTarget === 'education') renderEducationAdmin();
+                    else if (currentTarget === 'users') renderUsers();
+                    else if (currentTarget === 'about-us') renderAboutUsAdmin();
+                    else if (currentTarget === 'contacts') renderContactsAdmin();
+                } catch (e) {
+                    console.error('Error rendering current target in updateAccess:', currentTarget, e);
+                    alert('Ошибка при отрисовке вкладки ' + currentTarget + ': ' + e.message + '\n\nПожалуйста, отправьте скриншот этой ошибки.');
+                }
 
                 const gBtn = document.getElementById('globalSaveBtn');
                 if (gBtn) {
