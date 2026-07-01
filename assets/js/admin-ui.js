@@ -293,10 +293,6 @@
                 else if (currentTarget === 'contacts') renderContactsAdmin();
                 else if (currentTarget === 'education') renderEducationAdmin();
                 else if (currentTarget === 'consulting') renderConsultingAdmin();
-                
-            } catch (e) {
-                console.warn("Failed to sync some data from server, using local/defaults", e);
-            }
         }
 
         // Миграция со старой версии или инициализация по умолчанию
