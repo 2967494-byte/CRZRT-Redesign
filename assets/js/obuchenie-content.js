@@ -1437,7 +1437,7 @@
     }
   }
 
-  function renderObucheniePage(data) {
+  function renderObucheniePage(data, isApi = false) {
     activeCourseRegistry = Array.isArray(data.courseRegistry) ? data.courseRegistry : [];
     renderHero(data.hero);
     renderNavCards(data.navCards);
@@ -1446,19 +1446,19 @@
     renderCourseCards(data.courseCards, data.courseRegistry);
     renderTestingBanner(data.testingBanner);
     setupEnrollModal();
-    document.dispatchEvent(new CustomEvent('obuchenieContentReady', { detail: data }));
+    document.dispatchEvent(new CustomEvent('obuchenieContentReady', { detail: { data, isApi } }));
   }
 
   async function initObuchenieContent() {
     try {
       const localData = loadObuchenieDataFromLocal();
       const initialData = localData || migrateObucheniePageData(null);
-      renderObucheniePage(initialData);
+      renderObucheniePage(initialData, false);
       markObuchenieContentReady();
 
       const apiData = await loadObuchenieDataFromApi();
       if (apiData) {
-        renderObucheniePage(apiData);
+        renderObucheniePage(apiData, true);
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(apiData));
         } catch (error) {

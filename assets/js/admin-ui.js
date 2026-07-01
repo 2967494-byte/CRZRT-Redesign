@@ -13,6 +13,16 @@
             }
         } catch(e) { console.error('DB Sync Error:', e); }
 
+        function safeParseJson(str, fallback = null) {
+            if (!str || str === 'undefined' || str === 'null') return fallback;
+            try {
+                return JSON.parse(str);
+            } catch (e) {
+                console.warn('JSON parse warning:', e, 'for string:', str);
+                return fallback;
+            }
+        }
+
         // Global Variables for Admin Panel
         let cropper;
         let imageInput, uploadWrapper, imageToCrop, cropperWrapper, cropperActions;
@@ -103,7 +113,7 @@
             'users@crzrt.ru': { password: 'password', name: 'Менеджер Кадров', permissions: ['users'] }
         };
 
-        let usersDb = JSON.parse(localStorage.getItem('crzrt_users'));
+        let usersDb = safeParseJson(localStorage.getItem('crzrt_users'));
         const defaultMainData = AdminLanding.DEFAULT_LANDING_MAIN;
 
         const defaultAboutData = {
@@ -122,14 +132,14 @@
             requisites: 'АО «ЦРЗ РТ»\nИНН 1655291703\nКПП 165501001\nОГРН 1141690029800'
         };
         let mainPageData = AdminLanding.migrateMainPageData(
-            JSON.parse(localStorage.getItem('crzrt_main_page_data') || 'null')
+            safeParseJson(localStorage.getItem('crzrt_main_page_data'))
         );
         window.mainPageData = mainPageData;
         window.saveMainPageStateToMemory = function () {
             AdminLanding.collectMainPageFromForm(mainPageData);
         };
         let ecpPageData = AdminEcp.migrateEcpPageData(
-            JSON.parse(localStorage.getItem('crzrt_ecp_page_data') || 'null')
+            safeParseJson(localStorage.getItem('crzrt_ecp_page_data'))
         );
         window.ecpPageData = ecpPageData;
         window.saveEcpPageStateToMemory = function () {
@@ -139,7 +149,7 @@
         let consultingPageData = {};
         if (typeof AdminConsultingPage !== 'undefined') {
             consultingPageData = AdminConsultingPage.migrateConsultingPageData(
-                JSON.parse(localStorage.getItem('crzrt_consulting_page_data') || 'null')
+                safeParseJson(localStorage.getItem('crzrt_consulting_page_data'))
             );
         }
         window.consultingPageData = consultingPageData;
@@ -151,7 +161,7 @@
         let supportPageData = {};
         if (typeof AdminSupport !== 'undefined') {
             supportPageData = AdminSupport.migrateSupportPageData(
-                JSON.parse(localStorage.getItem('crzrt_support_page_data') || 'null')
+                safeParseJson(localStorage.getItem('crzrt_support_page_data'))
             );
         }
         window.supportPageData = supportPageData;
@@ -163,7 +173,7 @@
         let obucheniePageData = {};
         if (typeof AdminObuchenie !== 'undefined') {
             obucheniePageData = AdminObuchenie.migrateObucheniePageData(
-                JSON.parse(localStorage.getItem('crzrt_obuchenie_page_data') || 'null')
+                safeParseJson(localStorage.getItem('crzrt_obuchenie_page_data'))
             );
         }
         window.obucheniePageData = obucheniePageData;
@@ -175,7 +185,7 @@
         let knowledgePageData = {};
         if (typeof AdminKnowledge !== 'undefined') {
             knowledgePageData = AdminKnowledge.migrateKnowledgePageData(
-                JSON.parse(localStorage.getItem('crzrt_knowledge_page_data') || 'null')
+                safeParseJson(localStorage.getItem('crzrt_knowledge_page_data'))
             );
         }
         window.knowledgePageData = knowledgePageData;
@@ -187,7 +197,7 @@
         let newsPageData = {};
         if (typeof AdminNews !== 'undefined') {
             newsPageData = AdminNews.migrateNewsPageData(
-                JSON.parse(localStorage.getItem('crzrt_news_page_data') || 'null')
+                safeParseJson(localStorage.getItem('crzrt_news_page_data'))
             );
         }
         window.newsPageData = newsPageData;
@@ -216,8 +226,8 @@
                 'crzrt_consulting_data'
             ];
 
-            try {
-                for (const key of keys) {
+            for (const key of keys) {
+                try {
                     const resp = await fetch(`api/settings.php?key=${key}`);
                     if (resp.ok) {
                         const data = await resp.json();
@@ -267,7 +277,10 @@
                             }
                         }
                     }
+                } catch (e) {
+                    console.warn(`Failed to sync key ${key} from server:`, e);
                 }
+            }
                 // Refresh appropriate views
                 if (currentTarget === 'main-page') renderMainPageAdmin();
                 else if (currentTarget === 'ecp-page') renderEcpPageAdmin();

@@ -169,11 +169,19 @@
     grid.innerHTML = '';
 
     if (results.length === 0) {
-      grid.innerHTML =
-        '<div class="csr-no-results">' +
-          '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
-          '<p>По выбранным фильтрам курсы не найдены.<br>Попробуйте изменить параметры поиска.</p>' +
-        '</div>';
+      if (!isApiLoaded) {
+        grid.innerHTML =
+          '<div class="csr-loading">' +
+            '<div class="csr-spinner"></div>' +
+            '<p>Загрузка актуальных курсов...</p>' +
+          '</div>';
+      } else {
+        grid.innerHTML =
+          '<div class="csr-no-results">' +
+            '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+            '<p>По выбранным фильтрам курсы не найдены.<br>Попробуйте изменить параметры поиска.</p>' +
+          '</div>';
+      }
     } else {
       results.forEach(function (c) {
         grid.appendChild(renderCard(c));
@@ -210,6 +218,7 @@
   }
 
   var isInitialized = false;
+  var isApiLoaded = false;
 
   // Helper to select an option in a specific dropdown by its value
   function selectOptionByValue(val) {
@@ -384,9 +393,21 @@
 
   // Wait for content to be ready
   document.addEventListener('obuchenieContentReady', function (ev) {
-    if (ev.detail && ev.detail.courseRegistry) {
+    var data = ev.detail && ev.detail.data;
+    var isApi = ev.detail && ev.detail.isApi;
+
+    if (data) {
+      if (data.courseRegistry) {
+        COURSE_REGISTRY = data.courseRegistry;
+      }
+    } else if (ev.detail && ev.detail.courseRegistry) {
       COURSE_REGISTRY = ev.detail.courseRegistry;
     }
+
+    if (isApi) {
+      isApiLoaded = true;
+    }
+
     if (!isInitialized) {
       init();
     } else {
