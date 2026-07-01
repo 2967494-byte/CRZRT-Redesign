@@ -365,26 +365,31 @@
         }
 
         function renderConsultingPageAdmin() {
+            console.log('renderConsultingPageAdmin called. AdminConsultingPage:', typeof AdminConsultingPage);
             if (typeof AdminConsultingPage === 'undefined') return;
             AdminConsultingPage.renderConsultingPageAdmin(consultingPageData);
         }
 
         function renderSupportPageAdmin() {
+            console.log('renderSupportPageAdmin called. AdminSupport:', typeof AdminSupport);
             if (typeof AdminSupport === 'undefined') return;
             AdminSupport.renderSupportPageAdmin(supportPageData);
         }
 
         function renderObucheniePageAdmin() {
+            console.log('renderObucheniePageAdmin called. AdminObuchenie:', typeof AdminObuchenie);
             if (typeof AdminObuchenie === 'undefined') return;
             AdminObuchenie.renderObucheniePageAdmin(obucheniePageData);
         }
 
         function renderKnowledgePageAdmin() {
+            console.log('renderKnowledgePageAdmin called. AdminKnowledge:', typeof AdminKnowledge);
             if (typeof AdminKnowledge === 'undefined') return;
             AdminKnowledge.renderKnowledgePageAdmin(knowledgePageData);
         }
 
         function renderNewsPageAdmin() {
+            console.log('renderNewsPageAdmin called. AdminNews:', typeof AdminNews);
             if (typeof AdminNews === 'undefined') return;
             AdminNews.renderNewsPageAdmin(newsPageData);
         }
@@ -914,24 +919,40 @@
         });
 
         function updateAccess() {
-            if (currentPermissions.length === 0 && currentUserEmail === null) return;
+            console.log('--- updateAccess called ---');
+            console.log('currentTarget:', currentTarget);
+            console.log('currentPermissions:', currentPermissions);
+            console.log('currentUserEmail:', currentUserEmail);
+            if (currentPermissions.length === 0 && currentUserEmail === null) {
+                console.log('updateAccess: returned early because of no permissions & email');
+                return;
+            }
 
             const isSuperuser = currentPermissions.includes('superuser');
             const targetBlockId = blockTargetMap[currentTarget];
             const targetBlock = targetBlockId ? document.getElementById(targetBlockId) : null;
+            console.log('targetBlockId:', targetBlockId);
+            console.log('targetBlock found:', !!targetBlock);
 
-            blocks.forEach((block) => block.classList.remove('active'));
+            blocks.forEach((block) => {
+                block.classList.remove('active');
+            });
 
             if (!targetBlock) {
+                console.log('updateAccess: targetBlock not found, showing permissionDenied');
                 permissionDenied.style.display = 'block';
                 return;
             }
 
             const requiredTarget = targetBlock.getAttribute('data-required-role') || currentTarget;
             const canAccess = isSuperuser || currentPermissions.includes(requiredTarget);
+            console.log('requiredTarget:', requiredTarget);
+            console.log('canAccess:', canAccess);
 
             if (canAccess) {
                 targetBlock.classList.add('active');
+                console.log('targetBlock active class added. Classes now:', targetBlock.className);
+                console.log('Computed display style for targetBlock:', window.getComputedStyle(targetBlock).display);
                 permissionDenied.style.display = 'none';
 
                 try {
