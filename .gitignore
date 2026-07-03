@@ -5,4 +5,4 @@ dist/
 *.log
 .agent/
 .gemini/
-.antigravity/
+api/bitrix-config.local.php

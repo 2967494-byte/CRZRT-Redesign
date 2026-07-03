@@ -164,6 +164,31 @@
       : {};
   }
 
+  async function syncCourseLeadToBitrix(course) {
+    const response = await fetch('api/bitrix-lead-course.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({
+        title: course.title,
+        dateFrom: course.dateFrom,
+        dateTo: course.dateTo,
+        durationDays: course.durationDays,
+        format: course.format,
+        price: course.price
+      })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.success || !result.leadId) {
+      const details = result.details
+        ? (typeof result.details === 'string' ? result.details : JSON.stringify(result.details))
+        : '';
+      const message = result.error || `HTTP ${response.status}`;
+      throw new Error(details ? `${message} (${details})` : message);
+    }
+    return result.leadId;
+  }
+
   async function persistPageData(message) {
     if (saving) return;
     saving = true;
@@ -176,6 +201,7 @@
       const response = await fetch('api/settings.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ key: STORAGE_KEY, value: pageData })
       });
       const result = await response.json();
@@ -246,6 +272,9 @@
     els.formDescription.innerHTML = descHtml;
 
     els.formPrice.value = course?.price || '';
+    if (els.formBitrixCatalogId) {
+      els.formBitrixCatalogId.value = course?.bitrixCourseElementId ? String(course.bitrixCourseElementId) : '';
+    }
     els.formForIndividuals.checked = course ? course.forIndividuals !== false : true;
     els.formForLegalEntities.checked = course ? course.forLegalEntities !== false : true;
 
@@ -337,6 +366,9 @@
       if (bitrixFormUr) bitrixFormUr = await api.enrichBitrixFormRef(bitrixFormUr);
     }
 
+    const existingIndex = courses.findIndex((course) => course.id === (els.formId.value || ''));
+    const existingLeadId = existingIndex >= 0 ? courses[existingIndex].bitrixLeadId : null;
+
     const payload = {
       id: els.formId.value || (api.createCourseId ? api.createCourseId() : `course_${Date.now()}`),
       title: els.formTitle.value.trim(),
@@ -345,6 +377,9 @@
       durationDays: Math.max(1, parseInt(els.formDurationDays.value, 10) || 1),
       description: els.formDescription.innerHTML,
       price: els.formPrice.value.trim(),
+      bitrixCourseElementId: els.formBitrixCatalogId?.value
+        ? parseInt(els.formBitrixCatalogId.value, 10) || null
+        : null,
       forIndividuals: audience.forIndividuals,
       forLegalEntities: audience.forLegalEntities,
       forCustomers: audience.forCustomers,
@@ -353,6 +388,7 @@
       is223fz: audience.is223fz,
       bitrixFormFl,
       bitrixFormUr,
+      bitrixLeadId: existingLeadId || null,
       speakers: [],
       options: audience.options,
       active: true
@@ -362,7 +398,9 @@
       ? api.normalizeCourseRegistryItem(payload, courses.length)
       : payload;
 
-    const existingIndex = courses.findIndex((course) => course.id === normalized.id);
+    const isNew = existingIndex < 0;
+    let bitrixSyncNote = '';
+
     if (existingIndex >= 0) {
       courses[existingIndex] = { ...courses[existingIndex], ...normalized };
     } else {
@@ -370,9 +408,28 @@
     }
 
     courses = normalizeCourses(courses);
+
+    const needsBitrixLead = isNew || !normalized.bitrixLeadId;
+    if (needsBitrixLead) {
+      try {
+        const leadId = await syncCourseLeadToBitrix(normalized);
+        const courseIndex = courses.findIndex((course) => course.id === normalized.id);
+        if (courseIndex >= 0) {
+          courses[courseIndex].bitrixLeadId = leadId;
+        }
+        bitrixSyncNote = `, лид Bitrix24 #${leadId}`;
+      } catch (syncError) {
+        console.error('Bitrix lead sync failed', syncError);
+        const errorText = syncError.message || 'неизвестная ошибка';
+        window.alert(`Курс сохранён на сайте, но лид в Bitrix24 не создан: ${errorText}`);
+        bitrixSyncNote = ', лид Bitrix24 не создан';
+      }
+    }
+
     closeModal();
     renderTable();
-    await persistPageData(existingIndex >= 0 ? 'Курс обновлён' : 'Курс добавлен');
+    const baseMessage = existingIndex >= 0 ? 'Курс обновлён' : 'Курс добавлен';
+    await persistPageData(`${baseMessage}${bitrixSyncNote}`);
   }
 
   async function deleteCourse(courseId) {
@@ -601,7 +658,7 @@
     const authError = $('authError');
 
     try {
-      const response = await fetch('api/auth.php?action=check');
+      const response = await fetch('api/auth.php?action=check', { credentials: 'same-origin' });
       const data = await response.json();
       if (data.authenticated) {
         authModal.style.display = 'none';
@@ -624,6 +681,7 @@
         const response = await fetch('api/auth.php?action=login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
           body: JSON.stringify({ email, password })
         });
         const data = await response.json();
@@ -698,6 +756,7 @@
     els.formDescription = $('courseFormDescription');
     els.wysiwygBtns = document.querySelectorAll('.wysiwyg-btn');
     els.formPrice = $('courseFormPrice');
+    els.formBitrixCatalogId = $('courseFormBitrixCatalogId');
     els.formForIndividuals = $('courseFormForIndividuals');
     els.formForLegalEntities = $('courseFormForLegalEntities');
     els.formAudienceGroup = $('courseFormAudienceGroup');

@@ -452,24 +452,18 @@
     const course = activeCourseRegistry.find((item) => item.id === courseId);
     const audienceType = document.getElementById('enroll-audience-type')?.value === 'legal' ? 'legal' : 'individual';
     const bitrixForm = course ? await getCourseBitrixForm(course, audienceType) : null;
-    const useEmbed = Boolean(bitrixForm?.captchaEnabled);
 
-    if (form) form.hidden = useEmbed;
+    if (form) form.hidden = false;
     if (embed) {
-      embed.hidden = !useEmbed;
+      embed.hidden = true;
       embed.innerHTML = '';
-      if (useEmbed && bitrixForm) {
-        mountBitrixInlineForm(embed, bitrixForm.id, bitrixForm.sec);
-      }
     }
 
-    if (!useEmbed) {
-      configureEnrollSourceSelect(bitrixForm);
-      const emailInput = document.getElementById('enroll-email');
-      if (emailInput) emailInput.required = bitrixForm?.emailRequired !== false;
-    }
+    configureEnrollSourceSelect(bitrixForm);
+    const emailInput = document.getElementById('enroll-email');
+    if (emailInput) emailInput.required = bitrixForm?.emailRequired !== false;
 
-    return { bitrixForm, useEmbed };
+    return { bitrixForm, useEmbed: false };
   }
 
   function normalizeCourseAudience(raw) {
@@ -528,6 +522,8 @@
       is223fz: Boolean(raw?.is223fz),
       bitrixFormFl: normalizeBitrixForm(raw?.bitrixFormFl),
       bitrixFormUr: normalizeBitrixForm(raw?.bitrixFormUr),
+      bitrixLeadId: raw?.bitrixLeadId ? parseInt(raw.bitrixLeadId, 10) || null : null,
+      bitrixCourseElementId: raw?.bitrixCourseElementId ? parseInt(raw.bitrixCourseElementId, 10) || null : null,
       speakers,
       options,
       active: raw?.active !== false
@@ -708,33 +704,48 @@
     const courseId = form?.dataset?.courseId || '';
     const course = activeCourseRegistry.find((item) => item.id === courseId);
     const audienceType = document.getElementById('enroll-audience-type')?.value === 'legal' ? 'legal' : 'individual';
-    const bitrixForm = audienceType === 'legal' ? course?.bitrixFormUr : course?.bitrixFormFl;
+    const sourceSelect = document.getElementById('enroll-source');
+    const sourceValue = sourceSelect?.value || '';
+    const sourceLabel = sourceSelect?.selectedOptions?.[0]?.text?.trim() || '';
 
-    if (!bitrixForm?.id || !bitrixForm?.sec) {
-      throw new Error('Для этого курса не настроена CRM-форма Bitrix24. Укажите ID формы в админке.');
+    const name = document.getElementById('enroll-name')?.value.trim() || '';
+    const phone = document.getElementById('enroll-phone')?.value.trim() || '';
+    const email = document.getElementById('enroll-email')?.value.trim() || '';
+    const company = document.getElementById('enroll-company')?.value.trim() || '';
+
+    if (!name || !phone) {
+      throw new Error('Заполните имя и телефон');
     }
 
-    if (bitrixForm.captchaEnabled) {
-      throw new Error('Эта форма отправляется через встроенный виджет Bitrix24.');
-    }
-
-    const { values, required } = buildBitrixEnrollPayload(bitrixForm, audienceType);
-
-    const response = await fetch('api/bitrix-enroll.php', {
+    const response = await fetch('api/bitrix-lead-enroll.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        formId: parseInt(bitrixForm.id, 10),
-        sec: bitrixForm.sec,
-        values,
-        required
+        name,
+        phone,
+        email,
+        company,
+        audienceType,
+        source: sourceValue,
+        sourceLabel,
+        courseTitle: course?.title || '',
+        dateFrom: course?.dateFrom || '',
+        dateTo: course?.dateTo || '',
+        durationDays: course?.durationDays || 1,
+        format: course?.format || 'och',
+        price: course?.price || '',
+        bitrixCourseElementId: course?.bitrixCourseElementId || null,
+        forCustomers: Boolean(course?.forCustomers),
+        forSuppliers: Boolean(course?.forSuppliers),
+        is44fz: Boolean(course?.is44fz),
+        is223fz: Boolean(course?.is223fz),
+        options: Array.isArray(course?.options) ? course.options : []
       })
     });
 
     const result = await response.json().catch(() => ({}));
     if (!response.ok || !result.success) {
-      const details = result.details?.result?.message || result.error || 'Не удалось отправить заявку в Bitrix24';
-      throw new Error(details);
+      throw new Error(result.error || 'Не удалось отправить заявку в Bitrix24');
     }
 
     return result;
