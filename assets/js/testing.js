@@ -49,7 +49,10 @@
     fetch('api/settings.php?key=crzrt_obuchenie_page_data')
       .then(res => res.json())
       .then(response => {
-        const data = response.data || {};
+        let data = response.data || {};
+        if (typeof data === 'string') {
+          try { data = JSON.parse(data); } catch(e) { data = {}; }
+        }
         ALL_TEST_QUESTIONS = data.quizQuestions || [];
         
         if (!ALL_TEST_QUESTIONS.length) {
