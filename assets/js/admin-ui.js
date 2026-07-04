@@ -1202,6 +1202,7 @@
         if (imageInput) {
             imageInput.addEventListener('change', function (e) {
                 handleFiles(this.files);
+                this.value = '';
             });
         }
 
@@ -1228,10 +1229,6 @@
             const files = dt.files;
             handleFiles(files);
         }
-
-        imageInput.addEventListener('change', function (e) {
-            handleFiles(this.files);
-        });
 
         const docFileInput = document.getElementById('docFileInput');
         if (docFileInput) {

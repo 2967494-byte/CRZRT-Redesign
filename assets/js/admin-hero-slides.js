@@ -134,6 +134,13 @@
     return document.getElementById(`${id}_val`)?.value || '';
   }
 
+  function readColorForCollect(colorId) {
+    const text = document.getElementById(colorId)?.value?.trim() || '';
+    if (/^#[0-9A-Fa-f]{6}$/.test(text)) return text;
+    if (/^[0-9A-Fa-f]{6}$/.test(text)) return `#${text}`;
+    return document.getElementById(`${colorId}_picker`)?.value || '';
+  }
+
   function collect(prefix, options) {
     const { subtitleUseBottom = false } = options || {};
     const slides = [];
@@ -141,7 +148,7 @@
     for (let i = 0; i < count; i++) {
       const slide = {
         title: document.getElementById(`${prefix}_title_${i}`)?.value || '',
-        titleColor: document.getElementById(`${prefix}_title_color_${i}`)?.value || '',
+        titleColor: readColorForCollect(`${prefix}_title_color_${i}`),
         titleTop: parseInt(document.getElementById(`${prefix}_title_top_${i}`)?.value || '122', 10),
         titleLeft: parseInt(document.getElementById(`${prefix}_title_left_${i}`)?.value || '70', 10),
         titleFontSize: document.getElementById(`${prefix}_title_size_${i}`)?.value || '',
@@ -149,7 +156,7 @@
         titleItalic: document.getElementById(`${prefix}_title_italic_${i}`)?.checked || false,
         titleUnderline: document.getElementById(`${prefix}_title_underline_${i}`)?.checked || false,
         subtitle: document.getElementById(`${prefix}_subtitle_${i}`)?.value || '',
-        subtitleColor: document.getElementById(`${prefix}_subtitle_color_${i}`)?.value || '',
+        subtitleColor: readColorForCollect(`${prefix}_subtitle_color_${i}`),
         subtitleLeft: parseInt(document.getElementById(`${prefix}_subtitle_left_${i}`)?.value || '70', 10),
         subtitleFontSize: document.getElementById(`${prefix}_subtitle_size_${i}`)?.value || '',
         subtitleFontWeight: document.getElementById(`${prefix}_subtitle_weight_${i}`)?.value || '',
@@ -167,6 +174,34 @@
     return slides;
   }
 
+  function resolveColor(colorId, fallback) {
+    const text = document.getElementById(colorId)?.value?.trim() || '';
+    if (/^#[0-9A-Fa-f]{6}$/.test(text)) return text;
+    if (/^[0-9A-Fa-f]{6}$/.test(text)) return `#${text}`;
+    const picker = document.getElementById(`${colorId}_picker`)?.value || '';
+    if (/^#[0-9A-Fa-f]{6}$/.test(picker)) return picker;
+    return fallback || '#ffffff';
+  }
+
+  function wireColorField(colorId, refresh) {
+    const color = document.getElementById(colorId);
+    const colorPicker = document.getElementById(`${colorId}_picker`);
+    if (colorPicker) {
+      colorPicker.addEventListener('input', (e) => {
+        if (color) color.value = e.target.value.toUpperCase();
+        refresh();
+      });
+    }
+    if (color) {
+      color.addEventListener('input', (e) => {
+        let v = String(e.target.value || '').trim();
+        if (/^[0-9A-Fa-f]{6}$/.test(v)) v = `#${v}`;
+        if (/^#[0-9A-Fa-f]{6}$/.test(v) && colorPicker) colorPicker.value = v.toLowerCase();
+        refresh();
+      });
+    }
+  }
+
   function applySlidePreviewStyles(i, config) {
     const { prefix, subtitleUseBottom, defaults } = config;
     const d = defaults || {};
@@ -178,8 +213,8 @@
     const bg = readImageVal(`${prefix}_bg_${i}`);
     preview.style.backgroundImage = bg ? `url('${bg.replace(/'/g, "\\'")}')` : '';
 
-    const titleColor = document.getElementById(`${prefix}_title_color_${i}`)?.value || d.titleColor || '#ffffff';
-    const subtitleColor = document.getElementById(`${prefix}_subtitle_color_${i}`)?.value || d.subtitleColor || '#ffffff';
+    const titleColor = resolveColor(`${prefix}_title_color_${i}`, d.titleColor || '#ffffff');
+    const subtitleColor = resolveColor(`${prefix}_subtitle_color_${i}`, d.subtitleColor || '#ffffff');
     const titleTop = parseFloat(document.getElementById(`${prefix}_title_top_${i}`)?.value) || d.titleTop || 122;
     const titleLeft = parseFloat(document.getElementById(`${prefix}_title_left_${i}`)?.value) || d.titleLeft || 70;
     const subtitleLeft = parseFloat(document.getElementById(`${prefix}_subtitle_left_${i}`)?.value) || d.subtitleLeft || 70;
@@ -233,8 +268,7 @@
 
     ['title', 'subtitle'].forEach((field) => {
       const input = document.getElementById(`${prefix}_${field}_${i}`);
-      const color = document.getElementById(`${prefix}_${field}_color_${i}`);
-      const colorPicker = document.getElementById(`${prefix}_${field}_color_${i}_picker`);
+      const colorId = `${prefix}_${field}_color_${i}`;
       const size = document.getElementById(`${prefix}_${field}_size_${i}`);
       const weight = document.getElementById(`${prefix}_${field}_weight_${i}`);
       const italic = document.getElementById(`${prefix}_${field}_italic_${i}`);
@@ -242,8 +276,7 @@
       const refresh = () => applySlidePreviewStyles(i, config);
 
       if (input) input.addEventListener('input', refresh);
-      if (color) color.addEventListener('input', refresh);
-      if (colorPicker) colorPicker.addEventListener('input', refresh);
+      wireColorField(colorId, refresh);
       if (size) size.addEventListener('input', refresh);
       if (weight) weight.addEventListener('change', refresh);
       if (italic) italic.addEventListener('change', refresh);

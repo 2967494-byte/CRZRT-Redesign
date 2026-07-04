@@ -733,6 +733,7 @@
       }
     },
     applyCroppedImage,
+    pickImage,
     getAspect,
     getCropSize,
     isObuchenieUploadId,
