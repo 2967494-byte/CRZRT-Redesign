@@ -202,26 +202,6 @@
     }
   }
 
-  function previewFontSizeCss(sizePx, fallbackPx) {
-    if (window.HeroSlides?.fontSizeCss) {
-      return window.HeroSlides.fontSizeCss(sizePx, fallbackPx);
-    }
-    const px = parseFloat(sizePx);
-    const value = Number.isFinite(px) && px > 0 ? px : fallbackPx;
-    return `calc((${value} / 1520) * 100cqw)`;
-  }
-
-  const previewResizeObservers = new WeakMap();
-
-  function observePreviewResize(previewEl, i, config) {
-    if (!previewEl || typeof ResizeObserver === 'undefined') return;
-    const prev = previewResizeObservers.get(previewEl);
-    if (prev) prev.disconnect();
-    const observer = new ResizeObserver(() => applySlidePreviewStyles(i, config));
-    observer.observe(previewEl);
-    previewResizeObservers.set(previewEl, observer);
-  }
-
   function applySlidePreviewStyles(i, config) {
     const { prefix, subtitleUseBottom, defaults } = config;
     const d = defaults || {};
@@ -238,23 +218,19 @@
     const titleTop = parseFloat(document.getElementById(`${prefix}_title_top_${i}`)?.value) || d.titleTop || 122;
     const titleLeft = parseFloat(document.getElementById(`${prefix}_title_left_${i}`)?.value) || d.titleLeft || 70;
     const subtitleLeft = parseFloat(document.getElementById(`${prefix}_subtitle_left_${i}`)?.value) || d.subtitleLeft || 70;
-    const titleDefaultSize = d.titleFontSize ?? 60;
-    const titleWidth = d.titleWidth ?? 745;
-    const subtitleDefaultSize = d.subtitleFontSize ?? 20;
-    const subtitleWidth = d.subtitleWidth ?? 602;
 
     if (titleLive) {
       titleLive.textContent = document.getElementById(`${prefix}_title_${i}`)?.value || '';
       titleLive.style.color = titleColor;
       titleLive.style.top = `calc((${titleTop} / 420) * 100%)`;
       titleLive.style.left = `calc((${titleLeft} / 1520) * 100%)`;
-      titleLive.style.width = `calc((${titleWidth} / 1520) * 100%)`;
       titleLive.style.maxWidth = `calc(100% - ((${titleLeft} / 1520) * 100%) - 10px)`;
       const titleSize = document.getElementById(`${prefix}_title_size_${i}`)?.value || '';
       const titleWeight = document.getElementById(`${prefix}_title_weight_${i}`)?.value || '';
       const titleItalic = document.getElementById(`${prefix}_title_italic_${i}`)?.checked || false;
       const titleUnderline = document.getElementById(`${prefix}_title_underline_${i}`)?.checked || false;
-      titleLive.style.fontSize = previewFontSizeCss(titleSize, titleDefaultSize);
+      if (titleSize) titleLive.style.fontSize = `${titleSize}px`;
+      else titleLive.style.removeProperty('font-size');
       if (titleWeight) titleLive.style.fontWeight = titleWeight; else titleLive.style.removeProperty('font-weight');
       titleLive.style.fontStyle = titleItalic ? 'italic' : '';
       titleLive.style.textDecoration = titleUnderline ? 'underline' : '';
@@ -264,7 +240,6 @@
       subtitleLive.textContent = document.getElementById(`${prefix}_subtitle_${i}`)?.value || '';
       subtitleLive.style.color = subtitleColor;
       subtitleLive.style.left = `calc((${subtitleLeft} / 1520) * 100%)`;
-      subtitleLive.style.width = `calc((${subtitleWidth} / 1520) * 100%)`;
       subtitleLive.style.maxWidth = `calc(100% - ((${subtitleLeft} / 1520) * 100%) - 10px)`;
       if (subtitleUseBottom) {
         const subtitleBottom = parseFloat(document.getElementById(`${prefix}_subtitle_bottom_${i}`)?.value) || d.subtitleBottom || 40;
@@ -279,7 +254,8 @@
       const subtitleWeight = document.getElementById(`${prefix}_subtitle_weight_${i}`)?.value || '';
       const subtitleItalic = document.getElementById(`${prefix}_subtitle_italic_${i}`)?.checked || false;
       const subtitleUnderline = document.getElementById(`${prefix}_subtitle_underline_${i}`)?.checked || false;
-      subtitleLive.style.fontSize = previewFontSizeCss(subtitleSize, subtitleDefaultSize);
+      if (subtitleSize) subtitleLive.style.fontSize = `${subtitleSize}px`;
+      else subtitleLive.style.removeProperty('font-size');
       if (subtitleWeight) subtitleLive.style.fontWeight = subtitleWeight; else subtitleLive.style.removeProperty('font-weight');
       subtitleLive.style.fontStyle = subtitleItalic ? 'italic' : '';
       subtitleLive.style.textDecoration = subtitleUnderline ? 'underline' : '';
@@ -325,7 +301,6 @@
       }
       wireSlideLivePreview(i, config);
       applySlidePreviewStyles(i, config);
-      observePreviewResize(document.getElementById(`${config.prefix}_live_preview_${i}`), i, config);
     });
   }
 
