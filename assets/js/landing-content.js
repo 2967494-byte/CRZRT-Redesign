@@ -366,7 +366,10 @@
       if (first.titleColor && first.titleColor !== '#000000') titleEl.style.color = first.titleColor;
       else titleEl.style.removeProperty('color');
       if (first.titleTop !== undefined) titleEl.style.top = `${first.titleTop}px`;
-      if (first.titleLeft !== undefined) titleEl.style.left = `${first.titleLeft}px`;
+      if (first.titleLeft !== undefined) {
+        titleEl.style.left = `${first.titleLeft}px`;
+        titleEl.style.maxWidth = `calc(100% - ${first.titleLeft}px - 10px)`;
+      }
       applyTypographyStyles(titleEl, first.titleFontSize, first.titleFontWeight, first.titleItalic, first.titleUnderline);
     }
     if (subEl) {
@@ -374,7 +377,10 @@
       if (first.subtitleColor && first.subtitleColor !== '#333333') subEl.style.color = first.subtitleColor;
       else subEl.style.removeProperty('color');
       if (first.subtitleTop !== undefined) subEl.style.top = `${first.subtitleTop}px`;
-      if (first.subtitleLeft !== undefined) subEl.style.left = `${first.subtitleLeft}px`;
+      if (first.subtitleLeft !== undefined) {
+        subEl.style.left = `${first.subtitleLeft}px`;
+        subEl.style.maxWidth = `calc(100% - ${first.subtitleLeft}px - 10px)`;
+      }
       applyTypographyStyles(subEl, first.subtitleFontSize, first.subtitleFontWeight, first.subtitleItalic, first.subtitleUnderline);
     }
     
@@ -427,7 +433,10 @@
       if (slide.titleColor && slide.titleColor !== '#000000') titleEl.style.color = slide.titleColor;
       else titleEl.style.removeProperty('color');
       if (slide.titleTop !== undefined) titleEl.style.top = `${slide.titleTop}px`;
-      if (slide.titleLeft !== undefined) titleEl.style.left = `${slide.titleLeft}px`;
+      if (slide.titleLeft !== undefined) {
+        titleEl.style.left = `${slide.titleLeft}px`;
+        titleEl.style.maxWidth = `calc(100% - ${slide.titleLeft}px - 10px)`;
+      }
       applyTypographyStyles(titleEl, slide.titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline);
     }
     if (subEl) {
@@ -435,7 +444,10 @@
       if (slide.subtitleColor && slide.subtitleColor !== '#333333') subEl.style.color = slide.subtitleColor;
       else subEl.style.removeProperty('color');
       if (slide.subtitleTop !== undefined) subEl.style.top = `${slide.subtitleTop}px`;
-      if (slide.subtitleLeft !== undefined) subEl.style.left = `${slide.subtitleLeft}px`;
+      if (slide.subtitleLeft !== undefined) {
+        subEl.style.left = `${slide.subtitleLeft}px`;
+        subEl.style.maxWidth = `calc(100% - ${slide.subtitleLeft}px - 10px)`;
+      }
       applyTypographyStyles(subEl, slide.subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline);
     }
     document.querySelectorAll('.hero-slide__dots .dot').forEach((dot, idx) => {

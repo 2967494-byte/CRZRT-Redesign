@@ -211,7 +211,10 @@
       titleEl.innerHTML = multilineHtml(hero?.title);
       titleEl.style.color = hero?.titleColor || DEFAULT_NEWS_PAGE.hero.titleColor;
       if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
-      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
+      if (hero?.titleLeft !== undefined) {
+        titleEl.style.left = `${hero.titleLeft}px`;
+        titleEl.style.maxWidth = `calc(100% - ${hero.titleLeft}px - 10px)`;
+      }
       applyTypographyStyles(titleEl, hero?.titleFontSize, hero?.titleFontWeight, hero?.titleItalic, hero?.titleUnderline);
     }
 
@@ -219,7 +222,10 @@
       subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
       subtitleEl.style.color = hero?.subtitleColor || DEFAULT_NEWS_PAGE.hero.subtitleColor;
       if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
-      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
+      if (hero?.subtitleLeft !== undefined) {
+        subtitleEl.style.left = `${hero.subtitleLeft}px`;
+        subtitleEl.style.maxWidth = `calc(100% - ${hero.subtitleLeft}px - 10px)`;
+      }
       applyTypographyStyles(subtitleEl, hero?.subtitleFontSize, hero?.subtitleFontWeight, hero?.subtitleItalic, hero?.subtitleUnderline);
       subtitleEl.hidden = !hasSubtitle;
     }
@@ -250,7 +256,10 @@
       titleEl.innerHTML = multilineHtml(hero?.title);
       titleEl.style.color = hero?.titleColor || DEFAULT_NEWS_PAGE.hero.titleColor;
       if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
-      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
+      if (hero?.titleLeft !== undefined) {
+        titleEl.style.left = `${hero.titleLeft}px`;
+        titleEl.style.maxWidth = `calc(100% - ${hero.titleLeft}px - 10px)`;
+      }
       applyTypographyStyles(titleEl, hero?.titleFontSize, hero?.titleFontWeight, hero?.titleItalic, hero?.titleUnderline);
     }
 
@@ -258,7 +267,10 @@
       subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
       subtitleEl.style.color = hero?.subtitleColor || DEFAULT_NEWS_PAGE.hero.subtitleColor;
       if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
-      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
+      if (hero?.subtitleLeft !== undefined) {
+        subtitleEl.style.left = `${hero.subtitleLeft}px`;
+        subtitleEl.style.maxWidth = `calc(100% - ${hero.subtitleLeft}px - 10px)`;
+      }
       applyTypographyStyles(subtitleEl, hero?.subtitleFontSize, hero?.subtitleFontWeight, hero?.subtitleItalic, hero?.subtitleUnderline);
       subtitleEl.hidden = !hasSubtitle;
     }

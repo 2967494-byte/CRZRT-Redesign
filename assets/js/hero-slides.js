@@ -110,7 +110,10 @@
         if (slide.titleColor && slide.titleColor !== titleColorFallback) titleEl.style.color = slide.titleColor;
         else titleEl.style.removeProperty('color');
         if (slide.titleTop !== undefined) titleEl.style.top = `${slide.titleTop}px`;
-        if (slide.titleLeft !== undefined) titleEl.style.left = `${slide.titleLeft}px`;
+        if (slide.titleLeft !== undefined) {
+          titleEl.style.left = `${slide.titleLeft}px`;
+          titleEl.style.maxWidth = `calc(100% - ${slide.titleLeft}px - 10px)`;
+        }
         applyTypographyStyles(titleEl, slide.titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline);
       }
 
@@ -125,7 +128,10 @@
           if (slide.subtitleTop !== undefined) subtitleEl.style.top = `${slide.subtitleTop}px`;
           subtitleEl.style.removeProperty('bottom');
         }
-        if (slide.subtitleLeft !== undefined) subtitleEl.style.left = `${slide.subtitleLeft}px`;
+        if (slide.subtitleLeft !== undefined) {
+          subtitleEl.style.left = `${slide.subtitleLeft}px`;
+          subtitleEl.style.maxWidth = `calc(100% - ${slide.subtitleLeft}px - 10px)`;
+        }
         applyTypographyStyles(subtitleEl, slide.subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline);
       }
 
@@ -166,7 +172,10 @@
         if (first.titleColor && first.titleColor !== titleColorFallback) titleEl.style.color = first.titleColor;
         else titleEl.style.removeProperty('color');
         if (first.titleTop !== undefined) titleEl.style.top = `${first.titleTop}px`;
-        if (first.titleLeft !== undefined) titleEl.style.left = `${first.titleLeft}px`;
+        if (first.titleLeft !== undefined) {
+          titleEl.style.left = `${first.titleLeft}px`;
+          titleEl.style.maxWidth = `calc(100% - ${first.titleLeft}px - 10px)`;
+        }
         applyTypographyStyles(titleEl, first.titleFontSize, first.titleFontWeight, first.titleItalic, first.titleUnderline);
       }
 
@@ -181,7 +190,10 @@
           if (first.subtitleTop !== undefined) subtitleEl.style.top = `${first.subtitleTop}px`;
           subtitleEl.style.removeProperty('bottom');
         }
-        if (first.subtitleLeft !== undefined) subtitleEl.style.left = `${first.subtitleLeft}px`;
+        if (first.subtitleLeft !== undefined) {
+          subtitleEl.style.left = `${first.subtitleLeft}px`;
+          subtitleEl.style.maxWidth = `calc(100% - ${first.subtitleLeft}px - 10px)`;
+        }
         applyTypographyStyles(subtitleEl, first.subtitleFontSize, first.subtitleFontWeight, first.subtitleItalic, first.subtitleUnderline);
       }
 
