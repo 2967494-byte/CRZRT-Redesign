@@ -2080,11 +2080,11 @@
 
         async function replaceObuchenieBase64WithUploads(data) {
             const cache = new Map();
-            const uploadOrReuse = (src, slot, maxWidth, maxHeight) => {
+            const uploadOrReuse = (src, slot, maxWidth, maxHeight, options = {}) => {
                 if (!isImageDataUrl(src)) return Promise.resolve(src);
-                const key = `${slot}:${src.slice(0, 64)}:${src.length}`;
+                const key = `${slot}:${src.slice(0, 64)}:${src.length}:${options.preserveSize ? '1' : '0'}`;
                 if (!cache.has(key)) {
-                    cache.set(key, uploadDataUrlImage(src, slot, maxWidth, maxHeight));
+                    cache.set(key, uploadDataUrlImage(src, slot, maxWidth, maxHeight, options));
                 }
                 return cache.get(key);
             };
@@ -2093,13 +2093,26 @@
                 for (let i = 0; i < data.heroSlides.length; i++) {
                     const slide = data.heroSlides[i];
                     if (!slide) continue;
-                    slide.background = await uploadOrReuse(slide.background, `obuchenie_hero_bg_${i}`, 1520, 420);
+                    slide.background = await uploadOrReuse(
+                        slide.background,
+                        `obuchenie_hero_bg_${i}`,
+                        1520,
+                        420,
+                        { preserveSize: true }
+                    );
                 }
             } else if (data.hero) {
-                data.hero.background = await uploadOrReuse(data.hero.background, 'obuchenie_hero_bg', 1520, 420);
+                data.hero.background = await uploadOrReuse(data.hero.background, 'obuchenie_hero_bg', 1520, 420, { preserveSize: true });
             }
             if (data.hero) {
                 data.hero.gavelImage = await uploadOrReuse(data.hero.gavelImage, 'obuchenie_hero_gavel', 420, 420);
+            }
+
+            if (Array.isArray(data.heroSlides) && data.heroSlides[0]) {
+                data.hero = {
+                    ...data.heroSlides[0],
+                    gavelImage: data.hero?.gavelImage || ''
+                };
             }
 
             if (data.calendar) {

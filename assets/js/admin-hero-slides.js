@@ -87,8 +87,8 @@
             <div style="margin-top:20px;">
               <label style="font-weight:600;display:block;margin-bottom:8px;font-size:0.9rem;color:var(--text-secondary);">Предпросмотр</label>
               <div class="${previewClass}" id="${prefix}_live_preview_${i}">
-                <div class="live-banner-title">${escapeAttr(slide.title)}</div>
-                <div class="live-banner-subtitle">${escapeAttr(slide.subtitle)}</div>
+                <div class="live-banner-title" id="${prefix}_live_title_${i}">${escapeAttr(slide.title)}</div>
+                <div class="live-banner-subtitle" id="${prefix}_live_subtitle_${i}">${escapeAttr(slide.subtitle)}</div>
               </div>
             </div>
           </div>
@@ -137,7 +137,7 @@
   function collect(prefix, options) {
     const { subtitleUseBottom = false } = options || {};
     const slides = [];
-    const count = document.querySelectorAll(`[id^="${prefix}_bg_"][type="hidden"]`).length;
+    const count = document.querySelectorAll(`input[id^="${prefix}_bg_"][id$="_val"]`).length;
     for (let i = 0; i < count; i++) {
       const slide = {
         title: document.getElementById(`${prefix}_title_${i}`)?.value || '',
@@ -167,6 +167,95 @@
     return slides;
   }
 
+  function applySlidePreviewStyles(i, config) {
+    const { prefix, subtitleUseBottom, defaults } = config;
+    const d = defaults || {};
+    const preview = document.getElementById(`${prefix}_live_preview_${i}`);
+    const titleLive = document.getElementById(`${prefix}_live_title_${i}`);
+    const subtitleLive = document.getElementById(`${prefix}_live_subtitle_${i}`);
+    if (!preview) return;
+
+    const bg = readImageVal(`${prefix}_bg_${i}`);
+    preview.style.backgroundImage = bg ? `url('${bg.replace(/'/g, "\\'")}')` : '';
+
+    const titleColor = document.getElementById(`${prefix}_title_color_${i}`)?.value || d.titleColor || '#ffffff';
+    const subtitleColor = document.getElementById(`${prefix}_subtitle_color_${i}`)?.value || d.subtitleColor || '#ffffff';
+    const titleTop = parseFloat(document.getElementById(`${prefix}_title_top_${i}`)?.value) || d.titleTop || 122;
+    const titleLeft = parseFloat(document.getElementById(`${prefix}_title_left_${i}`)?.value) || d.titleLeft || 70;
+    const subtitleLeft = parseFloat(document.getElementById(`${prefix}_subtitle_left_${i}`)?.value) || d.subtitleLeft || 70;
+
+    if (titleLive) {
+      titleLive.textContent = document.getElementById(`${prefix}_title_${i}`)?.value || '';
+      titleLive.style.color = titleColor;
+      titleLive.style.top = `calc((${titleTop} / 420) * 100%)`;
+      titleLive.style.left = `calc((${titleLeft} / 1520) * 100%)`;
+      titleLive.style.maxWidth = `calc(100% - ((${titleLeft} / 1520) * 100%) - 10px)`;
+      const titleSize = document.getElementById(`${prefix}_title_size_${i}`)?.value || '';
+      const titleWeight = document.getElementById(`${prefix}_title_weight_${i}`)?.value || '';
+      const titleItalic = document.getElementById(`${prefix}_title_italic_${i}`)?.checked || false;
+      const titleUnderline = document.getElementById(`${prefix}_title_underline_${i}`)?.checked || false;
+      if (titleSize) titleLive.style.fontSize = `${titleSize}px`; else titleLive.style.removeProperty('font-size');
+      if (titleWeight) titleLive.style.fontWeight = titleWeight; else titleLive.style.removeProperty('font-weight');
+      titleLive.style.fontStyle = titleItalic ? 'italic' : '';
+      titleLive.style.textDecoration = titleUnderline ? 'underline' : '';
+    }
+
+    if (subtitleLive) {
+      subtitleLive.textContent = document.getElementById(`${prefix}_subtitle_${i}`)?.value || '';
+      subtitleLive.style.color = subtitleColor;
+      subtitleLive.style.left = `calc((${subtitleLeft} / 1520) * 100%)`;
+      subtitleLive.style.maxWidth = `calc(100% - ((${subtitleLeft} / 1520) * 100%) - 10px)`;
+      if (subtitleUseBottom) {
+        const subtitleBottom = parseFloat(document.getElementById(`${prefix}_subtitle_bottom_${i}`)?.value) || d.subtitleBottom || 40;
+        subtitleLive.style.bottom = `calc((${subtitleBottom} / 420) * 100%)`;
+        subtitleLive.style.top = 'auto';
+      } else {
+        const subtitleTop = parseFloat(document.getElementById(`${prefix}_subtitle_top_${i}`)?.value) || d.subtitleTop || 213;
+        subtitleLive.style.top = `calc((${subtitleTop} / 420) * 100%)`;
+        subtitleLive.style.bottom = 'auto';
+      }
+      const subtitleSize = document.getElementById(`${prefix}_subtitle_size_${i}`)?.value || '';
+      const subtitleWeight = document.getElementById(`${prefix}_subtitle_weight_${i}`)?.value || '';
+      const subtitleItalic = document.getElementById(`${prefix}_subtitle_italic_${i}`)?.checked || false;
+      const subtitleUnderline = document.getElementById(`${prefix}_subtitle_underline_${i}`)?.checked || false;
+      if (subtitleSize) subtitleLive.style.fontSize = `${subtitleSize}px`; else subtitleLive.style.removeProperty('font-size');
+      if (subtitleWeight) subtitleLive.style.fontWeight = subtitleWeight; else subtitleLive.style.removeProperty('font-weight');
+      subtitleLive.style.fontStyle = subtitleItalic ? 'italic' : '';
+      subtitleLive.style.textDecoration = subtitleUnderline ? 'underline' : '';
+    }
+  }
+
+  function wireSlideLivePreview(i, config) {
+    const { prefix, subtitleUseBottom } = config;
+    const titleOffsetId = `${prefix}_title_top_${i}`;
+    const titleLeftId = `${prefix}_title_left_${i}`;
+    const subtitleOffsetId = subtitleUseBottom ? `${prefix}_subtitle_bottom_${i}` : `${prefix}_subtitle_top_${i}`;
+
+    ['title', 'subtitle'].forEach((field) => {
+      const input = document.getElementById(`${prefix}_${field}_${i}`);
+      const color = document.getElementById(`${prefix}_${field}_color_${i}`);
+      const colorPicker = document.getElementById(`${prefix}_${field}_color_${i}_picker`);
+      const size = document.getElementById(`${prefix}_${field}_size_${i}`);
+      const weight = document.getElementById(`${prefix}_${field}_weight_${i}`);
+      const italic = document.getElementById(`${prefix}_${field}_italic_${i}`);
+      const underline = document.getElementById(`${prefix}_${field}_underline_${i}`);
+      const refresh = () => applySlidePreviewStyles(i, config);
+
+      if (input) input.addEventListener('input', refresh);
+      if (color) color.addEventListener('input', refresh);
+      if (colorPicker) colorPicker.addEventListener('input', refresh);
+      if (size) size.addEventListener('input', refresh);
+      if (weight) weight.addEventListener('change', refresh);
+      if (italic) italic.addEventListener('change', refresh);
+      if (underline) underline.addEventListener('change', refresh);
+    });
+
+    [titleOffsetId, titleLeftId, `${prefix}_subtitle_left_${i}`, subtitleOffsetId].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', () => applySlidePreviewStyles(i, config));
+    });
+  }
+
   function render(container, slides, config, setImageUploadState) {
     if (!container) return;
     container.innerHTML = '';
@@ -174,11 +263,9 @@
       container.insertAdjacentHTML('beforeend', slideHtml(slide, i, config));
       if (typeof setImageUploadState === 'function') {
         setImageUploadState(`${config.prefix}_bg_${i}`, slide.background || '');
-        const preview = document.getElementById(`${config.prefix}_live_preview_${i}`);
-        if (preview && slide.background) {
-          preview.style.backgroundImage = `url('${slide.background}')`;
-        }
       }
+      wireSlideLivePreview(i, config);
+      applySlidePreviewStyles(i, config);
     });
   }
 
@@ -191,6 +278,8 @@
     render,
     collect,
     isHeroBgUploadId,
-    readImageVal
+    readImageVal,
+    applySlidePreviewStyles,
+    wireSlideLivePreview
   };
 })();

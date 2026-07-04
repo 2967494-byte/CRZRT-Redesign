@@ -44,8 +44,12 @@
       frame.classList.toggle('hero-slide-frame--empty', !v);
     }
     if (clr) clr.style.display = v ? 'inline-flex' : 'none';
-    if (id === 'obuchenie_hero_bg' || (window.AdminHeroSlides?.isHeroBgUploadId(id, 'obuchenie_hero'))) {
-      setTimeout(() => window.AdminObuchenie?.updateLivePreview?.(), 0);
+    if (window.AdminHeroSlides?.isHeroBgUploadId(id, 'obuchenie_hero')) {
+      const match = id.match(/_bg_(\d+)$/);
+      const idx = match ? parseInt(match[1], 10) : 0;
+      setTimeout(() => {
+        AdminHeroSlides.applySlidePreviewStyles(idx, obuchenieHeroSlidesConfig());
+      }, 0);
     }
     if (id === 'obuchenie_testing_image') {
       setTimeout(() => window.AdminObuchenie?.updateTestingLivePreview?.(), 0);
@@ -515,8 +519,10 @@
     setTimeout(() => {
       if (String(id).startsWith('obuchenie_testing_')) {
         window.AdminObuchenie?.updateTestingLivePreview?.();
-      } else {
-        window.AdminObuchenie?.updateLivePreview?.();
+      } else if (window.AdminHeroSlides?.isHeroBgUploadId(id, 'obuchenie_hero')) {
+        const match = id.match(/_bg_(\d+)$/);
+        const idx = match ? parseInt(match[1], 10) : 0;
+        AdminHeroSlides.applySlidePreviewStyles(idx, obuchenieHeroSlidesConfig());
       }
     }, 0);
   }
@@ -591,11 +597,13 @@
   }
 
   function pickImage(uploadId) {
+    const imageInput = document.getElementById('imageInput');
+    if (imageInput) imageInput.value = '';
     window.cropTarget = { uploadId, aspect: AdminObuchenie.getAspect(uploadId) };
     window.activeAuthorIndex = null;
     window.activeFeatureCardIndex = undefined;
     window.activeAboutImage = false;
-    document.getElementById('imageInput')?.click();
+    imageInput?.click();
   }
 
   function clearImage(uploadId) {
@@ -771,59 +779,12 @@
       btnEl.style.top = 'auto';
     },
     updateLivePreview() {
-      const titleEl = document.getElementById('obuchenie_live_banner_title');
-      const subtitleEl = document.getElementById('obuchenie_live_banner_subtitle');
-      const previewEl = document.getElementById('obuchenie_live_banner_preview');
-      if (!titleEl || !subtitleEl || !previewEl) return;
-
-      const titleText = document.getElementById('obuchenie_hero_title')?.value || '';
-      const subtitleText = document.getElementById('obuchenie_hero_subtitle')?.value || '';
-      const titleColor = document.getElementById('obuchenie_hero_title_color')?.value || '#00AE4D';
-      const subtitleColor = document.getElementById('obuchenie_hero_subtitle_color')?.value || '#FFFFFF';
-      const bgImage = document.getElementById('obuchenie_hero_bg_val')?.value || '';
-
-      const titleTop = parseFloat(document.getElementById('obuchenie_hero_title_top')?.value) || 68;
-      const titleLeft = parseFloat(document.getElementById('obuchenie_hero_title_left')?.value) || 60;
-      const subtitleBottom = parseFloat(document.getElementById('obuchenie_hero_subtitle_bottom')?.value) || 40;
-      const subtitleLeft = parseFloat(document.getElementById('obuchenie_hero_subtitle_left')?.value) || 60;
-
-      if (bgImage) {
-        previewEl.style.backgroundImage = `url(${bgImage})`;
-      } else {
-        previewEl.style.backgroundImage = '';
+      if (!window.AdminHeroSlides) return;
+      const config = obuchenieHeroSlidesConfig();
+      const count = document.querySelectorAll(`input[id^="obuchenie_hero_bg_"][id$="_val"]`).length;
+      for (let i = 0; i < count; i++) {
+        AdminHeroSlides.applySlidePreviewStyles(i, config);
       }
-
-      titleEl.textContent = titleText;
-      titleEl.style.color = titleColor;
-      titleEl.style.top = `calc((${titleTop} / 420) * 100%)`;
-      titleEl.style.left = `calc((${titleLeft} / 1520) * 100%)`;
-      titleEl.style.maxWidth = `calc(100% - ((${titleLeft} / 1520) * 100%) - 10px)`;
-
-      const titleSize = document.getElementById('obuchenie_hero_title_size')?.value || '';
-      const titleWeight = document.getElementById('obuchenie_hero_title_weight')?.value || '';
-      const titleItalic = document.getElementById('obuchenie_hero_title_italic')?.checked || false;
-      const titleUnderline = document.getElementById('obuchenie_hero_title_underline')?.checked || false;
-
-      if (titleSize) titleEl.style.fontSize = `${titleSize}px`; else titleEl.style.removeProperty('font-size');
-      if (titleWeight) titleEl.style.fontWeight = titleWeight; else titleEl.style.removeProperty('font-weight');
-      if (titleItalic) titleEl.style.fontStyle = 'italic'; else titleEl.style.removeProperty('font-style');
-      if (titleUnderline) titleEl.style.textDecoration = 'underline'; else titleEl.style.removeProperty('text-decoration');
-
-      subtitleEl.textContent = subtitleText;
-      subtitleEl.style.color = subtitleColor;
-      subtitleEl.style.bottom = `calc((${subtitleBottom} / 420) * 100%)`;
-      subtitleEl.style.left = `calc((${subtitleLeft} / 1520) * 100%)`;
-      subtitleEl.style.maxWidth = `calc(100% - ((${subtitleLeft} / 1520) * 100%) - 10px)`;
-
-      const subtitleSize = document.getElementById('obuchenie_hero_subtitle_size')?.value || '';
-      const subtitleWeight = document.getElementById('obuchenie_hero_subtitle_weight')?.value || '';
-      const subtitleItalic = document.getElementById('obuchenie_hero_subtitle_italic')?.checked || false;
-      const subtitleUnderline = document.getElementById('obuchenie_hero_subtitle_underline')?.checked || false;
-
-      if (subtitleSize) subtitleEl.style.fontSize = `${subtitleSize}px`; else subtitleEl.style.removeProperty('font-size');
-      if (subtitleWeight) subtitleEl.style.fontWeight = subtitleWeight; else subtitleEl.style.removeProperty('font-weight');
-      if (subtitleItalic) subtitleEl.style.fontStyle = 'italic'; else subtitleEl.style.removeProperty('font-style');
-      if (subtitleUnderline) subtitleEl.style.textDecoration = 'underline'; else subtitleEl.style.removeProperty('text-decoration');
     },
     addCourseCard() {
       window.saveObucheniePageStateToMemory?.();

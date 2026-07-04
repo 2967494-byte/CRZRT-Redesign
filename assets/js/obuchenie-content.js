@@ -995,12 +995,13 @@
   }
 
   function renderHero(data) {
-    const slides = data?.heroSlides?.length
-      ? data.heroSlides
-      : window.HeroSlides?.migrateHeroSlides({ hero: data?.hero }, OBUCHENIE_HERO_SLIDE_DEFAULTS) || [];
+    const pageData = migrateObucheniePageData(data || {});
+    const slides = pageData.heroSlides?.length
+      ? pageData.heroSlides
+      : window.HeroSlides?.migrateHeroSlides({ hero: pageData?.hero }, OBUCHENIE_HERO_SLIDE_DEFAULTS) || [];
     const renderer = getObuchenieHeroRenderer();
     if (renderer) {
-      renderer.render(slides, { gavelImage: data?.hero?.gavelImage });
+      renderer.render(slides, { gavelImage: pageData?.hero?.gavelImage });
     }
   }
 
