@@ -202,6 +202,12 @@
     }
   }
 
+  function previewFontSizeCss(sizePx, fallbackPx) {
+    const px = parseFloat(sizePx);
+    const value = Number.isFinite(px) && px > 0 ? px : fallbackPx;
+    return `calc((${value} / 1520) * 100cqw)`;
+  }
+
   function applySlidePreviewStyles(i, config) {
     const { prefix, subtitleUseBottom, defaults } = config;
     const d = defaults || {};
@@ -226,10 +232,11 @@
       titleLive.style.left = `calc((${titleLeft} / 1520) * 100%)`;
       titleLive.style.maxWidth = `calc(100% - ((${titleLeft} / 1520) * 100%) - 10px)`;
       const titleSize = document.getElementById(`${prefix}_title_size_${i}`)?.value || '';
+      const titleDefaultSize = d.titleFontSize ?? 60;
       const titleWeight = document.getElementById(`${prefix}_title_weight_${i}`)?.value || '';
       const titleItalic = document.getElementById(`${prefix}_title_italic_${i}`)?.checked || false;
       const titleUnderline = document.getElementById(`${prefix}_title_underline_${i}`)?.checked || false;
-      if (titleSize) titleLive.style.fontSize = `${titleSize}px`; else titleLive.style.removeProperty('font-size');
+      titleLive.style.fontSize = previewFontSizeCss(titleSize, titleDefaultSize);
       if (titleWeight) titleLive.style.fontWeight = titleWeight; else titleLive.style.removeProperty('font-weight');
       titleLive.style.fontStyle = titleItalic ? 'italic' : '';
       titleLive.style.textDecoration = titleUnderline ? 'underline' : '';
@@ -250,10 +257,11 @@
         subtitleLive.style.bottom = 'auto';
       }
       const subtitleSize = document.getElementById(`${prefix}_subtitle_size_${i}`)?.value || '';
+      const subtitleDefaultSize = d.subtitleFontSize ?? 20;
       const subtitleWeight = document.getElementById(`${prefix}_subtitle_weight_${i}`)?.value || '';
       const subtitleItalic = document.getElementById(`${prefix}_subtitle_italic_${i}`)?.checked || false;
       const subtitleUnderline = document.getElementById(`${prefix}_subtitle_underline_${i}`)?.checked || false;
-      if (subtitleSize) subtitleLive.style.fontSize = `${subtitleSize}px`; else subtitleLive.style.removeProperty('font-size');
+      subtitleLive.style.fontSize = previewFontSizeCss(subtitleSize, subtitleDefaultSize);
       if (subtitleWeight) subtitleLive.style.fontWeight = subtitleWeight; else subtitleLive.style.removeProperty('font-weight');
       subtitleLive.style.fontStyle = subtitleItalic ? 'italic' : '';
       subtitleLive.style.textDecoration = subtitleUnderline ? 'underline' : '';

@@ -173,7 +173,9 @@
         titleTop: 68,
         titleLeft: 60,
         subtitleBottom: 40,
-        subtitleLeft: 60
+        subtitleLeft: 60,
+        titleFontSize: 60,
+        subtitleFontSize: 20
       }
     };
   }

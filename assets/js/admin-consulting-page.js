@@ -168,7 +168,7 @@
       pickHandler: 'AdminConsultingPage.pickImage',
       clearHandler: 'AdminConsultingPage.clearImage',
       previewClass: 'consulting-live-banner-preview',
-      defaults: { titleColor: '#ffffff', subtitleColor: '#ffffff', titleTop: 122, titleLeft: 70, subtitleTop: 213, subtitleLeft: 70 }
+      defaults: { titleColor: '#ffffff', subtitleColor: '#ffffff', titleTop: 122, titleLeft: 70, subtitleTop: 213, subtitleLeft: 70, titleFontSize: 60, subtitleFontSize: 20 }
     };
   }
 
