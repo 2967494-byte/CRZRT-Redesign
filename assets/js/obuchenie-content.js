@@ -985,10 +985,6 @@
   function applyTypographyStyles(el, size, weight, italic, underline) {
     if (!el) return;
     if (size) {
-      const banner = el.closest('.hero-slider, .ecp-support-banner, .consulting-hero, .landing-hero, .knowledge-hero, .obuchenie-knowledge-banner, .news-knowledge-banner');
-      if (banner && banner.style.containerType !== 'inline-size') {
-        banner.style.containerType = 'inline-size';
-      }
       el.style.fontSize = `clamp(calc(${size}px * 0.5), calc(${size}px * (100cqw / 1520)), ${size}px)`;
     } else {
       el.style.removeProperty('font-size');
@@ -996,12 +992,14 @@
     if (weight) el.style.fontWeight = weight;
     else el.style.removeProperty('font-weight');
     if (italic) el.style.fontStyle = 'italic';
-    else el.style.removeProperty('font-style');
+    else el.style.fontStyle = 'normal';
     if (underline) el.style.textDecoration = 'underline';
     else el.style.removeProperty('text-decoration');
   }
 
   function renderHero(data) {
+    const heroWrapper = document.querySelector('.obuchenie-hero');
+    if (heroWrapper) heroWrapper.style.containerType = 'inline-size';
     const pageData = migrateObucheniePageData(data || {});
     const slides = pageData.heroSlides?.length
       ? pageData.heroSlides
@@ -1375,6 +1373,7 @@
   function renderTestingBanner(testingBanner) {
     const data = testingBanner || OBUCHENIE_DEFAULTS.testingBanner;
     const bannerEl = document.querySelector('.obuchenie-testing-banner');
+    if (bannerEl) bannerEl.style.containerType = 'inline-size';
     const contentEl = document.querySelector('.obuchenie-testing-banner__content');
     const titleEl = document.querySelector('.obuchenie-testing-banner__title');
     const btnEl = document.querySelector('.obuchenie-testing-banner__btn');

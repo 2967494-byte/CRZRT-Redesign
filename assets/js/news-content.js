@@ -180,10 +180,6 @@
   function applyTypographyStyles(el, size, weight, italic, underline) {
     if (!el) return;
     if (size) {
-      const banner = el.closest('.hero-slider, .ecp-support-banner, .consulting-hero, .landing-hero, .knowledge-hero, .obuchenie-knowledge-banner, .news-knowledge-banner');
-      if (banner && banner.style.containerType !== 'inline-size') {
-        banner.style.containerType = 'inline-size';
-      }
       el.style.fontSize = `clamp(calc(${size}px * 0.5), calc(${size}px * (100cqw / 1520)), ${size}px)`;
     } else {
       el.style.removeProperty('font-size');
@@ -198,6 +194,47 @@
 
   function getActiveNewsItems(items) {
     return (items || []).filter((item) => item && item.active !== false);
+  }
+
+  function renderNewsKnowledgeHero(hero) {
+    const banner = document.querySelector('.news-knowledge-banner');
+    const titleEl = document.querySelector('.news-knowledge-banner__title');
+    const subtitleEl = document.querySelector('.news-knowledge-banner__subtitle');
+    const graphicEl = document.querySelector('.news-knowledge-banner__graphic');
+    if (!banner) return;
+    banner.style.containerType = 'inline-size';
+    const background = (hero?.background || '').trim();
+    const hasCustomBanner = Boolean(background);
+    const hasSubtitle = Boolean(String(hero?.subtitle || '').trim());
+
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(hero?.title);
+      titleEl.style.color = hero?.titleColor || DEFAULT_NEWS_PAGE.hero.titleColor;
+      if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
+      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
+      applyTypographyStyles(titleEl, hero?.titleFontSize, hero?.titleFontWeight, hero?.titleItalic, hero?.titleUnderline);
+    }
+
+    if (subtitleEl) {
+      subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
+      subtitleEl.style.color = hero?.subtitleColor || DEFAULT_NEWS_PAGE.hero.subtitleColor;
+      if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
+      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
+      applyTypographyStyles(subtitleEl, hero?.subtitleFontSize, hero?.subtitleFontWeight, hero?.subtitleItalic, hero?.subtitleUnderline);
+      subtitleEl.hidden = !hasSubtitle;
+    }
+
+    if (banner) {
+      if (hasCustomBanner) {
+        banner.style.backgroundImage = `url('${background.replace(/'/g, "\\'")}')`;
+        banner.classList.add('news-knowledge-banner--custom-bg');
+      } else {
+        banner.style.backgroundImage = '';
+        banner.classList.remove('news-knowledge-banner--custom-bg');
+      }
+    }
+
+    if (graphicEl) graphicEl.classList.add('is-hidden');
   }
 
   function renderHero(hero) {

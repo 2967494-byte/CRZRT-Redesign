@@ -333,10 +333,6 @@
   function applyTypographyStyles(el, size, weight, italic, underline) {
     if (!el) return;
     if (size) {
-      const banner = el.closest('.hero-slider, .ecp-support-banner, .consulting-hero, .landing-hero, .knowledge-hero, .obuchenie-knowledge-banner, .news-knowledge-banner');
-      if (banner && banner.style.containerType !== 'inline-size') {
-        banner.style.containerType = 'inline-size';
-      }
       el.style.fontSize = `clamp(calc(${size}px * 0.5), calc(${size}px * (100cqw / 1520)), ${size}px)`;
     } else {
       el.style.removeProperty('font-size');
@@ -354,6 +350,7 @@
     const slideEl = document.querySelector('.hero-slide');
     if (!slider || !slideEl) return;
     if (shouldSkipLandingHero()) return;
+    slider.style.containerType = 'inline-size';
 
     const slides = (data.heroSlides || []).filter((s) => s && (s.background || s.title));
     if (!slides.length) return;

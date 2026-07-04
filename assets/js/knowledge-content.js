@@ -167,10 +167,6 @@
   function applyTypographyStyles(el, size, weight, italic, underline) {
     if (!el) return;
     if (size) {
-      const banner = el.closest('.hero-slider, .ecp-support-banner, .consulting-hero, .landing-hero, .knowledge-hero, .obuchenie-knowledge-banner, .news-knowledge-banner');
-      if (banner && banner.style.containerType !== 'inline-size') {
-        banner.style.containerType = 'inline-size';
-      }
       el.style.fontSize = `clamp(calc(${size}px * 0.5), calc(${size}px * (100cqw / 1520)), ${size}px)`;
     } else {
       el.style.removeProperty('font-size');
@@ -183,11 +179,13 @@
     else el.style.removeProperty('text-decoration');
   }
 
-  function renderHero(hero) {
-    const banner = document.querySelector('.consulting-hero');
-    const titleEl = document.querySelector('.consulting-hero-title');
-    const subtitleEl = document.querySelector('.consulting-hero-subtitle');
-    const graphicEl = document.querySelector('.consulting-banner__graphic');
+  function renderKnowledgeHero(hero) {
+    const banner = document.querySelector('.knowledge-hero');
+    const titleEl = document.querySelector('.knowledge-hero__title');
+    const subtitleEl = document.querySelector('.knowledge-hero__subtitle');
+    const imageEl = document.querySelector('.knowledge-hero__image');
+    if (!banner) return;
+    banner.style.containerType = 'inline-size';
     const background = (hero?.background || '').trim();
     const hasCustomBanner = Boolean(background);
 
