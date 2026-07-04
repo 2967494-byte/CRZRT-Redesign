@@ -206,6 +206,72 @@
             newsPageData = AdminNews.collectNewsPageFromForm(newsPageData);
             window.newsPageData = newsPageData;
         };
+
+        let bgHistoryData = safeParseJson(localStorage.getItem('crzrt_bg_history'), []);
+        window.bgHistoryData = bgHistoryData;
+
+        // Background History Modal Logic
+        let bgHistoryTargetId = null;
+
+        window.openBgHistoryModal = function(targetId) {
+            bgHistoryTargetId = targetId;
+            const modal = document.getElementById('bgHistoryModal');
+            const grid = document.getElementById('bgHistoryGrid');
+            const emptyState = document.getElementById('bgHistoryEmptyState');
+
+            if (!modal || !grid) return;
+
+            grid.innerHTML = '';
+            if (bgHistoryData.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+            } else {
+                grid.style.display = 'grid';
+                emptyState.style.display = 'none';
+                bgHistoryData.forEach(url => {
+                    const item = document.createElement('div');
+                    item.className = 'bg-history-item';
+                    item.innerHTML = `
+                        <img src="${url}" alt="Background">
+                        <div class="bg-history-item-apply">Выбрать этот фон</div>
+                    `;
+                    item.onclick = () => {
+                        const input = document.getElementById(bgHistoryTargetId + '_val');
+                        const preview = document.getElementById(bgHistoryTargetId + '_preview');
+                        const frame = document.querySelector(`[data-upload-frame-for="${bgHistoryTargetId}"]`);
+                        const clearBtn = document.getElementById(bgHistoryTargetId + '_clear');
+
+                        if (input) input.value = url;
+                        if (preview) {
+                            preview.src = url;
+                            preview.style.display = 'block';
+                        }
+                        if (frame) {
+                            frame.classList.remove('hero-slide-frame--empty');
+                            frame.classList.add('hero-slide-frame--filled');
+                        }
+                        if (clearBtn) clearBtn.style.display = 'inline-block';
+                        
+                        modal.style.display = 'none';
+                        bgHistoryTargetId = null;
+                        updateSaveButtonsState({
+                            boxShadow: '0 0 15px rgba(52, 199, 89, 0.5)',
+                            text: 'Сохраните изменения!'
+                        });
+                    };
+                    grid.appendChild(item);
+                });
+            }
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+        };
+
+        document.getElementById('btnBgHistoryClose')?.addEventListener('click', () => {
+            const modal = document.getElementById('bgHistoryModal');
+            if (modal) modal.style.display = 'none';
+            bgHistoryTargetId = null;
+        });
+
         let aboutData = { ...defaultAboutData };
         let contactsData = { ...defaultContactsData };
         let educationData; // assigned after defaultEducationData is declared (~line 1570)
@@ -223,7 +289,8 @@
                 'crzrt_about_data', 
                 'crzrt_contacts', 
                 'crzrt_education_data', 
-                'crzrt_consulting_data'
+                'crzrt_consulting_data',
+                'crzrt_bg_history'
             ];
 
             for (const key of keys) {
@@ -270,6 +337,10 @@
                             else if (key === 'crzrt_contacts') contactsData = { ...defaultContactsData, ...data };
                             else if (key === 'crzrt_education_data') educationData = { ...educationData, ...data };
                             else if (key === 'crzrt_consulting_data') consultingData = { ...consultingData, ...data };
+                            else if (key === 'crzrt_bg_history') {
+                                bgHistoryData = Array.isArray(data) ? data : [];
+                                window.bgHistoryData = bgHistoryData;
+                            }
                             
                             // Save to local for fallback
                             if (key !== 'crzrt_ecp_page_data' && key !== 'crzrt_consulting_page_data' && key !== 'crzrt_support_page_data' && key !== 'crzrt_obuchenie_page_data' && key !== 'crzrt_knowledge_page_data' && key !== 'crzrt_news_page_data') {
@@ -1843,6 +1914,20 @@
             if (!response.ok || !payload?.success || !payload?.url) {
                 throw new Error(payload?.error || 'Не удалось загрузить изображение');
             }
+            
+            // Track hero/banner backgrounds in history
+            if (payload.url && slot && (slot.includes('hero_bg') || slot.includes('hero_graphic') || slot.includes('bg'))) {
+                if (!bgHistoryData.includes(payload.url)) {
+                    bgHistoryData.push(payload.url);
+                    window.bgHistoryData = bgHistoryData;
+                    fetch('api/settings.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ key: 'crzrt_bg_history', value: bgHistoryData })
+                    }).catch(e => console.error('Failed to save bg history', e));
+                }
+            }
+
             return payload.url;
         }
 

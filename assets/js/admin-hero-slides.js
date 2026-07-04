@@ -49,6 +49,7 @@
         </div>
         <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}">
           <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="${pickHandler}('${id}')">Загрузить</button>
+          <button type="button" class="btn-secondary" style="padding:8px 14px;font-size:0.85rem;" onclick="openBgHistoryModal('${id}')">Ранее загруженные</button>
           <button type="button" class="btn-delete" style="padding:8px 14px;font-size:0.85rem;display:none;" id="${id}_clear" onclick="${clearHandler}('${id}')">Удалить</button>
           <input type="hidden" id="${id}_val" value="">
         </div>

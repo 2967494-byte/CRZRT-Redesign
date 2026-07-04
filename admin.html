@@ -984,6 +984,25 @@
         </div>
     </div>
 
+    <!-- Background History Modal -->
+    <div class="modal-overlay" id="bgHistoryModal" style="display: none; z-index: 1050;">
+        <div class="modal-content" style="max-width: 800px; width: 100%;">
+            <button class="btn-modal-close" id="btnBgHistoryClose" aria-label="Закрыть">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h2 class="modal-title" style="text-align: left; margin-bottom: 24px;">Ранее загруженные фоны</h2>
+            <div id="bgHistoryGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-height: 400px; overflow-y: auto;">
+                <!-- Items will be injected here via JS -->
+            </div>
+            <div id="bgHistoryEmptyState" style="display: none; text-align: center; color: var(--text-secondary); padding: 40px 0;">
+                Нет ранее загруженных фонов
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="assets/js/hero-slides.js?v=11"></script>
     <script src="assets/js/landing-content.js?v=16"></script>
