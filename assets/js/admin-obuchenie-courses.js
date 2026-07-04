@@ -175,7 +175,8 @@
         dateTo: course.dateTo,
         durationDays: course.durationDays,
         format: course.format,
-        price: course.price
+        price: course.price,
+        bitrixCourseElementId: course.bitrixCourseElementId || null
       })
     });
     const result = await response.json().catch(() => ({}));
@@ -186,7 +187,7 @@
       const message = result.error || `HTTP ${response.status}`;
       throw new Error(details ? `${message} (${details})` : message);
     }
-    return result.leadId;
+    return result;
   }
 
   async function persistPageData(message) {
@@ -412,12 +413,23 @@
     const needsBitrixLead = isNew || !normalized.bitrixLeadId;
     if (needsBitrixLead) {
       try {
-        const leadId = await syncCourseLeadToBitrix(normalized);
+        const bitrixResult = await syncCourseLeadToBitrix(normalized);
         const courseIndex = courses.findIndex((course) => course.id === normalized.id);
         if (courseIndex >= 0) {
-          courses[courseIndex].bitrixLeadId = leadId;
+          courses[courseIndex].bitrixLeadId = bitrixResult.leadId;
+          if (bitrixResult.catalogElementId) {
+            courses[courseIndex].bitrixCourseElementId = bitrixResult.catalogElementId;
+          }
         }
-        bitrixSyncNote = `, лид Bitrix24 #${leadId}`;
+        bitrixSyncNote = `, лид Bitrix24 #${bitrixResult.leadId}`;
+        if (bitrixResult.catalogElementId) {
+          bitrixSyncNote += `, каталог #${bitrixResult.catalogElementId}`;
+        }
+        if (bitrixResult.catalogWarning) {
+          window.alert(
+            `Курс сохранён, лид Bitrix24 создан (#${bitrixResult.leadId}), но в каталог курсов Bitrix24 не попал: ${bitrixResult.catalogWarning}. Попросите администратора Bitrix24 выдать webhook права «lists».`
+          );
+        }
       } catch (syncError) {
         console.error('Bitrix lead sync failed', syncError);
         const errorText = syncError.message || 'неизвестная ошибка';

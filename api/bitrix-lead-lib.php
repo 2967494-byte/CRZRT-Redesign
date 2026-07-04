@@ -283,6 +283,8 @@ function bitrix_build_event_lead_fields(array $input): array
         (int)($input['durationDays'] ?? 1)
     );
     $comments = trim((string)($input['comments'] ?? ''));
+    $catalogElementId = (int)($input['catalogElementId'] ?? $input['bitrixCourseElementId'] ?? 0);
+    $courseLabel = trim((string)($input['courseLabel'] ?? ''));
 
     $fields = [
         'TITLE' => $title !== '' ? $title : 'Заявка с сайта',
@@ -290,6 +292,19 @@ function bitrix_build_event_lead_fields(array $input): array
         BITRIX_UF_EVENT_START => bitrix_format_date_dmY($dateFrom),
         BITRIX_UF_EVENT_END => bitrix_format_date_dmY($dateTo),
     ];
+
+    if ($catalogElementId > 0) {
+        $fields[BITRIX_UF_COURSE_CATALOG] = $catalogElementId;
+    }
+    if ($courseLabel !== '') {
+        $fields[BITRIX_UF_COURSE_TEXT] = $courseLabel;
+    }
+
+    $opportunity = bitrix_parse_opportunity($input['price'] ?? '');
+    if ($opportunity !== null && $opportunity > 0) {
+        $fields['OPPORTUNITY'] = $opportunity;
+        $fields['CURRENCY_ID'] = 'RUB';
+    }
 
     if ($name !== '') {
         $fields['NAME'] = $name;
@@ -331,22 +346,40 @@ function bitrix_build_lead_fields(array $input): array
     return bitrix_build_event_lead_fields($input);
 }
 
-function bitrix_lead_add(array $fields): array
+function bitrix_webhook_url_for_method(string $method): ?string
 {
     $config = bitrix_load_config();
+    $configKey = 'webhook_' . str_replace('.', '_', $method);
+    if (!empty($config[$configKey])) {
+        return trim((string)$config[$configKey]);
+    }
+
     $url = trim((string)($config['webhook_lead_add'] ?? ''));
     if ($url === '') {
+        return null;
+    }
+
+    if (preg_match('#^(https://[^/]+/rest/\d+/[^/]+)/#', $url, $matches)) {
+        return $matches[1] . '/' . $method . '.json';
+    }
+
+    return null;
+}
+
+function bitrix_rest_call(string $method, array $params): array
+{
+    $url = bitrix_webhook_url_for_method($method);
+    if ($url === null) {
         return [
             'success' => false,
             'error' => 'Webhook Bitrix24 не настроен. Создайте api/bitrix-config.local.php',
         ];
     }
 
-    $payload = ['fields' => $fields];
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => http_build_query($payload),
+        CURLOPT_POSTFIELDS => http_build_query($params),
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => 20,
         CURLOPT_CONNECTTIMEOUT => 10,
@@ -376,17 +409,83 @@ function bitrix_lead_add(array $fields): array
         ];
     }
 
-    if (!empty($result['result'])) {
+    if (array_key_exists('result', $result) && $result['result'] !== false && $result['result'] !== null) {
         return [
             'success' => true,
-            'leadId' => (int)$result['result'],
+            'result' => $result['result'],
         ];
     }
 
     return [
         'success' => false,
-        'error' => (string)($result['error_description'] ?? $result['error'] ?? 'Bitrix24 не создал лид'),
+        'error' => (string)($result['error_description'] ?? $result['error'] ?? 'Ошибка Bitrix24'),
         'details' => $result,
         'httpCode' => $httpCode,
+    ];
+}
+
+function bitrix_catalog_config(): array
+{
+    $config = bitrix_load_config();
+
+    return [
+        'iblock_type_id' => trim((string)($config['course_catalog_iblock_type'] ?? 'lists')) ?: 'lists',
+        'iblock_id' => (int)($config['course_catalog_iblock_id'] ?? 24),
+    ];
+}
+
+/**
+ * Элемент списка «На какой курс заявка» (iblock 24) — то, что заказчик заводит вручную.
+ */
+function bitrix_catalog_add_course_element(string $name, array $options = []): array
+{
+    $catalog = bitrix_catalog_config();
+    if ($catalog['iblock_id'] <= 0) {
+        return [
+            'success' => false,
+            'error' => 'Каталог курсов Bitrix24 не настроен (course_catalog_iblock_id)',
+        ];
+    }
+
+    $label = trim($name);
+    if ($label === '') {
+        return [
+            'success' => false,
+            'error' => 'Пустое название элемента каталога',
+        ];
+    }
+
+    $elementCode = trim((string)($options['elementCode'] ?? ''));
+    if ($elementCode === '') {
+        $elementCode = 'zakupki-' . date('Ymd-His') . '-' . substr(uniqid('', true), -6);
+    }
+
+    $result = bitrix_rest_call('lists.element.add', [
+        'IBLOCK_TYPE_ID' => $catalog['iblock_type_id'],
+        'IBLOCK_ID' => $catalog['iblock_id'],
+        'ELEMENT_CODE' => $elementCode,
+        'FIELDS[NAME]' => $label,
+    ]);
+
+    if (!$result['success']) {
+        return $result;
+    }
+
+    return [
+        'success' => true,
+        'elementId' => (int)$result['result'],
+    ];
+}
+
+function bitrix_lead_add(array $fields): array
+{
+    $result = bitrix_rest_call('crm.lead.add', ['fields' => $fields]);
+    if (!$result['success']) {
+        return $result;
+    }
+
+    return [
+        'success' => true,
+        'leadId' => (int)$result['result'],
     ];
 }
