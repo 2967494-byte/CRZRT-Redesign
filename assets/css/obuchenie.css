@@ -282,14 +282,14 @@ body.theme-purple .hero-slide__arrows {
 }
 
 body.theme-purple .hero-slide__arrows .arrow-btn {
-  background: #8B5CF6;
+  background: var(--green);
   color: #FFFFFF;
   transition: background 0.2s, transform 0.2s;
-  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
 body.theme-purple .hero-slide__arrows .arrow-btn:hover {
-  background: #7C3AED;
+  background: var(--green-dark);
   transform: scale(1.05);
 }
 
@@ -721,6 +721,11 @@ body[data-page="obuchenie"] .consultation-card__title {
 }
 
 /* Green hero + phone button */
+body[data-page="obuchenie"] {
+  --green: #00AE4D;
+  --green-dark: #009341;
+}
+
 body[data-page="obuchenie"] .header__actions .btn--green {
   background: #00AE4D;
 }

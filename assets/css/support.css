@@ -286,14 +286,14 @@ body.theme-purple .hero-slide__arrows {
 }
 
 body.theme-purple .hero-slide__arrows .arrow-btn {
-  background: #8B5CF6;
+  background: var(--green);
   color: #FFFFFF;
   transition: background 0.2s, transform 0.2s;
-  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
 body.theme-purple .hero-slide__arrows .arrow-btn:hover {
-  background: #7C3AED;
+  background: var(--green-dark);
   transform: scale(1.05);
 }
 
@@ -598,6 +598,11 @@ body[data-page="support"] .consultation-card__title {
 }
 
 /* Peach hero + orange phone button */
+body[data-page="support"] {
+  --green: #FF5512;
+  --green-dark: #E64A10;
+}
+
 body[data-page="support"] .header__actions .btn--green {
   background: #FF5512;
 }

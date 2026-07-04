@@ -187,14 +187,14 @@ body.theme-blue .hero-slide__arrows {
 }
 
 body.theme-blue .hero-slide__arrows .arrow-btn {
-  background: #1D9DFF;
+  background: var(--green);
   color: #FFFFFF;
   transition: background 0.2s, transform 0.2s;
-  box-shadow: 0 4px 10px rgba(29, 157, 255, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
 body.theme-blue .hero-slide__arrows .arrow-btn:hover {
-  background: #0084E6;
+  background: var(--green-dark);
   transform: scale(1.05);
 }
 

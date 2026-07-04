@@ -190,15 +190,17 @@ body.theme-purple .consulting-hero .hero-slide__arrows .arrow-btn {
   height: 48px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--green);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.2s, transform 0.2s;
 }
 
 body.theme-purple .consulting-hero .hero-slide__arrows .arrow-btn:hover {
-  background: rgba(255, 255, 255, 0.35);
+  background: var(--green-dark);
+  transform: scale(1.05);
 }
 
 /* Legacy ECP hero-slider rules kept for copied sections below */
@@ -326,14 +328,14 @@ body.theme-purple .hero-slide__arrows {
 }
 
 body.theme-purple .hero-slide__arrows .arrow-btn {
-  background: #8B5CF6;
+  background: var(--green);
   color: #FFFFFF;
   transition: background 0.2s, transform 0.2s;
-  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
 body.theme-purple .hero-slide__arrows .arrow-btn:hover {
-  background: #7C3AED;
+  background: var(--green-dark);
   transform: scale(1.05);
 }
 

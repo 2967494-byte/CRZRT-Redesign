@@ -453,7 +453,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   min-height: 58.35px;
   padding: 0;
   border-radius: 20px;
-  background: #00ae4d;
+  background: var(--green);
   flex-shrink: 0;
 }
 
