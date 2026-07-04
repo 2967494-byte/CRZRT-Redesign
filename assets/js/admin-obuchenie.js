@@ -478,11 +478,87 @@
 
   function renderObucheniePageAdmin(data) {
     const migrated = getMigratedData(data);
+
+    // МИГРАЦИЯ: если нет вопросов, но есть window.TEST_QUESTIONS, загружаем их
+    if ((!migrated.quizQuestions || migrated.quizQuestions.length === 0) && window.TEST_QUESTIONS && window.TEST_QUESTIONS.length > 0) {
+      const CORRECT_ANSWERS = {
+        1: 'А', 2: 'В', 3: 'Г', 4: 'В', 5: 'А', 6: 'Д', 7: 'Д', 8: 'В', 9: 'А', 10: 'Г',
+        11: 'Г', 12: 'Г', 13: 'Б', 14: 'Б', 15: 'Б', 16: 'А', 17: 'А', 18: 'А', 19: 'А', 20: 'В',
+        21: 'А', 22: 'А', 23: 'Б', 24: 'Г', 25: 'Б', 26: 'Г', 27: 'В', 28: 'Г', 29: 'А', 30: 'В',
+        31: 'Е', 32: 'Б', 33: 'Г', 34: 'Г', 35: 'Б', 36: 'В', 37: 'Г', 38: 'Г', 39: 'Е', 40: 'Д',
+        41: 'А', 42: 'А', 43: 'А', 44: 'А', 45: 'А', 46: 'В', 47: 'В', 48: 'Г', 49: 'А', 50: 'Б',
+        51: 'А', 52: 'А', 53: 'А', 54: 'А', 55: 'А', 56: 'А', 57: 'А', 58: 'А', 59: 'А', 60: 'А',
+        61: 'А', 62: 'А', 63: 'А', 64: 'А', 65: 'А', 66: 'А', 67: 'А', 68: 'А', 69: 'А', 70: 'А',
+        71: 'А', 72: 'А', 73: 'А', 74: 'А', 75: 'А', 76: 'А', 77: 'А', 78: 'А', 79: 'А', 80: 'А',
+        81: 'А', 82: 'А', 83: 'А', 84: 'А', 85: 'А', 86: 'А', 87: 'А', 88: 'А', 89: 'А', 90: 'А',
+        91: 'А', 92: 'А', 93: 'А', 94: 'А', 95: 'А', 96: 'А', 97: 'А', 98: 'А', 99: 'А', 100: 'А'
+      };
+      migrated.quizQuestions = window.TEST_QUESTIONS.map(q => {
+        return {
+          id: q.id,
+          text: q.text,
+          options: q.options || [],
+          correctAnswer: CORRECT_ANSWERS[q.id] || 'А'
+        };
+      });
+    }
+
     renderHeroAdmin(migrated);
     renderNavCardsAdmin(migrated);
     renderCourseSearchAdmin(migrated);
     renderCalendarAdmin(migrated);
     renderTestingAdmin(migrated);
+    renderTestingQuestionsAdmin(migrated);
+  }
+
+  function renderTestingQuestionsAdmin(data) {
+    const el = document.getElementById('obuchenieTestingQuestionsAdmin');
+    if (!el) return;
+    const questions = data.quizQuestions || [];
+    if (questions.length === 0) {
+      el.innerHTML = '<p style="color:var(--text-secondary);">Нет вопросов. Нажмите «+ Добавить вопрос».</p>';
+      return;
+    }
+    
+    let html = '<div style="display:flex;flex-direction:column;gap:16px;">';
+    questions.forEach((q, i) => {
+      html += `
+        <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02); position: relative;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <strong style="color:var(--text-main);">Вопрос ${i + 1}</strong>
+            <button type="button" class="btn-delete" style="padding:4px 8px;font-size:0.8rem;" onclick="AdminObuchenie.removeQuizQuestion(${i})">Удалить</button>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Текст вопроса</label>
+            <textarea class="form-control" id="obuchenie_q_text_${i}" rows="2">${escapeAttr(q.text)}</textarea>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label>Варианты ответа (отметьте правильный)</label>
+      `;
+      const options = q.options && q.options.length ? q.options : [
+        { letter: 'А', text: '' },
+        { letter: 'Б', text: '' },
+        { letter: 'В', text: '' },
+        { letter: 'Г', text: '' }
+      ];
+      options.forEach((opt, optIdx) => {
+        const isChecked = (q.correctAnswer === opt.letter) ? 'checked' : '';
+        html += `
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="radio" name="obuchenie_q_correct_${i}" value="${opt.letter}" ${isChecked} style="cursor:pointer; width:18px; height:18px;">
+              <span style="font-weight:bold; min-width:20px;">${opt.letter})</span>
+              <input type="hidden" id="obuchenie_q_opt_letter_${i}_${optIdx}" value="${opt.letter}">
+              <input type="text" class="form-control" id="obuchenie_q_opt_text_${i}_${optIdx}" value="${escapeAttr(opt.text)}" style="margin-bottom:0;" placeholder="Текст варианта ${opt.letter}">
+            </div>
+        `;
+      });
+      html += `
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    el.innerHTML = html;
   }
 
   function readImageVal(id) {
@@ -592,6 +668,31 @@
       btnLeft: parseFloat(document.getElementById('obuchenie_testing_btn_left')?.value) || 60,
       image: readImageVal('obuchenie_testing_image') || data.testingBanner?.image || ''
     };
+
+    data.quizQuestions = [];
+    const qCount = document.querySelectorAll('[id^="obuchenie_q_text_"]').length;
+    for (let i = 0; i < qCount; i++) {
+      const qText = document.getElementById(`obuchenie_q_text_${i}`)?.value || '';
+      const correctRadio = document.querySelector(`input[name="obuchenie_q_correct_${i}"]:checked`);
+      const correctAnswer = correctRadio ? correctRadio.value : 'А';
+      
+      const options = [];
+      let optIdx = 0;
+      while (document.getElementById(`obuchenie_q_opt_letter_${i}_${optIdx}`)) {
+        options.push({
+          letter: document.getElementById(`obuchenie_q_opt_letter_${i}_${optIdx}`).value,
+          text: document.getElementById(`obuchenie_q_opt_text_${i}_${optIdx}`).value
+        });
+        optIdx++;
+      }
+      
+      data.quizQuestions.push({
+        id: i + 1, // Re-assign sequential IDs
+        text: qText,
+        options: options,
+        correctAnswer: correctAnswer
+      });
+    }
 
     return data;
   }
@@ -806,6 +907,33 @@
       window.saveObucheniePageStateToMemory?.();
       window.obucheniePageData.courseCards.splice(index, 1);
       renderObucheniePageAdmin(window.obucheniePageData);
+    },
+    addQuizQuestion() {
+      window.saveObucheniePageStateToMemory?.();
+      const page = window.obucheniePageData || {};
+      if (!page.quizQuestions) page.quizQuestions = [];
+      const newId = page.quizQuestions.length > 0 ? Math.max(...page.quizQuestions.map(q => q.id || 0)) + 1 : 1;
+      page.quizQuestions.push({
+        id: newId,
+        text: '',
+        options: [
+          { letter: 'А', text: '' },
+          { letter: 'Б', text: '' },
+          { letter: 'В', text: '' },
+          { letter: 'Г', text: '' }
+        ],
+        correctAnswer: 'А'
+      });
+      renderObucheniePageAdmin(page);
+    },
+    removeQuizQuestion(index) {
+      if (!confirm('Вы уверены, что хотите удалить этот вопрос?')) return;
+      window.saveObucheniePageStateToMemory?.();
+      const page = window.obucheniePageData || {};
+      if (page.quizQuestions && page.quizQuestions.length > index) {
+        page.quizQuestions.splice(index, 1);
+        renderObucheniePageAdmin(page);
+      }
     }
   };
 })();

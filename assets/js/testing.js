@@ -2,24 +2,12 @@
  * Логика тестирования по госзакупкам (100 вопросов, 1 час).
  */
 (function () {
-  // Словарь правильных ответов. Ключ — ID вопроса (1..100), значение — буква правильного ответа (в верхнем регистре).
-  // Пользователь сможет легко изменить эти значения, когда получит точные правильные ответы.
-  const CORRECT_ANSWERS = {
-    1: 'А', 2: 'В', 3: 'Г', 4: 'В', 5: 'А', 6: 'Д', 7: 'Д', 8: 'В', 9: 'А', 10: 'Г',
-    11: 'Г', 12: 'Г', 13: 'Б', 14: 'Б', 15: 'Б', 16: 'А', 17: 'А', 18: 'А', 19: 'А', 20: 'В',
-    21: 'А', 22: 'А', 23: 'Б', 24: 'Г', 25: 'Б', 26: 'Г', 27: 'В', 28: 'Г', 29: 'А', 30: 'В',
-    31: 'Е', 32: 'Б', 33: 'Г', 34: 'Г', 35: 'Б', 36: 'В', 37: 'Г', 38: 'Г', 39: 'Е', 40: 'Д',
-    41: 'А', 42: 'А', 43: 'А', 44: 'А', 45: 'А', 46: 'В', 47: 'В', 48: 'Г', 49: 'А', 50: 'Б',
-    51: 'А', 52: 'А', 53: 'А', 54: 'А', 55: 'А', 56: 'А', 57: 'А', 58: 'А', 59: 'А', 60: 'А',
-    61: 'А', 62: 'А', 63: 'А', 64: 'А', 65: 'А', 66: 'А', 67: 'А', 68: 'А', 69: 'А', 70: 'А',
-    71: 'А', 72: 'А', 73: 'А', 74: 'А', 75: 'А', 76: 'А', 77: 'А', 78: 'А', 79: 'А', 80: 'А',
-    81: 'А', 82: 'А', 83: 'А', 84: 'А', 85: 'А', 86: 'А', 87: 'А', 88: 'А', 89: 'А', 90: 'А',
-    91: 'А', 92: 'А', 93: 'А', 94: 'А', 95: 'А', 96: 'А', 97: 'А', 98: 'А', 99: 'А', 100: 'А'
-  };
+  // Правильные ответы теперь хранятся в свойстве correctAnswer каждого вопроса
 
   const SESSION_PREFIX = 'crzrt_quiz_';
   const TIME_LIMIT = 600; // 10 минут = 600 секунд
 
+  let ALL_TEST_QUESTIONS = [];
   let questions = [];
   let currentQuestionIndex = 0;
   let answers = {}; // { questionId: chosenLetter }
@@ -58,22 +46,31 @@
   const reviewQuestionsContainer = document.getElementById('review-questions-container');
 
   function init() {
-    const allQuestions = window.TEST_QUESTIONS || [];
-    if (!allQuestions.length) {
-      console.error('Вопросы для тестирования не найдены!');
-      return;
-    }
+    fetch('api/settings.php?key=crzrt_obuchenie_page_data')
+      .then(res => res.json())
+      .then(response => {
+        const data = response.data || {};
+        ALL_TEST_QUESTIONS = data.quizQuestions || [];
+        
+        if (!ALL_TEST_QUESTIONS.length) {
+          console.error('Вопросы для тестирования не найдены!');
+          return;
+        }
 
-    // Восстанавливаем состояние при перезагрузке страницы, если тест активен
-    const savedActive = sessionStorage.getItem(`${SESSION_PREFIX}active`);
-    if (savedActive === 'true') {
-      loadSessionState();
-      startQuiz(true); // возобновить
-    } else {
-      showScreen('start');
-    }
+        // Восстанавливаем состояние при перезагрузке страницы, если тест активен
+        const savedActive = sessionStorage.getItem(`${SESSION_PREFIX}active`);
+        if (savedActive === 'true') {
+          loadSessionState();
+          startQuiz(true); // возобновить
+        } else {
+          showScreen('start');
+        }
 
-    bindEvents();
+        bindEvents();
+      })
+      .catch(e => {
+        console.error('Ошибка загрузки данных тестирования', e);
+      });
   }
 
   function bindEvents() {
@@ -97,7 +94,7 @@
 
     if (!resume) {
       // Выбираем 20 случайных вопросов
-      let allQ = [...(window.TEST_QUESTIONS || [])];
+      let allQ = [...ALL_TEST_QUESTIONS];
       for (let i = allQ.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [allQ[i], allQ[j]] = [allQ[j], allQ[i]];
@@ -126,7 +123,7 @@
       const savedQIds = sessionStorage.getItem(`${SESSION_PREFIX}question_ids`);
       if (savedQIds !== null) {
         const qIds = JSON.parse(savedQIds);
-        const allQ = window.TEST_QUESTIONS || [];
+        const allQ = ALL_TEST_QUESTIONS;
         questions = qIds.map(id => allQ.find(q => q.id === id)).filter(Boolean);
       }
 
@@ -337,7 +334,7 @@
 
     questions.forEach((q) => {
       const userAns = answers[q.id];
-      const correctAns = CORRECT_ANSWERS[q.id];
+      const correctAns = q.correctAnswer;
       if (userAns !== undefined) {
         if (userAns === correctAns) {
           correctCount++;
@@ -380,7 +377,7 @@
 
     questions.forEach((q) => {
       const userAns = answers[q.id];
-      const correctAns = CORRECT_ANSWERS[q.id];
+      const correctAns = q.correctAnswer;
       
       let statusClass = 'review-item--incorrect';
       let badgeHtml = '<span class="review-item__badge review-item__badge--incorrect">Неверно</span>';
