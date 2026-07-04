@@ -202,11 +202,7 @@
     }
   }
 
-  function previewFontSizeCss(sizePx, fallbackPx, previewEl) {
-    const width = previewEl?.clientWidth || 0;
-    if (window.HeroSlides?.fontSizePxForWidth && width > 0) {
-      return window.HeroSlides.fontSizePxForWidth(sizePx, fallbackPx, width);
-    }
+  function previewFontSizeCss(sizePx, fallbackPx) {
     if (window.HeroSlides?.fontSizeCss) {
       return window.HeroSlides.fontSizeCss(sizePx, fallbackPx);
     }
@@ -258,7 +254,7 @@
       const titleWeight = document.getElementById(`${prefix}_title_weight_${i}`)?.value || '';
       const titleItalic = document.getElementById(`${prefix}_title_italic_${i}`)?.checked || false;
       const titleUnderline = document.getElementById(`${prefix}_title_underline_${i}`)?.checked || false;
-      titleLive.style.fontSize = previewFontSizeCss(titleSize, titleDefaultSize, preview);
+      titleLive.style.fontSize = previewFontSizeCss(titleSize, titleDefaultSize);
       if (titleWeight) titleLive.style.fontWeight = titleWeight; else titleLive.style.removeProperty('font-weight');
       titleLive.style.fontStyle = titleItalic ? 'italic' : '';
       titleLive.style.textDecoration = titleUnderline ? 'underline' : '';
@@ -283,7 +279,7 @@
       const subtitleWeight = document.getElementById(`${prefix}_subtitle_weight_${i}`)?.value || '';
       const subtitleItalic = document.getElementById(`${prefix}_subtitle_italic_${i}`)?.checked || false;
       const subtitleUnderline = document.getElementById(`${prefix}_subtitle_underline_${i}`)?.checked || false;
-      subtitleLive.style.fontSize = previewFontSizeCss(subtitleSize, subtitleDefaultSize, preview);
+      subtitleLive.style.fontSize = previewFontSizeCss(subtitleSize, subtitleDefaultSize);
       if (subtitleWeight) subtitleLive.style.fontWeight = subtitleWeight; else subtitleLive.style.removeProperty('font-weight');
       subtitleLive.style.fontStyle = subtitleItalic ? 'italic' : '';
       subtitleLive.style.textDecoration = subtitleUnderline ? 'underline' : '';

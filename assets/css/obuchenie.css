@@ -140,7 +140,7 @@ body.theme-purple .consulting-hero.consulting-hero--custom-bg .consulting-hero__
   top: 108px;
   width: 552px;
   height: 120px;
-  font-size: 60px;
+  font-size: calc(60 / 1520 * 100cqw);
   line-height: 100%;
   letter-spacing: 0;
   color: #7C3AED;
@@ -152,7 +152,7 @@ body.theme-purple .consulting-hero.consulting-hero--custom-bg .consulting-hero__
   top: auto;
   width: 629px;
   height: 120px;
-  font-size: 20px;
+  font-size: calc(20 / 1520 * 100cqw);
   line-height: 120%;
   letter-spacing: -0.03em;
   color: #FFFFFF;
@@ -795,6 +795,7 @@ body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg {
   background-color: #B8FDC6;
 }
 
+body[data-page="obuchenie"].theme-purple .consulting-hero.consulting-hero--custom-bg .consulting-hero__title,
 body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consulting-hero__title {
   left: 60px;
   top: 68px;
@@ -806,6 +807,7 @@ body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consult
   color: #00AE4D;
 }
 
+body[data-page="obuchenie"].theme-purple .consulting-hero.consulting-hero--custom-bg .consulting-hero__subtitle,
 body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consulting-hero__subtitle {
   left: 60px;
   top: auto;
