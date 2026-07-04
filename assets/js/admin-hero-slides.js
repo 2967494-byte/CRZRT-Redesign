@@ -1,5 +1,5 @@
-﻿/**
- * ╨Р╨┤╨╝╨╕╨╜╨║╨░: ╨┤╨╛ 8 ╤Б╨╗╨░╨╣╨┤╨╛╨▓ ╨▒╨░╨╜╨╜╨╡╤А╨░ (╨║╨░╨║ ╨╜╨░ ╨│╨╗╨░╨▓╨╜╨╛╨╣).
+/**
+ * Админка: до 8 слайдов баннера (как на главной).
  */
 (function () {
   const MAX = window.HeroSlides?.MAX_HERO_SLIDES || 8;
@@ -18,18 +18,18 @@
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
         <span style="font-weight:600; font-size:0.95rem;">${title}</span>
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <input type="number" id="${sizeId}" value="${escapeAttr(fontSize)}" placeholder="px" title="╨а╨░╨╖╨╝╨╡╤А ╤И╤А╨╕╤Д╤В╨░" style="width:55px; height:30px; padding:4px 6px; font-size:0.85rem; border:1px solid var(--card-border); border-radius:4px; background:rgba(0,0,0,0.1); color:inherit; text-align:center; margin-bottom:0;">
-          <select id="${weightId}" title="╨в╨╛╨╗╤Й╨╕╨╜╨░ ╤И╤А╨╕╤Д╤В╨░" style="height:30px; padding:4px 6px; font-size:0.85rem; border:1px solid var(--card-border); border-radius:4px; background:rgba(0,0,0,0.1); color:inherit; cursor:pointer; margin-bottom:0;">
-            <option value="" ${!fontWeight ? 'selected' : ''}>╨в╨╛╨╗╤Й╨╕╨╜╨░</option>
-            <option value="300" ${fontWeight === '300' ? 'selected' : ''}>╨в╨╛╨╜╨║╨╕╨╣</option>
-            <option value="500" ${fontWeight === '500' ? 'selected' : ''}>╨б╤А╨╡╨┤╨╜╨╕╨╣</option>
-            <option value="700" ${fontWeight === '700' ? 'selected' : ''}>╨в╨╛╨╗╤Б╤В╤Л╨╣</option>
+          <input type="number" id="${sizeId}" value="${escapeAttr(fontSize)}" placeholder="px" title="Размер шрифта" style="width:55px; height:30px; padding:4px 6px; font-size:0.85rem; border:1px solid var(--card-border); border-radius:4px; background:rgba(0,0,0,0.1); color:inherit; text-align:center; margin-bottom:0;">
+          <select id="${weightId}" title="Толщина шрифта" style="height:30px; padding:4px 6px; font-size:0.85rem; border:1px solid var(--card-border); border-radius:4px; background:rgba(0,0,0,0.1); color:inherit; cursor:pointer; margin-bottom:0;">
+            <option value="" ${!fontWeight ? 'selected' : ''}>Толщина</option>
+            <option value="300" ${fontWeight === '300' ? 'selected' : ''}>Тонкий</option>
+            <option value="500" ${fontWeight === '500' ? 'selected' : ''}>Средний</option>
+            <option value="700" ${fontWeight === '700' ? 'selected' : ''}>Толстый</option>
           </select>
-          <label title="╨Ъ╤Г╤А╤Б╨╕╨▓" style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--card-border); border-radius:4px; cursor:pointer; background:${italic ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'}; margin-bottom:0; font-style:italic; font-weight:bold; user-select:none; font-family:serif;">
+          <label title="Курсив" style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--card-border); border-radius:4px; cursor:pointer; background:${italic ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'}; margin-bottom:0; font-style:italic; font-weight:bold; user-select:none; font-family:serif;">
             <input type="checkbox" id="${italicId}" ${italic ? 'checked' : ''} style="display:none;">
             I
           </label>
-          <label title="╨Я╨╛╨┤╤З╨╡╤А╨║╨╜╤Г╤В╤Л╨╣" style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--card-border); border-radius:4px; cursor:pointer; background:${underline ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'}; margin-bottom:0; text-decoration:underline; font-weight:bold; user-select:none; font-family:serif;">
+          <label title="Подчеркнутый" style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--card-border); border-radius:4px; cursor:pointer; background:${underline ? 'rgba(15,170,75,0.2)' : 'rgba(0,0,0,0.1)'}; margin-bottom:0; text-decoration:underline; font-weight:bold; user-select:none; font-family:serif;">
             <input type="checkbox" id="${underlineId}" ${underline ? 'checked' : ''} style="display:none;">
             U
           </label>
@@ -44,12 +44,12 @@
       <div class="form-group hero-slide-upload-group" style="margin-bottom:0;">
         <label>${label}</label>
         <div class="hero-slide-frame hero-slide-frame--empty" data-upload-frame-for="${id}">
-          <span class="hero-slide-frame__empty">╨┐╤А╨╛╨┐╨╛╤А╤Ж╨╕╨╕ 1520├Ч420</span>
+          <span class="hero-slide-frame__empty">пропорции 1520×420</span>
           <img id="${id}_preview" class="hero-slide-frame__img" src="" alt="">
         </div>
         <div class="hero-slide-upload-actions image-upload-mini" data-upload-id="${id}">
-          <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="${pickHandler}('${id}')">╨Ч╨░╨│╤А╤Г╨╖╨╕╤В╤М</button>
-          <button type="button" class="btn-delete" style="padding:8px 14px;font-size:0.85rem;display:none;" id="${id}_clear" onclick="${clearHandler}('${id}')">╨г╨┤╨░╨╗╨╕╤В╤М</button>
+          <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="${pickHandler}('${id}')">Загрузить</button>
+          <button type="button" class="btn-delete" style="padding:8px 14px;font-size:0.85rem;display:none;" id="${id}_clear" onclick="${clearHandler}('${id}')">Удалить</button>
           <input type="hidden" id="${id}_val" value="">
         </div>
       </div>`;
@@ -67,7 +67,7 @@
     const d = defaults || {};
     const titleTop = slide.titleTop !== undefined ? slide.titleTop : d.titleTop ?? 122;
     const titleLeft = slide.titleLeft !== undefined ? slide.titleLeft : d.titleLeft ?? 70;
-    const subtitleOffsetLabel = subtitleUseBottom ? '╨Ю╤В╤Б╤В╤Г╨┐ ╤Б╨╜╨╕╨╖╤Г (px)' : '╨Ю╤В╤Б╤В╤Г╨┐ ╤Б╨▓╨╡╤А╤Е╤Г (px)';
+    const subtitleOffsetLabel = subtitleUseBottom ? 'Отступ снизу (px)' : 'Отступ сверху (px)';
     const subtitleOffsetId = subtitleUseBottom ? `${prefix}_subtitle_bottom_${i}` : `${prefix}_subtitle_top_${i}`;
     const subtitleOffsetVal = subtitleUseBottom
       ? (slide.subtitleBottom !== undefined ? slide.subtitleBottom : d.subtitleBottom ?? 40)
@@ -79,13 +79,13 @@
 
     return `
       <div class="admin-subcard" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;margin-bottom:20px;">
-        <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;z-index:2;" onclick="${removeHandler}(${i})">├Ч</button>
-        <div class="obuchenie-block-header"><strong>╨б╨╗╨░╨╣╨┤ ${i + 1}</strong></div>
+        <button type="button" class="btn-delete" style="position:absolute;top:10px;right:10px;z-index:2;" onclick="${removeHandler}(${i})">×</button>
+        <div class="obuchenie-block-header"><strong>Слайд ${i + 1}</strong></div>
         <div class="obuchenie-hero-grid" style="margin-top:15px;">
           <div class="obuchenie-hero-banner-col">
-            ${heroBgUploadShell(`${prefix}_bg_${i}`, '╨д╨╛╨╜ ╤Б╨╗╨░╨╣╨┤╨░ (╨┐╤А╨╛╨┐╨╛╤А╤Ж╨╕╨╕ ~1520├Ч420)', pickHandler, clearHandler)}
+            ${heroBgUploadShell(`${prefix}_bg_${i}`, 'Фон слайда (пропорции ~1520×420)', pickHandler, clearHandler)}
             <div style="margin-top:20px;">
-              <label style="font-weight:600;display:block;margin-bottom:8px;font-size:0.9rem;color:var(--text-secondary);">╨Я╤А╨╡╨┤╨┐╤А╨╛╤Б╨╝╨╛╤В╤А</label>
+              <label style="font-weight:600;display:block;margin-bottom:8px;font-size:0.9rem;color:var(--text-secondary);">Предпросмотр</label>
               <div class="${previewClass}" id="${prefix}_live_preview_${i}">
                 <div class="live-banner-title" id="${prefix}_live_title_${i}">${escapeAttr(slide.title)}</div>
                 <div class="live-banner-subtitle" id="${prefix}_live_subtitle_${i}">${escapeAttr(slide.subtitle)}</div>
@@ -94,25 +94,25 @@
           </div>
           <div class="obuchenie-hero-fields-col" style="display:flex;flex-direction:column;gap:20px;">
             <div class="obuchenie-hero-block" style="border:1px solid var(--card-border);padding:15px;border-radius:8px;background:rgba(255,255,255,0.02);">
-              ${blockHeaderWithColorHtml('╨Ч╨░╨│╨╛╨╗╨╛╨▓╨╛╨║ (Enter тАФ ╨┐╨╡╤А╨╡╨╜╨╛╤Б ╤Б╤В╤А╨╛╨║╨╕)', `${prefix}_title_color_${i}`, slide.titleColor, titleColorDefault, slide.titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline)}
+              ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', `${prefix}_title_color_${i}`, slide.titleColor, titleColorDefault, slide.titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline)}
               <div class="form-group" style="margin-bottom:0;margin-top:8px;">
-                <textarea class="form-control" id="${prefix}_title_${i}" rows="2" placeholder="╨Ч╨░╨│╨╛╨╗╨╛╨▓╨╛╨║ ╨▒╨░╨╜╨╜╨╡╤А╨░">${escapeAttr(slide.title)}</textarea>
+                <textarea class="form-control" id="${prefix}_title_${i}" rows="2" placeholder="Заголовок баннера">${escapeAttr(slide.title)}</textarea>
               </div>
               <div style="display:flex;gap:16px;margin-top:12px;">
                 <div style="flex:1;margin-bottom:0;" class="form-group">
-                  <label style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;">╨Ю╤В╤Б╤В╤Г╨┐ ╤Б╨▓╨╡╤А╤Е╤Г (px)</label>
+                  <label style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;">Отступ сверху (px)</label>
                   <input type="number" class="form-control" id="${prefix}_title_top_${i}" value="${titleTop}" style="padding:6px 10px;font-size:0.85rem;margin-bottom:0;">
                 </div>
                 <div style="flex:1;margin-bottom:0;" class="form-group">
-                  <label style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;">╨Ю╤В╤Б╤В╤Г╨┐ ╤Б╨╗╨╡╨▓╨░ (px)</label>
+                  <label style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;">Отступ слева (px)</label>
                   <input type="number" class="form-control" id="${prefix}_title_left_${i}" value="${titleLeft}" style="padding:6px 10px;font-size:0.85rem;margin-bottom:0;">
                 </div>
               </div>
             </div>
             <div class="obuchenie-hero-block" style="border:1px solid var(--card-border);padding:15px;border-radius:8px;background:rgba(255,255,255,0.02);">
-              ${blockHeaderWithColorHtml('╨в╨╡╨║╤Б╤В', `${prefix}_subtitle_color_${i}`, slide.subtitleColor, subtitleColorDefault, slide.subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline)}
+              ${blockHeaderWithColorHtml('Текст', `${prefix}_subtitle_color_${i}`, slide.subtitleColor, subtitleColorDefault, slide.subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline)}
               <div class="form-group" style="margin-bottom:0;margin-top:8px;">
-                <textarea class="form-control" id="${prefix}_subtitle_${i}" rows="3" placeholder="╨Ю╨┐╨╕╤Б╨░╨╜╨╕╨╡/╤В╨╡╨║╤Б╤В ╨┐╨╛╨┤ ╨╖╨░╨│╨╛╨╗╨╛╨▓╨║╨╛╨╝">${escapeAttr(slide.subtitle)}</textarea>
+                <textarea class="form-control" id="${prefix}_subtitle_${i}" rows="3" placeholder="Описание/текст под заголовком">${escapeAttr(slide.subtitle)}</textarea>
               </div>
               <div style="display:flex;gap:16px;margin-top:12px;">
                 <div style="flex:1;margin-bottom:0;" class="form-group">
@@ -120,7 +120,7 @@
                   <input type="number" class="form-control" id="${subtitleOffsetId}" value="${subtitleOffsetVal}" style="padding:6px 10px;font-size:0.85rem;margin-bottom:0;">
                 </div>
                 <div style="flex:1;margin-bottom:0;" class="form-group">
-                  <label style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;">╨Ю╤В╤Б╤В╤Г╨┐ ╤Б╨╗╨╡╨▓╨░ (px)</label>
+                  <label style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;">Отступ слева (px)</label>
                   <input type="number" class="form-control" id="${prefix}_subtitle_left_${i}" value="${subtitleLeft}" style="padding:6px 10px;font-size:0.85rem;margin-bottom:0;">
                 </div>
               </div>
