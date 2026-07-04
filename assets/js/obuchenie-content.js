@@ -635,21 +635,6 @@
     };
   }
 
-  function sanitizeObuchenieHeroFontSize(value, defaultPx) {
-    const px = parseFloat(String(value ?? '').trim());
-    if (!Number.isFinite(px) || px <= 0) return '';
-    if (px === defaultPx) return '';
-    return String(px);
-  }
-
-  function sanitizeObuchenieHeroSlides(slides) {
-    return (slides || []).map((slide) => ({
-      ...slide,
-      titleFontSize: sanitizeObuchenieHeroFontSize(slide?.titleFontSize, 60),
-      subtitleFontSize: sanitizeObuchenieHeroFontSize(slide?.subtitleFontSize, 20)
-    }));
-  }
-
   function migrateObucheniePageData(raw) {
     const navCards =
       Array.isArray(raw?.navCards) && raw.navCards.length
@@ -679,11 +664,9 @@
           }))
         : [];
 
-    const heroSlides = sanitizeObuchenieHeroSlides(
-      window.HeroSlides
-        ? window.HeroSlides.migrateHeroSlides(raw, OBUCHENIE_HERO_SLIDE_DEFAULTS)
-        : [buildObuchenieHeroFromSlides([], raw?.hero)]
-    );
+    const heroSlides = window.HeroSlides
+      ? window.HeroSlides.migrateHeroSlides(raw, OBUCHENIE_HERO_SLIDE_DEFAULTS)
+      : [buildObuchenieHeroFromSlides([], raw?.hero)];
 
     return {
       heroSlides,
