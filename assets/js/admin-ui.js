@@ -1504,13 +1504,8 @@
                 const isHeroSlide = Boolean(
                     uploadId
                     && (uploadId.startsWith('m_hero_bg_')
-                        || uploadId === 'ecp_hero_bg'
-                        || uploadId === 'ecp_support_bg'
-                        || uploadId === 'consulting_hero_bg'
-                        || uploadId === 'support_hero_bg'
-                        || uploadId === 'obuchenie_hero_bg'
-                        || uploadId === 'knowledge_hero_bg'
-                        || uploadId === 'news_hero_bg')
+                        || /^(ecp|consulting|support|obuchenie|knowledge|news)_hero_bg(_\d+)?$/.test(uploadId)
+                        || uploadId === 'ecp_support_bg')
                 );
                 const isPromoCover = uploadId === 'obuchenie_cal_promo_image'
                     || uploadId === 'obuchenie_testing_image'
@@ -1927,7 +1922,24 @@
                 return cache.get(key);
             };
 
-            if (data.hero) {
+            async function uploadHeroSlidesBackgrounds(slides, prefix, uploadOrReuse, preserveSize) {
+                if (!Array.isArray(slides)) return;
+                for (let i = 0; i < slides.length; i++) {
+                    const slide = slides[i];
+                    if (!slide) continue;
+                    slide.background = await uploadOrReuse(
+                        slide.background,
+                        `${prefix}_bg_${i}`,
+                        1520,
+                        420,
+                        preserveSize ? { preserveSize: true } : undefined
+                    );
+                }
+            }
+
+            if (Array.isArray(data.heroSlides)) {
+                await uploadHeroSlidesBackgrounds(data.heroSlides, 'ecp_hero', uploadOrReuse, true);
+            } else if (data.hero) {
                 data.hero.background = await uploadOrReuse(data.hero.background, 'ecp_hero_bg', 1520, 420);
             }
 
@@ -1970,8 +1982,16 @@
                 return cache.get(key);
             };
 
-            if (data.hero) {
+            if (Array.isArray(data.heroSlides)) {
+                for (let i = 0; i < data.heroSlides.length; i++) {
+                    const slide = data.heroSlides[i];
+                    if (!slide) continue;
+                    slide.background = await uploadOrReuse(slide.background, `consulting_hero_bg_${i}`, 1520, 420);
+                }
+            } else if (data.hero) {
                 data.hero.background = await uploadOrReuse(data.hero.background, 'consulting_hero_bg', 1520, 420);
+            }
+            if (data.hero) {
                 data.hero.graphic = await uploadOrReuse(data.hero.graphic, 'consulting_hero_graphic', 420, 420);
             }
 
@@ -2015,7 +2035,13 @@
                 return cache.get(key);
             };
 
-            if (data.hero) {
+            if (Array.isArray(data.heroSlides)) {
+                for (let i = 0; i < data.heroSlides.length; i++) {
+                    const slide = data.heroSlides[i];
+                    if (!slide) continue;
+                    slide.background = await uploadOrReuse(slide.background, `support_hero_bg_${i}`, 1520, 420);
+                }
+            } else if (data.hero) {
                 data.hero.background = await uploadOrReuse(data.hero.background, 'support_hero_bg', 1520, 420);
             }
 
@@ -2063,8 +2089,16 @@
                 return cache.get(key);
             };
 
-            if (data.hero) {
+            if (Array.isArray(data.heroSlides)) {
+                for (let i = 0; i < data.heroSlides.length; i++) {
+                    const slide = data.heroSlides[i];
+                    if (!slide) continue;
+                    slide.background = await uploadOrReuse(slide.background, `obuchenie_hero_bg_${i}`, 1520, 420);
+                }
+            } else if (data.hero) {
                 data.hero.background = await uploadOrReuse(data.hero.background, 'obuchenie_hero_bg', 1520, 420);
+            }
+            if (data.hero) {
                 data.hero.gavelImage = await uploadOrReuse(data.hero.gavelImage, 'obuchenie_hero_gavel', 420, 420);
             }
 

@@ -98,29 +98,63 @@
       .join('<br>');
   }
 
+  const ECP_HERO_SLIDE_DEFAULTS = {
+    title: ECP_DEFAULTS.hero.title,
+    subtitle: ECP_DEFAULTS.hero.subtitle,
+    titleColor: ECP_DEFAULTS.hero.titleColor,
+    subtitleColor: ECP_DEFAULTS.hero.subtitleColor,
+    titleTop: ECP_DEFAULTS.hero.titleTop,
+    titleLeft: ECP_DEFAULTS.hero.titleLeft,
+    subtitleTop: ECP_DEFAULTS.hero.subtitleTop,
+    subtitleLeft: ECP_DEFAULTS.hero.subtitleLeft
+  };
+
+  let ecpHeroRenderer = null;
+
+  function getEcpHeroRenderer() {
+    if (!ecpHeroRenderer && window.HeroSlides) {
+      ecpHeroRenderer = window.HeroSlides.createRenderer({
+        rootSelector: '.hero-slider',
+        customBgClass: 'hero-slider--custom-bg',
+        titleSelector: '.ecp-hero-title',
+        subtitleSelector: '.ecp-hero-subtitle',
+        graphicSelector: '.ecp-banner__graphic',
+        contentSelector: '.hero-slide__content',
+        titleColorFallback: '#000000',
+        subtitleColorFallback: '#333333'
+      });
+    }
+    return ecpHeroRenderer;
+  }
+
   function migrateEcpData(raw) {
+    const heroSlides = window.HeroSlides
+      ? window.HeroSlides.migrateHeroSlides(raw, ECP_HERO_SLIDE_DEFAULTS)
+      : [];
+    const first = heroSlides[0] || {};
     const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
     const hero = {
-      background: rawHero.background || '',
-      title: rawHero.title !== undefined ? rawHero.title : ECP_DEFAULTS.hero.title,
-      titleColor: rawHero.titleColor || ECP_DEFAULTS.hero.titleColor,
-      titleTop: rawHero.titleTop !== undefined ? rawHero.titleTop : ECP_DEFAULTS.hero.titleTop,
-      titleLeft: rawHero.titleLeft !== undefined ? rawHero.titleLeft : ECP_DEFAULTS.hero.titleLeft,
-      titleFontSize: rawHero.titleFontSize || '',
-      titleFontWeight: rawHero.titleFontWeight || '',
-      titleItalic: rawHero.titleItalic || false,
-      titleUnderline: rawHero.titleUnderline || false,
-      subtitle: rawHero.subtitle !== undefined ? rawHero.subtitle : ECP_DEFAULTS.hero.subtitle,
-      subtitleColor: rawHero.subtitleColor || ECP_DEFAULTS.hero.subtitleColor,
-      subtitleTop: rawHero.subtitleTop !== undefined ? rawHero.subtitleTop : ECP_DEFAULTS.hero.subtitleTop,
-      subtitleLeft: rawHero.subtitleLeft !== undefined ? rawHero.subtitleLeft : ECP_DEFAULTS.hero.subtitleLeft,
-      subtitleFontSize: rawHero.subtitleFontSize || '',
-      subtitleFontWeight: rawHero.subtitleFontWeight || '',
-      subtitleItalic: rawHero.subtitleItalic || false,
-      subtitleUnderline: rawHero.subtitleUnderline || false
+      background: first.background || '',
+      title: first.title !== undefined ? first.title : ECP_DEFAULTS.hero.title,
+      titleColor: first.titleColor || ECP_DEFAULTS.hero.titleColor,
+      titleTop: first.titleTop !== undefined ? first.titleTop : ECP_DEFAULTS.hero.titleTop,
+      titleLeft: first.titleLeft !== undefined ? first.titleLeft : ECP_DEFAULTS.hero.titleLeft,
+      titleFontSize: first.titleFontSize || '',
+      titleFontWeight: first.titleFontWeight || '',
+      titleItalic: first.titleItalic || false,
+      titleUnderline: first.titleUnderline || false,
+      subtitle: first.subtitle !== undefined ? first.subtitle : ECP_DEFAULTS.hero.subtitle,
+      subtitleColor: first.subtitleColor || ECP_DEFAULTS.hero.subtitleColor,
+      subtitleTop: first.subtitleTop !== undefined ? first.subtitleTop : ECP_DEFAULTS.hero.subtitleTop,
+      subtitleLeft: first.subtitleLeft !== undefined ? first.subtitleLeft : ECP_DEFAULTS.hero.subtitleLeft,
+      subtitleFontSize: first.subtitleFontSize || '',
+      subtitleFontWeight: first.subtitleFontWeight || '',
+      subtitleItalic: first.subtitleItalic || false,
+      subtitleUnderline: first.subtitleUnderline || false
     };
 
     const data = {
+      heroSlides,
       hero,
       tariffs: Array.isArray(raw?.tariffs) && raw.tariffs.length ? raw.tariffs : [...ECP_DEFAULTS.tariffs],
       blanks: {
@@ -261,54 +295,11 @@
     else el.style.removeProperty('text-decoration');
   }
 
-  function renderHero(hero) {
-    const slider = document.querySelector('.hero-slider');
-    const contentEl = document.querySelector('.hero-slide__content');
-    const titleEl = document.querySelector('.ecp-hero-title');
-    const subtitleEl = document.querySelector('.ecp-hero-subtitle');
-    const graphicEl = document.querySelector('.ecp-banner__graphic');
-    const dotsWrap = document.querySelector('.hero-slide__dots');
-    const arrowsWrap = document.querySelector('.hero-slide__arrows');
-    const background = (hero?.background || '').trim();
-    const hasCustomBanner = Boolean(background);
-
-    if (titleEl) {
-      titleEl.innerHTML = multilineHtml(hero?.title);
-      if (hero?.titleColor && hero.titleColor !== '#000000') titleEl.style.color = hero.titleColor;
-      else titleEl.style.removeProperty('color');
-      if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
-      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
-      applyTypographyStyles(titleEl, hero?.titleFontSize, hero?.titleFontWeight, hero?.titleItalic, hero?.titleUnderline);
-    }
-    if (subtitleEl) {
-      subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
-      if (hero?.subtitleColor && hero.subtitleColor !== '#333333') subtitleEl.style.color = hero.subtitleColor;
-      else subtitleEl.style.removeProperty('color');
-      if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
-      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
-      applyTypographyStyles(subtitleEl, hero?.subtitleFontSize, hero?.subtitleFontWeight, hero?.subtitleItalic, hero?.subtitleUnderline);
-    }
-
-    if (slider) {
-      if (hasCustomBanner) {
-        slider.style.backgroundImage = `url('${background.replace(/'/g, "\\'")}')`;
-        slider.classList.add('hero-slider--custom-bg');
-      } else {
-        slider.style.backgroundImage = '';
-        slider.classList.remove('hero-slider--custom-bg');
-      }
-    }
-
-    if (contentEl) contentEl.classList.remove('is-hidden');
-    if (graphicEl) graphicEl.classList.toggle('is-hidden', hasCustomBanner);
-
-    if (dotsWrap) {
-      dotsWrap.innerHTML = '';
-      dotsWrap.classList.add('is-hidden');
-    }
-    if (arrowsWrap) {
-      arrowsWrap.classList.add('is-hidden');
-    }
+  function renderHero(data) {
+    const slides = data?.heroSlides?.length
+      ? data.heroSlides
+      : window.HeroSlides?.migrateHeroSlides({ hero: data?.hero }, ECP_HERO_SLIDE_DEFAULTS) || [];
+    getEcpHeroRenderer()?.render(slides);
   }
 
   function renderTariffs(tariffs) {
@@ -461,7 +452,7 @@
   }
 
   function renderEcpPage(data) {
-    renderHero(data.hero);
+    renderHero(data);
     renderTariffs(data.tariffs);
     renderBlanks(data.blanks);
     renderManual(data.manual);

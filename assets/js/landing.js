@@ -2,6 +2,7 @@
 let heroCurrent = 0;
 
 function isStandaloneHeroPage() {
+  if ((window.__heroSlides?.length || 0) > 1) return false;
   return (
     document.body.dataset.page === 'consulting' ||
     document.body.dataset.page === 'support' ||

@@ -44,7 +44,7 @@
       frame.classList.toggle('hero-slide-frame--empty', !v);
     }
     if (clr) clr.style.display = v ? 'inline-flex' : 'none';
-    if (id === 'obuchenie_hero_bg') {
+    if (id === 'obuchenie_hero_bg' || (window.AdminHeroSlides?.isHeroBgUploadId(id, 'obuchenie_hero'))) {
       setTimeout(() => window.AdminObuchenie?.updateLivePreview?.(), 0);
     }
     if (id === 'obuchenie_testing_image') {
@@ -155,76 +155,30 @@
       </div>`;
   }
 
+  function obuchenieHeroSlidesConfig() {
+    return {
+      prefix: 'obuchenie_hero',
+      removeHandler: 'AdminObuchenie.removeHeroSlide',
+      pickHandler: 'AdminObuchenie.pickImage',
+      clearHandler: 'AdminObuchenie.clearImage',
+      subtitleUseBottom: true,
+      previewClass: 'obuchenie-live-banner-preview',
+      defaults: {
+        titleColor: '#00AE4D',
+        subtitleColor: '#FFFFFF',
+        titleTop: 68,
+        titleLeft: 60,
+        subtitleBottom: 40,
+        subtitleLeft: 60
+      }
+    };
+  }
+
   function renderHeroAdmin(data) {
     const el = document.getElementById('obuchenieHeroAdmin');
-    if (!el) return;
-    const hero = getMigratedData(data).hero || {};
-    el.innerHTML = `
-      <div class="obuchenie-hero-grid">
-        <!-- Left: Banner upload & Preview -->
-        <div class="obuchenie-hero-banner-col">
-          ${heroBgUploadShell('obuchenie_hero_bg', 'Готовый баннер (~1520×420 px)')}
-          
-          <div style="margin-top:20px;">
-            <label style="font-weight:600; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">Предпросмотр готового баннера с наложенным текстом</label>
-            <div class="obuchenie-live-banner-preview" id="obuchenie_live_banner_preview">
-              <div class="obuchenie-live-banner-title" id="obuchenie_live_banner_title"></div>
-              <div class="obuchenie-live-banner-subtitle" id="obuchenie_live_banner_subtitle"></div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Right: Fields -->
-        <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
-          <!-- Block "Заголовок" -->
-          <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'obuchenie_hero_title_color', hero.titleColor || '#00AE4D', '#00AE4D', hero.titleFontSize, hero.titleFontWeight, hero.titleItalic, hero.titleUnderline)}
-            <div class="form-group" style="margin-bottom:0; margin-top:8px;">
-              <textarea class="form-control" id="obuchenie_hero_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)" oninput="AdminObuchenie.updateLivePreview()">${escapeAttr(hero.title)}</textarea>
-            </div>
-            <div style="display:flex; gap:16px; margin-top:12px;">
-              <div style="flex:1; margin-bottom:0;" class="form-group">
-                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ сверху (px)</label>
-                <input type="number" class="form-control" id="obuchenie_hero_title_top" value="${hero.titleTop !== undefined ? hero.titleTop : 68}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateLivePreview()">
-              </div>
-              <div style="flex:1; margin-bottom:0;" class="form-group">
-                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
-                <input type="number" class="form-control" id="obuchenie_hero_title_left" value="${hero.titleLeft !== undefined ? hero.titleLeft : 60}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateLivePreview()">
-              </div>
-            </div>
-          </div>
-          
-          <!-- Block "Текст" -->
-          <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Текст', 'obuchenie_hero_subtitle_color', hero.subtitleColor || '#FFFFFF', '#FFFFFF', hero.subtitleFontSize, hero.subtitleFontWeight, hero.subtitleItalic, hero.subtitleUnderline)}
-            <div class="form-group" style="margin-bottom:0; margin-top:8px;">
-              <textarea class="form-control" id="obuchenie_hero_subtitle" rows="3" placeholder="Описание/текст под заголовком" oninput="AdminObuchenie.updateLivePreview()">${escapeAttr(hero.subtitle)}</textarea>
-            </div>
-            <div style="display:flex; gap:16px; margin-top:12px;">
-              <div style="flex:1; margin-bottom:0;" class="form-group">
-                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ снизу (px)</label>
-                <input type="number" class="form-control" id="obuchenie_hero_subtitle_bottom" value="${hero.subtitleBottom !== undefined ? hero.subtitleBottom : 40}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateLivePreview()">
-              </div>
-              <div style="flex:1; margin-bottom:0;" class="form-group">
-                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
-                <input type="number" class="form-control" id="obuchenie_hero_subtitle_left" value="${hero.subtitleLeft !== undefined ? hero.subtitleLeft : 60}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;" oninput="AdminObuchenie.updateLivePreview()">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    setImageUploadState('obuchenie_hero_bg', hero.background);
-    setTimeout(() => {
-      AdminObuchenie.updateLivePreview();
-      ['title_size', 'title_weight', 'title_italic', 'title_underline', 'subtitle_size', 'subtitle_weight', 'subtitle_italic', 'subtitle_underline'].forEach(prop => {
-        const el = document.getElementById(`obuchenie_hero_${prop}`);
-        if (el) {
-          el.addEventListener('input', () => AdminObuchenie.updateLivePreview());
-          el.addEventListener('change', () => AdminObuchenie.updateLivePreview());
-        }
-      });
-    }, 50);
+    if (!el || !window.AdminHeroSlides) return;
+    const migrated = getMigratedData(data);
+    AdminHeroSlides.render(el, migrated.heroSlides || [], obuchenieHeroSlidesConfig(), setImageUploadState);
   }
 
   function navCardAdminHtml(prefix, card, i) {
@@ -575,25 +529,13 @@
   function collectObucheniePageFromForm(existing) {
     const data = getMigratedData(existing || window.obucheniePageData || {});
 
+    data.heroSlides = window.AdminHeroSlides
+      ? AdminHeroSlides.collect('obuchenie_hero', { subtitleUseBottom: true })
+      : [];
+    const firstSlide = data.heroSlides[0] || {};
     data.hero = {
-      background: readImageVal('obuchenie_hero_bg') || data.hero?.background || '',
-      title: document.getElementById('obuchenie_hero_title')?.value ?? data.hero?.title ?? '',
-      subtitle: document.getElementById('obuchenie_hero_subtitle')?.value ?? data.hero?.subtitle ?? '',
-      gavelImage: readImageVal('obuchenie_hero_gavel') || data.hero?.gavelImage || '',
-      titleColor: readColorVal('obuchenie_hero_title_color', data.hero?.titleColor || '#00AE4D'),
-      subtitleColor: readColorVal('obuchenie_hero_subtitle_color', data.hero?.subtitleColor || '#FFFFFF'),
-      titleTop: parseInt(document.getElementById('obuchenie_hero_title_top')?.value, 10) || 68,
-      titleLeft: parseInt(document.getElementById('obuchenie_hero_title_left')?.value, 10) || 60,
-      titleFontSize: document.getElementById('obuchenie_hero_title_size')?.value || '',
-      titleFontWeight: document.getElementById('obuchenie_hero_title_weight')?.value || '',
-      titleItalic: document.getElementById('obuchenie_hero_title_italic')?.checked || false,
-      titleUnderline: document.getElementById('obuchenie_hero_title_underline')?.checked || false,
-      subtitleBottom: parseInt(document.getElementById('obuchenie_hero_subtitle_bottom')?.value, 10) || 40,
-      subtitleLeft: parseInt(document.getElementById('obuchenie_hero_subtitle_left')?.value, 10) || 60,
-      subtitleFontSize: document.getElementById('obuchenie_hero_subtitle_size')?.value || '',
-      subtitleFontWeight: document.getElementById('obuchenie_hero_subtitle_weight')?.value || '',
-      subtitleItalic: document.getElementById('obuchenie_hero_subtitle_italic')?.checked || false,
-      subtitleUnderline: document.getElementById('obuchenie_hero_subtitle_underline')?.checked || false
+      ...firstSlide,
+      gavelImage: readImageVal('obuchenie_hero_gavel') || data.hero?.gavelImage || ''
     };
 
     data.navCards = [];
@@ -667,7 +609,7 @@
   }
 
   function getAspect(uploadId) {
-    if (uploadId === 'obuchenie_hero_bg') return 1520 / 420;
+    if (uploadId === 'obuchenie_hero_bg' || uploadId?.startsWith('obuchenie_hero_bg_')) return 1520 / 420;
     if (uploadId === 'obuchenie_hero_gavel') return 1;
     if (uploadId === 'obuchenie_cal_promo_image') return 596 / 881;
     if (uploadId === 'obuchenie_testing_image') return 1520 / 435;
@@ -676,7 +618,7 @@
   }
 
   function getCropSize(uploadId) {
-    if (uploadId === 'obuchenie_hero_bg') return [1520, 420];
+    if (uploadId === 'obuchenie_hero_bg' || uploadId?.startsWith('obuchenie_hero_bg_')) return [1520, 420];
     if (uploadId === 'obuchenie_hero_gavel') return [420, 420];
     if (uploadId === 'obuchenie_cal_promo_image') return [800, 1183];
     if (uploadId === 'obuchenie_testing_image') return [3040, 870];
@@ -704,6 +646,25 @@
         window.obuchenieSearchBlocks.splice(bIdx, 1);
         AdminObuchenie.renderCourseSearchAdmin({ courseSearch: { blocks: window.obuchenieSearchBlocks, tags: window.obuchenieSearchTags }, _isInternalReRender: true });
       }
+    },
+    addHeroSlide() {
+      window.saveObucheniePageStateToMemory?.();
+      const page = window.obucheniePageData || {};
+      if (!page.heroSlides) page.heroSlides = [];
+      if (page.heroSlides.length >= AdminHeroSlides.MAX) {
+        alert(`Не более ${AdminHeroSlides.MAX} слайдов`);
+        return;
+      }
+      page.heroSlides.push({ title: '', subtitle: '', background: '' });
+      renderObucheniePageAdmin(page);
+    },
+    removeHeroSlide(i) {
+      window.saveObucheniePageStateToMemory?.();
+      const page = window.obucheniePageData || {};
+      if (!page.heroSlides?.length) return;
+      page.heroSlides.splice(i, 1);
+      if (!page.heroSlides.length) page.heroSlides.push({ title: '', subtitle: '', background: '' });
+      renderObucheniePageAdmin(page);
     },
     addSearchBlock() {
       if (window.obuchenieSearchBlocks && window.obuchenieSearchBlocks.length < 4) {

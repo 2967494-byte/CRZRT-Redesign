@@ -162,110 +162,21 @@
       </div>`;
   }
 
+  function supportHeroSlidesConfig() {
+    return {
+      prefix: 'support_hero',
+      removeHandler: 'AdminSupport.removeHeroSlide',
+      pickHandler: 'AdminSupport.pickImage',
+      clearHandler: 'AdminSupport.clearImage',
+      previewClass: 'support-live-banner-preview',
+      defaults: { titleColor: '#ffffff', subtitleColor: '#ffffff', titleTop: 122, titleLeft: 70, subtitleTop: 213, subtitleLeft: 70 }
+    };
+  }
+
   function renderHeroAdmin(data) {
     const el = document.getElementById('supportHeroAdmin');
-    if (!el) return;
-    const hero = getMigratedData(data).hero || {};
-    el.innerHTML = `
-      <div class="obuchenie-hero-grid">
-        <!-- Left: Banner upload & Preview -->
-        <div class="obuchenie-hero-banner-col">
-          ${heroBgUploadShell('support_hero_bg', 'Готовый баннер (~1520×420 px)')}
-          
-          <div style="margin-top:20px;">
-            <label style="font-weight:600; display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">Предпросмотр готового баннера с наложенным текстом</label>
-            <div class="support-live-banner-preview" id="support_hero_live_preview">
-              <div class="live-banner-title" id="support_hero_live_title">${escapeAttr(hero.title)}</div>
-              <div class="live-banner-subtitle" id="support_hero_live_subtitle">${escapeAttr(hero.subtitle)}</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Right: Fields -->
-        <div class="obuchenie-hero-fields-col" style="display:flex; flex-direction:column; gap:20px;">
-          <!-- Block "Заголовок" -->
-          <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', 'support_hero_title_color', hero.titleColor, '#ffffff', hero.titleFontSize, hero.titleFontWeight, hero.titleItalic, hero.titleUnderline)}
-            <div class="form-group" style="margin-bottom:0; margin-top:8px;">
-              <textarea class="form-control" id="support_hero_title" rows="2" placeholder="Заголовок баннера (Enter — перенос строки)">${escapeAttr(hero.title)}</textarea>
-            </div>
-            <div style="display:flex; gap:16px; margin-top:12px;">
-              <div style="flex:1; margin-bottom:0;" class="form-group">
-                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ сверху (px)</label>
-                <input type="number" class="form-control" id="support_hero_title_top" value="${hero.titleTop !== undefined ? hero.titleTop : 122}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
-              </div>
-              <div style="flex:1; margin-bottom:0;" class="form-group">
-                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
-                <input type="number" class="form-control" id="support_hero_title_left" value="${hero.titleLeft !== undefined ? hero.titleLeft : 70}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
-              </div>
-            </div>
-          </div>
-          
-          <!-- Block "Текст" -->
-          <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02);">
-            ${blockHeaderWithColorHtml('Текст', 'support_hero_subtitle_color', hero.subtitleColor, '#ffffff', hero.subtitleFontSize, hero.subtitleFontWeight, hero.subtitleItalic, hero.subtitleUnderline)}
-            <div class="form-group" style="margin-bottom:0; margin-top:8px;">
-              <textarea class="form-control" id="support_hero_subtitle" rows="3" placeholder="Описание/текст под заголовком">${escapeAttr(hero.subtitle)}</textarea>
-            </div>
-            <div style="display:flex; gap:16px; margin-top:12px;">
-              <div style="flex:1; margin-bottom:0;" class="form-group">
-                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ сверху (px)</label>
-                <input type="number" class="form-control" id="support_hero_subtitle_top" value="${hero.subtitleTop !== undefined ? hero.subtitleTop : 213}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
-              </div>
-              <div style="flex:1; margin-bottom:0;" class="form-group">
-                <label style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">Отступ слева (px)</label>
-                <input type="number" class="form-control" id="support_hero_subtitle_left" value="${hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70}" style="padding:6px 10px; font-size:0.85rem; margin-bottom:0;">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>`;
-
-    ['title', 'subtitle'].forEach(field => {
-        const input = document.getElementById(`support_hero_${field}`);
-        const color = document.getElementById(`support_hero_${field}_color`);
-        const colorPicker = document.getElementById(`support_hero_${field}_color_picker`);
-        const top = document.getElementById(`support_hero_${field}_top`);
-        const left = document.getElementById(`support_hero_${field}_left`);
-        const live = document.getElementById(`support_hero_live_${field}`);
-        const size = document.getElementById(`support_hero_${field}_size`);
-        const weight = document.getElementById(`support_hero_${field}_weight`);
-        const italic = document.getElementById(`support_hero_${field}_italic`);
-        const underline = document.getElementById(`support_hero_${field}_underline`);
-
-        if(input && live) input.addEventListener('input', e => live.innerText = e.target.value);
-        if(color && live) color.addEventListener('input', e => { live.style.color = e.target.value; if(colorPicker) colorPicker.value = e.target.value; });
-        if(colorPicker && live) colorPicker.addEventListener('input', e => { live.style.color = e.target.value; if(color) color.value = e.target.value; });
-        if(top && live) top.addEventListener('input', e => live.style.top = `${(e.target.value / 420) * 100}%`);
-        if(left && live) left.addEventListener('input', e => live.style.left = `${(e.target.value / 1520) * 100}%`);
-        if(size && live) size.addEventListener('input', e => { if(e.target.value) live.style.fontSize = `${e.target.value}px`; else live.style.removeProperty('font-size'); });
-        if(weight && live) weight.addEventListener('change', e => { if(e.target.value) live.style.fontWeight = e.target.value; else live.style.removeProperty('font-weight'); });
-        if(italic && live) italic.addEventListener('change', e => { if(e.target.checked) live.style.fontStyle = 'italic'; else live.style.removeProperty('font-style'); });
-        if(underline && live) underline.addEventListener('change', e => { if(e.target.checked) live.style.textDecoration = 'underline'; else live.style.removeProperty('text-decoration'); });
-    });
-
-    setImageUploadState('support_hero_bg', hero.background);
-    
-    const liveTitle = document.getElementById('support_hero_live_title');
-    if(liveTitle) {
-      liveTitle.style.color = hero.titleColor || '#ffffff';
-      liveTitle.style.top = `${((hero.titleTop !== undefined ? hero.titleTop : 122) / 420) * 100}%`;
-      liveTitle.style.left = `${((hero.titleLeft !== undefined ? hero.titleLeft : 70) / 1520) * 100}%`;
-      if(hero.titleFontSize) liveTitle.style.fontSize = `${hero.titleFontSize}px`;
-      if(hero.titleFontWeight) liveTitle.style.fontWeight = hero.titleFontWeight;
-      if(hero.titleItalic) liveTitle.style.fontStyle = 'italic';
-      if(hero.titleUnderline) liveTitle.style.textDecoration = 'underline';
-    }
-    const liveSubtitle = document.getElementById('support_hero_live_subtitle');
-    if(liveSubtitle) {
-      liveSubtitle.style.color = hero.subtitleColor || '#ffffff';
-      liveSubtitle.style.top = `${((hero.subtitleTop !== undefined ? hero.subtitleTop : 213) / 420) * 100}%`;
-      liveSubtitle.style.left = `${((hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70) / 1520) * 100}%`;
-      if(hero.subtitleFontSize) liveSubtitle.style.fontSize = `${hero.subtitleFontSize}px`;
-      if(hero.subtitleFontWeight) liveSubtitle.style.fontWeight = hero.subtitleFontWeight;
-      if(hero.subtitleItalic) liveSubtitle.style.fontStyle = 'italic';
-      if(hero.subtitleUnderline) liveSubtitle.style.textDecoration = 'underline';
-    }
+    if (!el || !window.AdminHeroSlides) return;
+    AdminHeroSlides.render(el, getMigratedData(data).heroSlides || [], supportHeroSlidesConfig(), setImageUploadState);
   }
 
   function navCardAdminHtml(card, i) {
@@ -588,25 +499,8 @@
   function collectSupportPageFromForm(existing) {
     const data = getMigratedData(existing || window.supportPageData || {});
 
-    data.hero = {
-      background: readImageVal('support_hero_bg') || data.hero?.background || '',
-      title: document.getElementById('support_hero_title')?.value ?? data.hero?.title ?? '',
-      titleColor: document.getElementById('support_hero_title_color')?.value ?? data.hero?.titleColor ?? '#ffffff',
-      titleTop: parseInt(document.getElementById('support_hero_title_top')?.value || 122, 10),
-      titleLeft: parseInt(document.getElementById('support_hero_title_left')?.value || 70, 10),
-      titleFontSize: document.getElementById('support_hero_title_size')?.value || '',
-      titleFontWeight: document.getElementById('support_hero_title_weight')?.value || '',
-      titleItalic: document.getElementById('support_hero_title_italic')?.checked || false,
-      titleUnderline: document.getElementById('support_hero_title_underline')?.checked || false,
-      subtitle: document.getElementById('support_hero_subtitle')?.value ?? data.hero?.subtitle ?? SUPPORT_DEFAULTS.hero.subtitle,
-      subtitleColor: document.getElementById('support_hero_subtitle_color')?.value ?? data.hero?.subtitleColor ?? '#ffffff',
-      subtitleTop: parseInt(document.getElementById('support_hero_subtitle_top')?.value || 213, 10),
-      subtitleLeft: parseInt(document.getElementById('support_hero_subtitle_left')?.value || 70, 10),
-      subtitleFontSize: document.getElementById('support_hero_subtitle_size')?.value || '',
-      subtitleFontWeight: document.getElementById('support_hero_subtitle_weight')?.value || '',
-      subtitleItalic: document.getElementById('support_hero_subtitle_italic')?.checked || false,
-      subtitleUnderline: document.getElementById('support_hero_subtitle_underline')?.checked || false
-    };
+    data.heroSlides = window.AdminHeroSlides ? AdminHeroSlides.collect('support_hero') : [];
+    data.hero = data.heroSlides[0] || data.hero || {};
 
     data.navCards = [];
     const navCount = document.querySelectorAll('[id^="support_nav_label_"]').length;
@@ -653,14 +547,14 @@
   }
 
   function getAspect(uploadId) {
-    if (uploadId === 'support_hero_bg') return 1520 / 420;
+    if (uploadId === 'support_hero_bg' || uploadId?.startsWith('support_hero_bg_')) return 1520 / 420;
     if (uploadId === 'support_calc_image') return 845 / 845;
     if (uploadId.startsWith('support_nav_icon_')) return 122 / 154;
     return 16 / 9;
   }
 
   function getCropSize(uploadId) {
-    if (uploadId === 'support_hero_bg') return [1520, 420];
+    if (uploadId === 'support_hero_bg' || uploadId?.startsWith('support_hero_bg_')) return [1520, 420];
     if (uploadId === 'support_calc_image') return [845, 845];
     if (uploadId.startsWith('support_nav_icon_')) return [122, 154];
     return [1200, 675];
@@ -690,6 +584,25 @@
     isSupportUploadId,
     isSupportFileInputId,
     openServiceDetails,
+    addHeroSlide() {
+      window.saveSupportPageStateToMemory?.();
+      const page = window.supportPageData || {};
+      if (!page.heroSlides) page.heroSlides = [];
+      if (page.heroSlides.length >= AdminHeroSlides.MAX) {
+        alert(`Не более ${AdminHeroSlides.MAX} слайдов`);
+        return;
+      }
+      page.heroSlides.push({ title: '', subtitle: '', background: '' });
+      renderSupportPageAdmin(page);
+    },
+    removeHeroSlide(i) {
+      window.saveSupportPageStateToMemory?.();
+      const page = window.supportPageData || {};
+      if (!page.heroSlides?.length) return;
+      page.heroSlides.splice(i, 1);
+      if (!page.heroSlides.length) page.heroSlides.push({ title: '', subtitle: '', background: '' });
+      renderSupportPageAdmin(page);
+    },
     addChecklistItem(prefix) {
       window.saveSupportPageStateToMemory?.();
       const key = prefix === 'customers' ? 'customers' : 'suppliers';

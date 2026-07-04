@@ -94,27 +94,60 @@
     };
   }
 
+  const CONSULTING_HERO_SLIDE_DEFAULTS = {
+    title: CONSULTING_DEFAULTS.hero.title,
+    subtitle: CONSULTING_DEFAULTS.hero.subtitle,
+    titleColor: CONSULTING_DEFAULTS.hero.titleColor,
+    subtitleColor: CONSULTING_DEFAULTS.hero.subtitleColor,
+    titleTop: CONSULTING_DEFAULTS.hero.titleTop,
+    titleLeft: CONSULTING_DEFAULTS.hero.titleLeft,
+    subtitleTop: CONSULTING_DEFAULTS.hero.subtitleTop,
+    subtitleLeft: CONSULTING_DEFAULTS.hero.subtitleLeft
+  };
+
+  let consultingHeroRenderer = null;
+
+  function getConsultingHeroRenderer() {
+    if (!consultingHeroRenderer && window.HeroSlides) {
+      consultingHeroRenderer = window.HeroSlides.createRenderer({
+        rootSelector: '.consulting-hero',
+        customBgClass: 'consulting-hero--custom-bg',
+        titleSelector: '.consulting-hero-title',
+        subtitleSelector: '.consulting-hero-subtitle',
+        graphicSelector: '.consulting-banner__graphic',
+        contentSelector: '.consulting-hero__content',
+        titleColorFallback: '#000000',
+        subtitleColorFallback: '#333333'
+      });
+    }
+    return consultingHeroRenderer;
+  }
+
   function migrateConsultingData(raw) {
+    const heroSlides = window.HeroSlides
+      ? window.HeroSlides.migrateHeroSlides(raw, CONSULTING_HERO_SLIDE_DEFAULTS)
+      : [];
+    const first = heroSlides[0] || {};
     const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
     const hero = {
-      background: rawHero.background || '',
+      background: first.background || '',
       graphic: rawHero.graphic || CONSULTING_DEFAULTS.hero.graphic,
-      title: rawHero.title !== undefined ? rawHero.title : CONSULTING_DEFAULTS.hero.title,
-      titleColor: rawHero.titleColor || CONSULTING_DEFAULTS.hero.titleColor,
-      titleTop: rawHero.titleTop !== undefined ? rawHero.titleTop : CONSULTING_DEFAULTS.hero.titleTop,
-      titleLeft: rawHero.titleLeft !== undefined ? rawHero.titleLeft : CONSULTING_DEFAULTS.hero.titleLeft,
-      titleFontSize: rawHero.titleFontSize || '',
-      titleFontWeight: rawHero.titleFontWeight || '',
-      titleItalic: rawHero.titleItalic || false,
-      titleUnderline: rawHero.titleUnderline || false,
-      subtitle: rawHero.subtitle !== undefined ? rawHero.subtitle : CONSULTING_DEFAULTS.hero.subtitle,
-      subtitleColor: rawHero.subtitleColor || CONSULTING_DEFAULTS.hero.subtitleColor,
-      subtitleTop: rawHero.subtitleTop !== undefined ? rawHero.subtitleTop : CONSULTING_DEFAULTS.hero.subtitleTop,
-      subtitleLeft: rawHero.subtitleLeft !== undefined ? rawHero.subtitleLeft : CONSULTING_DEFAULTS.hero.subtitleLeft,
-      subtitleFontSize: rawHero.subtitleFontSize || '',
-      subtitleFontWeight: rawHero.subtitleFontWeight || '',
-      subtitleItalic: rawHero.subtitleItalic || false,
-      subtitleUnderline: rawHero.subtitleUnderline || false
+      title: first.title !== undefined ? first.title : CONSULTING_DEFAULTS.hero.title,
+      titleColor: first.titleColor || CONSULTING_DEFAULTS.hero.titleColor,
+      titleTop: first.titleTop !== undefined ? first.titleTop : CONSULTING_DEFAULTS.hero.titleTop,
+      titleLeft: first.titleLeft !== undefined ? first.titleLeft : CONSULTING_DEFAULTS.hero.titleLeft,
+      titleFontSize: first.titleFontSize || '',
+      titleFontWeight: first.titleFontWeight || '',
+      titleItalic: first.titleItalic || false,
+      titleUnderline: first.titleUnderline || false,
+      subtitle: first.subtitle !== undefined ? first.subtitle : CONSULTING_DEFAULTS.hero.subtitle,
+      subtitleColor: first.subtitleColor || CONSULTING_DEFAULTS.hero.subtitleColor,
+      subtitleTop: first.subtitleTop !== undefined ? first.subtitleTop : CONSULTING_DEFAULTS.hero.subtitleTop,
+      subtitleLeft: first.subtitleLeft !== undefined ? first.subtitleLeft : CONSULTING_DEFAULTS.hero.subtitleLeft,
+      subtitleFontSize: first.subtitleFontSize || '',
+      subtitleFontWeight: first.subtitleFontWeight || '',
+      subtitleItalic: first.subtitleItalic || false,
+      subtitleUnderline: first.subtitleUnderline || false
     };
 
     const competencies =
@@ -128,6 +161,7 @@
         : [...CONSULTING_DEFAULTS.competencies];
 
     return {
+      heroSlides,
       hero,
       competenciesTitle: raw?.competenciesTitle || CONSULTING_DEFAULTS.competenciesTitle,
       competencies,
@@ -177,55 +211,11 @@
     else el.style.removeProperty('text-decoration');
   }
 
-  function renderHero(hero) {
-    const banner = document.querySelector('.consulting-hero');
-    const contentEl = document.querySelector('.consulting-hero__content');
-    const titleEl = document.querySelector('.consulting-hero-title');
-    const subtitleEl = document.querySelector('.consulting-hero-subtitle');
-    const graphicEl = document.querySelector('.consulting-banner__graphic');
-    const graphicImg = document.querySelector('.consulting-hero-gavel');
-    const background = (hero?.background || '').trim();
-    const hasCustomBanner = Boolean(background);
-    const graphic = (hero?.graphic || CONSULTING_DEFAULTS.hero.graphic || '').trim();
-
-    if (titleEl) {
-      titleEl.innerHTML = multilineHtml(hero?.title);
-      if (hero?.titleColor && hero.titleColor !== '#000000') titleEl.style.color = hero.titleColor;
-      else titleEl.style.removeProperty('color');
-      if (hero?.titleTop !== undefined) titleEl.style.top = `${hero.titleTop}px`;
-      if (hero?.titleLeft !== undefined) titleEl.style.left = `${hero.titleLeft}px`;
-      applyTypographyStyles(titleEl, hero?.titleFontSize, hero?.titleFontWeight, hero?.titleItalic, hero?.titleUnderline);
-    }
-    if (subtitleEl) {
-      subtitleEl.innerHTML = multilineHtml(hero?.subtitle);
-      if (hero?.subtitleColor && hero.subtitleColor !== '#333333') subtitleEl.style.color = hero.subtitleColor;
-      else subtitleEl.style.removeProperty('color');
-      if (hero?.subtitleTop !== undefined) subtitleEl.style.top = `${hero.subtitleTop}px`;
-      if (hero?.subtitleLeft !== undefined) subtitleEl.style.left = `${hero.subtitleLeft}px`;
-      applyTypographyStyles(subtitleEl, hero?.subtitleFontSize, hero?.subtitleFontWeight, hero?.subtitleItalic, hero?.subtitleUnderline);
-    }
-
-    if (banner) {
-      if (hasCustomBanner) {
-        banner.style.backgroundImage = `url('${background.replace(/'/g, "\\'")}')`;
-        banner.classList.add('consulting-hero--custom-bg');
-      } else {
-        banner.style.backgroundImage = '';
-        banner.classList.remove('consulting-hero--custom-bg');
-      }
-    }
-
-    if (graphicImg && graphic) {
-      graphicImg.src = graphic;
-    }
-
-    window.__heroSlides = [];
-    window.__heroCurrent = 0;
-
-    if (contentEl) contentEl.classList.remove('is-hidden');
-    if (graphicEl) graphicEl.classList.toggle('is-hidden', hasCustomBanner);
-
-    document.dispatchEvent(new CustomEvent('heroSlidesUpdated', { detail: { count: 1 } }));
+  function renderHero(data) {
+    const slides = data?.heroSlides?.length
+      ? data.heroSlides
+      : window.HeroSlides?.migrateHeroSlides({ hero: data?.hero }, CONSULTING_HERO_SLIDE_DEFAULTS) || [];
+    getConsultingHeroRenderer()?.render(slides, { graphic: data?.hero?.graphic });
   }
 
   let publicModalOverlay = null;
@@ -371,7 +361,7 @@
   }
 
   function renderConsultingPage(data) {
-    renderHero(data.hero);
+    renderHero(data);
     renderCompetencies(data);
     renderWhyUs(data.whyUs);
     document.dispatchEvent(new CustomEvent('consultingContentReady', { detail: data }));

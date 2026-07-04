@@ -161,6 +161,46 @@ body.theme-purple .consulting-hero.consulting-hero--custom-bg .consulting-hero__
   color: #FFFFFF;
 }
 
+body.theme-purple .consulting-hero .hero-slide__dots {
+  position: absolute;
+  top: 30px;
+  left: 68px;
+  right: 68px;
+  display: flex;
+  gap: 24px;
+  z-index: 4;
+}
+
+body.theme-purple .consulting-hero .hero-slide__arrows {
+  position: absolute;
+  right: 68px;
+  bottom: 40px;
+  display: flex;
+  gap: 12px;
+  z-index: 4;
+}
+
+body.theme-purple .consulting-hero .hero-slide__arrows.is-hidden,
+body.theme-purple .consulting-hero .hero-slide__dots.is-hidden {
+  display: none;
+}
+
+body.theme-purple .consulting-hero .hero-slide__arrows .arrow-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.theme-purple .consulting-hero .hero-slide__arrows .arrow-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
 /* Legacy ECP hero-slider rules kept for copied sections below */
 body.theme-purple .hero-slider {
   width: 100%;
