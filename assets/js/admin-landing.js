@@ -348,7 +348,7 @@
             if(colorPicker && live) colorPicker.addEventListener('input', e => { live.style.color = e.target.value; if(color) color.value = e.target.value; });
             if(top && live) top.addEventListener('input', e => live.style.top = `${(e.target.value / 420) * 100}%`);
             if(left && live) left.addEventListener('input', e => live.style.left = `${(e.target.value / 1520) * 100}%`);
-            if(size && live) size.addEventListener('input', e => { if(e.target.value) live.style.fontSize = `${e.target.value}px`; else live.style.removeProperty('font-size'); });
+            if(size && live) size.addEventListener('input', e => { if(e.target.value) live.style.fontSize = `calc((${e.target.value} / 1520) * 100cqw)`; else live.style.removeProperty('font-size'); });
             if(weight && live) weight.addEventListener('change', e => { if(e.target.value) live.style.fontWeight = e.target.value; else live.style.removeProperty('font-weight'); });
             if(italic && live) italic.addEventListener('change', e => { if(e.target.checked) live.style.fontStyle = 'italic'; else live.style.removeProperty('font-style'); });
             if(underline && live) underline.addEventListener('change', e => { if(e.target.checked) live.style.textDecoration = 'underline'; else live.style.removeProperty('text-decoration'); });
@@ -361,7 +361,7 @@
           liveTitle.style.color = slide.titleColor || '#ffffff';
           liveTitle.style.top = `${((slide.titleTop !== undefined ? slide.titleTop : 122) / 420) * 100}%`;
           liveTitle.style.left = `${((slide.titleLeft !== undefined ? slide.titleLeft : 70) / 1520) * 100}%`;
-          if(slide.titleFontSize) liveTitle.style.fontSize = `${slide.titleFontSize}px`;
+          if(slide.titleFontSize) liveTitle.style.fontSize = `calc((${slide.titleFontSize} / 1520) * 100cqw)`;
           if(slide.titleFontWeight) liveTitle.style.fontWeight = slide.titleFontWeight;
           if(slide.titleItalic) liveTitle.style.fontStyle = 'italic';
           if(slide.titleUnderline) liveTitle.style.textDecoration = 'underline';
@@ -371,7 +371,7 @@
           liveSubtitle.style.color = slide.subtitleColor || '#ffffff';
           liveSubtitle.style.top = `${((slide.subtitleTop !== undefined ? slide.subtitleTop : 213) / 420) * 100}%`;
           liveSubtitle.style.left = `${((slide.subtitleLeft !== undefined ? slide.subtitleLeft : 70) / 1520) * 100}%`;
-          if(slide.subtitleFontSize) liveSubtitle.style.fontSize = `${slide.subtitleFontSize}px`;
+          if(slide.subtitleFontSize) liveSubtitle.style.fontSize = `calc((${slide.subtitleFontSize} / 1520) * 100cqw)`;
           if(slide.subtitleFontWeight) liveSubtitle.style.fontWeight = slide.subtitleFontWeight;
           if(slide.subtitleItalic) liveSubtitle.style.fontStyle = 'italic';
           if(slide.subtitleUnderline) liveSubtitle.style.textDecoration = 'underline';

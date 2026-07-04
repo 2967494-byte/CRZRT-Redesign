@@ -229,7 +229,7 @@
       const titleWeight = document.getElementById(`${prefix}_title_weight_${i}`)?.value || '';
       const titleItalic = document.getElementById(`${prefix}_title_italic_${i}`)?.checked || false;
       const titleUnderline = document.getElementById(`${prefix}_title_underline_${i}`)?.checked || false;
-      if (titleSize) titleLive.style.fontSize = `${titleSize}px`; else titleLive.style.removeProperty('font-size');
+      if (titleSize) titleLive.style.fontSize = `calc((${titleSize} / 1520) * 100cqw)`; else titleLive.style.removeProperty('font-size');
       if (titleWeight) titleLive.style.fontWeight = titleWeight; else titleLive.style.removeProperty('font-weight');
       titleLive.style.fontStyle = titleItalic ? 'italic' : '';
       titleLive.style.textDecoration = titleUnderline ? 'underline' : '';
@@ -253,7 +253,7 @@
       const subtitleWeight = document.getElementById(`${prefix}_subtitle_weight_${i}`)?.value || '';
       const subtitleItalic = document.getElementById(`${prefix}_subtitle_italic_${i}`)?.checked || false;
       const subtitleUnderline = document.getElementById(`${prefix}_subtitle_underline_${i}`)?.checked || false;
-      if (subtitleSize) subtitleLive.style.fontSize = `${subtitleSize}px`; else subtitleLive.style.removeProperty('font-size');
+      if (subtitleSize) subtitleLive.style.fontSize = `calc((${subtitleSize} / 1520) * 100cqw)`; else subtitleLive.style.removeProperty('font-size');
       if (subtitleWeight) subtitleLive.style.fontWeight = subtitleWeight; else subtitleLive.style.removeProperty('font-weight');
       subtitleLive.style.fontStyle = subtitleItalic ? 'italic' : '';
       subtitleLive.style.textDecoration = subtitleUnderline ? 'underline' : '';

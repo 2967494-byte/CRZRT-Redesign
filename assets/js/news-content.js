@@ -179,7 +179,7 @@
 
   function applyTypographyStyles(el, size, weight, italic, underline) {
     if (!el) return;
-    if (size) el.style.fontSize = `${size}px`;
+    if (size) el.style.fontSize = `clamp(calc(${size}px * 0.5), calc(${size}px * (100vw / 1520)), ${size}px)`;
     else el.style.removeProperty('font-size');
     if (weight) el.style.fontWeight = weight;
     else el.style.removeProperty('font-weight');

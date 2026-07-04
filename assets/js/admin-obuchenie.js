@@ -767,7 +767,7 @@
       const titleItalic = document.getElementById('obuchenie_testing_title_italic')?.checked || false;
       const titleUnderline = document.getElementById('obuchenie_testing_title_underline')?.checked || false;
 
-      if (titleSize) titleEl.style.fontSize = `${titleSize}px`;
+      if (titleSize) titleEl.style.fontSize = `calc((${titleSize} / 1520) * 100cqw)`;
       else titleEl.style.removeProperty('font-size');
       if (titleWeight) titleEl.style.fontWeight = titleWeight;
       else titleEl.style.removeProperty('font-weight');

@@ -121,7 +121,7 @@
     const titleWeight = document.getElementById('news_hero_title_weight')?.value || '';
     const titleItalic = document.getElementById('news_hero_title_italic')?.checked || false;
     const titleUnderline = document.getElementById('news_hero_title_underline')?.checked || false;
-    if (titleSize) titleEl.style.fontSize = `${titleSize}px`; else titleEl.style.removeProperty('font-size');
+    if (titleSize) titleEl.style.fontSize = `calc((${titleSize} / 1520) * 100cqw)`; else titleEl.style.removeProperty('font-size');
     if (titleWeight) titleEl.style.fontWeight = titleWeight; else titleEl.style.removeProperty('font-weight');
     titleEl.style.fontStyle = titleItalic ? 'italic' : '';
     titleEl.style.textDecoration = titleUnderline ? 'underline' : '';
@@ -137,7 +137,7 @@
     const subtitleWeight = document.getElementById('news_hero_subtitle_weight')?.value || '';
     const subtitleItalic = document.getElementById('news_hero_subtitle_italic')?.checked || false;
     const subtitleUnderline = document.getElementById('news_hero_subtitle_underline')?.checked || false;
-    if (subtitleSize) subtitleEl.style.fontSize = `${subtitleSize}px`; else subtitleEl.style.removeProperty('font-size');
+    if (subtitleSize) subtitleEl.style.fontSize = `calc((${subtitleSize} / 1520) * 100cqw)`; else subtitleEl.style.removeProperty('font-size');
     if (subtitleWeight) subtitleEl.style.fontWeight = subtitleWeight; else subtitleEl.style.removeProperty('font-weight');
     subtitleEl.style.fontStyle = subtitleItalic ? 'italic' : '';
     subtitleEl.style.textDecoration = subtitleUnderline ? 'underline' : '';

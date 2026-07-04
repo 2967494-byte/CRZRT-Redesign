@@ -245,7 +245,7 @@
       if (colorPicker && live) colorPicker.addEventListener('input', e => { live.style.color = e.target.value; if (color) color.value = e.target.value; });
       if (top && live) top.addEventListener('input', e => live.style.top = `${(e.target.value / 420) * 100}%`);
       if (left && live) left.addEventListener('input', e => live.style.left = `${(e.target.value / 1520) * 100}%`);
-      if (size && live) size.addEventListener('input', e => { if (e.target.value) live.style.fontSize = `${e.target.value}px`; else live.style.removeProperty('font-size'); });
+      if (size && live) size.addEventListener('input', e => { if (e.target.value) live.style.fontSize = `calc((${e.target.value} / 1520) * 100cqw)`; else live.style.removeProperty('font-size'); });
       if (weight && live) weight.addEventListener('change', e => { if (e.target.value) live.style.fontWeight = e.target.value; else live.style.removeProperty('font-weight'); });
       if (italic && live) italic.addEventListener('change', e => { if (e.target.checked) live.style.fontStyle = 'italic'; else live.style.removeProperty('font-style'); });
       if (underline && live) underline.addEventListener('change', e => { if (e.target.checked) live.style.textDecoration = 'underline'; else live.style.removeProperty('text-decoration'); });
@@ -258,7 +258,7 @@
       liveTitle.style.color = hero.titleColor || '#575B6D';
       liveTitle.style.top = `${((hero.titleTop !== undefined ? hero.titleTop : 122) / 420) * 100}%`;
       liveTitle.style.left = `${((hero.titleLeft !== undefined ? hero.titleLeft : 70) / 1520) * 100}%`;
-      if (hero.titleFontSize) liveTitle.style.fontSize = `${hero.titleFontSize}px`;
+      if (hero.titleFontSize) liveTitle.style.fontSize = `calc((${hero.titleFontSize} / 1520) * 100cqw)`;
       if (hero.titleFontWeight) liveTitle.style.fontWeight = hero.titleFontWeight;
       if (hero.titleItalic) liveTitle.style.fontStyle = 'italic';
       if (hero.titleUnderline) liveTitle.style.textDecoration = 'underline';
@@ -268,7 +268,7 @@
       liveSubtitle.style.color = hero.subtitleColor || '#FFFFFF';
       liveSubtitle.style.top = `${((hero.subtitleTop !== undefined ? hero.subtitleTop : 213) / 420) * 100}%`;
       liveSubtitle.style.left = `${((hero.subtitleLeft !== undefined ? hero.subtitleLeft : 70) / 1520) * 100}%`;
-      if (hero.subtitleFontSize) liveSubtitle.style.fontSize = `${hero.subtitleFontSize}px`;
+      if (hero.subtitleFontSize) liveSubtitle.style.fontSize = `calc((${hero.subtitleFontSize} / 1520) * 100cqw)`;
       if (hero.subtitleFontWeight) liveSubtitle.style.fontWeight = hero.subtitleFontWeight;
       if (hero.subtitleItalic) liveSubtitle.style.fontStyle = 'italic';
       if (hero.subtitleUnderline) liveSubtitle.style.textDecoration = 'underline';
