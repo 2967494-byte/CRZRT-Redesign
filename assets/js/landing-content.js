@@ -368,6 +368,7 @@
       if (first.titleTop !== undefined) titleEl.style.top = `${first.titleTop}px`;
       if (first.titleLeft !== undefined) {
         titleEl.style.left = `${first.titleLeft}px`;
+        titleEl.style.width = 'auto';
         titleEl.style.maxWidth = `calc(100% - ${first.titleLeft}px - 10px)`;
       }
       applyTypographyStyles(titleEl, first.titleFontSize, first.titleFontWeight, first.titleItalic, first.titleUnderline);
@@ -379,6 +380,7 @@
       if (first.subtitleTop !== undefined) subEl.style.top = `${first.subtitleTop}px`;
       if (first.subtitleLeft !== undefined) {
         subEl.style.left = `${first.subtitleLeft}px`;
+        subEl.style.width = 'auto';
         subEl.style.maxWidth = `calc(100% - ${first.subtitleLeft}px - 10px)`;
       }
       applyTypographyStyles(subEl, first.subtitleFontSize, first.subtitleFontWeight, first.subtitleItalic, first.subtitleUnderline);
@@ -435,6 +437,7 @@
       if (slide.titleTop !== undefined) titleEl.style.top = `${slide.titleTop}px`;
       if (slide.titleLeft !== undefined) {
         titleEl.style.left = `${slide.titleLeft}px`;
+        titleEl.style.width = 'auto';
         titleEl.style.maxWidth = `calc(100% - ${slide.titleLeft}px - 10px)`;
       }
       applyTypographyStyles(titleEl, slide.titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline);
@@ -446,6 +449,7 @@
       if (slide.subtitleTop !== undefined) subEl.style.top = `${slide.subtitleTop}px`;
       if (slide.subtitleLeft !== undefined) {
         subEl.style.left = `${slide.subtitleLeft}px`;
+        subEl.style.width = 'auto';
         subEl.style.maxWidth = `calc(100% - ${slide.subtitleLeft}px - 10px)`;
       }
       applyTypographyStyles(subEl, slide.subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline);

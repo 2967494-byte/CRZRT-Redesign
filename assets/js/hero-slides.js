@@ -112,6 +112,7 @@
         if (slide.titleTop !== undefined) titleEl.style.top = `${slide.titleTop}px`;
         if (slide.titleLeft !== undefined) {
           titleEl.style.left = `${slide.titleLeft}px`;
+          titleEl.style.width = 'auto';
           titleEl.style.maxWidth = `calc(100% - ${slide.titleLeft}px - 10px)`;
         }
         applyTypographyStyles(titleEl, slide.titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline);
@@ -130,6 +131,7 @@
         }
         if (slide.subtitleLeft !== undefined) {
           subtitleEl.style.left = `${slide.subtitleLeft}px`;
+          subtitleEl.style.width = 'auto';
           subtitleEl.style.maxWidth = `calc(100% - ${slide.subtitleLeft}px - 10px)`;
         }
         applyTypographyStyles(subtitleEl, slide.subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline);
@@ -174,6 +176,7 @@
         if (first.titleTop !== undefined) titleEl.style.top = `${first.titleTop}px`;
         if (first.titleLeft !== undefined) {
           titleEl.style.left = `${first.titleLeft}px`;
+          titleEl.style.width = 'auto';
           titleEl.style.maxWidth = `calc(100% - ${first.titleLeft}px - 10px)`;
         }
         applyTypographyStyles(titleEl, first.titleFontSize, first.titleFontWeight, first.titleItalic, first.titleUnderline);
@@ -192,6 +195,7 @@
         }
         if (first.subtitleLeft !== undefined) {
           subtitleEl.style.left = `${first.subtitleLeft}px`;
+          subtitleEl.style.width = 'auto';
           subtitleEl.style.maxWidth = `calc(100% - ${first.subtitleLeft}px - 10px)`;
         }
         applyTypographyStyles(subtitleEl, first.subtitleFontSize, first.subtitleFontWeight, first.subtitleItalic, first.subtitleUnderline);

@@ -1412,6 +1412,7 @@
         titleEl.style.margin = '0';
         titleEl.style.top = `${data.titleTop !== undefined ? data.titleTop : 68}px`;
         titleEl.style.left = `${data.titleLeft !== undefined ? data.titleLeft : 60}px`;
+        titleEl.style.width = 'auto';
         titleEl.style.maxWidth = `calc(100% - ${data.titleLeft !== undefined ? data.titleLeft : 60}px - 24px)`;
       } else {
         titleEl.style.position = '';
