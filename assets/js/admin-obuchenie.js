@@ -175,7 +175,9 @@
         subtitleBottom: 40,
         subtitleLeft: 60,
         titleFontSize: 60,
-        subtitleFontSize: 20
+        subtitleFontSize: 20,
+        titleWidth: 745,
+        subtitleWidth: 602
       }
     };
   }

@@ -3,6 +3,7 @@
  */
 (function () {
   const MAX_HERO_SLIDES = 8;
+  const HERO_BANNER_DESIGN_WIDTH = 1520;
 
   function multilineHtml(str) {
     return String(str ?? '')
@@ -12,9 +13,27 @@
       .replace(/\n/g, '<br>');
   }
 
-  function applyTypographyStyles(el, size, weight, italic, underline) {
+  function resolveDesignFontSize(size, defaultPx) {
+    const px = parseFloat(size);
+    return Number.isFinite(px) && px > 0 ? px : defaultPx;
+  }
+
+  function fontSizeCss(size, defaultPx) {
+    const value = resolveDesignFontSize(size, defaultPx);
+    if (!value) return '';
+    return `calc((${value} / ${HERO_BANNER_DESIGN_WIDTH}) * 100cqw)`;
+  }
+
+  function fontSizePxForWidth(size, defaultPx, width) {
+    const value = resolveDesignFontSize(size, defaultPx);
+    if (!value || !width) return '';
+    return `${value * (width / HERO_BANNER_DESIGN_WIDTH)}px`;
+  }
+
+  function applyTypographyStyles(el, size, weight, italic, underline, defaultSize) {
     if (!el) return;
-    if (size) el.style.fontSize = `${size}px`;
+    const css = fontSizeCss(size, defaultSize);
+    if (css) el.style.fontSize = css;
     else el.style.removeProperty('font-size');
     if (weight) el.style.fontWeight = weight;
     else el.style.removeProperty('font-weight');
@@ -71,7 +90,9 @@
       arrowsSelector = '.hero-slide__arrows',
       subtitleUseBottom = false,
       titleColorFallback = '#000000',
-      subtitleColorFallback = '#333333'
+      subtitleColorFallback = '#333333',
+      titleDefaultFontSize = 60,
+      subtitleDefaultFontSize = 20
     } = config;
 
     function getRoot() {
@@ -108,7 +129,14 @@
         else titleEl.style.removeProperty('color');
         if (slide.titleTop !== undefined) titleEl.style.top = `${slide.titleTop}px`;
         if (slide.titleLeft !== undefined) titleEl.style.left = `${slide.titleLeft}px`;
-        applyTypographyStyles(titleEl, slide.titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline);
+        applyTypographyStyles(
+          titleEl,
+          slide.titleFontSize,
+          slide.titleFontWeight,
+          slide.titleItalic,
+          slide.titleUnderline,
+          titleDefaultFontSize
+        );
       }
 
       if (subtitleEl) {
@@ -123,7 +151,14 @@
           subtitleEl.style.removeProperty('bottom');
         }
         if (slide.subtitleLeft !== undefined) subtitleEl.style.left = `${slide.subtitleLeft}px`;
-        applyTypographyStyles(subtitleEl, slide.subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline);
+        applyTypographyStyles(
+          subtitleEl,
+          slide.subtitleFontSize,
+          slide.subtitleFontWeight,
+          slide.subtitleItalic,
+          slide.subtitleUnderline,
+          subtitleDefaultFontSize
+        );
       }
 
       if (contentEl) contentEl.classList.remove('is-hidden');
@@ -164,7 +199,14 @@
         else titleEl.style.removeProperty('color');
         if (first.titleTop !== undefined) titleEl.style.top = `${first.titleTop}px`;
         if (first.titleLeft !== undefined) titleEl.style.left = `${first.titleLeft}px`;
-        applyTypographyStyles(titleEl, first.titleFontSize, first.titleFontWeight, first.titleItalic, first.titleUnderline);
+        applyTypographyStyles(
+          titleEl,
+          first.titleFontSize,
+          first.titleFontWeight,
+          first.titleItalic,
+          first.titleUnderline,
+          titleDefaultFontSize
+        );
       }
 
       if (subtitleEl) {
@@ -179,7 +221,14 @@
           subtitleEl.style.removeProperty('bottom');
         }
         if (first.subtitleLeft !== undefined) subtitleEl.style.left = `${first.subtitleLeft}px`;
-        applyTypographyStyles(subtitleEl, first.subtitleFontSize, first.subtitleFontWeight, first.subtitleItalic, first.subtitleUnderline);
+        applyTypographyStyles(
+          subtitleEl,
+          first.subtitleFontSize,
+          first.subtitleFontWeight,
+          first.subtitleItalic,
+          first.subtitleUnderline,
+          subtitleDefaultFontSize
+        );
       }
 
       if (meta?.gavelImage) {
@@ -220,9 +269,12 @@
 
   window.HeroSlides = {
     MAX_HERO_SLIDES,
+    HERO_BANNER_DESIGN_WIDTH,
     normalizeSlide,
     migrateHeroSlides,
     createRenderer,
-    multilineHtml
+    multilineHtml,
+    fontSizeCss,
+    fontSizePxForWidth
   };
 })();

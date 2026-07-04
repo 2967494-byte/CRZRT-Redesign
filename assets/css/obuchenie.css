@@ -71,6 +71,7 @@ body.theme-purple .consulting-hero {
   position: relative;
   width: 100%;
   height: 420px;
+  container-type: inline-size;
   background-color: #C4B5FD;
   background-image: radial-gradient(43.42% 74.44% at 71.22% 54%, #FFFFFF 0%, #C4B5FD 100%);
   background-repeat: no-repeat;
@@ -735,6 +736,7 @@ body[data-page="obuchenie"] .header__actions .btn--green:hover {
 }
 
 body[data-page="obuchenie"] .consulting-hero {
+  container-type: inline-size;
   background-color: #B8FDC6;
   background-image: radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #B8FDC6 100%);
   box-shadow: 0 10px 30px rgba(0, 174, 77, 0.08);
@@ -761,7 +763,7 @@ body[data-page="obuchenie"] .consulting-hero__title {
   height: auto;
   margin: 0;
   font-family: 'Google Sans', sans-serif;
-  font-size: 60px;
+  font-size: calc(60 / 1520 * 100cqw);
   font-weight: 700;
   font-style: normal;
   line-height: 100%;
@@ -781,7 +783,7 @@ body[data-page="obuchenie"] .consulting-hero__subtitle {
   min-height: 0;
   margin: 0;
   font-family: 'Google Sans', sans-serif;
-  font-size: 20px;
+  font-size: calc(20 / 1520 * 100cqw);
   font-weight: 500;
   font-style: normal;
   line-height: 120%;
@@ -798,7 +800,7 @@ body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consult
   top: 68px;
   width: 745px;
   height: auto;
-  font-size: 60px;
+  font-size: calc(60 / 1520 * 100cqw);
   line-height: 100%;
   letter-spacing: 0;
   color: #00AE4D;
@@ -810,7 +812,7 @@ body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consult
   bottom: 40px;
   width: 602px;
   height: auto;
-  font-size: 20px;
+  font-size: calc(20 / 1520 * 100cqw);
   line-height: 120%;
   letter-spacing: -0.03em;
   color: #FFFFFF;
@@ -1671,12 +1673,12 @@ body[data-page="obuchenie"] .consulting-hero.consulting-hero--custom-bg .consult
   }
 
   body[data-page="obuchenie"] .consulting-hero__title {
-    font-size: clamp(36px, 5vw, 60px);
+    font-size: calc(60 / 1520 * 100cqw);
     margin-bottom: 24px;
   }
 
   body[data-page="obuchenie"] .consulting-hero__subtitle {
-    font-size: clamp(16px, 2vw, 20px);
+    font-size: calc(20 / 1520 * 100cqw);
     max-width: 602px;
   }
 }

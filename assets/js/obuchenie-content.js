@@ -604,7 +604,9 @@
         contentSelector: '.consulting-hero__content',
         subtitleUseBottom: true,
         titleColorFallback: '#00AE4D',
-        subtitleColorFallback: '#FFFFFF'
+        subtitleColorFallback: '#FFFFFF',
+        titleDefaultFontSize: 60,
+        subtitleDefaultFontSize: 20
       });
     }
     return obuchenieHeroRenderer;
