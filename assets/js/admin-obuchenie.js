@@ -173,7 +173,9 @@
         titleTop: 68,
         titleLeft: 60,
         subtitleBottom: 40,
-        subtitleLeft: 60
+        subtitleLeft: 60,
+        titleFontSizeDefault: 60,
+        subtitleFontSizeDefault: 20
       }
     };
   }
@@ -536,7 +538,11 @@
     const data = getMigratedData(existing || window.obucheniePageData || {});
 
     data.heroSlides = window.AdminHeroSlides
-      ? AdminHeroSlides.collect('obuchenie_hero', { subtitleUseBottom: true })
+      ? AdminHeroSlides.collect('obuchenie_hero', {
+          subtitleUseBottom: true,
+          titleFontSizeDefault: 60,
+          subtitleFontSizeDefault: 20
+        })
       : [];
     const firstSlide = data.heroSlides[0] || {};
     data.hero = {

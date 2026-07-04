@@ -3,6 +3,7 @@
  */
 (function () {
   const MAX = window.HeroSlides?.MAX_HERO_SLIDES || 8;
+  const HERO_BANNER_DESIGN_WIDTH = 1520;
 
   function escapeAttr(s) {
     return String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -37,6 +38,21 @@
           <input type="text" class="form-control" id="${colorId}" value="${escapeAttr(colorValue || '')}" placeholder="${defaultColor}" style="max-width:90px; padding:4px 8px; font-size:0.85rem; font-family:monospace; margin-bottom:0;">
         </div>
       </div>`;
+  }
+
+  function normalizeStoredFontSize(raw, defaultPx) {
+    const px = parseFloat(String(raw ?? '').trim());
+    if (!Number.isFinite(px) || px <= 0) return '';
+    if (defaultPx && px === defaultPx) return '';
+    return String(px);
+  }
+
+  /** Пропорциональный размер для предпросмотра (баннер 1520×420, контейнер меньше). */
+  function resolvePreviewFontSize(sizePx, defaultPx) {
+    const px = parseFloat(String(sizePx ?? '').trim());
+    const value = Number.isFinite(px) && px > 0 ? px : defaultPx;
+    if (!value) return '';
+    return `calc((${value} / ${HERO_BANNER_DESIGN_WIDTH}) * 100cqw)`;
   }
 
   function heroBgUploadShell(id, label, pickHandler, clearHandler) {
@@ -76,6 +92,8 @@
     const titleColorDefault = d.titleColor || '#ffffff';
     const subtitleColorDefault = d.subtitleColor || '#ffffff';
     const previewClass = config.previewClass || 'landing-live-banner-preview';
+    const titleFontSize = normalizeStoredFontSize(slide.titleFontSize, d.titleFontSizeDefault ?? null);
+    const subtitleFontSize = normalizeStoredFontSize(slide.subtitleFontSize, d.subtitleFontSizeDefault ?? null);
 
     return `
       <div class="admin-subcard" style="padding:16px;border:1px solid var(--card-border);border-radius:12px;position:relative;margin-bottom:20px;">
@@ -94,7 +112,7 @@
           </div>
           <div class="obuchenie-hero-fields-col" style="display:flex;flex-direction:column;gap:20px;">
             <div class="obuchenie-hero-block" style="border:1px solid var(--card-border);padding:15px;border-radius:8px;background:rgba(255,255,255,0.02);">
-              ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', `${prefix}_title_color_${i}`, slide.titleColor, titleColorDefault, slide.titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline)}
+              ${blockHeaderWithColorHtml('Заголовок (Enter — перенос строки)', `${prefix}_title_color_${i}`, slide.titleColor, titleColorDefault, titleFontSize, slide.titleFontWeight, slide.titleItalic, slide.titleUnderline)}
               <div class="form-group" style="margin-bottom:0;margin-top:8px;">
                 <textarea class="form-control" id="${prefix}_title_${i}" rows="2" placeholder="Заголовок баннера">${escapeAttr(slide.title)}</textarea>
               </div>
@@ -110,7 +128,7 @@
               </div>
             </div>
             <div class="obuchenie-hero-block" style="border:1px solid var(--card-border);padding:15px;border-radius:8px;background:rgba(255,255,255,0.02);">
-              ${blockHeaderWithColorHtml('Текст', `${prefix}_subtitle_color_${i}`, slide.subtitleColor, subtitleColorDefault, slide.subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline)}
+              ${blockHeaderWithColorHtml('Текст', `${prefix}_subtitle_color_${i}`, slide.subtitleColor, subtitleColorDefault, subtitleFontSize, slide.subtitleFontWeight, slide.subtitleItalic, slide.subtitleUnderline)}
               <div class="form-group" style="margin-bottom:0;margin-top:8px;">
                 <textarea class="form-control" id="${prefix}_subtitle_${i}" rows="3" placeholder="Описание/текст под заголовком">${escapeAttr(slide.subtitle)}</textarea>
               </div>
@@ -142,7 +160,11 @@
   }
 
   function collect(prefix, options) {
-    const { subtitleUseBottom = false } = options || {};
+    const {
+      subtitleUseBottom = false,
+      titleFontSizeDefault = null,
+      subtitleFontSizeDefault = null
+    } = options || {};
     const slides = [];
     const count = document.querySelectorAll(`input[id^="${prefix}_bg_"][id$="_val"]`).length;
     for (let i = 0; i < count; i++) {
@@ -151,14 +173,20 @@
         titleColor: readColorForCollect(`${prefix}_title_color_${i}`),
         titleTop: parseInt(document.getElementById(`${prefix}_title_top_${i}`)?.value || '122', 10),
         titleLeft: parseInt(document.getElementById(`${prefix}_title_left_${i}`)?.value || '70', 10),
-        titleFontSize: document.getElementById(`${prefix}_title_size_${i}`)?.value || '',
+        titleFontSize: normalizeStoredFontSize(
+          document.getElementById(`${prefix}_title_size_${i}`)?.value,
+          titleFontSizeDefault
+        ),
         titleFontWeight: document.getElementById(`${prefix}_title_weight_${i}`)?.value || '',
         titleItalic: document.getElementById(`${prefix}_title_italic_${i}`)?.checked || false,
         titleUnderline: document.getElementById(`${prefix}_title_underline_${i}`)?.checked || false,
         subtitle: document.getElementById(`${prefix}_subtitle_${i}`)?.value || '',
         subtitleColor: readColorForCollect(`${prefix}_subtitle_color_${i}`),
         subtitleLeft: parseInt(document.getElementById(`${prefix}_subtitle_left_${i}`)?.value || '70', 10),
-        subtitleFontSize: document.getElementById(`${prefix}_subtitle_size_${i}`)?.value || '',
+        subtitleFontSize: normalizeStoredFontSize(
+          document.getElementById(`${prefix}_subtitle_size_${i}`)?.value,
+          subtitleFontSizeDefault
+        ),
         subtitleFontWeight: document.getElementById(`${prefix}_subtitle_weight_${i}`)?.value || '',
         subtitleItalic: document.getElementById(`${prefix}_subtitle_italic_${i}`)?.checked || false,
         subtitleUnderline: document.getElementById(`${prefix}_subtitle_underline_${i}`)?.checked || false,
@@ -229,8 +257,7 @@
       const titleWeight = document.getElementById(`${prefix}_title_weight_${i}`)?.value || '';
       const titleItalic = document.getElementById(`${prefix}_title_italic_${i}`)?.checked || false;
       const titleUnderline = document.getElementById(`${prefix}_title_underline_${i}`)?.checked || false;
-      if (titleSize) titleLive.style.fontSize = `${titleSize}px`;
-      else titleLive.style.removeProperty('font-size');
+      titleLive.style.fontSize = resolvePreviewFontSize(titleSize, d.titleFontSizeDefault ?? 60);
       if (titleWeight) titleLive.style.fontWeight = titleWeight; else titleLive.style.removeProperty('font-weight');
       titleLive.style.fontStyle = titleItalic ? 'italic' : '';
       titleLive.style.textDecoration = titleUnderline ? 'underline' : '';
@@ -254,8 +281,7 @@
       const subtitleWeight = document.getElementById(`${prefix}_subtitle_weight_${i}`)?.value || '';
       const subtitleItalic = document.getElementById(`${prefix}_subtitle_italic_${i}`)?.checked || false;
       const subtitleUnderline = document.getElementById(`${prefix}_subtitle_underline_${i}`)?.checked || false;
-      if (subtitleSize) subtitleLive.style.fontSize = `${subtitleSize}px`;
-      else subtitleLive.style.removeProperty('font-size');
+      subtitleLive.style.fontSize = resolvePreviewFontSize(subtitleSize, d.subtitleFontSizeDefault ?? 20);
       if (subtitleWeight) subtitleLive.style.fontWeight = subtitleWeight; else subtitleLive.style.removeProperty('font-weight');
       subtitleLive.style.fontStyle = subtitleItalic ? 'italic' : '';
       subtitleLive.style.textDecoration = subtitleUnderline ? 'underline' : '';
