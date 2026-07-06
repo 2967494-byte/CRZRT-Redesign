@@ -1,7 +1,8 @@
 <?php
 /**
  * Скопируйте в bitrix-config.local.php и укажите webhook из Bitrix24.
- * Файл в .gitignore — его нужно вручную залить на боевой сервер в api/.
+ * Файл в .gitignore — заливать на сервер вручную в api/.
+ * URL webhook: базовый .../rest/USER/KEY/ или полный .../crm.lead.add.json
  * Альтернатива: переменная окружения BITRIX_WEBHOOK_LEAD_ADD на сервере.
  *
  * Права входящего webhook:

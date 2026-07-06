@@ -359,8 +359,9 @@ function bitrix_webhook_url_for_method(string $method): ?string
         return null;
     }
 
-    if (preg_match('#^(https://[^/]+/rest/\d+/[^/]+)/#', $url, $matches)) {
-        return $matches[1] . '/' . $method . '.json';
+    // Базовый URL: .../rest/USER/KEY или .../rest/USER/KEY/ или .../KEY/method.json
+    if (preg_match('#^(https://[^/]+/rest/\d+/[^/]+)#', $url, $matches)) {
+        return rtrim($matches[1], '/') . '/' . $method . '.json';
     }
 
     return null;
