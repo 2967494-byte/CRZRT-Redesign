@@ -6,3 +6,4 @@ dist/
 .agent/
 .gemini/
 api/bitrix-config.local.php
+deploy/bitrix-prod/bitrix-config.local.php

@@ -1,0 +1,33 @@
+Bitrix24 — файлы для копирования на прод (06.07.2026)
+=====================================================
+
+Скопировать ОБА файла из этой папки в api/ на сервере (рядом с bitrix-lead-lib.php):
+
+  1. bitrix-config.local.php     — СЕКРЕТ, не в git
+  2. bitrix-connection-test.php
+
+Остальные файлы интеграции должны уже быть на сервере:
+  bitrix-lead-lib.php, bitrix-lead-enroll.php, bitrix-lead-course.php
+
+Проверка после копирования
+--------------------------
+1. Войти в админку сайта (сессия CMS).
+2. Открыть в браузере:
+   https://ВАШ_ДОМЕН/new_design/api/bitrix-connection-test.php
+   — должен показать config_file: найден, webhook_set: true
+
+3. Проверка API без побочных эффектов:
+   .../api/bitrix-connection-test.php?run=1
+   — crm_lead_fields и lists_field_get: ok: true
+
+4. Проверка записи в каталог (создаст тестовый курс — удалить в Bitrix):
+   .../api/bitrix-connection-test.php?run=1&catalog=1
+   — lists_element_add: ok: true, elementId: NNN
+
+5. Создать курс в админке «Обучение → Курсы» — в Bitrix:
+   - элемент в каталоге iblock 24
+   - лид «Мероприятие»
+
+6. Заявка «Записаться» на странице Обучение — лид с полем курса.
+
+После проверки удалить bitrix-connection-test.php с прода (опционально).
