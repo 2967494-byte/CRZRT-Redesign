@@ -475,9 +475,10 @@
         }
 
         function renderQuizPageAdmin() {
-            console.log('renderQuizPageAdmin called. AdminQuiz:', typeof AdminQuiz);
             if (typeof AdminQuiz === 'undefined') return;
-            AdminQuiz.renderQuizPageAdmin(quizPageData);
+            quizPageData = AdminQuiz.migrateQuizPageData(quizPageData);
+            window.quizPageData = quizPageData;
+            AdminQuiz.renderQuizPageAdmin();
         }
 
         function renderKnowledgePageAdmin() {
@@ -1059,6 +1060,7 @@
                     else if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
                     else if (currentTarget === 'support-page') renderSupportPageAdmin();
                     else if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
+                    else if (currentTarget === 'testing-page') renderQuizPageAdmin();
                     else if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();
                     else if (currentTarget === 'news-page') renderNewsPageAdmin();
                     else if (currentTarget === 'consulting') renderConsultingAdmin();
