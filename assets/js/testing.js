@@ -46,7 +46,7 @@
   const reviewQuestionsContainer = document.getElementById('review-questions-container');
 
   function init() {
-    fetch('api/settings.php?key=crzrt_obuchenie_page_data')
+    fetch('api/settings.php?key=crzrt_quiz_data')
       .then(res => res.json())
       .then(response => {
         let data = response.data || {};
@@ -55,8 +55,27 @@
         }
         ALL_TEST_QUESTIONS = data.quizQuestions || [];
         
+        if (!ALL_TEST_QUESTIONS.length && window.TEST_QUESTIONS && window.TEST_QUESTIONS.length > 0) {
+          const CORRECT_ANSWERS = {
+            1: 'А', 2: 'В', 3: 'Г', 4: 'В', 5: 'А', 6: 'Д', 7: 'Д', 8: 'В', 9: 'А', 10: 'Г',
+            11: 'Г', 12: 'Г', 13: 'Б', 14: 'Б', 15: 'Б', 16: 'А', 17: 'А', 18: 'А', 19: 'А', 20: 'В'
+          };
+          ALL_TEST_QUESTIONS = window.TEST_QUESTIONS.map(q => {
+              return {
+                  id: q.id,
+                  text: q.text || q.question || '',
+                  options: q.options || [],
+                  correctAnswer: CORRECT_ANSWERS[q.id] || 'А'
+              };
+          });
+        }
+        
+        // Filter out any corrupted entries just in case
+        ALL_TEST_QUESTIONS = ALL_TEST_QUESTIONS.filter(q => q && q.text);
+
         if (!ALL_TEST_QUESTIONS.length) {
           console.error('Вопросы для тестирования не найдены!');
+          alert('База вопросов пуста. Администратору необходимо добавить вопросы в панели управления.');
           return;
         }
 

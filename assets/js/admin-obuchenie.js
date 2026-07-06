@@ -508,57 +508,6 @@
     renderCourseSearchAdmin(migrated);
     renderCalendarAdmin(migrated);
     renderTestingAdmin(migrated);
-    renderTestingQuestionsAdmin(migrated);
-  }
-
-  function renderTestingQuestionsAdmin(data) {
-    const el = document.getElementById('obuchenieTestingQuestionsAdmin');
-    if (!el) return;
-    const questions = data.quizQuestions || [];
-    if (questions.length === 0) {
-      el.innerHTML = '<p style="color:var(--text-secondary);">Нет вопросов. Нажмите «+ Добавить вопрос».</p>';
-      return;
-    }
-    
-    let html = '<div style="display:flex;flex-direction:column;gap:16px;">';
-    questions.forEach((q, i) => {
-      html += `
-        <div class="obuchenie-hero-block" style="border: 1px solid var(--card-border); padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.02); position: relative;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <strong style="color:var(--text-main);">Вопрос ${i + 1}</strong>
-            <button type="button" class="btn-delete" style="padding:4px 8px;font-size:0.8rem;" onclick="AdminObuchenie.removeQuizQuestion(${i})">Удалить</button>
-          </div>
-          <div class="form-group" style="margin-bottom:12px;">
-            <label>Текст вопроса</label>
-            <textarea class="form-control" id="obuchenie_q_text_${i}" rows="2">${escapeAttr(q.text)}</textarea>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            <label>Варианты ответа (отметьте правильный)</label>
-      `;
-      const options = q.options && q.options.length ? q.options : [
-        { letter: 'А', text: '' },
-        { letter: 'Б', text: '' },
-        { letter: 'В', text: '' },
-        { letter: 'Г', text: '' }
-      ];
-      options.forEach((opt, optIdx) => {
-        const isChecked = (q.correctAnswer === opt.letter) ? 'checked' : '';
-        html += `
-            <div style="display:flex; align-items:center; gap:8px;">
-              <input type="radio" name="obuchenie_q_correct_${i}" value="${opt.letter}" ${isChecked} style="cursor:pointer; width:18px; height:18px;">
-              <span style="font-weight:bold; min-width:20px;">${opt.letter})</span>
-              <input type="hidden" id="obuchenie_q_opt_letter_${i}_${optIdx}" value="${opt.letter}">
-              <input type="text" class="form-control" id="obuchenie_q_opt_text_${i}_${optIdx}" value="${escapeAttr(opt.text)}" style="margin-bottom:0;" placeholder="Текст варианта ${opt.letter}">
-            </div>
-        `;
-      });
-      html += `
-          </div>
-        </div>
-      `;
-    });
-    html += '</div>';
-    el.innerHTML = html;
   }
 
   function readImageVal(id) {
@@ -907,33 +856,6 @@
       window.saveObucheniePageStateToMemory?.();
       window.obucheniePageData.courseCards.splice(index, 1);
       renderObucheniePageAdmin(window.obucheniePageData);
-    },
-    addQuizQuestion() {
-      window.saveObucheniePageStateToMemory?.();
-      const page = window.obucheniePageData || {};
-      if (!page.quizQuestions) page.quizQuestions = [];
-      const newId = page.quizQuestions.length > 0 ? Math.max(...page.quizQuestions.map(q => q.id || 0)) + 1 : 1;
-      page.quizQuestions.push({
-        id: newId,
-        text: '',
-        options: [
-          { letter: 'А', text: '' },
-          { letter: 'Б', text: '' },
-          { letter: 'В', text: '' },
-          { letter: 'Г', text: '' }
-        ],
-        correctAnswer: 'А'
-      });
-      renderObucheniePageAdmin(page);
-    },
-    removeQuizQuestion(index) {
-      if (!confirm('Вы уверены, что хотите удалить этот вопрос?')) return;
-      window.saveObucheniePageStateToMemory?.();
-      const page = window.obucheniePageData || {};
-      if (page.quizQuestions && page.quizQuestions.length > index) {
-        page.quizQuestions.splice(index, 1);
-        renderObucheniePageAdmin(page);
-      }
     }
   };
 })();

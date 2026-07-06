@@ -1,0 +1,21 @@
+{
+  "name": "crzrt-site",
+  "version": "1.0.0",
+  "description": "This is a conceptual redesign of the Zakupki Tatar website, focusing on a modern, \"Apple-style\" aesthetic and educational content.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2967494-byte/CRZRT-Redesign.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/2967494-byte/CRZRT-Redesign/issues"
+  },
+  "homepage": "https://github.com/2967494-byte/CRZRT-Redesign#readme"
+}

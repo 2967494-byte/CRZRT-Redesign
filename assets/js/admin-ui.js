@@ -182,6 +182,19 @@
             obucheniePageData = AdminObuchenie.collectObucheniePageFromForm(obucheniePageData);
             window.obucheniePageData = obucheniePageData;
         };
+
+        let quizPageData = {};
+        if (typeof AdminQuiz !== 'undefined') {
+            quizPageData = AdminQuiz.migrateQuizPageData(
+                safeParseJson(localStorage.getItem('crzrt_quiz_data'))
+            );
+        }
+        window.quizPageData = quizPageData;
+        window.saveQuizPageStateToMemory = function () {
+            if (typeof AdminQuiz === 'undefined') return;
+            quizPageData = AdminQuiz.collectQuizPageFromForm(quizPageData);
+            window.quizPageData = quizPageData;
+        };
         let knowledgePageData = {};
         if (typeof AdminKnowledge !== 'undefined') {
             knowledgePageData = AdminKnowledge.migrateKnowledgePageData(
@@ -284,6 +297,7 @@
                 'crzrt_consulting_page_data',
                 'crzrt_support_page_data',
                 'crzrt_obuchenie_page_data',
+                'crzrt_quiz_data',
                 'crzrt_knowledge_page_data',
                 'crzrt_news_page_data',
                 'crzrt_about_data', 
@@ -323,6 +337,11 @@
                                 window.obucheniePageData = obucheniePageData;
                                 localStorage.setItem(key, JSON.stringify(obucheniePageData));
                             }
+                            else if (key === 'crzrt_quiz_data' && typeof AdminQuiz !== 'undefined') {
+                                quizPageData = AdminQuiz.migrateQuizPageData(data);
+                                window.quizPageData = quizPageData;
+                                localStorage.setItem(key, JSON.stringify(quizPageData));
+                            }
                             else if (key === 'crzrt_knowledge_page_data' && typeof AdminKnowledge !== 'undefined') {
                                 knowledgePageData = AdminKnowledge.migrateKnowledgePageData(data);
                                 window.knowledgePageData = knowledgePageData;
@@ -359,6 +378,7 @@
                     else if (currentTarget === 'consulting-page') renderConsultingPageAdmin();
                     else if (currentTarget === 'support-page') renderSupportPageAdmin();
                     else if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();
+                    else if (currentTarget === 'testing-page') renderQuizPageAdmin();
                     else if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();
                     else if (currentTarget === 'news-page') renderNewsPageAdmin();
                     else if (currentTarget === 'about-us') renderAboutUsAdmin();
@@ -406,6 +426,7 @@
             'consulting-page': 'consultingPageBlock',
             'support-page': 'supportPageBlock',
             'obuchenie-page': 'obucheniePageBlock',
+            'testing-page': 'testingPageBlock',
             'knowledge-page': 'knowledgePageBlock',
             'news-page': 'newsPageBlock',
             'consulting': 'consultingBlock',
@@ -451,6 +472,12 @@
             console.log('renderObucheniePageAdmin called. AdminObuchenie:', typeof AdminObuchenie);
             if (typeof AdminObuchenie === 'undefined') return;
             AdminObuchenie.renderObucheniePageAdmin(obucheniePageData);
+        }
+
+        function renderQuizPageAdmin() {
+            console.log('renderQuizPageAdmin called. AdminQuiz:', typeof AdminQuiz);
+            if (typeof AdminQuiz === 'undefined') return;
+            AdminQuiz.renderQuizPageAdmin(quizPageData);
         }
 
         function renderKnowledgePageAdmin() {
@@ -1098,6 +1125,7 @@
                 'consulting-page': 'Консалтинг',
                 'support-page': 'Сопровождение',
                 'obuchenie-page': 'Обучение',
+                'testing-page': 'База тестирования',
                 'users': 'Упр. пользователями',
                 'contacts': 'Реквизиты',
                 'settings': 'Настройки'
@@ -2273,6 +2301,10 @@
                     saveObucheniePageStateToMemory();
                     keyToSave = 'crzrt_obuchenie_page_data';
                     dataToSave = obucheniePageData;
+                } else if (currentTarget === 'testing-page') {
+                    saveQuizPageStateToMemory();
+                    keyToSave = 'crzrt_quiz_data';
+                    dataToSave = quizPageData;
                 } else if (currentTarget === 'knowledge-page') {
                     saveKnowledgePageStateToMemory();
                     keyToSave = 'crzrt_knowledge_page_data';
