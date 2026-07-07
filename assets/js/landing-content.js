@@ -650,7 +650,9 @@
     renderSocialLinks(data.socialLinks);
     renderConsultationPhoto(data.consultation?.photos);
     bindPromoClick();
-    window.applyHeroSlide = applyHeroSlide;
+    if (!shouldSkipLandingHero()) {
+      window.applyHeroSlide = applyHeroSlide;
+    }
     document.dispatchEvent(new CustomEvent('landingContentReady', { detail: data }));
   }
 

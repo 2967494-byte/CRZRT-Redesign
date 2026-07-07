@@ -40,6 +40,16 @@ document.getElementById('hero-next')?.addEventListener('click', () => {
   setHeroDot((heroCurrent + 1) % heroSlideCount());
 });
 
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.hero-slide__dots .dot')) {
+    if (isStandaloneHeroPage()) return;
+    const slideIdx = parseInt(e.target.dataset.slide, 10);
+    if (!isNaN(slideIdx)) {
+      setHeroDot(slideIdx);
+    }
+  }
+});
+
 function syncHeroControls() {
   const count = heroSlideCount();
   const hide = count <= 1;
