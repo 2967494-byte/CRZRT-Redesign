@@ -108,7 +108,9 @@
 
   function migrateKnowledgePageData(raw) {
     const rawHero = raw?.hero && typeof raw.hero === 'object' ? raw.hero : {};
-    const blocks = Array.isArray(raw?.blocks) ? raw.blocks : [...DEFAULT_KNOWLEDGE_PAGE.blocks];
+    const blocks = Array.isArray(raw?.blocks) && raw.blocks.length > 0
+      ? raw.blocks
+      : [...DEFAULT_KNOWLEDGE_PAGE.blocks];
 
     return {
       hero: {
@@ -180,10 +182,10 @@
   }
 
   function renderKnowledgeHero(hero) {
-    const banner = document.querySelector('.knowledge-hero');
-    const titleEl = document.querySelector('.knowledge-hero__title');
-    const subtitleEl = document.querySelector('.knowledge-hero__subtitle');
-    const imageEl = document.querySelector('.knowledge-hero__image');
+    const banner = document.querySelector('body[data-page="knowledge"] .consulting-hero');
+    const titleEl = document.querySelector('body[data-page="knowledge"] .consulting-hero-title');
+    const subtitleEl = document.querySelector('body[data-page="knowledge"] .consulting-hero-subtitle');
+    const graphicEl = document.querySelector('body[data-page="knowledge"] .consulting-banner__graphic');
     if (!banner) return;
     banner.style.containerType = 'inline-size';
     const background = (hero?.background || '').trim();
@@ -196,7 +198,6 @@
       if (hero?.titleLeft !== undefined) {
         titleEl.style.left = `${hero.titleLeft}px`;
         titleEl.style.width = 'auto';
-        titleEl.style.width = 'auto';
         titleEl.style.maxWidth = `calc(100% - ${hero.titleLeft}px - 10px)`;
       }
       applyTypographyStyles(titleEl, hero?.titleFontSize, hero?.titleFontWeight, hero?.titleItalic, hero?.titleUnderline);
@@ -208,20 +209,17 @@
       if (hero?.subtitleLeft !== undefined) {
         subtitleEl.style.left = `${hero.subtitleLeft}px`;
         subtitleEl.style.width = 'auto';
-        subtitleEl.style.width = 'auto';
         subtitleEl.style.maxWidth = `calc(100% - ${hero.subtitleLeft}px - 10px)`;
       }
       applyTypographyStyles(subtitleEl, hero?.subtitleFontSize, hero?.subtitleFontWeight, hero?.subtitleItalic, hero?.subtitleUnderline);
     }
 
-    if (banner) {
-      if (hasCustomBanner) {
-        banner.style.backgroundImage = `url('${background.replace(/'/g, "\\'")}')`;
-        banner.classList.add('consulting-hero--custom-bg');
-      } else {
-        banner.style.backgroundImage = '';
-        banner.classList.remove('consulting-hero--custom-bg');
-      }
+    if (hasCustomBanner) {
+      banner.style.backgroundImage = `url('${background.replace(/'/g, "\\'")}')`;
+      banner.classList.add('consulting-hero--custom-bg');
+    } else {
+      banner.style.backgroundImage = '';
+      banner.classList.remove('consulting-hero--custom-bg');
     }
 
     if (graphicEl) graphicEl.classList.add('is-hidden');
@@ -320,7 +318,7 @@
   }
 
   function renderKnowledgePage(data) {
-    renderHero(data.hero);
+    renderKnowledgeHero(data.hero);
     renderBlocks(data.blocks);
   }
 
