@@ -180,29 +180,6 @@ body.theme-purple .consulting-hero .hero-slide__arrows {
   z-index: 4;
 }
 
-body.theme-purple .consulting-hero .hero-slide__arrows.is-hidden,
-body.theme-purple .consulting-hero .hero-slide__dots.is-hidden {
-  display: none;
-}
-
-body.theme-purple .consulting-hero .hero-slide__arrows .arrow-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-  background: var(--green);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, transform 0.2s;
-}
-
-body.theme-purple .consulting-hero .hero-slide__arrows .arrow-btn:hover {
-  background: var(--green-dark);
-  transform: scale(1.05);
-}
-
 /* Legacy ECP hero-slider rules kept for copied sections below */
 body.theme-purple .hero-slider {
   width: 100%;
