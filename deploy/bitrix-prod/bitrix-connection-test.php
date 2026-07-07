@@ -3,8 +3,8 @@
  * Проверка webhook Bitrix24 после деплоя. Только для авторизованных в CMS.
  *
  * GET                          — конфиг (webhook замаскирован), без вызовов API
- * GET ?run=1                   — crm.lead.fields + lists.field.get (без создания сущностей)
- * GET ?run=1&catalog=1         — то же + тестовый элемент в каталоге курсов (удалить вручную в Bitrix)
+ * GET ?run=1                   — crm.lead.fields + catalog.product.list (без создания сущностей)
+ * GET ?run=1&catalog=1         — то же + тестовый товар в каталоге курсов (удалить вручную в Bitrix)
  */
 session_start();
 header('Content-Type: application/json; charset=utf-8');
@@ -43,9 +43,8 @@ $report = [
         'webhook_set' => $webhook !== '',
         'webhook_masked' => bitrix_test_mask_url($webhook),
         'crm_lead_add' => bitrix_test_mask_url(bitrix_webhook_url_for_method('crm.lead.add')),
-        'lists_element_add' => bitrix_test_mask_url(bitrix_webhook_url_for_method('lists.element.add')),
+        'catalog_product_add' => bitrix_test_mask_url(bitrix_webhook_url_for_method('catalog.product.add')),
         'course_catalog_iblock_id' => $catalog['iblock_id'],
-        'course_catalog_iblock_type' => $catalog['iblock_type_id'],
     ],
     'tests' => [],
 ];
@@ -58,7 +57,7 @@ if ($webhook === '') {
 }
 
 if (!$run) {
-    $report['hint'] = 'Добавьте ?run=1 для проверки API. ?run=1&catalog=1 — создать тестовый элемент каталога в Bitrix24.';
+    $report['hint'] = 'Добавьте ?run=1 для проверки API. ?run=1&catalog=1 — создать тестовый товар в каталоге Bitrix24.';
     echo json_encode($report, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     exit;
 }
@@ -72,31 +71,29 @@ $report['tests']['crm_lead_fields'] = [
     'details' => $crmFields['success'] ? null : ($crmFields['details'] ?? null),
 ];
 
-$listsRead = bitrix_rest_call('lists.field.get', [
-    'IBLOCK_TYPE_ID' => $catalog['iblock_type_id'],
-    'IBLOCK_ID' => $catalog['iblock_id'],
+$catalogRead = bitrix_rest_call('catalog.product.list', [
+    'filter' => ['iblockId' => $catalog['iblock_id']],
+    'select' => ['id', 'iblockId', 'name'],
+    'start' => 0,
 ]);
-$listsReadDenied = !$listsRead['success']
-    && (($listsRead['details']['error'] ?? '') === 'ACCESS_DENIED'
-        || stripos((string)($listsRead['error'] ?? ''), 'extended plans') !== false);
-$report['tests']['lists_field_get'] = [
-    'ok' => $listsRead['success'],
-    'optional' => $listsReadDenied,
-    'message' => $listsRead['success']
-        ? 'Lists: чтение каталога #' . $catalog['iblock_id'] . ' OK'
-        : ($listsReadDenied
-            ? 'Lists: чтение недоступно на тарифе (не критично) — проверьте ?catalog=1'
-            : (string)($listsRead['error'] ?? 'ошибка')),
-    'details' => $listsRead['success'] ? null : ($listsRead['details'] ?? null),
+$catalogTotal = is_array($catalogRead['result'] ?? null)
+    ? (int)($catalogRead['result']['total'] ?? count($catalogRead['result']['products'] ?? []))
+    : 0;
+$report['tests']['catalog_product_list'] = [
+    'ok' => $catalogRead['success'],
+    'message' => $catalogRead['success']
+        ? 'Каталог товаров #' . $catalog['iblock_id'] . ': чтение OK (найдено ' . $catalogTotal . ')'
+        : (string)($catalogRead['error'] ?? 'ошибка'),
+    'details' => $catalogRead['success'] ? null : ($catalogRead['details'] ?? null),
 ];
 
 if ($addCatalogTest) {
     $label = 'ТЕСТ zakupki.tatar ' . date('d.m.Y H:i') . ' — удалить';
     $catalogAdd = bitrix_catalog_add_course_element($label);
-    $report['tests']['lists_element_add'] = [
+    $report['tests']['catalog_product_add'] = [
         'ok' => $catalogAdd['success'],
         'message' => $catalogAdd['success']
-            ? 'Элемент каталога #' . $catalogAdd['elementId'] . ' создан — удалите вручную в Bitrix24'
+            ? 'Товар каталога #' . $catalogAdd['elementId'] . ' создан — удалите вручную в Bitrix24'
             : (string)($catalogAdd['error'] ?? 'ошибка'),
         'elementId' => $catalogAdd['elementId'] ?? null,
         'label' => $label,
@@ -105,7 +102,7 @@ if ($addCatalogTest) {
 }
 
 foreach ($report['tests'] as $test) {
-    if (empty($test['ok']) && empty($test['optional'])) {
+    if (empty($test['ok'])) {
         $report['success'] = false;
         break;
     }

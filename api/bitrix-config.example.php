@@ -7,12 +7,12 @@
  *
  * Права входящего webhook:
  * - crm (crm.lead.add) — обязательно;
- * - lists (lists.element.add) — чтобы курс появлялся в каталоге «На какой курс заявка».
+ * - catalog (catalog.product.add) — чтобы курс появлялся в товарном каталоге «На какой курс заявка» (iblock 24).
  */
 return [
     'webhook_lead_add' => 'https://YOUR_PORTAL.bitrix24.ru/rest/USER_ID/WEBHOOK_KEY/crm.lead.add.json',
 
-    // Каталог курсов в Bitrix24 (список для поля UF_CRM_1668839163).
+    // Товарный каталог курсов в Bitrix24 (поле UF_CRM_1668839163). API: catalog.product.*
     'course_catalog_iblock_id' => 24,
     'course_catalog_iblock_type' => 'lists',
 ];

@@ -13,6 +13,8 @@ const BITRIX_UF_LEAD_TYPE = 'UF_CRM_1675160062565';
 const BITRIX_UF_AUDIENCE = 'UF_CRM_62CFF6610395E';
 const BITRIX_UF_CUSTOMER_TYPE = 'UF_CRM_1657263972340';
 const BITRIX_UF_CUSTOMER_LAW = 'UF_CRM_1657264015040';
+/** Поле «Мне интересно» в форме консультации. */
+const BITRIX_UF_CONSULT_INTEREST = 'UF_CRM_1659440083530';
 
 const BITRIX_ENUM_LEAD_APPLICATION = '1808';
 const BITRIX_ENUM_AUDIENCE_INDIVIDUAL = '398';
@@ -21,6 +23,29 @@ const BITRIX_ENUM_CUSTOMER_BUYER = '362';
 const BITRIX_ENUM_CUSTOMER_SUPPLIER = '364';
 const BITRIX_ENUM_LAW_44 = '366';
 const BITRIX_ENUM_LAW_223 = '368';
+
+/** Значения UF_CRM_1659440083530 («Мне интересно»). */
+const BITRIX_ENUM_INTEREST_TRAINING = '654';       // Обучение
+const BITRIX_ENUM_INTEREST_SUPPORT = '656';        // Сопрвождение закупок
+const BITRIX_ENUM_INTEREST_LEGAL = '658';          // Юр. услуги
+const BITRIX_ENUM_INTEREST_ETP = '992';            // ПЭТП
+
+function bitrix_map_consult_interest_enum(string $interest): ?string
+{
+    $normalized = mb_strtolower(trim($interest));
+    $map = [
+        'обучение' => BITRIX_ENUM_INTEREST_TRAINING,
+        'сопровождение' => BITRIX_ENUM_INTEREST_SUPPORT,
+        'сопровождение закупок' => BITRIX_ENUM_INTEREST_SUPPORT,
+        'юридический консалтинг' => BITRIX_ENUM_INTEREST_LEGAL,
+        'юр. услуги' => BITRIX_ENUM_INTEREST_LEGAL,
+        'юридические услуги' => BITRIX_ENUM_INTEREST_LEGAL,
+        'этп' => BITRIX_ENUM_INTEREST_ETP,
+        'пэтп' => BITRIX_ENUM_INTEREST_ETP,
+    ];
+
+    return $map[$normalized] ?? null;
+}
 
 function bitrix_load_config(): array
 {
@@ -268,6 +293,69 @@ function bitrix_build_enroll_lead_fields(array $input): array
     return $fields;
 }
 
+function bitrix_build_consult_lead_fields(array $input): array
+{
+    $name = trim((string)($input['name'] ?? ''));
+    $lastName = trim((string)($input['lastName'] ?? ''));
+    $phone = trim((string)($input['phone'] ?? ''));
+    $email = trim((string)($input['email'] ?? ''));
+    $interest = trim((string)($input['interest'] ?? ''));
+    $pageUrl = trim((string)($input['pageUrl'] ?? ''));
+    $pageLabel = trim((string)($input['pageLabel'] ?? ''));
+
+    $title = $interest !== ''
+        ? ('Заявка на консультацию: ' . $interest)
+        : 'Заявка на консультацию с сайта';
+
+    $commentParts = ['Форма «Получить консультацию» на zakupki.tatar'];
+    if ($pageLabel !== '') {
+        $commentParts[] = 'Страница: ' . $pageLabel;
+    }
+    if ($pageUrl !== '') {
+        $commentParts[] = 'URL: ' . $pageUrl;
+    }
+    if ($interest !== '') {
+        $commentParts[] = 'Мне интересно: ' . $interest;
+    }
+    $interestEnum = bitrix_map_consult_interest_enum($interest);
+    if (!empty($input['agreePolicy'])) {
+        $commentParts[] = 'Согласие на обработку персональных данных: да';
+    }
+    if (!empty($input['agreeNews'])) {
+        $commentParts[] = 'Согласие на рассылку: да';
+    }
+
+    $fields = [
+        'TITLE' => $title,
+        'SOURCE_ID' => 'WEB',
+        'COMMENTS' => implode("\n", $commentParts),
+    ];
+
+    if ($name !== '') {
+        $fields['NAME'] = $name;
+    }
+    if ($lastName !== '') {
+        $fields['LAST_NAME'] = $lastName;
+    }
+    if ($phone !== '') {
+        $fields['PHONE'] = [['VALUE' => $phone, 'VALUE_TYPE' => 'WORK']];
+    }
+    if ($email !== '') {
+        $fields['EMAIL'] = [['VALUE' => $email, 'VALUE_TYPE' => 'WORK']];
+    }
+    if ($interestEnum !== null) {
+        $fields[BITRIX_UF_CONSULT_INTEREST] = $interestEnum;
+    }
+
+    foreach ($fields as $key => $value) {
+        if ($value === '' || $value === null || $value === []) {
+            unset($fields[$key]);
+        }
+    }
+
+    return $fields;
+}
+
 function bitrix_build_event_lead_fields(array $input): array
 {
     $title = trim((string)($input['title'] ?? 'Заявка с сайта'));
@@ -430,13 +518,28 @@ function bitrix_catalog_config(): array
     $config = bitrix_load_config();
 
     return [
-        'iblock_type_id' => trim((string)($config['course_catalog_iblock_type'] ?? 'lists')) ?: 'lists',
         'iblock_id' => (int)($config['course_catalog_iblock_id'] ?? 24),
+        // iblock 24 — товарный каталог (catalog.product.*), не универсальный список (lists.*).
+        'iblock_type_id' => trim((string)($config['course_catalog_iblock_type'] ?? 'lists')) ?: 'lists',
     ];
 }
 
+function bitrix_parse_catalog_product_id($result): int
+{
+    if (is_array($result)) {
+        if (isset($result['element']['id'])) {
+            return (int)$result['element']['id'];
+        }
+        if (isset($result['id'])) {
+            return (int)$result['id'];
+        }
+    }
+
+    return (int)$result;
+}
+
 /**
- * Элемент списка «На какой курс заявка» (iblock 24) — то, что заказчик заводит вручную.
+ * Товар каталога «На какой курс заявка» (iblock 24) — справочник курсов в CRM.
  */
 function bitrix_catalog_add_course_element(string $name, array $options = []): array
 {
@@ -461,20 +564,30 @@ function bitrix_catalog_add_course_element(string $name, array $options = []): a
         $elementCode = 'zakupki-' . date('Ymd-His') . '-' . substr(uniqid('', true), -6);
     }
 
-    $result = bitrix_rest_call('lists.element.add', [
-        'IBLOCK_TYPE_ID' => $catalog['iblock_type_id'],
-        'IBLOCK_ID' => $catalog['iblock_id'],
-        'ELEMENT_CODE' => $elementCode,
-        'FIELDS[NAME]' => $label,
+    $result = bitrix_rest_call('catalog.product.add', [
+        'fields' => [
+            'iblockId' => $catalog['iblock_id'],
+            'name' => $label,
+            'code' => $elementCode,
+        ],
     ]);
 
     if (!$result['success']) {
         return $result;
     }
 
+    $elementId = bitrix_parse_catalog_product_id($result['result']);
+    if ($elementId <= 0) {
+        return [
+            'success' => false,
+            'error' => 'Bitrix24 не вернул ID товара каталога',
+            'details' => $result['result'] ?? null,
+        ];
+    }
+
     return [
         'success' => true,
-        'elementId' => (int)$result['result'],
+        'elementId' => $elementId,
     ];
 }
 

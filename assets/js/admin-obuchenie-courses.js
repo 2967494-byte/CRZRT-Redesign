@@ -428,7 +428,7 @@
         if (bitrixResult.catalogWarning) {
           window.alert(
             `Курс сохранён, лид Bitrix24 создан (#${bitrixResult.leadId}), но в каталог курсов Bitrix24 не попал: ${bitrixResult.catalogWarning}. ` +
-            'Добавьте курс вручную в Bitrix24 (iblock 24) и укажите ID элемента в поле «ID курса в каталоге Bitrix24», либо подключите тариф с REST API для lists.'
+            'Добавьте курс вручную в товарный каталог Bitrix24 (iblock 24) и укажите ID в поле «ID курса в каталоге Bitrix24», либо проверьте права webhook на catalog.product.add.'
           );
         }
       } catch (syncError) {

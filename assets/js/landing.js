@@ -94,10 +94,69 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// Form submit
-document.getElementById('consultForm')?.addEventListener('submit', (e) => {
+// Form submit → Bitrix24 CRM
+document.getElementById('consultForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
-  alert('Спасибо! Мы свяжемся с вами в ближайшее время.');
+
+  const form = e.currentTarget;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const name = document.getElementById('consultName')?.value.trim() || '';
+  const lastName = document.getElementById('consultSurname')?.value.trim() || '';
+  const phone = document.getElementById('consultPhone')?.value.trim() || '';
+  const email = document.getElementById('consultEmail')?.value.trim() || '';
+  const interest = document.getElementById('consultInterest')?.value.trim() || '';
+  const agreePolicy = document.getElementById('agreePolicy')?.checked || false;
+  const agreeNews = document.getElementById('agreeNews')?.checked || false;
+
+  if (!name || !phone) {
+    alert('Укажите имя и телефон');
+    return;
+  }
+  if (!interest) {
+    alert('Выберите направление в поле «Мне интересно»');
+    return;
+  }
+  if (!agreePolicy) {
+    alert('Необходимо согласие на обработку персональных данных');
+    return;
+  }
+
+  const originalText = submitBtn?.textContent || 'Отправить';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Отправка…';
+  }
+
+  try {
+    const response = await fetch('api/bitrix-lead-consult.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        lastName,
+        phone,
+        email,
+        interest,
+        agreePolicy,
+        agreeNews,
+        pageUrl: window.location.href,
+        pageLabel: document.title,
+      }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Не удалось отправить заявку');
+    }
+    alert(result.message || 'Спасибо! Мы свяжемся с вами в ближайшее время.');
+    form.reset();
+  } catch (error) {
+    alert(error.message || 'Ошибка отправки. Попробуйте позже или позвоните нам.');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  }
 });
 
 // Scroll Reveal Animations
