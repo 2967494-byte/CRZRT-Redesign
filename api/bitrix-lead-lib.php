@@ -16,7 +16,8 @@ const BITRIX_UF_CUSTOMER_LAW = 'UF_CRM_1657264015040';
 /** Поле «Мне интересно» в форме консультации. */
 const BITRIX_UF_CONSULT_INTEREST = 'UF_CRM_1659440083530';
 
-const BITRIX_ENUM_LEAD_APPLICATION = '1808';
+const BITRIX_ENUM_LEAD_APPLICATION = '1808';   // Заявка (курс)
+const BITRIX_ENUM_LEAD_CONSULTATION = '3082';  // Консультация (форма с сайта)
 const BITRIX_ENUM_AUDIENCE_INDIVIDUAL = '398';
 const BITRIX_ENUM_AUDIENCE_LEGAL = '400';
 const BITRIX_ENUM_CUSTOMER_BUYER = '362';
@@ -328,6 +329,7 @@ function bitrix_build_consult_lead_fields(array $input): array
     $fields = [
         'TITLE' => $title,
         'SOURCE_ID' => 'WEB',
+        BITRIX_UF_LEAD_TYPE => BITRIX_ENUM_LEAD_CONSULTATION,
         'COMMENTS' => implode("\n", $commentParts),
     ];
 
