@@ -57,9 +57,8 @@ body {
 
 @media (min-width: 1100px) {
   .header__inner {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    justify-content: unset;
+    display: flex;
+    gap: 30px;
   }
 
   .nav {
@@ -186,12 +185,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 /* Nav — ширина и интервалы ссылок по макету (714px, space-between) */
-.nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 714px;
-  max-width: 714px;
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 714px;
+    margin: 0 20px;
 }
 
 .nav__link {
