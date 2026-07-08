@@ -1,109 +1,117 @@
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 (function () {
-  const MAX_PRICES = 10;
-  const MIN_PRICES = 2;
-  const pricesContainer = document.getElementById('support-calc-prices');
-  const addBtn = document.getElementById('support-calc-add');
-  const runBtn = document.getElementById('support-calc-run');
-  const resetBtn = document.getElementById('support-calc-reset');
-  const resultX = document.getElementById('support-calc-result-x');
-  const resultD = document.getElementById('support-calc-result-d');
-  const resultV = document.getElementById('support-calc-result-v');
-  const resultNote = document.getElementById('support-calc-result-note');
-  const recommendationEl = document.getElementById('support-calc-recommendation');
-
+  var MAX_PRICES = 10;
+  var MIN_PRICES = 2;
+  var pricesContainer = document.getElementById('support-calc-prices');
+  var addBtn = document.getElementById('support-calc-add');
+  var runBtn = document.getElementById('support-calc-run');
+  var resetBtn = document.getElementById('support-calc-reset');
+  var resultX = document.getElementById('support-calc-result-x');
+  var resultD = document.getElementById('support-calc-result-d');
+  var resultV = document.getElementById('support-calc-result-v');
+  var resultNote = document.getElementById('support-calc-result-note');
+  var recommendationEl = document.getElementById('support-calc-recommendation');
   if (!pricesContainer || !addBtn) return;
-
-  const RECOMMENDATIONS = {
+  var RECOMMENDATIONS = {
     optimal: 'Средняя цена оптимальна для определения начальной (максимальной) цены контракта.',
-    notRecommended:
-      'Средняя цена не рекомендована для определения начальной (максимальной) цены контракта, требуется дополнительное изучение рынка и характеристик предмета закупок.',
-    cannotUse:
-      'Средняя цена не может быть использована для определения начальной (максимальной) цены контракта',
+    notRecommended: 'Средняя цена не рекомендована для определения начальной (максимальной) цены контракта, требуется дополнительное изучение рынка и характеристик предмета закупок.',
+    cannotUse: 'Средняя цена не может быть использована для определения начальной (максимальной) цены контракта'
   };
-
-  const numberFormatter = new Intl.NumberFormat('ru-RU', {
+  var numberFormatter = new Intl.NumberFormat('ru-RU', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 2
   });
-
-  const PRICE_INPUT_ALLOWED = /[^\d\s.,]/g;
-
+  var PRICE_INPUT_ALLOWED = /[^\d\s.,]/g;
   function sanitizePriceInputValue(value) {
-    return String(value ?? '').replace(PRICE_INPUT_ALLOWED, '');
+    return String(value !== null && value !== void 0 ? value : '').replace(PRICE_INPUT_ALLOWED, '');
   }
-
   function bindPriceInput(input) {
     if (!input || input.dataset.priceBound === '1') return;
     input.dataset.priceBound = '1';
-
-    input.addEventListener('input', () => {
-      const sanitized = sanitizePriceInputValue(input.value);
+    input.addEventListener('input', function () {
+      var sanitized = sanitizePriceInputValue(input.value);
       if (sanitized !== input.value) {
-        const pos = input.selectionStart;
+        var pos = input.selectionStart;
         input.value = sanitized;
         if (typeof pos === 'number') {
           input.setSelectionRange(pos, pos);
         }
       }
     });
-
-    input.addEventListener('paste', (event) => {
+    input.addEventListener('paste', function (event) {
+      var _event$clipboardData, _input$selectionStart, _input$selectionEnd;
       event.preventDefault();
-      const pasted = sanitizePriceInputValue(event.clipboardData?.getData('text') || '');
+      var pasted = sanitizePriceInputValue(((_event$clipboardData = event.clipboardData) === null || _event$clipboardData === void 0 ? void 0 : _event$clipboardData.getData('text')) || '');
       if (!pasted) return;
-      const start = input.selectionStart ?? input.value.length;
-      const end = input.selectionEnd ?? input.value.length;
+      var start = (_input$selectionStart = input.selectionStart) !== null && _input$selectionStart !== void 0 ? _input$selectionStart : input.value.length;
+      var end = (_input$selectionEnd = input.selectionEnd) !== null && _input$selectionEnd !== void 0 ? _input$selectionEnd : input.value.length;
       input.value = input.value.slice(0, start) + pasted + input.value.slice(end);
-      const caret = start + pasted.length;
+      var caret = start + pasted.length;
       input.setSelectionRange(caret, caret);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('input', {
+        bubbles: true
+      }));
     });
   }
-
-  function bindAllPriceInputs(root = pricesContainer) {
+  function bindAllPriceInputs() {
+    var root = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : pricesContainer;
     root.querySelectorAll('.support-calculator__input').forEach(bindPriceInput);
   }
-
   function getPriceFields() {
     return pricesContainer.querySelectorAll('.support-calculator__price-field');
   }
-
   function parsePrice(value) {
     if (value == null) return NaN;
-    const normalized = String(value).trim().replace(/\s/g, '').replace(',', '.');
+    var normalized = String(value).trim().replace(/\s/g, '').replace(',', '.');
     if (!normalized) return NaN;
-    const num = Number(normalized);
+    var num = Number(normalized);
     return Number.isFinite(num) && num > 0 ? num : NaN;
   }
-
   function collectPrices() {
-    return Array.from(getPriceFields())
-      .map((field) => parsePrice(field.querySelector('.support-calculator__input')?.value))
-      .filter((price) => Number.isFinite(price));
+    return Array.from(getPriceFields()).map(function (field) {
+      var _field$querySelector;
+      return parsePrice((_field$querySelector = field.querySelector('.support-calculator__input')) === null || _field$querySelector === void 0 ? void 0 : _field$querySelector.value);
+    }).filter(function (price) {
+      return Number.isFinite(price);
+    });
   }
-
   function calculateStats(prices) {
-    const n = prices.length;
+    var n = prices.length;
     if (n < MIN_PRICES) return null;
-
-    const sum = prices.reduce((acc, price) => acc + price, 0);
-    const x = sum / n;
-    const squaredDiffSum = prices.reduce((acc, price) => acc + (price - x) ** 2, 0);
-    const delta = Math.sqrt(squaredDiffSum / (n - 1));
-    const v = x === 0 ? 0 : (delta / x) * 100;
-
-    return { x, delta, v, n };
+    var sum = prices.reduce(function (acc, price) {
+      return acc + price;
+    }, 0);
+    var x = sum / n;
+    var squaredDiffSum = prices.reduce(function (acc, price) {
+      return acc + Math.pow(price - x, 2);
+    }, 0);
+    var delta = Math.sqrt(squaredDiffSum / (n - 1));
+    var v = x === 0 ? 0 : delta / x * 100;
+    return {
+      x: x,
+      delta: delta,
+      v: v,
+      n: n
+    };
   }
-
   function excludeMinMax(prices) {
     if (prices.length < 3) return prices.slice();
-
-    const min = Math.min(...prices);
-    const max = Math.max(...prices);
-    let minRemoved = false;
-    let maxRemoved = false;
-
-    return prices.filter((price) => {
+    var min = Math.min.apply(Math, _toConsumableArray(prices));
+    var max = Math.max.apply(Math, _toConsumableArray(prices));
+    var minRemoved = false;
+    var maxRemoved = false;
+    return prices.filter(function (price) {
       if (!minRemoved && price === min) {
         minRemoved = true;
         return false;
@@ -115,62 +123,62 @@
       return true;
     });
   }
-
   function getVariabilityLabel(v) {
     if (v < 10) return 'незначительной';
     if (v <= 20) return 'средней';
     if (v <= 33) return 'значительной';
     return 'неоднородности информации';
   }
-
   function getRecommendation(v) {
     if (v > 33) {
-      return { type: 'rejected', text: RECOMMENDATIONS.cannotUse };
+      return {
+        type: 'rejected',
+        text: RECOMMENDATIONS.cannotUse
+      };
     }
     if (v < 10) {
-      return { type: 'optimal', text: RECOMMENDATIONS.optimal };
+      return {
+        type: 'optimal',
+        text: RECOMMENDATIONS.optimal
+      };
     }
-    return { type: 'warning', text: RECOMMENDATIONS.notRecommended };
+    return {
+      type: 'warning',
+      text: RECOMMENDATIONS.notRecommended
+    };
   }
-
   function calculateNmck(prices) {
-    const initial = calculateStats(prices);
+    var initial = calculateStats(prices);
     if (!initial) {
-      return { error: `Для расчёта нужно минимум ${MIN_PRICES} корректные цены` };
+      return {
+        error: "\u0414\u043B\u044F \u0440\u0430\u0441\u0447\u0451\u0442\u0430 \u043D\u0443\u0436\u043D\u043E \u043C\u0438\u043D\u0438\u043C\u0443\u043C ".concat(MIN_PRICES, " \u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u044B\u0435 \u0446\u0435\u043D\u044B")
+      };
     }
-
-    let finalStats = initial;
-    let excludedOutliers = false;
-
+    var finalStats = initial;
+    var excludedOutliers = false;
     if (initial.v > 33 && prices.length >= 3) {
-      const filtered = excludeMinMax(prices);
-      const recalculated = calculateStats(filtered);
+      var filtered = excludeMinMax(prices);
+      var recalculated = calculateStats(filtered);
       if (recalculated) {
         finalStats = recalculated;
         excludedOutliers = true;
       }
     }
-
-    return {
-      ...finalStats,
-      excludedOutliers,
+    return _objectSpread(_objectSpread({}, finalStats), {}, {
+      excludedOutliers: excludedOutliers,
       variability: getVariabilityLabel(finalStats.v),
-      recommendation: getRecommendation(finalStats.v),
-    };
+      recommendation: getRecommendation(finalStats.v)
+    });
   }
-
   function formatMoney(value) {
-    return `${numberFormatter.format(value)} ₽`;
+    return "".concat(numberFormatter.format(value), " \u20BD");
   }
-
   function formatNumber(value) {
     return numberFormatter.format(value);
   }
-
   function formatPercent(value) {
-    return `${numberFormatter.format(value)}%`;
+    return "".concat(numberFormatter.format(value), "%");
   }
-
   function showError(message) {
     if (resultX) resultX.textContent = message;
     if (resultD) resultD.textContent = '—';
@@ -178,7 +186,6 @@
     if (resultNote) resultNote.hidden = true;
     if (recommendationEl) recommendationEl.hidden = true;
   }
-
   function resetResults() {
     if (resultX) resultX.textContent = 'Результат';
     if (resultD) resultD.textContent = 'Результат';
@@ -193,106 +200,87 @@
       recommendationEl.className = 'support-calculator__recommendation';
     }
   }
-
   function createRemoveButton() {
-    const btn = document.createElement('button');
+    var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'support-calculator__price-remove';
     btn.setAttribute('aria-label', 'Очистить поле');
     btn.textContent = '×';
     return btn;
   }
-
   function createPriceField(index) {
-    const field = document.createElement('div');
+    var field = document.createElement('div');
     field.className = 'support-calculator__price-field';
     field.dataset.priceIndex = String(index);
-
-    const label = document.createElement('label');
+    var label = document.createElement('label');
     label.className = 'support-calculator__label';
-    label.htmlFor = `support-calc-price-${index}`;
-    label.textContent = `Цена ${index}`;
-
-    const head = document.createElement('div');
+    label.htmlFor = "support-calc-price-".concat(index);
+    label.textContent = "\u0426\u0435\u043D\u0430 ".concat(index);
+    var head = document.createElement('div');
     head.className = 'support-calculator__price-head';
     head.append(label, createRemoveButton());
-
-    const input = document.createElement('input');
+    var input = document.createElement('input');
     input.type = 'text';
     input.className = 'support-calculator__input';
-    input.id = `support-calc-price-${index}`;
+    input.id = "support-calc-price-".concat(index);
     input.placeholder = 'Введите сумму';
     input.inputMode = 'decimal';
     input.autocomplete = 'off';
     bindPriceInput(input);
-
-    const row = document.createElement('div');
+    var row = document.createElement('div');
     row.className = 'support-calculator__price-row';
     row.append(input);
-
     field.append(head, row);
     return field;
   }
-
   function renumberFields() {
-    getPriceFields().forEach((field, i) => {
-      const index = i + 1;
+    getPriceFields().forEach(function (field, i) {
+      var index = i + 1;
       field.dataset.priceIndex = String(index);
-
-      const label = field.querySelector('.support-calculator__label');
-      const input = field.querySelector('.support-calculator__input');
-
+      var label = field.querySelector('.support-calculator__label');
+      var input = field.querySelector('.support-calculator__input');
       if (label) {
-        label.htmlFor = `support-calc-price-${index}`;
-        label.textContent = `Цена ${index}`;
+        label.htmlFor = "support-calc-price-".concat(index);
+        label.textContent = "\u0426\u0435\u043D\u0430 ".concat(index);
       }
-      if (input) input.id = `support-calc-price-${index}`;
+      if (input) input.id = "support-calc-price-".concat(index);
     });
   }
-
   function updateRemoveButtons() {
-    const canRemoveField = getPriceFields().length > MIN_PRICES;
-    const label = canRemoveField ? 'Удалить цену' : 'Очистить поле';
-
-    getPriceFields().forEach((field) => {
-      const btn = field.querySelector('.support-calculator__price-remove');
+    var canRemoveField = getPriceFields().length > MIN_PRICES;
+    var label = canRemoveField ? 'Удалить цену' : 'Очистить поле';
+    getPriceFields().forEach(function (field) {
+      var btn = field.querySelector('.support-calculator__price-remove');
       if (!btn) return;
       btn.hidden = false;
       btn.setAttribute('aria-label', label);
       btn.title = label;
     });
   }
-
   function updateAddButton() {
-    const atLimit = getPriceFields().length >= MAX_PRICES;
+    var atLimit = getPriceFields().length >= MAX_PRICES;
     addBtn.disabled = atLimit;
   }
-
   function renderResultNote(result) {
     if (resultNote) {
-      let noteText = 'Вариация: ' + result.variability + '.';
+      var noteText = 'Вариация: ' + result.variability + '.';
       if (result.excludedOutliers) {
         noteText = 'Исключены минимальное и максимальное значения (V > 33%). ' + noteText;
       }
       resultNote.textContent = noteText;
       resultNote.hidden = false;
     }
-
     if (recommendationEl && result.recommendation) {
       recommendationEl.textContent = result.recommendation.text;
-      recommendationEl.className =
-        'support-calculator__recommendation support-calculator__recommendation--' + result.recommendation.type;
+      recommendationEl.className = 'support-calculator__recommendation support-calculator__recommendation--' + result.recommendation.type;
       recommendationEl.hidden = false;
     }
   }
-
-  pricesContainer.addEventListener('click', (event) => {
-    const btn = event.target.closest('.support-calculator__price-remove');
+  pricesContainer.addEventListener('click', function (event) {
+    var btn = event.target.closest('.support-calculator__price-remove');
     if (!btn) return;
-
-    const field = btn.closest('.support-calculator__price-field');
+    var field = btn.closest('.support-calculator__price-field');
     if (!field) return;
-
     if (getPriceFields().length > MIN_PRICES) {
       field.remove();
       renumberFields();
@@ -300,47 +288,40 @@
       updateRemoveButtons();
       return;
     }
-
-    const input = field.querySelector('.support-calculator__input');
+    var input = field.querySelector('.support-calculator__input');
     if (input) {
       input.value = '';
       input.focus();
     }
   });
-
-  addBtn.addEventListener('click', () => {
-    const count = getPriceFields().length;
+  addBtn.addEventListener('click', function () {
+    var _field$querySelector2;
+    var count = getPriceFields().length;
     if (count >= MAX_PRICES) return;
-
-    const field = createPriceField(count + 1);
+    var field = createPriceField(count + 1);
     pricesContainer.appendChild(field);
     updateAddButton();
     updateRemoveButtons();
-    field.querySelector('input')?.focus();
+    (_field$querySelector2 = field.querySelector('input')) === null || _field$querySelector2 === void 0 || _field$querySelector2.focus();
   });
-
-  runBtn?.addEventListener('click', () => {
-    const prices = collectPrices();
-    const result = calculateNmck(prices);
-
+  runBtn === null || runBtn === void 0 || runBtn.addEventListener('click', function () {
+    var prices = collectPrices();
+    var result = calculateNmck(prices);
     if (result.error) {
       showError(result.error);
       return;
     }
-
     if (resultX) resultX.textContent = formatMoney(result.x);
     if (resultD) resultD.textContent = formatNumber(result.delta);
     if (resultV) resultV.textContent = formatPercent(result.v);
     renderResultNote(result);
   });
-
   function ensureInitialPriceFields() {
     while (getPriceFields().length < MIN_PRICES) {
       pricesContainer.appendChild(createPriceField(getPriceFields().length + 1));
     }
   }
-
-  resetBtn?.addEventListener('click', () => {
+  resetBtn === null || resetBtn === void 0 || resetBtn.addEventListener('click', function () {
     pricesContainer.innerHTML = '';
     pricesContainer.appendChild(createPriceField(1));
     pricesContainer.appendChild(createPriceField(2));
@@ -349,7 +330,6 @@
     updateRemoveButtons();
     resetResults();
   });
-
   ensureInitialPriceFields();
   bindAllPriceInputs();
   updateAddButton();

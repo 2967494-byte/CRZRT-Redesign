@@ -1,0 +1,7 @@
+{
+  "presets": [
+    ["@babel/preset-env", {
+      "targets": "defaults, IE 11, Safari 9"
+    }]
+  ]
+}
