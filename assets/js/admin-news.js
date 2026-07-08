@@ -442,7 +442,7 @@
     if (index >= 0 && data.items[index]) {
       data.items[index] = { ...data.items[index], ...payload };
     } else {
-      data.items.push(payload);
+      data.items.unshift(payload);
     }
 
     window.newsPageData = data;
@@ -566,9 +566,9 @@
       renderNewsPageAdmin(window.newsPageData);
     },
     moveItemDown(i) {
+      window.saveNewsPageStateToMemory?.();
       const list = window.newsPageData.items;
       if (i >= list.length - 1) return;
-      window.saveNewsPageStateToMemory?.();
       [list[i + 1], list[i]] = [list[i], list[i + 1]];
       renderNewsPageAdmin(window.newsPageData);
     }
