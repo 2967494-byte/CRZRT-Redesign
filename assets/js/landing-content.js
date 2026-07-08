@@ -145,6 +145,73 @@
       .join('<br>');
   }
 
+  function normalizeServiceTitle(title) {
+    const t = String(title || '').trim().toLowerCase();
+    if (t.includes('образователь') || t === 'обучение') return 'obuchenie';
+    if (t.includes('сопровожд')) return 'support';
+    if (t.includes('консалтинг') || t.includes('юрид')) return 'consulting';
+    if (t === 'этп' || t.includes('электронная торгов')) return 'ecp';
+    return '';
+  }
+
+  function normalizeServiceCards(cards) {
+    const canonical = {
+      obuchenie: {
+        link: 'obuchenie.html',
+        variant: 'green',
+        icon: 'assets/img/obuch.png'
+      },
+      support: {
+        link: 'support.html',
+        variant: 'peach',
+        icon: 'assets/img/sopr.png'
+      },
+      consulting: {
+        link: 'consulting.html',
+        variant: 'purple',
+        icon: 'assets/img/u_k.png'
+      },
+      ecp: {
+        link: 'ecp.html',
+        variant: 'blue',
+        icon: 'assets/img/etp.png'
+      }
+    };
+    const order = ['obuchenie', 'support', 'consulting', 'ecp'];
+    const known = new Map();
+    const unknown = [];
+
+    (cards || []).forEach((card) => {
+      const key = normalizeServiceTitle(card?.title);
+      if (key && !known.has(key)) {
+        known.set(key, {
+          ...card,
+          link: canonical[key].link,
+          variant: canonical[key].variant,
+          icon: card?.icon || canonical[key].icon,
+          external: false
+        });
+      } else if (key) {
+        const prev = known.get(key) || {};
+        known.set(key, {
+          ...prev,
+          ...card,
+          link: canonical[key].link,
+          variant: canonical[key].variant,
+          icon: card?.icon || prev.icon || canonical[key].icon,
+          external: false
+        });
+      } else if (card) {
+        unknown.push(card);
+      }
+    });
+
+    const normalized = order
+      .filter((key) => known.has(key))
+      .map((key) => known.get(key));
+    return [...normalized, ...unknown];
+  }
+
   function normalizeConsultationPhotos(raw, data) {
     let photos = [];
     if (Array.isArray(data?.consultation?.photos)) {
@@ -234,6 +301,7 @@
       }
       return card;
     });
+    data.serviceCards = normalizeServiceCards(data.serviceCards);
 
     if (!data.promoBanner || typeof data.promoBanner !== 'object') {
       data.promoBanner = { ...LANDING_DEFAULTS.promoBanner };
