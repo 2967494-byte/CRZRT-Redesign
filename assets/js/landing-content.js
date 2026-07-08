@@ -290,7 +290,7 @@
     data.serviceCards = data.serviceCards.map((card) => {
       const title = String(card?.title || '').trim();
       const link = String(card?.link || '').trim();
-      if (title === 'ЭТП' && /etpzakupki/i.test(link)) {
+      if (title === 'ЭТП' && /etp\.?zakupki/i.test(link)) {
         return { ...card, link: 'ecp.html', external: false };
       }
       if (title === 'Сопровождение') {
