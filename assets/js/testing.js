@@ -5,13 +5,13 @@ function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Sym
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 /**
-* Р›РѕРіРёРєР° С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ РїРѕ РіРѕСЃР·Р°РєСѓРїРєР°Рј (100 РІРѕРїСЂРѕСЃРѕРІ, 1 С‡Р°СЃ).
+* Логика тестирования по госзакупкам (100 вопросов, 1 час).
 */
 (function () {
-  // РџСЂР°РІРёР»СЊРЅС‹Рµ РѕС‚РІРµС‚С‹ С‚РµРїРµСЂСЊ С…СЂР°РЅСЏС‚СЃСЏ РІ СЃРІРѕР№СЃС‚РІРµ correctAnswer РєР°Р¶РґРѕРіРѕ РІРѕРїСЂРѕСЃР°
+  // Правильные ответы теперь хранятся в свойстве correctAnswer каждого вопроса
 
   var SESSION_PREFIX = 'crzrt_quiz_';
-  var TIME_LIMIT = 600; // 10 РјРёРЅСѓС‚ = 600 СЃРµРєСѓРЅРґ
+  var TIME_LIMIT = 600; // 10 минут = 600 секунд
 
   var ALL_TEST_QUESTIONS = [];
   var questions = [];
@@ -61,33 +61,33 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       ALL_TEST_QUESTIONS = data.quizQuestions || [];
       if (!ALL_TEST_QUESTIONS.length && window.TEST_QUESTIONS && window.TEST_QUESTIONS.length > 0) {
         var CORRECT_ANSWERS = {
-          1: 'Рђ',
-          2: 'Р’',
-          3: 'Р“',
-          4: 'Р’',
-          5: 'Рђ',
-          6: 'Р”',
-          7: 'Р”',
-          8: 'Р’',
-          9: 'Рђ',
-          10: 'Р“',
-          11: 'Р“',
-          12: 'Р“',
-          13: 'Р‘',
-          14: 'Р‘',
-          15: 'Р‘',
-          16: 'Рђ',
-          17: 'Рђ',
-          18: 'Рђ',
-          19: 'Рђ',
-          20: 'Р’'
+          1: 'А',
+          2: 'В',
+          3: 'Г',
+          4: 'В',
+          5: 'А',
+          6: 'Д',
+          7: 'Д',
+          8: 'В',
+          9: 'А',
+          10: 'Г',
+          11: 'Г',
+          12: 'Г',
+          13: 'Б',
+          14: 'Б',
+          15: 'Б',
+          16: 'А',
+          17: 'А',
+          18: 'А',
+          19: 'А',
+          20: 'В'
         };
         ALL_TEST_QUESTIONS = window.TEST_QUESTIONS.map(function (q) {
           return {
             id: q.id,
             text: q.text || q.question || '',
             options: q.options || [],
-            correctAnswer: CORRECT_ANSWERS[q.id] || 'Рђ'
+            correctAnswer: CORRECT_ANSWERS[q.id] || 'А'
           };
         });
       }
@@ -97,22 +97,22 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         return q && q.text;
       });
       if (!ALL_TEST_QUESTIONS.length) {
-        console.error('Р’РѕРїСЂРѕСЃС‹ РґР»СЏ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ РЅРµ РЅР°Р№РґРµРЅС‹!');
-        alert('Р‘Р°Р·Р° РІРѕРїСЂРѕСЃРѕРІ РїСѓСЃС‚Р°. РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂСѓ РЅРµРѕР±С…РѕРґРёРјРѕ РґРѕР±Р°РІРёС‚СЊ РІРѕРїСЂРѕСЃС‹ РІ РїР°РЅРµР»Рё СѓРїСЂР°РІР»РµРЅРёСЏ.');
+        console.error('Вопросы для тестирования не найдены!');
+        alert('База вопросов пуста. Администратору необходимо добавить вопросы в панели управления.');
         return;
       }
 
-      // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РїСЂРё РїРµСЂРµР·Р°РіСЂСѓР·РєРµ СЃС‚СЂР°РЅРёС†С‹, РµСЃР»Рё С‚РµСЃС‚ Р°РєС‚РёРІРµРЅ
+      // Восстанавливаем состояние при перезагрузке страницы, если тест активен
       var savedActive = sessionStorage.getItem("".concat(SESSION_PREFIX, "active"));
       if (savedActive === 'true') {
         loadSessionState();
-        startQuiz(true); // РІРѕР·РѕР±РЅРѕРІРёС‚СЊ
+        startQuiz(true); // возобновить
       } else {
         showScreen('start');
       }
       bindEvents();
     }).catch(function (e) {
-      console.error('РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё РґР°РЅРЅС‹С… С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ', e);
+      console.error('Ошибка загрузки данных тестирования', e);
     });
   }
   function bindEvents() {
@@ -137,7 +137,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     isQuizActive = true;
     showScreen('quiz');
     if (!resume) {
-      // Р’С‹Р±РёСЂР°РµРј 20 СЃР»СѓС‡Р°Р№РЅС‹С… РІРѕРїСЂРѕСЃРѕРІ
+      // Выбираем 20 случайных вопросов
       var allQ = _toConsumableArray(ALL_TEST_QUESTIONS);
       for (var i = allQ.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
@@ -152,14 +152,14 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       saveSessionState();
     }
 
-    // РЎРѕР·РґР°РµРј СЃРµС‚РєСѓ РєРЅРѕРїРѕРє
+    // Создаем сетку кнопок
     buildQuestionsGrid();
 
-    // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РїРµСЂРІС‹Р№/С‚РµРєСѓС‰РёР№ РІРѕРїСЂРѕСЃ
+    // Отрисовываем первый/текущий вопрос
     renderCurrentQuestion();
     updateProgressBar();
 
-    // Р—Р°РїСѓСЃРєР°РµРј С‚Р°Р№РјРµСЂ
+    // Запускаем таймер
     startTimer();
   }
   function loadSessionState() {
@@ -181,7 +181,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       var savedTime = sessionStorage.getItem("".concat(SESSION_PREFIX, "time_left"));
       if (savedTime !== null) timeLeftSeconds = parseInt(savedTime, 10);
     } catch (e) {
-      console.warn('РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё СЃРѕСЃС‚РѕСЏРЅРёСЏ РєРІРёР·Р°', e);
+      console.warn('Ошибка загрузки состояния квиза', e);
     }
   }
   function saveSessionState() {
@@ -243,7 +243,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (qIdTag) qIdTag.textContent = "ID: ".concat(q.id);
     if (qText) qText.textContent = q.text;
 
-    // РћС‡РёСЃС‚РєР° Рё РѕС‚СЂРёСЃРѕРІРєР° РІР°СЂРёР°РЅС‚РѕРІ РѕС‚РІРµС‚РѕРІ
+    // Очистка и отрисовка вариантов ответов
     if (optionsContainer) {
       optionsContainer.innerHTML = '';
       q.options.forEach(function (opt) {
@@ -258,7 +258,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       });
     }
 
-    // РЈРїСЂР°РІР»РµРЅРёРµ РєРЅРѕРїРєР°РјРё РЅР°РІРёРіР°С†РёРё
+    // Управление кнопками навигации
     if (btnPrev) btnPrev.disabled = currentQuestionIndex === 0;
     if (btnNext) {
       if (currentQuestionIndex === questions.length - 1) {
@@ -303,13 +303,13 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         timeLeftSeconds--;
         updateTimerDisplay();
 
-        // РљР°Р¶РґС‹Рµ 10 СЃРµРєСѓРЅРґ РїРёС€РµРј РІ sessionStorage, С‡С‚РѕР±С‹ РЅРµ РЅР°РіСЂСѓР¶Р°С‚СЊ РґРёСЃРє РєР°Р¶РґСѓСЋ СЃРµРєСѓРЅРґСѓ
+        // Каждые 10 секунд пишем в sessionStorage, чтобы не нагружать диск каждую секунду
         if (timeLeftSeconds % 10 === 0) {
           sessionStorage.setItem("".concat(SESSION_PREFIX, "time_left"), timeLeftSeconds);
         }
       } else {
         clearInterval(timerInterval);
-        confirmFinishQuiz(true); // С‚Р°Р№РјР°СѓС‚
+        confirmFinishQuiz(true); // таймаут
       }
     }, 1000);
   }
@@ -320,7 +320,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     var timeStr = "".concat(String(m).padStart(2, '0'), ":").concat(String(s).padStart(2, '0'));
     timerDisplay.textContent = timeStr;
     if (timeLeftSeconds <= 300) {
-      // РјРµРЅРµРµ 5 РјРёРЅСѓС‚
+      // менее 5 минут
       timerDisplay.classList.add('timer-widget__time--warning');
     } else {
       timerDisplay.classList.remove('timer-widget__time--warning');
@@ -331,7 +331,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (!isTimeout) {
       var answeredCount = Object.keys(answers).length;
       var unansweredCount = questions.length - answeredCount;
-      var msg = 'Р’С‹ СѓРІРµСЂРµРЅС‹, С‡С‚Рѕ С…РѕС‚РёС‚Рµ Р·Р°РІРµСЂС€РёС‚СЊ С‚РµСЃС‚РёСЂРѕРІР°РЅРёРµ?';
+      var msg = 'Вы уверены, что хотите завершить тестирование?';
       if (unansweredCount > 0) {
         msg = "\u0420\u0408 \u0420\u0406\u0420\xB0\u0421\u0403 \u0420\u0455\u0421\u0403\u0421\u201A\u0420\xB0\u0420\xBB\u0420\u0455\u0421\u0403\u0421\u040A ".concat(unansweredCount, " \u0420\u0405\u0420\xB5\u0420\u0455\u0421\u201A\u0420\u0406\u0420\xB5\u0421\u2021\u0420\xB5\u0420\u0405\u0420\u0405\u0421\u2039\u0421\u2026 \u0420\u0406\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403\u0420\u0455\u0420\u0406. \u0420\u2019\u0421\u2039 \u0420\u0491\u0420\xB5\u0420\u2116\u0421\u0403\u0421\u201A\u0420\u0406\u0420\u0451\u0421\u201A\u0420\xB5\u0420\xBB\u0421\u040A\u0420\u0405\u0420\u0455 \u0421\u2026\u0420\u0455\u0421\u201A\u0420\u0451\u0421\u201A\u0420\xB5 \u0420\xB7\u0420\xB0\u0420\u0406\u0420\xB5\u0421\u0402\u0421\u20AC\u0420\u0451\u0421\u201A\u0421\u040A \u0421\u201A\u0420\xB5\u0421\u0403\u0421\u201A\u0420\u0451\u0421\u0402\u0420\u0455\u0420\u0406\u0420\xB0\u0420\u0405\u0420\u0451\u0420\xB5?");
       }
@@ -344,7 +344,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     isQuizActive = false;
     if (timerInterval) clearInterval(timerInterval);
 
-    // Р Р°СЃС‡С‘С‚ СЃС‚Р°С‚РёСЃС‚РёРєРё
+    // Расчёт статистики
     var totalCount = questions.length;
     var answeredCount = Object.keys(answers).length;
     var correctCount = 0;
@@ -359,7 +359,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
           incorrectCount++;
         }
       } else {
-        // РЅРµ РѕС‚РІРµС‡РµРЅ = РЅРµРїСЂР°РІРёР»СЊРЅРѕ
+        // не отвечен = неправильно
         incorrectCount++;
       }
     });
@@ -368,23 +368,23 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     var spentSec = timeSpentSeconds % 60;
     var timeSpentStr = spentMin > 0 ? "".concat(spentMin, " \u0420\u0458\u0420\u0451\u0420\u0405. ").concat(spentSec, " \u0421\u0403\u0420\xB5\u0420\u0454.") : "".concat(spentSec, " \u0421\u0403\u0420\xB5\u0420\u0454.");
 
-    // Р’С‹РІРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РЅР° СЃС‚СЂР°РЅРёС†Сѓ
+    // Вывод результатов на страницу
     if (resTotal) resTotal.textContent = String(totalCount);
     if (resAnswered) resAnswered.textContent = String(answeredCount);
     if (resCorrect) resCorrect.textContent = String(correctCount);
     if (resIncorrect) resIncorrect.textContent = String(incorrectCount);
     if (resTime) resTime.textContent = timeSpentStr;
 
-    // Р“РµРЅРµСЂРёСЂСѓРµРј РґРµС‚Р°Р»СЊРЅС‹Р№ СЂР°Р·Р±РѕСЂ РІРѕРїСЂРѕСЃРѕРІ
+    // Генерируем детальный разбор вопросов
     generateDetailedReview();
 
-    // РџРµСЂРµРєР»СЋС‡Р°РµРј СЌРєСЂР°РЅС‹
+    // Переключаем экраны
     clearSessionState();
     showScreen('results');
 
-    // РЎРєСЂС‹РІР°РµРј РїРѕРґСЂРѕР±РЅС‹Р№ СЂР°Р·Р±РѕСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+    // Скрываем подробный разбор по умолчанию
     if (reviewPanel) reviewPanel.style.display = 'none';
-    if (btnToggleReview) btnToggleReview.textContent = 'РџРѕРєР°Р·Р°С‚СЊ СЃРїРёСЃРѕРє РѕС‚РІРµС‚РѕРІ';
+    if (btnToggleReview) btnToggleReview.textContent = 'Показать список ответов';
   }
   function generateDetailedReview() {
     if (!reviewQuestionsContainer) return;
@@ -393,13 +393,13 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       var userAns = answers[q.id];
       var correctAns = q.correctAnswer;
       var statusClass = 'review-item--incorrect';
-      var badgeHtml = '<span class="review-item__badge review-item__badge--incorrect">РќРµРІРµСЂРЅРѕ</span>';
+      var badgeHtml = '<span class="review-item__badge review-item__badge--incorrect">Неверно</span>';
       if (userAns === undefined) {
         statusClass = 'review-item--incorrect';
-        badgeHtml = '<span class="review-item__badge review-item__badge--unanswered">РќРµС‚ РѕС‚РІРµС‚Р°</span>';
+        badgeHtml = '<span class="review-item__badge review-item__badge--unanswered">Нет ответа</span>';
       } else if (userAns === correctAns) {
         statusClass = 'review-item--correct';
-        badgeHtml = '<span class="review-item__badge review-item__badge--correct">РџСЂР°РІРёР»СЊРЅРѕ</span>';
+        badgeHtml = '<span class="review-item__badge review-item__badge--correct">Правильно</span>';
       }
       var div = document.createElement('div');
       div.className = "review-item ".concat(statusClass);
@@ -422,17 +422,17 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     var isHidden = reviewPanel.style.display === 'none';
     if (isHidden) {
       reviewPanel.style.display = 'block';
-      if (btnToggleReview) btnToggleReview.textContent = 'РЎРєСЂС‹С‚СЊ СЃРїРёСЃРѕРє РѕС‚РІРµС‚РѕРІ';
+      if (btnToggleReview) btnToggleReview.textContent = 'Скрыть список ответов';
       reviewPanel.scrollIntoView({
         behavior: 'smooth'
       });
     } else {
       reviewPanel.style.display = 'none';
-      if (btnToggleReview) btnToggleReview.textContent = 'РџРѕРєР°Р·Р°С‚СЊ СЃРїРёСЃРѕРє РѕС‚РІРµС‚РѕРІ';
+      if (btnToggleReview) btnToggleReview.textContent = 'Показать список ответов';
     }
   }
   function restartQuiz() {
-    if (window.confirm('Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ РїСЂРѕР№С‚Рё С‚РµСЃС‚ Р·Р°РЅРѕРІРѕ? РўРµРєСѓС‰РёРµ СЂРµР·СѓР»СЊС‚Р°С‚С‹ Р±СѓРґСѓС‚ СЃР±СЂРѕС€РµРЅС‹.')) {
+    if (window.confirm('Вы действительно хотите пройти тест заново? Текущие результаты будут сброшены.')) {
       clearSessionState();
       showScreen('start');
     }
