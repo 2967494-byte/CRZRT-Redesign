@@ -261,7 +261,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!publicModalOverlay) {
       publicModalOverlay = document.createElement('div');
       publicModalOverlay.className = 'comp-public-overlay';
-      publicModalOverlay.innerHTML = "\n        <div class=\"comp-public-card\">\n          <button type=\"button\" class=\"comp-public-close\" aria-label=\"\u0417\u0430\u043A\u0440\u044B\u0442\u044C\">\n            <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n              <line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"></line>\n              <line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"></line>\n            </svg>\n          </button>\n          <div class=\"comp-public-header\">\n            <div class=\"comp-public-icon-circle\">\n              <img src=\"\" alt=\"\" class=\"comp-public-icon\">\n            </div>\n            <h3 class=\"comp-public-title\"></h3>\n          </div>\n          <div class=\"comp-public-body\"></div>\n        </div>\n      ";
+      publicModalOverlay.innerHTML = "\n        <div class=\"comp-public-card\">\n          <button type=\"button\" class=\"comp-public-close\" aria-label=\"\u0417\u0430\u043A\u0440\u044B\u0442\u044C\">\n            <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n              <line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"></line>\n              <line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"></line>\n            </svg>\n          </button>\n          <div class=\"comp-public-header\">\n            <div class=\"comp-public-icon-circle\">\n              <img src=\"\" alt=\"\" class=\"comp-public-icon\">\n            </div>\n            <h3 class=\"comp-public-title\"></h3>\n          </div>\n          <div class=\"comp-public-body\"></div>\n          <div class=\"comp-public-footer\" style=\"margin-top: 24px;\">\n            <button type=\"button\" class=\"btn btn--green comp-public-action-btn\" style=\"width: 100%;\">\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u043A\u043E\u043D\u0441\u0443\u043B\u044C\u0442\u0430\u0446\u0438\u044E</button>\n          </div>\n        </div>\n      ";
       document.body.appendChild(publicModalOverlay);
 
       // Close events
@@ -271,6 +271,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       });
       publicModalOverlay.querySelector('.comp-public-close').addEventListener('click', closePublicModal);
+
+      // Action button event
+      publicModalOverlay.querySelector('.comp-public-action-btn').addEventListener('click', function () {
+        closePublicModal();
+        var target = document.getElementById('contacts');
+        if (target) {
+          var y = target.getBoundingClientRect().top + window.scrollY - 120;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      });
 
       // Close on Esc key
       document.addEventListener('keydown', function (e) {
