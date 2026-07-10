@@ -239,7 +239,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   function renderCurrentQuestion() {
     var q = questions[currentQuestionIndex];
     if (!q) return;
-    if (qProgressLabel) qProgressLabel.textContent = "\u0420\u2019\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403 ".concat(currentQuestionIndex + 1, " \u0420\u0451\u0420\xB7 ").concat(questions.length);
+    if (qProgressLabel) qProgressLabel.textContent = "Вопрос ".concat(currentQuestionIndex + 1, " из ").concat(questions.length);
     if (qIdTag) qIdTag.textContent = "ID: ".concat(q.id);
     if (qText) qText.textContent = q.text;
 
@@ -279,7 +279,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     var answeredCount = Object.keys(answers).length;
     var pct = answeredCount / questions.length * 100;
     if (progressBarFill) progressBarFill.style.width = "".concat(pct, "%");
-    if (answeredCountLabel) answeredCountLabel.textContent = "\u0420\u045B\u0421\u201A\u0420\u0406\u0420\xB5\u0421\u2021\u0420\xB5\u0420\u0405\u0420\u0455: ".concat(answeredCount, " \u0420\u0451\u0420\xB7 ").concat(questions.length);
+    if (answeredCountLabel) answeredCountLabel.textContent = "Отвечено: ".concat(answeredCount, " из ").concat(questions.length);
   }
   function showPrevQuestion() {
     if (currentQuestionIndex > 0) {
@@ -333,7 +333,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       var unansweredCount = questions.length - answeredCount;
       var msg = 'Вы уверены, что хотите завершить тестирование?';
       if (unansweredCount > 0) {
-        msg = "\u0420\u0408 \u0420\u0406\u0420\xB0\u0421\u0403 \u0420\u0455\u0421\u0403\u0421\u201A\u0420\xB0\u0420\xBB\u0420\u0455\u0421\u0403\u0421\u040A ".concat(unansweredCount, " \u0420\u0405\u0420\xB5\u0420\u0455\u0421\u201A\u0420\u0406\u0420\xB5\u0421\u2021\u0420\xB5\u0420\u0405\u0420\u0405\u0421\u2039\u0421\u2026 \u0420\u0406\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403\u0420\u0455\u0420\u0406. \u0420\u2019\u0421\u2039 \u0420\u0491\u0420\xB5\u0420\u2116\u0421\u0403\u0421\u201A\u0420\u0406\u0420\u0451\u0421\u201A\u0420\xB5\u0420\xBB\u0421\u040A\u0420\u0405\u0420\u0455 \u0421\u2026\u0420\u0455\u0421\u201A\u0420\u0451\u0421\u201A\u0420\xB5 \u0420\xB7\u0420\xB0\u0420\u0406\u0420\xB5\u0421\u0402\u0421\u20AC\u0420\u0451\u0421\u201A\u0421\u040A \u0421\u201A\u0420\xB5\u0421\u0403\u0421\u201A\u0420\u0451\u0421\u0402\u0420\u0455\u0420\u0406\u0420\xB0\u0420\u0405\u0420\u0451\u0420\xB5?");
+        msg = "У вас осталось ".concat(unansweredCount, " неотвеченных вопросов. Вы действительно хотите завершить тестирование?");
       }
       if (!window.confirm(msg)) return;
     }
@@ -366,7 +366,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     var timeSpentSeconds = TIME_LIMIT - timeLeftSeconds;
     var spentMin = Math.floor(timeSpentSeconds / 60);
     var spentSec = timeSpentSeconds % 60;
-    var timeSpentStr = spentMin > 0 ? "".concat(spentMin, " \u0420\u0458\u0420\u0451\u0420\u0405. ").concat(spentSec, " \u0421\u0403\u0420\xB5\u0420\u0454.") : "".concat(spentSec, " \u0421\u0403\u0420\xB5\u0420\u0454.");
+    var timeSpentStr = spentMin > 0 ? "".concat(spentMin, " мин. ").concat(spentSec, " сек.") : "".concat(spentSec, " сек.");
 
     // Вывод результатов на страницу
     if (resTotal) resTotal.textContent = String(totalCount);
