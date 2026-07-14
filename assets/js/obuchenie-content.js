@@ -246,7 +246,10 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   function normalizeSpeaker(raw) {
     return {
       name: String((raw === null || raw === void 0 ? void 0 : raw.name) || '').trim(),
-      position: String((raw === null || raw === void 0 ? void 0 : raw.position) || '').trim()
+      role: String((raw === null || raw === void 0 ? void 0 : raw.role) || (raw === null || raw === void 0 ? void 0 : raw.position) || '').trim(),
+      position: String((raw === null || raw === void 0 ? void 0 : raw.role) || (raw === null || raw === void 0 ? void 0 : raw.position) || '').trim(),
+      desc: String((raw === null || raw === void 0 ? void 0 : raw.desc) || '').trim(),
+      img: String((raw === null || raw === void 0 ? void 0 : raw.img) || '').trim()
     };
   }
   var DEFAULT_BITRIX_FIELD_MAP = {
@@ -620,7 +623,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       durationDays: durationDays
     }) : null;
     var speakers = Array.isArray(raw === null || raw === void 0 ? void 0 : raw.speakers) && raw.speakers.length ? raw.speakers.map(normalizeSpeaker).filter(function (speaker) {
-      return speaker.name || speaker.position;
+      return speaker.name || speaker.role || speaker.position;
     }) : [];
     var audience = normalizeCourseAudience(raw);
     var options = Array.isArray(raw === null || raw === void 0 ? void 0 : raw.options) ? _toConsumableArray(raw.options) : [];
@@ -653,7 +656,13 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       bitrixCourseElementId: raw !== null && raw !== void 0 && raw.bitrixCourseElementId ? parseInt(raw.bitrixCourseElementId, 10) || null : null,
       speakers: speakers,
       options: options,
-      active: (raw === null || raw === void 0 ? void 0 : raw.active) !== false
+      active: (raw === null || raw === void 0 ? void 0 : raw.active) !== false,
+      targetAudience: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.targetAudience) ? raw.targetAudience : String((raw === null || raw === void 0 ? void 0 : raw.targetAudience) || '').trim(),
+      outcomes: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.outcomes) ? raw.outcomes : String((raw === null || raw === void 0 ? void 0 : raw.outcomes) || '').trim(),
+      documentType: String((raw === null || raw === void 0 ? void 0 : raw.documentType) || '').trim(),
+      documentImage: String((raw === null || raw === void 0 ? void 0 : raw.documentImage) || '').trim(),
+      programPdf: String((raw === null || raw === void 0 ? void 0 : raw.programPdf) || '').trim(),
+      program: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.program) ? raw.program : []
     };
   }
   function normalizeCourseRegistry(raw) {
