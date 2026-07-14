@@ -150,14 +150,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!course.dateFrom) return false;
       return String(course.dateFrom).trim() === targetIso;
     });
+    
+    if (coursesOnDate.length === 1) {
+      window.location.href = coursesOnDate[0].id + '.html';
+      return;
+    }
+    
     renderCoursesInModal(coursesOnDate, dateLabel);
     modal.style.display = 'flex';
   }
   function openCourseDetailModal(course) {
-    var modal = document.getElementById('calendar-course-modal');
-    if (!modal || !course) return;
-    renderCoursesInModal([course], formatCourseDateLabel(course));
-    modal.style.display = 'flex';
+    if (!course) return;
+    window.location.href = course.id + '.html';
   }
   function setCourseDays(map) {
     if (!map || _typeof(map) !== 'object') return;
