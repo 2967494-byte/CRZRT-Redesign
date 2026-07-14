@@ -843,6 +843,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
    PROMO BANNER
 =========================== */
 .promo-banner {
+  position: relative;
   border-radius: 20px;
   background: url('../img/banner.png') no-repeat center center;
   background-size: cover;
@@ -853,6 +854,22 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   overflow: hidden;
   height: 253px; /* Точно по Figma */
   width: 100%;
+  container-type: inline-size;
+}
+
+.promo-banner--custom {
+  padding: 0;
+}
+
+.promo-banner--custom .promo-banner__content {
+  position: absolute;
+  inset: 0;
+}
+
+.promo-banner--custom .promo-banner__title,
+.promo-banner--custom .promo-banner__date {
+  position: absolute;
+  margin: 0;
 }
 
 .promo-banner__title {
@@ -1816,6 +1833,16 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     padding: 30px 20px;
     text-align: center;
     align-items: center;
+  }
+  .promo-banner--custom {
+    height: auto;
+    aspect-ratio: 1520 / 253;
+    padding: 0;
+    text-align: left;
+  }
+  .promo-banner--custom .promo-banner__title,
+  .promo-banner--custom .promo-banner__date {
+    /* px из админки масштабируем через cqw на узких экранах */
   }
   .promo-banner__image {
     width: 100%;

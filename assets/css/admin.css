@@ -635,6 +635,10 @@ body {
             margin-bottom: 10px;
         }
 
+        .hero-slide-frame--promo {
+            aspect-ratio: 1520 / 253;
+        }
+
         [data-theme="light"] .hero-slide-frame {
             background: rgba(0, 0, 0, 0.04);
         }
@@ -1504,7 +1508,8 @@ body {
         .support-live-banner-preview,
         .consulting-live-banner-preview,
         .ecp-live-banner-preview,
-        .landing-live-banner-preview {
+        .landing-live-banner-preview,
+        .landing-live-promo-preview {
             position: relative;
             width: 100%;
             aspect-ratio: 1520 / 420;
@@ -1517,6 +1522,10 @@ body {
             container-type: inline-size;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0, 174, 77, 0.1);
+        }
+
+        .landing-live-promo-preview {
+            aspect-ratio: 1520 / 253;
         }
 
         .obuchenie-live-banner-title,
@@ -3110,5 +3119,6 @@ body {
  . b g - h i s t o r y - i t e m : h o v e r   . b g - h i s t o r y - i t e m - a p p l y   { 
          t r a n s f o r m :   t r a n s l a t e Y ( 0 ) ; 
  } 
-  
+ 
+ 
  

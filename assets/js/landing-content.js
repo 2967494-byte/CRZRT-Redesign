@@ -65,7 +65,21 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     }],
     promoBanner: {
       title: 'Дистанционный курс\nпо 44 ФЗ для заказчиков',
+      titleColor: '#ffffff',
+      titleTop: 40,
+      titleLeft: 80,
+      titleFontSize: '50',
+      titleFontWeight: '700',
+      titleItalic: false,
+      titleUnderline: false,
       date: '2-4 июня 2026 года',
+      dateColor: '#ffffff',
+      dateTop: 160,
+      dateLeft: 80,
+      dateFontSize: '25',
+      dateFontWeight: '400',
+      dateItalic: false,
+      dateUnderline: false,
       link: '',
       image: 'assets/img/banner.png'
     },
@@ -318,6 +332,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     data.serviceCards = normalizeServiceCards(data.serviceCards);
     if (!data.promoBanner || _typeof(data.promoBanner) !== 'object') {
       data.promoBanner = _objectSpread({}, LANDING_DEFAULTS.promoBanner);
+    } else {
+      data.promoBanner = _objectSpread(_objectSpread({}, LANDING_DEFAULTS.promoBanner), data.promoBanner);
     }
     if (!Array.isArray(data.partners) || !data.partners.length) {
       data.partners = _toConsumableArray(LANDING_DEFAULTS.partners);
@@ -546,11 +562,31 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   function renderPromoBanner(banner) {
     var el = document.querySelector('.promo-banner');
     if (!el || !banner) return;
+    el.style.containerType = 'inline-size';
     if (banner.image) el.style.backgroundImage = "url('".concat(banner.image, "')");
+    el.classList.add('promo-banner--custom');
     var titleEl = el.querySelector('.promo-banner__title');
     var dateEl = el.querySelector('.promo-banner__date');
-    if (titleEl) titleEl.innerHTML = multilineHtml(banner.title);
-    if (dateEl) dateEl.textContent = banner.date || '';
+    if (titleEl) {
+      titleEl.innerHTML = multilineHtml(banner.title);
+      if (banner.titleColor) titleEl.style.color = banner.titleColor;else titleEl.style.removeProperty('color');
+      if (banner.titleTop !== undefined) titleEl.style.top = "calc((".concat(banner.titleTop, " / 253) * 100%)");
+      if (banner.titleLeft !== undefined) {
+        titleEl.style.left = "calc((".concat(banner.titleLeft, " / 1520) * 100%)");
+        titleEl.style.maxWidth = "calc(100% - ((".concat(banner.titleLeft, " / 1520) * 100%) - 10px)");
+      }
+      applyTypographyStyles(titleEl, banner.titleFontSize, banner.titleFontWeight, banner.titleItalic, banner.titleUnderline);
+    }
+    if (dateEl) {
+      dateEl.textContent = banner.date || '';
+      if (banner.dateColor) dateEl.style.color = banner.dateColor;else dateEl.style.removeProperty('color');
+      if (banner.dateTop !== undefined) dateEl.style.top = "calc((".concat(banner.dateTop, " / 253) * 100%)");
+      if (banner.dateLeft !== undefined) {
+        dateEl.style.left = "calc((".concat(banner.dateLeft, " / 1520) * 100%)");
+        dateEl.style.maxWidth = "calc(100% - ((".concat(banner.dateLeft, " / 1520) * 100%) - 10px)");
+      }
+      applyTypographyStyles(dateEl, banner.dateFontSize, banner.dateFontWeight, banner.dateItalic, banner.dateUnderline);
+    }
     if (banner.link) {
       el.style.cursor = 'pointer';
       el.dataset.href = banner.link;

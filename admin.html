@@ -8,7 +8,7 @@
     <title>Админ-панель | Центр Развития Закупок РТ</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/admin.css?v=23">
+    <link rel="stylesheet" href="assets/css/admin.css?v=24">
 </head>
 
 <body>
@@ -184,19 +184,8 @@
                 </div>
                 <div class="admin-card">
                     <div class="card-header">Промо-баннер</div>
-                    <div class="form-group"><label>Заголовок (Enter — перенос)</label>
-                        <textarea class="form-control" id="m_promo_title" rows="2"></textarea></div>
-                    <div class="form-group"><label>Дата / подпись</label>
-                        <input type="text" class="form-control" id="m_promo_date"></div>
-                    <div class="form-group"><label>Ссылка при клике (необязательно)</label>
-                        <input type="text" class="form-control" id="m_promo_link" placeholder="seminars.html или https://..."></div>
-                    <div class="form-group">
-                        <label>Фон баннера (~1520×253)</label>
-                        <img id="m_promo_img_preview" alt="" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;display:none;margin-bottom:8px;">
-                        <button type="button" class="btn-save" style="padding:8px 14px;font-size:0.85rem;" onclick="AdminLanding.pickImage('m_promo_img')">Загрузить</button>
-                        <button type="button" class="btn-delete" id="m_promo_img_clear" style="padding:8px 14px;margin-left:8px;display:none;" onclick="AdminLanding.clearImage('m_promo_img')">Удалить</button>
-                        <input type="hidden" id="m_promo_img_val" value="">
-                    </div>
+                    <p style="color:var(--text-secondary);margin:-8px 0 16px;font-size:0.9rem;">Ниже Hero (~1520×253). Шрифты, отступы и предпросмотр — как у слайдера.</p>
+                    <div id="mPromoBannerAdmin"></div>
                 </div>
                 <div class="admin-card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
@@ -1043,7 +1032,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="assets/js/hero-slides.js?v=11"></script>
-    <script src="assets/js/landing-content.js?v=16"></script>
+    <script src="assets/js/landing-content.js?v=18"></script>
     <script src="assets/js/knowledge-content.js?v=3"></script>
     <script src="assets/js/news-content.js?v=1"></script>
     <script src="assets/js/ecp-content.js?v=13"></script>
@@ -1052,7 +1041,7 @@
     <script src="assets/js/testing-questions.js"></script>
     <script src="assets/js/obuchenie-content.js?v=31"></script>
     <script src="assets/js/admin-hero-slides.js?v=11"></script>
-    <script src="assets/js/admin-landing.js?v=6"></script>
+    <script src="assets/js/admin-landing.js?v=7"></script>
     <script src="assets/js/admin-ecp.js?v=10"></script>
     <script src="assets/js/admin-consulting-page.js?v=7"></script>
     <script src="assets/js/admin-support.js?v=8"></script>

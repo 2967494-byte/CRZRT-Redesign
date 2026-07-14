@@ -86,7 +86,21 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }],
     promoBanner: {
       title: 'Дистанционный курс\nпо 44 ФЗ для заказчиков',
+      titleColor: '#ffffff',
+      titleTop: 40,
+      titleLeft: 80,
+      titleFontSize: '50',
+      titleFontWeight: '700',
+      titleItalic: false,
+      titleUnderline: false,
       date: '2-4 июня 2026 года',
+      dateColor: '#ffffff',
+      dateTop: 160,
+      dateLeft: 80,
+      dateFontSize: '25',
+      dateFontWeight: '400',
+      dateItalic: false,
+      dateUnderline: false,
       link: '',
       image: 'assets/img/banner.png'
     },
@@ -235,6 +249,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
           livePreview.style.backgroundImage = 'radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #B8FDC6 100%)';
         }
       }
+    }
+    if (id === 'm_promo_img') {
+      applyPromoPreviewStyles();
     }
   }
   function consultPhotoUploadShell(id, label, index) {
@@ -441,23 +458,131 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     return links.length ? links : _toConsumableArray(DEFAULT_LANDING_MAIN.socialLinks);
   }
+  var PROMO_BANNER_W = 1520;
+  var PROMO_BANNER_H = 253;
+  function promoBgUploadShell(id, label) {
+    return "\n      <div class=\"form-group hero-slide-upload-group\" style=\"margin-bottom:0;\">\n        <label>".concat(label, "</label>\n        <div class=\"hero-slide-frame hero-slide-frame--promo hero-slide-frame--empty\" data-upload-frame-for=\"").concat(id, "\">\n          <span class=\"hero-slide-frame__empty\">\u043F\u0440\u043E\u043F\u043E\u0440\u0446\u0438\u0438 1520\xD7253</span>\n          <img id=\"").concat(id, "_preview\" class=\"hero-slide-frame__img\" src=\"\" alt=\"\">\n        </div>\n        <div class=\"hero-slide-upload-actions image-upload-mini\" data-upload-id=\"").concat(id, "\">\n          <button type=\"button\" class=\"btn-save\" style=\"padding:8px 14px;font-size:0.85rem;\" onclick=\"AdminLanding.pickImage('").concat(id, "')\">\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C</button>\n          <button type=\"button\" class=\"btn-delete\" style=\"padding:8px 14px;font-size:0.85rem;display:none;\" id=\"").concat(id, "_clear\" onclick=\"AdminLanding.clearImage('").concat(id, "')\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</button>\n          <input type=\"hidden\" id=\"").concat(id, "_val\" value=\"\">\n        </div>\n      </div>");
+  }
+  function resolvePromoColor(colorId, fallback) {
+    var _document$getElementById, _document$getElementById2;
+    var text = ((_document$getElementById = document.getElementById(colorId)) === null || _document$getElementById === void 0 || (_document$getElementById = _document$getElementById.value) === null || _document$getElementById === void 0 ? void 0 : _document$getElementById.trim()) || '';
+    if (/^#[0-9A-Fa-f]{6}$/.test(text)) return text;
+    if (/^[0-9A-Fa-f]{6}$/.test(text)) return "#".concat(text);
+    var picker = ((_document$getElementById2 = document.getElementById("".concat(colorId, "_picker"))) === null || _document$getElementById2 === void 0 ? void 0 : _document$getElementById2.value) || '';
+    if (/^#[0-9A-Fa-f]{6}$/.test(picker)) return picker;
+    return fallback || '#ffffff';
+  }
+  function applyPromoPreviewStyles() {
+    var _document$getElementById3, _document$getElementById4, _document$getElementById5, _document$getElementById6, _document$getElementById7, _document$getElementById8, _document$getElementById9, _document$getElementById0, _document$getElementById1, _document$getElementById10, _document$getElementById11, _document$getElementById12, _document$getElementById13, _document$getElementById14;
+    var preview = document.getElementById('m_promo_live_preview');
+    var titleLive = document.getElementById('m_promo_live_title');
+    var dateLive = document.getElementById('m_promo_live_date');
+    if (!preview) return;
+    var bg = readImageVal('m_promo_img');
+    preview.style.backgroundImage = bg ? "url('".concat(bg.replace(/'/g, "\\'"), "')") : 'radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #B8FDC6 100%)';
+    var titleTop = parseFloat((_document$getElementById3 = document.getElementById('m_promo_title_top')) === null || _document$getElementById3 === void 0 ? void 0 : _document$getElementById3.value) || 40;
+    var titleLeft = parseFloat((_document$getElementById4 = document.getElementById('m_promo_title_left')) === null || _document$getElementById4 === void 0 ? void 0 : _document$getElementById4.value) || 80;
+    var dateTop = parseFloat((_document$getElementById5 = document.getElementById('m_promo_date_top')) === null || _document$getElementById5 === void 0 ? void 0 : _document$getElementById5.value) || 160;
+    var dateLeft = parseFloat((_document$getElementById6 = document.getElementById('m_promo_date_left')) === null || _document$getElementById6 === void 0 ? void 0 : _document$getElementById6.value) || 80;
+    if (titleLive) {
+      titleLive.textContent = ((_document$getElementById7 = document.getElementById('m_promo_title')) === null || _document$getElementById7 === void 0 ? void 0 : _document$getElementById7.value) || '';
+      titleLive.style.color = resolvePromoColor('m_promo_title_color', '#ffffff');
+      titleLive.style.top = "calc((".concat(titleTop, " / ").concat(PROMO_BANNER_H, ") * 100%)");
+      titleLive.style.left = "calc((".concat(titleLeft, " / ").concat(PROMO_BANNER_W, ") * 100%)");
+      titleLive.style.maxWidth = "calc(100% - ((".concat(titleLeft, " / ").concat(PROMO_BANNER_W, ") * 100%) - 10px)");
+      var titleSize = ((_document$getElementById8 = document.getElementById('m_promo_title_size')) === null || _document$getElementById8 === void 0 ? void 0 : _document$getElementById8.value) || '';
+      var titleWeight = ((_document$getElementById9 = document.getElementById('m_promo_title_weight')) === null || _document$getElementById9 === void 0 ? void 0 : _document$getElementById9.value) || '';
+      if (titleSize) titleLive.style.fontSize = "calc((".concat(titleSize, " / ").concat(PROMO_BANNER_W, ") * 100cqw)");else titleLive.style.removeProperty('font-size');
+      if (titleWeight) titleLive.style.fontWeight = titleWeight;else titleLive.style.removeProperty('font-weight');
+      titleLive.style.fontStyle = ((_document$getElementById0 = document.getElementById('m_promo_title_italic')) === null || _document$getElementById0 === void 0 ? void 0 : _document$getElementById0.checked) ? 'italic' : '';
+      titleLive.style.textDecoration = ((_document$getElementById1 = document.getElementById('m_promo_title_underline')) === null || _document$getElementById1 === void 0 ? void 0 : _document$getElementById1.checked) ? 'underline' : '';
+    }
+    if (dateLive) {
+      dateLive.textContent = ((_document$getElementById10 = document.getElementById('m_promo_date')) === null || _document$getElementById10 === void 0 ? void 0 : _document$getElementById10.value) || '';
+      dateLive.style.color = resolvePromoColor('m_promo_date_color', '#ffffff');
+      dateLive.style.top = "calc((".concat(dateTop, " / ").concat(PROMO_BANNER_H, ") * 100%)");
+      dateLive.style.left = "calc((".concat(dateLeft, " / ").concat(PROMO_BANNER_W, ") * 100%)");
+      dateLive.style.maxWidth = "calc(100% - ((".concat(dateLeft, " / ").concat(PROMO_BANNER_W, ") * 100%) - 10px)");
+      var dateSize = ((_document$getElementById11 = document.getElementById('m_promo_date_size')) === null || _document$getElementById11 === void 0 ? void 0 : _document$getElementById11.value) || '';
+      var dateWeight = ((_document$getElementById12 = document.getElementById('m_promo_date_weight')) === null || _document$getElementById12 === void 0 ? void 0 : _document$getElementById12.value) || '';
+      if (dateSize) dateLive.style.fontSize = "calc((".concat(dateSize, " / ").concat(PROMO_BANNER_W, ") * 100cqw)");else dateLive.style.removeProperty('font-size');
+      if (dateWeight) dateLive.style.fontWeight = dateWeight;else dateLive.style.removeProperty('font-weight');
+      dateLive.style.fontStyle = ((_document$getElementById13 = document.getElementById('m_promo_date_italic')) === null || _document$getElementById13 === void 0 ? void 0 : _document$getElementById13.checked) ? 'italic' : '';
+      dateLive.style.textDecoration = ((_document$getElementById14 = document.getElementById('m_promo_date_underline')) === null || _document$getElementById14 === void 0 ? void 0 : _document$getElementById14.checked) ? 'underline' : '';
+    }
+  }
+  function wirePromoLivePreview() {
+    var refresh = function refresh() {
+      return applyPromoPreviewStyles();
+    };
+    ['title', 'date'].forEach(function (field) {
+      var input = document.getElementById("m_promo_".concat(field));
+      var color = document.getElementById("m_promo_".concat(field, "_color"));
+      var colorPicker = document.getElementById("m_promo_".concat(field, "_color_picker"));
+      var size = document.getElementById("m_promo_".concat(field, "_size"));
+      var weight = document.getElementById("m_promo_".concat(field, "_weight"));
+      var italic = document.getElementById("m_promo_".concat(field, "_italic"));
+      var underline = document.getElementById("m_promo_".concat(field, "_underline"));
+      var top = document.getElementById("m_promo_".concat(field, "_top"));
+      var left = document.getElementById("m_promo_".concat(field, "_left"));
+      if (input) input.addEventListener('input', refresh);
+      if (colorPicker) colorPicker.addEventListener('input', function (e) {
+        if (color) color.value = e.target.value.toUpperCase();
+        refresh();
+      });
+      if (color) color.addEventListener('input', function (e) {
+        var v = String(e.target.value || '').trim();
+        if (/^[0-9A-Fa-f]{6}$/.test(v)) v = "#".concat(v);
+        if (/^#[0-9A-Fa-f]{6}$/.test(v) && colorPicker) colorPicker.value = v.toLowerCase();
+        refresh();
+      });
+      if (size) size.addEventListener('input', refresh);
+      if (weight) weight.addEventListener('change', refresh);
+      if (italic) italic.addEventListener('change', refresh);
+      if (underline) underline.addEventListener('change', refresh);
+      if (top) top.addEventListener('input', refresh);
+      if (left) left.addEventListener('input', refresh);
+    });
+    var link = document.getElementById('m_promo_link');
+    if (link) link.addEventListener('input', refresh);
+  }
+  function renderPromoBannerAdmin(container, promo) {
+    var p = _objectSpread(_objectSpread({}, DEFAULT_LANDING_MAIN.promoBanner), promo || {});
+    if (!container) return;
+    container.innerHTML = "\n      <div class=\"obuchenie-hero-grid\">\n        <div class=\"obuchenie-hero-banner-col\">\n          ".concat(promoBgUploadShell('m_promo_img', 'Фон баннера (пропорции ~1520×253)'), "\n          <div style=\"margin-top:20px;\">\n            <label style=\"font-weight:600;display:block;margin-bottom:8px;font-size:0.9rem;color:var(--text-secondary);\">\u041F\u0440\u0435\u0434\u043F\u0440\u043E\u0441\u043C\u043E\u0442\u0440</label>\n            <div class=\"landing-live-promo-preview\" id=\"m_promo_live_preview\">\n              <div class=\"live-banner-title\" id=\"m_promo_live_title\">").concat(escapeAttr(p.title), "</div>\n              <div class=\"live-banner-subtitle\" id=\"m_promo_live_date\">").concat(escapeAttr(p.date), "</div>\n            </div>\n          </div>\n        </div>\n        <div class=\"obuchenie-hero-fields-col\" style=\"display:flex;flex-direction:column;gap:20px;\">\n          <div class=\"obuchenie-hero-block\" style=\"border:1px solid var(--card-border);padding:15px;border-radius:8px;background:rgba(255,255,255,0.02);\">\n            ").concat(blockHeaderWithColorHtml('Заголовок (Enter — перенос)', 'm_promo_title_color', p.titleColor, '#ffffff', p.titleFontSize, p.titleFontWeight, p.titleItalic, p.titleUnderline), "\n            <div class=\"form-group\" style=\"margin-bottom:0;margin-top:8px;\">\n              <textarea class=\"form-control\" id=\"m_promo_title\" rows=\"2\">").concat(escapeAttr(p.title), "</textarea>\n            </div>\n            <div style=\"display:flex;gap:16px;margin-top:12px;\">\n              <div style=\"flex:1;margin-bottom:0;\" class=\"form-group\">\n                <label style=\"font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;\">\u041E\u0442\u0441\u0442\u0443\u043F \u0441\u0432\u0435\u0440\u0445\u0443 (px)</label>\n                <input type=\"number\" class=\"form-control\" id=\"m_promo_title_top\" value=\"").concat(p.titleTop !== undefined ? p.titleTop : 40, "\" style=\"padding:6px 10px;font-size:0.85rem;margin-bottom:0;\">\n              </div>\n              <div style=\"flex:1;margin-bottom:0;\" class=\"form-group\">\n                <label style=\"font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;\">\u041E\u0442\u0441\u0442\u0443\u043F \u0441\u043B\u0435\u0432\u0430 (px)</label>\n                <input type=\"number\" class=\"form-control\" id=\"m_promo_title_left\" value=\"").concat(p.titleLeft !== undefined ? p.titleLeft : 80, "\" style=\"padding:6px 10px;font-size:0.85rem;margin-bottom:0;\">\n              </div>\n            </div>\n          </div>\n          <div class=\"obuchenie-hero-block\" style=\"border:1px solid var(--card-border);padding:15px;border-radius:8px;background:rgba(255,255,255,0.02);\">\n            ").concat(blockHeaderWithColorHtml('Дата / подпись', 'm_promo_date_color', p.dateColor, '#ffffff', p.dateFontSize, p.dateFontWeight, p.dateItalic, p.dateUnderline), "\n            <div class=\"form-group\" style=\"margin-bottom:0;margin-top:8px;\">\n              <input type=\"text\" class=\"form-control\" id=\"m_promo_date\" value=\"").concat(escapeAttr(p.date), "\">\n            </div>\n            <div style=\"display:flex;gap:16px;margin-top:12px;\">\n              <div style=\"flex:1;margin-bottom:0;\" class=\"form-group\">\n                <label style=\"font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;\">\u041E\u0442\u0441\u0442\u0443\u043F \u0441\u0432\u0435\u0440\u0445\u0443 (px)</label>\n                <input type=\"number\" class=\"form-control\" id=\"m_promo_date_top\" value=\"").concat(p.dateTop !== undefined ? p.dateTop : 160, "\" style=\"padding:6px 10px;font-size:0.85rem;margin-bottom:0;\">\n              </div>\n              <div style=\"flex:1;margin-bottom:0;\" class=\"form-group\">\n                <label style=\"font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;\">\u041E\u0442\u0441\u0442\u0443\u043F \u0441\u043B\u0435\u0432\u0430 (px)</label>\n                <input type=\"number\" class=\"form-control\" id=\"m_promo_date_left\" value=\"").concat(p.dateLeft !== undefined ? p.dateLeft : 80, "\" style=\"padding:6px 10px;font-size:0.85rem;margin-bottom:0;\">\n              </div>\n            </div>\n          </div>\n          <div class=\"form-group\" style=\"margin-bottom:0;\">\n            <label>\u0421\u0441\u044B\u043B\u043A\u0430 \u043F\u0440\u0438 \u043A\u043B\u0438\u043A\u0435 (\u043D\u0435\u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u043E)</label>\n            <input type=\"text\" class=\"form-control\" id=\"m_promo_link\" value=\"").concat(escapeAttr(p.link), "\" placeholder=\"seminars.html \u0438\u043B\u0438 https://...\">\n          </div>\n        </div>\n      </div>");
+    setImageUploadState('m_promo_img', p.image || '');
+    wirePromoLivePreview();
+    applyPromoPreviewStyles();
+  }
+  function collectPromoBannerFromForm() {
+    var _document$getElementById15, _document$getElementById16, _document$getElementById17, _document$getElementById18, _document$getElementById19, _document$getElementById20, _document$getElementById21, _document$getElementById22, _document$getElementById23, _document$getElementById24, _document$getElementById25, _document$getElementById26, _document$getElementById27, _document$getElementById28, _document$getElementById29, _document$getElementById30, _document$getElementById31;
+    return {
+      title: ((_document$getElementById15 = document.getElementById('m_promo_title')) === null || _document$getElementById15 === void 0 ? void 0 : _document$getElementById15.value) || '',
+      titleColor: resolvePromoColor('m_promo_title_color', '#ffffff'),
+      titleTop: parseInt(((_document$getElementById16 = document.getElementById('m_promo_title_top')) === null || _document$getElementById16 === void 0 ? void 0 : _document$getElementById16.value) || '40', 10),
+      titleLeft: parseInt(((_document$getElementById17 = document.getElementById('m_promo_title_left')) === null || _document$getElementById17 === void 0 ? void 0 : _document$getElementById17.value) || '80', 10),
+      titleFontSize: ((_document$getElementById18 = document.getElementById('m_promo_title_size')) === null || _document$getElementById18 === void 0 ? void 0 : _document$getElementById18.value) || '',
+      titleFontWeight: ((_document$getElementById19 = document.getElementById('m_promo_title_weight')) === null || _document$getElementById19 === void 0 ? void 0 : _document$getElementById19.value) || '',
+      titleItalic: ((_document$getElementById20 = document.getElementById('m_promo_title_italic')) === null || _document$getElementById20 === void 0 ? void 0 : _document$getElementById20.checked) || false,
+      titleUnderline: ((_document$getElementById21 = document.getElementById('m_promo_title_underline')) === null || _document$getElementById21 === void 0 ? void 0 : _document$getElementById21.checked) || false,
+      date: ((_document$getElementById22 = document.getElementById('m_promo_date')) === null || _document$getElementById22 === void 0 ? void 0 : _document$getElementById22.value) || '',
+      dateColor: resolvePromoColor('m_promo_date_color', '#ffffff'),
+      dateTop: parseInt(((_document$getElementById23 = document.getElementById('m_promo_date_top')) === null || _document$getElementById23 === void 0 ? void 0 : _document$getElementById23.value) || '160', 10),
+      dateLeft: parseInt(((_document$getElementById24 = document.getElementById('m_promo_date_left')) === null || _document$getElementById24 === void 0 ? void 0 : _document$getElementById24.value) || '80', 10),
+      dateFontSize: ((_document$getElementById25 = document.getElementById('m_promo_date_size')) === null || _document$getElementById25 === void 0 ? void 0 : _document$getElementById25.value) || '',
+      dateFontWeight: ((_document$getElementById26 = document.getElementById('m_promo_date_weight')) === null || _document$getElementById26 === void 0 ? void 0 : _document$getElementById26.value) || '',
+      dateItalic: ((_document$getElementById27 = document.getElementById('m_promo_date_italic')) === null || _document$getElementById27 === void 0 ? void 0 : _document$getElementById27.checked) || false,
+      dateUnderline: ((_document$getElementById28 = document.getElementById('m_promo_date_underline')) === null || _document$getElementById28 === void 0 ? void 0 : _document$getElementById28.checked) || false,
+      link: ((_document$getElementById29 = document.getElementById('m_promo_link')) === null || _document$getElementById29 === void 0 ? void 0 : _document$getElementById29.value) || '',
+      image: readImageVal('m_promo_img')
+    };
+  }
   function renderMainPageAdmin(mainPageData) {
     var _mainPageData$consult;
     var heroEl = document.getElementById('mHeroSlidesAdmin');
     var svcEl = document.getElementById('mServiceCardsAdmin');
-    var promo = mainPageData.promoBanner || {};
-    document.getElementById('m_promo_title').value = promo.title || '';
-    document.getElementById('m_promo_date').value = promo.date || '';
-    document.getElementById('m_promo_link').value = promo.link || '';
-    var promoPrev = document.getElementById('m_promo_img_preview');
-    var promoVal = document.getElementById('m_promo_img_val');
-    if (promoPrev && promoVal) {
-      promoPrev.src = promo.image || '';
-      promoPrev.style.display = promo.image ? 'block' : 'none';
-      promoVal.value = promo.image || '';
-      var clr = document.getElementById('m_promo_img_clear');
-      if (clr) clr.style.display = promo.image ? 'inline-flex' : 'none';
-    }
+    var promoEl = document.getElementById('mPromoBannerAdmin');
+    if (promoEl) renderPromoBannerAdmin(promoEl, mainPageData.promoBanner || {});
     if (heroEl) renderHeroSlides(heroEl, mainPageData.heroSlides || []);
     if (svcEl) renderServiceCards(svcEl, mainPageData.serviceCards || []);
     renderPartners(document.getElementById('mPartnersAdmin'), mainPageData.partners || []);
@@ -515,7 +640,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (index >= 0 && index < photos.length) photos[index] = '';
   }
   function collectMainPageFromForm(mainPageData) {
-    var _document$getElementB29, _document$getElementB30, _document$getElementB31, _document$getElementB32;
+    var _document$getElementB32;
     var heroSlides = [];
     var heroCount = document.querySelectorAll('[id^="m_hero_bg_"][type="hidden"]').length;
     for (var i = 0; i < heroCount; i++) {
@@ -575,12 +700,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     mainPageData.heroSlides = heroSlides;
     mainPageData.serviceCards = serviceCards;
-    mainPageData.promoBanner = {
-      title: ((_document$getElementB29 = document.getElementById('m_promo_title')) === null || _document$getElementB29 === void 0 ? void 0 : _document$getElementB29.value) || '',
-      date: ((_document$getElementB30 = document.getElementById('m_promo_date')) === null || _document$getElementB30 === void 0 ? void 0 : _document$getElementB30.value) || '',
-      link: ((_document$getElementB31 = document.getElementById('m_promo_link')) === null || _document$getElementB31 === void 0 ? void 0 : _document$getElementB31.value) || '',
-      image: readImageVal('m_promo_img')
-    };
+    mainPageData.promoBanner = collectPromoBannerFromForm();
     mainPageData.partners = partners;
     mainPageData.reviews = reviews;
     mainPageData.socialLinks = collectSocialLinksFromForm();
