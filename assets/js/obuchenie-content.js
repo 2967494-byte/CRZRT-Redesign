@@ -1458,7 +1458,31 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       var startMonth = start.getFullYear() === 2099 ? '' : MONTH_NAMES_GENITIVE_RU[start.getMonth()];
       var dateLabel = start.getFullYear() === 2099 ? '' : "".concat(startDay, " ").concat(startMonth, " ").concat(start.getFullYear());
       var enrollAttrs = buildEnrollAttrs(c, dateLabel);
-      return "<article class=\"occ-card\">\n          <div class=\"occ-card__top\" style=\"flex-grow: 1; margin-bottom: auto;\">\n            <h3 class=\"occ-card__title\">".concat(escapeHtml(c.title), "</h3>\n            ").concat(priceHtml, "\n          </div>\n          <div class=\"occ-card__stats\" style=\"margin-top: 0;\">\n            <div class=\"occ-card__stat\">\n              <span class=\"occ-card__stat-label\">\u0441\u0442\u0430\u0440\u0442 \u043A\u0443\u0440\u0441\u0430</span>\n              <div class=\"occ-card__stat-value\">\n                <span class=\"occ-card__stat-num\">").concat(startDay, "</span>\n                <span class=\"occ-card__stat-unit\">").concat(startMonth, "</span>\n              </div>\n            </div>\n            <div class=\"occ-card__stat-divider\"></div>\n            <div class=\"occ-card__stat\">\n              <span class=\"occ-card__stat-label\">\u0434\u043B\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u044C</span>\n              <div class=\"occ-card__stat-value\">\n                <span class=\"occ-card__stat-num\">").concat(durDays, "</span>\n                <span class=\"occ-card__stat-unit\">").concat(durUnit, "</span>\n              </div>\n            </div>\n          </div>\n          <a href=\"courses/".concat(escapeHtml(c.id), ".html\" class=\"occ-card__btn\">\u0417\u0430\u043F\u0438\u0441\u0430\u0442\u044C\u0441\u044F</a>\n          <a href=\"courses/".concat(escapeHtml(c.id), ".html\" class=\"occ-card__more\">\u043F\u043E\u0434\u0440\u043E\u0431\u043D\u0435\u0435 ").concat(MORE_ARROW_SVG, "</a>\n        </article>");
+      return `<article class="occ-card">
+          <div class="occ-card__top" style="flex-grow: 1; margin-bottom: auto;">
+            <h3 class="occ-card__title">${escapeHtml(c.title)}</h3>
+            ${priceHtml}
+          </div>
+          <div class="occ-card__stats" style="margin-top: 0;">
+            <div class="occ-card__stat">
+              <span class="occ-card__stat-label">\u0441\u0442\u0430\u0440\u0442 \u043A\u0443\u0440\u0441\u0430</span>
+              <div class="occ-card__stat-value">
+                <span class="occ-card__stat-num">${startDay}</span>
+                <span class="occ-card__stat-unit">${startMonth}</span>
+              </div>
+            </div>
+            <div class="occ-card__stat-divider"></div>
+            <div class="occ-card__stat">
+              <span class="occ-card__stat-label">\u0434\u043B\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u044C</span>
+              <div class="occ-card__stat-value">
+                <span class="occ-card__stat-num">${durDays}</span>
+                <span class="occ-card__stat-unit">${durUnit}</span>
+              </div>
+            </div>
+          </div>
+          <a href="courses/${escapeHtml(c.id)}.html" class="occ-card__btn">\u0417\u0430\u043F\u0438\u0441\u0430\u0442\u044C\u0441\u044F</a>
+          <a href="courses/${escapeHtml(c.id)}.html" class="occ-card__more">\u043F\u043E\u0434\u0440\u043E\u0431\u043D\u0435\u0435 ${MORE_ARROW_SVG}</a>
+        </article>`;
     }).join('');
   }
   function renderTestingBanner(testingBanner) {
