@@ -361,6 +361,26 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       els.formBitrixUr.value = _ref;
       updateBitrixDisplay('ur', _ref);
     }
+    
+    // Fill new fields
+    if (els.formTargetAudience) {
+      els.formTargetAudience.value = Array.isArray(course === null || course === void 0 ? void 0 : course.targetAudience) ? course.targetAudience.join('\n') : (course === null || course === void 0 ? void 0 : course.targetAudience) || '';
+    }
+    if (els.formOutcomes) {
+      els.formOutcomes.value = Array.isArray(course === null || course === void 0 ? void 0 : course.outcomes) ? course.outcomes.join('\n') : (course === null || course === void 0 ? void 0 : course.outcomes) || '';
+    }
+    if (els.formDocumentType) {
+      els.formDocumentType.value = (course === null || course === void 0 ? void 0 : course.documentType) || '';
+    }
+    if (els.formProgramContainer) {
+      els.formProgramContainer.innerHTML = '';
+      if (Array.isArray(course === null || course === void 0 ? void 0 : course.program)) {
+        course.program.forEach(function(mod) {
+          addProgramModule(mod);
+        });
+      }
+    }
+
     syncBitrixFieldsVisibility();
     setAudienceFormError(false);
     els.modal.style.display = 'flex';
@@ -385,6 +405,12 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       els.formBitrixUr.value = '';
       updateBitrixDisplay('ur', '');
     }
+    
+    if (els.formTargetAudience) els.formTargetAudience.value = '';
+    if (els.formOutcomes) els.formOutcomes.value = '';
+    if (els.formDocumentType) els.formDocumentType.value = '';
+    if (els.formProgramContainer) els.formProgramContainer.innerHTML = '';
+
     syncBitrixFieldsVisibility();
     setAudienceFormError(false);
   }
@@ -468,6 +494,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               bitrixLeadId: existingLeadId || null,
               speakers: [],
               options: audience.options,
+              targetAudience: els.formTargetAudience ? els.formTargetAudience.value.split('\n').map(function(s){return s.trim();}).filter(Boolean) : [],
+              outcomes: els.formOutcomes ? els.formOutcomes.value.split('\n').map(function(s){return s.trim();}).filter(Boolean) : [],
+              documentType: els.formDocumentType ? els.formDocumentType.value.trim() : '',
+              program: extractProgramData(),
               active: true
             };
             normalized = api.normalizeCourseRegistryItem ? api.normalizeCourseRegistryItem(payload, courses.length) : payload;
@@ -755,6 +785,113 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     (_els$modal = els.modal) === null || _els$modal === void 0 || _els$modal.addEventListener('click', function (event) {
       if (event.target === els.modal) closeModal();
     });
+    
+    if (els.btnAddProgramModule) {
+      els.btnAddProgramModule.addEventListener('click', function() {
+        addProgramModule({ title: '', items: [''] });
+      });
+    }
+  }
+
+  function addProgramModule(moduleData) {
+    if (!els.formProgramContainer) return;
+    var wrapper = document.createElement('div');
+    wrapper.className = 'program-module-wrapper';
+    wrapper.style.border = '1px solid var(--border)';
+    wrapper.style.borderRadius = '8px';
+    wrapper.style.padding = '12px';
+    wrapper.style.background = 'var(--bg)';
+    
+    var header = document.createElement('div');
+    header.style.display = 'flex';
+    header.style.gap = '8px';
+    header.style.marginBottom = '8px';
+    
+    var titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.className = 'form-control module-title';
+    titleInput.placeholder = 'Название модуля';
+    titleInput.value = moduleData.title || '';
+    titleInput.style.flex = '1';
+    
+    var btnRemoveModule = document.createElement('button');
+    btnRemoveModule.type = 'button';
+    btnRemoveModule.className = 'btn-secondary';
+    btnRemoveModule.textContent = 'Удалить модуль';
+    btnRemoveModule.onclick = function() { wrapper.remove(); };
+    
+    header.appendChild(titleInput);
+    header.appendChild(btnRemoveModule);
+    
+    var itemsContainer = document.createElement('div');
+    itemsContainer.className = 'module-items-container';
+    itemsContainer.style.display = 'flex';
+    itemsContainer.style.flexDirection = 'column';
+    itemsContainer.style.gap = '8px';
+    
+    var items = Array.isArray(moduleData.items) && moduleData.items.length ? moduleData.items : [''];
+    items.forEach(function(itemText) {
+      addProgramItem(itemsContainer, itemText);
+    });
+    
+    var btnAddItem = document.createElement('button');
+    btnAddItem.type = 'button';
+    btnAddItem.className = 'btn-secondary';
+    btnAddItem.textContent = '+ Добавить тему';
+    btnAddItem.style.marginTop = '8px';
+    btnAddItem.style.fontSize = '12px';
+    btnAddItem.style.padding = '4px 8px';
+    btnAddItem.onclick = function() { addProgramItem(itemsContainer, ''); };
+    
+    wrapper.appendChild(header);
+    wrapper.appendChild(itemsContainer);
+    wrapper.appendChild(btnAddItem);
+    els.formProgramContainer.appendChild(wrapper);
+  }
+
+  function addProgramItem(container, text) {
+    var itemWrap = document.createElement('div');
+    itemWrap.style.display = 'flex';
+    itemWrap.style.gap = '8px';
+    
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'form-control module-item-text';
+    input.placeholder = 'Тема занятия';
+    input.value = text || '';
+    input.style.flex = '1';
+    input.style.fontSize = '13px';
+    
+    var btnRemove = document.createElement('button');
+    btnRemove.type = 'button';
+    btnRemove.className = 'btn-secondary';
+    btnRemove.innerHTML = '&times;';
+    btnRemove.style.padding = '0 8px';
+    btnRemove.onclick = function() { itemWrap.remove(); };
+    
+    itemWrap.appendChild(input);
+    itemWrap.appendChild(btnRemove);
+    container.appendChild(itemWrap);
+  }
+
+  function extractProgramData() {
+    if (!els.formProgramContainer) return [];
+    var modules = [];
+    var wrappers = els.formProgramContainer.querySelectorAll('.program-module-wrapper');
+    wrappers.forEach(function(wrapper) {
+      var titleInput = wrapper.querySelector('.module-title');
+      var itemInputs = wrapper.querySelectorAll('.module-item-text');
+      var items = [];
+      itemInputs.forEach(function(inp) {
+        var val = inp.value.trim();
+        if (val) items.push(val);
+      });
+      var moduleTitle = titleInput.value.trim();
+      if (moduleTitle || items.length > 0) {
+        modules.push({ title: moduleTitle, items: items });
+      }
+    });
+    return modules;
   }
   function checkAuth() {
     return _checkAuth.apply(this, arguments);
@@ -912,6 +1049,11 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.formFormat = $('courseFormFormat');
     els.formDurationDays = $('courseFormDurationDays');
     els.formDescription = $('courseFormDescription');
+    els.formTargetAudience = $('courseFormTargetAudience');
+    els.formOutcomes = $('courseFormOutcomes');
+    els.formDocumentType = $('courseFormDocumentType');
+    els.formProgramContainer = $('courseFormProgramContainer');
+    els.btnAddProgramModule = $('btnAddProgramModule');
     els.wysiwygBtns = document.querySelectorAll('.wysiwyg-btn');
     els.formPrice = $('courseFormPrice');
     els.formBitrixCatalogId = $('courseFormBitrixCatalogId');

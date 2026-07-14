@@ -192,6 +192,27 @@
                         <div class="wysiwyg-editor form-control" id="courseFormDescription" contenteditable="true" spellcheck="false"></div>
                     </div>
                 </div>
+
+                <div class="form-group admin-courses-modal__desc-section">
+                    <label for="courseFormTargetAudience">Для кого этот курс (через перенос строки)</label>
+                    <textarea class="form-control" id="courseFormTargetAudience" rows="4" placeholder="Специалисты по закупкам..."></textarea>
+                </div>
+
+                <div class="form-group admin-courses-modal__desc-section">
+                    <label for="courseFormOutcomes">Что вы узнаете на курсе (через перенос строки)</label>
+                    <textarea class="form-control" id="courseFormOutcomes" rows="4" placeholder="Вы научитесь..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="courseFormDocumentType">Документ об окончании</label>
+                    <input type="text" class="form-control" id="courseFormDocumentType" placeholder="Удостоверение о повышении квалификации">
+                </div>
+
+                <div class="form-group admin-courses-modal__desc-section">
+                    <label>Программа курса (Модули)</label>
+                    <div id="courseFormProgramContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom: 12px;"></div>
+                    <button type="button" class="btn-secondary" id="btnAddProgramModule" style="width:100%; border:1px dashed var(--text-secondary);">+ Добавить модуль</button>
+                </div>
                 <div class="admin-courses-modal__actions">
                     <button type="button" class="btn-secondary" id="courseModalCancel">Отмена</button>
                     <button type="submit" class="btn-save" id="courseModalSave">Сохранить</button>
