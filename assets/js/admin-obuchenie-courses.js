@@ -380,6 +380,14 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         });
       }
     }
+    if (els.formProgramPdf) els.formProgramPdf.value = (course === null || course === void 0 ? void 0 : course.programPdf) || '';
+    if (els.formDocumentImage) els.formDocumentImage.value = (course === null || course === void 0 ? void 0 : course.documentImage) || '';
+    if (els.formSpeakersContainer) {
+      els.formSpeakersContainer.innerHTML = '';
+      if (Array.isArray(course === null || course === void 0 ? void 0 : course.speakers)) {
+        course.speakers.forEach(function(sp) { addSpeaker(sp); });
+      }
+    }
 
     syncBitrixFieldsVisibility();
     setAudienceFormError(false);
@@ -410,6 +418,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (els.formOutcomes) els.formOutcomes.value = '';
     if (els.formDocumentType) els.formDocumentType.value = '';
     if (els.formProgramContainer) els.formProgramContainer.innerHTML = '';
+    if (els.formProgramPdf) els.formProgramPdf.value = '';
+    if (els.formDocumentImage) els.formDocumentImage.value = '';
+    if (els.formSpeakersContainer) els.formSpeakersContainer.innerHTML = '';
 
     syncBitrixFieldsVisibility();
     setAudienceFormError(false);
@@ -494,9 +505,12 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               bitrixLeadId: existingLeadId || null,
               speakers: [],
               options: audience.options,
-              targetAudience: els.formTargetAudience ? els.formTargetAudience.value.split('\n').map(function(s){return s.trim();}).filter(Boolean) : [],
-              outcomes: els.formOutcomes ? els.formOutcomes.value.split('\n').map(function(s){return s.trim();}).filter(Boolean) : [],
+              targetAudience: els.formTargetAudience ? els.formTargetAudience.value.trim() : '',
+              outcomes: els.formOutcomes ? els.formOutcomes.value.trim() : '',
               documentType: els.formDocumentType ? els.formDocumentType.value.trim() : '',
+              documentImage: els.formDocumentImage ? els.formDocumentImage.value.trim() : '',
+              programPdf: els.formProgramPdf ? els.formProgramPdf.value.trim() : '',
+              speakers: extractSpeakersData(),
               program: extractProgramData(),
               active: true
             };
@@ -791,6 +805,54 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         addProgramModule({ title: '', items: [''] });
       });
     }
+    if (els.btnUploadProgramPdf) {
+      els.btnUploadProgramPdf.addEventListener('click', function() { els.formProgramPdfFile.click(); });
+    }
+    if (els.formProgramPdfFile) {
+      els.formProgramPdfFile.addEventListener('change', function(e) { handleFileUpload(e, els.formProgramPdf, 'api/upload-file.php'); });
+    }
+    if (els.btnUploadDocumentImage) {
+      els.btnUploadDocumentImage.addEventListener('click', function() { els.formDocumentImageFile.click(); });
+    }
+    if (els.formDocumentImageFile) {
+      els.formDocumentImageFile.addEventListener('change', function(e) { handleFileUpload(e, els.formDocumentImage, 'api/upload.php'); });
+    }
+    if (els.btnAddSpeaker) {
+      els.btnAddSpeaker.addEventListener('click', function() { addSpeaker(); });
+    }
+  }
+
+  function handleFileUpload(e, targetInput, apiUrl) {
+    var file = e.target.files[0];
+    if (!file) return;
+    
+    var formData = new FormData();
+    formData.append('file', file);
+    formData.append('slot', 'course');
+
+    targetInput.value = 'Загрузка...';
+
+    fetch(apiUrl, {
+      method: 'POST',
+      body: formData
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res.success && res.url) {
+        targetInput.value = res.url;
+      } else {
+        targetInput.value = '';
+        alert('Ошибка загрузки: ' + (res.error || 'неизвестно'));
+      }
+    })
+    .catch(function(err) {
+      console.error(err);
+      targetInput.value = '';
+      alert('Ошибка при загрузке файла');
+    })
+    .finally(function() {
+      e.target.value = '';
+    });
   }
 
   function addProgramModule(moduleData) {
@@ -892,6 +954,102 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       }
     });
     return modules;
+  }
+
+  function addSpeaker(speakerData) {
+    speakerData = speakerData || {};
+    if (!els.formSpeakersContainer) return;
+    var wrapper = document.createElement('div');
+    wrapper.className = 'speaker-wrapper';
+    wrapper.style.border = '1px solid var(--border)';
+    wrapper.style.borderRadius = '8px';
+    wrapper.style.padding = '12px';
+    wrapper.style.background = 'var(--bg)';
+    wrapper.style.display = 'flex';
+    wrapper.style.flexDirection = 'column';
+    wrapper.style.gap = '8px';
+    
+    var row1 = document.createElement('div');
+    row1.style.display = 'flex'; row1.style.gap = '8px';
+    
+    var nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.className = 'form-control speaker-name';
+    nameInput.placeholder = 'ФИО эксперта';
+    nameInput.value = speakerData.name || '';
+    nameInput.style.flex = '1';
+    
+    var btnRemove = document.createElement('button');
+    btnRemove.type = 'button';
+    btnRemove.className = 'btn-secondary';
+    btnRemove.textContent = 'Удалить';
+    btnRemove.onclick = function() { wrapper.remove(); };
+    
+    row1.appendChild(nameInput);
+    row1.appendChild(btnRemove);
+    
+    var roleInput = document.createElement('input');
+    roleInput.type = 'text';
+    roleInput.className = 'form-control speaker-role';
+    roleInput.placeholder = 'Должность (например: Ведущий юрисконсульт)';
+    roleInput.value = speakerData.role || '';
+    
+    var descInput = document.createElement('textarea');
+    descInput.className = 'form-control speaker-desc';
+    descInput.placeholder = 'Описание (опыт работы, достижения)';
+    descInput.rows = 2;
+    descInput.value = speakerData.desc || '';
+    
+    var rowImg = document.createElement('div');
+    rowImg.style.display = 'flex'; rowImg.style.gap = '8px';
+    
+    var imgInput = document.createElement('input');
+    imgInput.type = 'text';
+    imgInput.className = 'form-control speaker-img';
+    imgInput.placeholder = 'Ссылка на фото (оставьте пустым для аватарки по умолчанию)';
+    imgInput.value = speakerData.img || '';
+    imgInput.style.flex = '1';
+    
+    var btnUploadImg = document.createElement('button');
+    btnUploadImg.type = 'button';
+    btnUploadImg.className = 'btn-secondary';
+    btnUploadImg.textContent = 'Загрузить фото';
+    
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.style.display = 'none';
+    
+    btnUploadImg.onclick = function() { fileInput.click(); };
+    fileInput.onchange = function(e) { handleFileUpload(e, imgInput, 'api/upload.php'); };
+    
+    rowImg.appendChild(imgInput);
+    rowImg.appendChild(btnUploadImg);
+    rowImg.appendChild(fileInput);
+    
+    wrapper.appendChild(row1);
+    wrapper.appendChild(roleInput);
+    wrapper.appendChild(descInput);
+    wrapper.appendChild(rowImg);
+    
+    els.formSpeakersContainer.appendChild(wrapper);
+  }
+
+  function extractSpeakersData() {
+    if (!els.formSpeakersContainer) return [];
+    var speakers = [];
+    var wrappers = els.formSpeakersContainer.querySelectorAll('.speaker-wrapper');
+    wrappers.forEach(function(wrapper) {
+      var name = wrapper.querySelector('.speaker-name').value.trim();
+      if (!name) return;
+      speakers.push({
+        name: name,
+        role: wrapper.querySelector('.speaker-role').value.trim(),
+        desc: wrapper.querySelector('.speaker-desc').value.trim(),
+        img: wrapper.querySelector('.speaker-img').value.trim()
+      });
+    });
+    return speakers;
   }
   function checkAuth() {
     return _checkAuth.apply(this, arguments);
@@ -1054,6 +1212,18 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.formDocumentType = $('courseFormDocumentType');
     els.formProgramContainer = $('courseFormProgramContainer');
     els.btnAddProgramModule = $('btnAddProgramModule');
+
+    els.formProgramPdf = $('courseFormProgramPdf');
+    els.btnUploadProgramPdf = $('btnUploadProgramPdf');
+    els.formProgramPdfFile = $('courseFormProgramPdfFile');
+
+    els.formSpeakersContainer = $('courseFormSpeakersContainer');
+    els.btnAddSpeaker = $('btnAddSpeaker');
+
+    els.formDocumentImage = $('courseFormDocumentImage');
+    els.btnUploadDocumentImage = $('btnUploadDocumentImage');
+    els.formDocumentImageFile = $('courseFormDocumentImageFile');
+
     els.wysiwygBtns = document.querySelectorAll('.wysiwyg-btn');
     els.formPrice = $('courseFormPrice');
     els.formBitrixCatalogId = $('courseFormBitrixCatalogId');

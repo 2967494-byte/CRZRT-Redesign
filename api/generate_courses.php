@@ -37,14 +37,17 @@ function generate_static_courses($courseRegistry) {
         }
         if (!empty($course['targetAudience'])) {
             // Берем первую аудиторию для тега
-            $audiences = explode("\n", $course['targetAudience']);
-            $tagsHtml .= '<span class="course-tag course-tag--accent">' . htmlspecialchars(trim($audiences[0])) . '</span>';
+            $audiences = is_array($course['targetAudience']) ? $course['targetAudience'] : explode("\n", $course['targetAudience']);
+            if (!empty($audiences[0])) {
+                $tagsHtml .= '<span class="course-tag course-tag--accent">' . htmlspecialchars(trim($audiences[0])) . '</span>';
+            }
         }
         $html = preg_replace('/<div class="course-hero__tags">.*?<\/div>/s', '<div class="course-hero__tags">' . $tagsHtml . '</div>', $html);
 
         // 4. Заголовок и описание (в Hero)
         $html = preg_replace('/<h1 class="course-hero__title">.*?<\/h1>/s', '<h1 class="course-hero__title">' . $title . '</h1>', $html);
-        $desc = nl2br($course['outcomes'] ?? $course['description'] ?? '');
+        $descOutcomes = is_array($course['outcomes'] ?? null) ? implode("\n", $course['outcomes']) : ($course['outcomes'] ?? '');
+        $desc = nl2br($descOutcomes ?: ($course['description'] ?? ''));
         $html = preg_replace('/<p class="course-hero__desc">.*?<\/p>/s', '<p class="course-hero__desc">' . $desc . '</p>', $html);
 
         // 5. Виджеты (Длительность, Дата, Цена)
@@ -67,7 +70,7 @@ function generate_static_courses($courseRegistry) {
         // 6.5 Для кого (Целевая аудитория)
         $audienceHtml = '';
         if (!empty($course['targetAudience'])) {
-            $audiences = array_filter(array_map('trim', explode("\n", $course['targetAudience'])));
+            $audiences = is_array($course['targetAudience']) ? array_filter(array_map('trim', $course['targetAudience'])) : array_filter(array_map('trim', explode("\n", $course['targetAudience'])));
             $icons = ['icon-programs.png', 'icon-corporate.png', 'icon-certificates.png'];
             $iconIdx = 0;
             foreach ($audiences as $aud) {
@@ -93,6 +96,16 @@ function generate_static_courses($courseRegistry) {
         $html = preg_replace('/<div class="course-audience__grid">.*?<\/div>\s*<\/div>\s*<\/section>/s', '<div class="course-audience__grid">' . $audienceHtml . '</div></div></section>', $html);
 
         // 7. Программа обучения (Конструктор)
+        $pdfHtml = '';
+        if (!empty($course['programPdf'])) {
+            $pdfUrl = htmlspecialchars($course['programPdf']);
+            if (strpos($pdfUrl, 'uploads/') === 0) {
+                $pdfUrl = '../' . $pdfUrl;
+            }
+            $pdfHtml = '<a href="' . $pdfUrl . '" target="_blank" class="course-program__download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Скачать PDF</a>';
+        }
+        $html = preg_replace('/<a href="#" class="course-program__download">.*?<\/a>/s', $pdfHtml, $html);
+
         $programHtml = '';
         if (!empty($course['program']) && is_array($course['program'])) {
             foreach ($course['program'] as $module) {
@@ -116,9 +129,47 @@ function generate_static_courses($courseRegistry) {
         }
         $html = preg_replace('/<div class="course-accordion">.*?<\/div>\s*<\/div>\s*<\/section>/s', '<div class="course-accordion">' . $programHtml . '</div></div></section>', $html);
 
+        // 7.5 Эксперты
+        $speakersHtml = '';
+        if (!empty($course['speakers']) && is_array($course['speakers'])) {
+            foreach ($course['speakers'] as $speaker) {
+                $sName = htmlspecialchars($speaker['name'] ?? '');
+                $sRole = htmlspecialchars($speaker['role'] ?? '');
+                $sDesc = htmlspecialchars($speaker['desc'] ?? '');
+                $sImg = htmlspecialchars($speaker['img'] ?? '');
+                if (strpos($sImg, 'uploads/') === 0) {
+                    $sImg = '../' . $sImg;
+                }
+                
+                $imgHtml = '<div class="expert-card__img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="#ADB8C6" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>';
+                if ($sImg) {
+                    $imgHtml = '<img src="' . $sImg . '" alt="' . $sName . '" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">';
+                }
+                
+                $speakersHtml .= '<div class="expert-card">';
+                $speakersHtml .= '<div class="expert-card__img-wrap">' . $imgHtml . '</div>';
+                $speakersHtml .= '<h3 class="expert-card__name">' . $sName . '</h3>';
+                if ($sRole) $speakersHtml .= '<p class="expert-card__role">' . $sRole . '</p>';
+                if ($sDesc) $speakersHtml .= '<p class="expert-card__desc">' . $sDesc . '</p>';
+                $speakersHtml .= '</div>';
+            }
+        } else {
+            $speakersHtml = '<p style="color:var(--text-secondary);">Спикеры уточняются</p>';
+        }
+        $html = preg_replace('/<div class="course-experts__grid">.*?<\/div>\s*<\/div>\s*<\/section>/s', '<div class="course-experts__grid">' . $speakersHtml . '</div></div></section>', $html);
+
         // 8. Документ
         $docName = htmlspecialchars($course['documentType'] ?? 'Удостоверение о повышении квалификации');
         $html = preg_replace('/<strong>Удостоверение о повышении квалификации установленного образца<\/strong>/s', '<strong>' . $docName . '</strong>', $html);
+
+        if (!empty($course['documentImage'])) {
+            $docImg = htmlspecialchars($course['documentImage']);
+            if (strpos($docImg, 'uploads/') === 0) {
+                $docImg = '../' . $docImg;
+            }
+            $docImgHtml = '<img src="' . $docImg . '" alt="Образец документа" style="max-width:100%; height:auto; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.1);">';
+            $html = preg_replace('/<div class="doc-placeholder">.*?<\/div>/s', $docImgHtml, $html);
+        }
 
         // 9. Относительные пути (так как мы теперь в папке courses/)
         $html = preg_replace('/href="assets\//', 'href="../assets/', $html);

@@ -213,6 +213,30 @@
                     <div id="courseFormProgramContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom: 12px;"></div>
                     <button type="button" class="btn-secondary" id="btnAddProgramModule" style="width:100%; border:1px dashed var(--text-secondary);">+ Добавить модуль</button>
                 </div>
+
+                <div class="form-group">
+                    <label for="courseFormProgramPdf">Файл программы курса (PDF)</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" class="form-control" id="courseFormProgramPdf" placeholder="Ссылка на PDF (загрузите файл или вставьте ссылку)">
+                        <button type="button" class="btn-secondary" id="btnUploadProgramPdf">Загрузить файл</button>
+                        <input type="file" id="courseFormProgramPdfFile" accept=".pdf,.doc,.docx" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="form-group admin-courses-modal__desc-section">
+                    <label>Эксперты (Спикеры) курса</label>
+                    <div id="courseFormSpeakersContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom: 12px;"></div>
+                    <button type="button" class="btn-secondary" id="btnAddSpeaker" style="width:100%; border:1px dashed var(--text-secondary);">+ Добавить эксперта</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="courseFormDocumentImage">Образец выдаваемого документа (Картинка)</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" class="form-control" id="courseFormDocumentImage" placeholder="Ссылка на картинку">
+                        <button type="button" class="btn-secondary" id="btnUploadDocumentImage">Загрузить картинку</button>
+                        <input type="file" id="courseFormDocumentImageFile" accept="image/*" style="display: none;">
+                    </div>
+                </div>
                 <div class="admin-courses-modal__actions">
                     <button type="button" class="btn-secondary" id="courseModalCancel">Отмена</button>
                     <button type="submit" class="btn-save" id="courseModalSave">Сохранить</button>
