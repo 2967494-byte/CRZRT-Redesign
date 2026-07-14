@@ -64,7 +64,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
         $stmt->execute([$key, $value, $value]);
         
-        echo json_encode(['success' => true, 'key' => $key, 'size' => strlen($value)]);
+        $response = ['success' => true, 'key' => $key, 'size' => strlen($value)];
+
+        // Если обновили курсы, перегенерируем статические HTML страницы
+        if ($key === 'crzrt_obuchenie_page_data' && isset($data['value']['courseRegistry'])) {
+            require_once 'generate_courses.php';
+            $genResult = generate_static_courses($data['value']['courseRegistry']);
+            $response['generated_pages'] = $genResult;
+        }
+
+        echo json_encode($response);
     } catch (\PDOException $e) {
         echo json_encode(['success' => false, 'error' => 'Ошибка базы данных: ' . $e->getMessage()]);
     }

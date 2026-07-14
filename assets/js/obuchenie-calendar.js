@@ -39,16 +39,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return pill;
   }
   function createEnrollButton(course, dateLabel) {
-    var enrollBtn = document.createElement('button');
-    enrollBtn.type = 'button';
+    var enrollBtn = document.createElement('a');
+    enrollBtn.href = course.id + '.html';
     enrollBtn.className = 'btn btn--green calendar-modal__header-enroll';
-    enrollBtn.textContent = 'Записаться';
-    enrollBtn.setAttribute('data-action', 'enroll');
-    enrollBtn.setAttribute('data-course-id', course.id || '');
-    enrollBtn.setAttribute('data-title', course.title || 'Курс');
-    enrollBtn.setAttribute('data-date', dateLabel || formatCourseDateLabel(course));
-    enrollBtn.setAttribute('data-for-individuals', course.forIndividuals !== false ? 'true' : 'false');
-    enrollBtn.setAttribute('data-for-legal', course.forLegalEntities !== false ? 'true' : 'false');
+    enrollBtn.textContent = 'Подробнее';
     return enrollBtn;
   }
   function appendCourseDescription(course, container) {
