@@ -485,7 +485,8 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     var dateTop = parseFloat((_document$getElementById5 = document.getElementById('m_promo_date_top')) === null || _document$getElementById5 === void 0 ? void 0 : _document$getElementById5.value) || 160;
     var dateLeft = parseFloat((_document$getElementById6 = document.getElementById('m_promo_date_left')) === null || _document$getElementById6 === void 0 ? void 0 : _document$getElementById6.value) || 80;
     if (titleLive) {
-      titleLive.textContent = ((_document$getElementById7 = document.getElementById('m_promo_title')) === null || _document$getElementById7 === void 0 ? void 0 : _document$getElementById7.value) || '';
+      var titleValue = (((_document$getElementById7 = document.getElementById('m_promo_title')) === null || _document$getElementById7 === void 0 ? void 0 : _document$getElementById7.value) || '').trim();
+      titleLive.innerHTML = escapeAttr(titleValue).split('\n').join('<br>');
       titleLive.style.color = resolvePromoColor('m_promo_title_color', '#ffffff');
       titleLive.style.top = "calc((".concat(titleTop, " / ").concat(PROMO_BANNER_H, ") * 100%)");
       titleLive.style.left = "calc((".concat(titleLeft, " / ").concat(PROMO_BANNER_W, ") * 100%)");
@@ -557,7 +558,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   function collectPromoBannerFromForm() {
     var _document$getElementById15, _document$getElementById16, _document$getElementById17, _document$getElementById18, _document$getElementById19, _document$getElementById20, _document$getElementById21, _document$getElementById22, _document$getElementById23, _document$getElementById24, _document$getElementById25, _document$getElementById26, _document$getElementById27, _document$getElementById28, _document$getElementById29, _document$getElementById30, _document$getElementById31;
     return {
-      title: ((_document$getElementById15 = document.getElementById('m_promo_title')) === null || _document$getElementById15 === void 0 ? void 0 : _document$getElementById15.value) || '',
+      title: (((_document$getElementById15 = document.getElementById('m_promo_title')) === null || _document$getElementById15 === void 0 ? void 0 : _document$getElementById15.value) || '').trim(),
       titleColor: resolvePromoColor('m_promo_title_color', '#ffffff'),
       titleTop: parseInt(((_document$getElementById16 = document.getElementById('m_promo_title_top')) === null || _document$getElementById16 === void 0 ? void 0 : _document$getElementById16.value) || '40', 10),
       titleLeft: parseInt(((_document$getElementById17 = document.getElementById('m_promo_title_left')) === null || _document$getElementById17 === void 0 ? void 0 : _document$getElementById17.value) || '80', 10),
@@ -565,7 +566,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       titleFontWeight: ((_document$getElementById19 = document.getElementById('m_promo_title_weight')) === null || _document$getElementById19 === void 0 ? void 0 : _document$getElementById19.value) || '',
       titleItalic: ((_document$getElementById20 = document.getElementById('m_promo_title_italic')) === null || _document$getElementById20 === void 0 ? void 0 : _document$getElementById20.checked) || false,
       titleUnderline: ((_document$getElementById21 = document.getElementById('m_promo_title_underline')) === null || _document$getElementById21 === void 0 ? void 0 : _document$getElementById21.checked) || false,
-      date: ((_document$getElementById22 = document.getElementById('m_promo_date')) === null || _document$getElementById22 === void 0 ? void 0 : _document$getElementById22.value) || '',
+      date: (((_document$getElementById22 = document.getElementById('m_promo_date')) === null || _document$getElementById22 === void 0 ? void 0 : _document$getElementById22.value) || '').trim(),
       dateColor: resolvePromoColor('m_promo_date_color', '#ffffff'),
       dateTop: parseInt(((_document$getElementById23 = document.getElementById('m_promo_date_top')) === null || _document$getElementById23 === void 0 ? void 0 : _document$getElementById23.value) || '160', 10),
       dateLeft: parseInt(((_document$getElementById24 = document.getElementById('m_promo_date_left')) === null || _document$getElementById24 === void 0 ? void 0 : _document$getElementById24.value) || '80', 10),

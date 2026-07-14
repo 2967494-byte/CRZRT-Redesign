@@ -400,7 +400,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
           case 0:
             _context.p = 0;
             _context.n = 1;
-            return fetch("api/settings.php?key=".concat(STORAGE_KEY));
+            return fetch("api/settings.php?key=".concat(STORAGE_KEY, "&_=").concat(Date.now()), {
+              cache: 'no-store'
+            });
           case 1:
             resp = _context.v;
             if (!resp.ok) {
@@ -437,6 +439,17 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     if (!el) return;
     if (size) {
       el.style.fontSize = "clamp(calc(".concat(size, "px * 0.5), calc(").concat(size, "px * (100cqw / 1520)), ").concat(size, "px)");
+    } else {
+      el.style.removeProperty('font-size');
+    }
+    if (weight) el.style.fontWeight = weight;else el.style.removeProperty('font-weight');
+    if (italic) el.style.fontStyle = 'italic';else el.style.removeProperty('font-style');
+    if (underline) el.style.textDecoration = 'underline';else el.style.removeProperty('text-decoration');
+  }
+  function applyPromoTypographyStyles(el, size, weight, italic, underline) {
+    if (!el) return;
+    if (size) {
+      el.style.fontSize = "calc((".concat(size, " / 1520) * 100cqw)");
     } else {
       el.style.removeProperty('font-size');
     }
@@ -563,7 +576,11 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     var el = document.querySelector('.promo-banner');
     if (!el || !banner) return;
     el.style.containerType = 'inline-size';
-    if (banner.image) el.style.backgroundImage = "url('".concat(banner.image, "')");
+    if (banner.image) {
+      el.style.background = "url('".concat(banner.image, "') no-repeat center center / cover");
+    } else {
+      el.style.removeProperty('background');
+    }
     el.classList.add('promo-banner--custom');
     var titleEl = el.querySelector('.promo-banner__title');
     var dateEl = el.querySelector('.promo-banner__date');
@@ -575,17 +592,19 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         titleEl.style.left = "calc((".concat(banner.titleLeft, " / 1520) * 100%)");
         titleEl.style.maxWidth = "calc(100% - ((".concat(banner.titleLeft, " / 1520) * 100%) - 10px)");
       }
-      applyTypographyStyles(titleEl, banner.titleFontSize, banner.titleFontWeight, banner.titleItalic, banner.titleUnderline);
+      applyPromoTypographyStyles(titleEl, banner.titleFontSize, banner.titleFontWeight, banner.titleItalic, banner.titleUnderline);
     }
     if (dateEl) {
-      dateEl.textContent = banner.date || '';
+      var dateText = (banner.date || '').trim();
+      dateEl.textContent = dateText;
+      dateEl.hidden = !dateText;
       if (banner.dateColor) dateEl.style.color = banner.dateColor;else dateEl.style.removeProperty('color');
       if (banner.dateTop !== undefined) dateEl.style.top = "calc((".concat(banner.dateTop, " / 253) * 100%)");
       if (banner.dateLeft !== undefined) {
         dateEl.style.left = "calc((".concat(banner.dateLeft, " / 1520) * 100%)");
         dateEl.style.maxWidth = "calc(100% - ((".concat(banner.dateLeft, " / 1520) * 100%) - 10px)");
       }
-      applyTypographyStyles(dateEl, banner.dateFontSize, banner.dateFontWeight, banner.dateItalic, banner.dateUnderline);
+      applyPromoTypographyStyles(dateEl, banner.dateFontSize, banner.dateFontWeight, banner.dateItalic, banner.dateUnderline);
     }
     if (banner.link) {
       el.style.cursor = 'pointer';
@@ -867,9 +886,50 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     LANDING_DEFAULTS: LANDING_DEFAULTS,
     applyHeroSlide: applyHeroSlide
   };
+  function refreshLandingFromApi() {
+    return _refreshLandingFromApi.apply(this, arguments);
+  }
+  function _refreshLandingFromApi() {
+    _refreshLandingFromApi = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5() {
+      var apiData, _t5;
+      return _regenerator().w(function (_context5) {
+        while (1) switch (_context5.p = _context5.n) {
+          case 0:
+            _context5.p = 0;
+            _context5.n = 1;
+            return loadLandingDataFromApi();
+          case 1:
+            apiData = _context5.v;
+            if (!apiData) {
+              _context5.n = 2;
+              break;
+            }
+            renderLanding(apiData);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(apiData));
+            } catch (e) {
+              console.warn('Landing: localStorage update failed', e);
+            }
+          case 2:
+            _context5.n = 4;
+            break;
+          case 3:
+            _context5.p = 3;
+            _t5 = _context5.v;
+            console.warn('Landing: refresh from API failed', _t5);
+          case 4:
+            return _context5.a(2);
+        }
+      }, _callee5, null, [[0, 3]]);
+    }));
+    return _refreshLandingFromApi.apply(this, arguments);
+  }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initLandingContent);
   } else {
     initLandingContent();
   }
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted) refreshLandingFromApi();
+  });
 })();
