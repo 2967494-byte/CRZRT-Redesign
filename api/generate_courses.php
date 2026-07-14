@@ -119,11 +119,22 @@ function generate_static_courses($courseRegistry) {
         $docName = htmlspecialchars($course['documentType'] ?? 'Удостоверение о повышении квалификации');
         $html = preg_replace('/<strong>Удостоверение о повышении квалификации установленного образца<\/strong>/s', '<strong>' . $docName . '</strong>', $html);
 
-        // 9. Сохранение файла
-        $fileName = $course['id'] . '.html'; // e.g. course_17200000.html
-        $filePath = __DIR__ . '/../' . $fileName;
+        // 9. Относительные пути (так как мы теперь в папке courses/)
+        $html = preg_replace('/href="assets\//', 'href="../assets/', $html);
+        $html = preg_replace('/src="assets\//', 'src="../assets/', $html);
+        $html = preg_replace('/url\([\'"]?assets\//', 'url(\'../assets/', $html);
+        // Ссылки на .html файлы в корне
+        $html = preg_replace('/href="([^\\/:]+\.html)(#[^"]*)?"/', 'href="../$1$2"', $html);
+
+        // 10. Сохранение файла
+        $coursesDir = __DIR__ . '/../courses';
+        if (!is_dir($coursesDir)) {
+            mkdir($coursesDir, 0777, true);
+        }
+        $fileName = $course['id'] . '.html';
+        $filePath = $coursesDir . '/' . $fileName;
         file_put_contents($filePath, $html);
-        $generatedFiles[] = $fileName;
+        $generatedFiles[] = 'courses/' . $fileName;
     }
 
     return ['success' => true, 'generated' => $generatedFiles];

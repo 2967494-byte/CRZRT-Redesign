@@ -40,7 +40,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function createEnrollButton(course, dateLabel) {
     var enrollBtn = document.createElement('a');
-    enrollBtn.href = course.id + '.html';
+    enrollBtn.href = 'courses/' + course.id + '.html';
     enrollBtn.className = 'btn btn--green calendar-modal__header-enroll';
     enrollBtn.textContent = 'Подробнее';
     return enrollBtn;
@@ -152,7 +152,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     
     if (coursesOnDate.length === 1) {
-      window.location.href = coursesOnDate[0].id + '.html';
+      window.location.href = 'courses/' + coursesOnDate[0].id + '.html';
       return;
     }
     
@@ -161,7 +161,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function openCourseDetailModal(course) {
     if (!course) return;
-    window.location.href = course.id + '.html';
+    window.location.href = 'courses/' + course.id + '.html';
   }
   function setCourseDays(map) {
     if (!map || _typeof(map) !== 'object') return;
