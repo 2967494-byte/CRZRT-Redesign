@@ -5,7 +5,7 @@
 function generate_static_courses($courseRegistry) {
     $templatePath = __DIR__ . '/../course-template.html';
     if (!file_exists($templatePath)) {
-        return ['success' => false, 'error' => 'РЁР°Р±Р»РѕРЅ course-template.html РЅРµ РЅР°Р№РґРµРЅ'];
+        return ['success' => false, 'error' => 'Шаблон course-template.html не найден'];
     }
 
     $template = file_get_contents($templatePath);
@@ -19,9 +19,9 @@ function generate_static_courses($courseRegistry) {
         $html = $template;
 
         // 1. SEO С‚РµРіРё
-        $title = htmlspecialchars($course['title'] ?? 'РљСѓСЂСЃ');
-        $html = preg_replace('/<title>.*?<\/title>/', "<title>{$title}. Р¦РµРЅС‚СЂ СЂР°Р·РІРёС‚РёСЏ Р·Р°РєСѓРїРѕРє</title>", $html);
-        $html = preg_replace('/<meta name="description" content=".*?">/', '<meta name="description" content="РџСЂРѕРіСЂР°РјРјР° РѕР±СѓС‡РµРЅРёСЏ: ' . $title . '">', $html);
+        $title = htmlspecialchars($course['title'] ?? 'Курс');
+        $html = preg_replace('/<title>.*?<\/title>/', "<title>{$title}. Центр развития закупок</title>", $html);
+        $html = preg_replace('/<meta name="description" content=".*?">/', '<meta name="description" content="Программа обучения: ' . $title . '">', $html);
 
         // 2. Хлебные крошки
         $html = preg_replace('/<span class="current">.*?<\/span>/s', '<span class="current">' . $title . '</span>', $html);
@@ -29,7 +29,8 @@ function generate_static_courses($courseRegistry) {
         // 3. Теги (Формат, Закон, Аудитория)
         $tagsHtml = '';
         if (!empty($course['format'])) {
-            $tagsHtml .= '<span class="course-tag">' . htmlspecialchars($course['format']) . '</span>';
+            $formatText = ($course['format'] === 'dist') ? 'Дистанционно' : (($course['format'] === 'och') ? 'Очно' : htmlspecialchars($course['format']));
+            $tagsHtml .= '<span class="course-tag">' . $formatText . '</span>';
         }
         if (!empty($course['law'])) {
             $tagsHtml .= '<span class="course-tag">' . htmlspecialchars($course['law']) . '</span>';
@@ -43,7 +44,7 @@ function generate_static_courses($courseRegistry) {
 
         // 4. Заголовок и описание (в Hero)
         $html = preg_replace('/<h1 class="course-hero__title">.*?<\/h1>/s', '<h1 class="course-hero__title">' . $title . '</h1>', $html);
-        $desc = nl2br(htmlspecialchars($course['outcomes'] ?? $course['description'] ?? ''));
+        $desc = nl2br($course['outcomes'] ?? $course['description'] ?? '');
         $html = preg_replace('/<p class="course-hero__desc">.*?<\/p>/s', '<p class="course-hero__desc">' . $desc . '</p>', $html);
 
         // 5. Виджеты (Длительность, Дата, Цена)
@@ -51,17 +52,17 @@ function generate_static_courses($courseRegistry) {
         $date = htmlspecialchars($course['date'] ?? '');
         $price = htmlspecialchars($course['price'] ?? '');
         
-        // Заменяем значения в виджетах. Это немного хрупко через регулярки, поэтому мы сделаем простую замену по порядку или уникальным классам.
+        // Заменяем значения в виджетах.
         // Длительность
-        $html = preg_replace('/<span class="course-widget-item__label">Р”Р»РёС‚РµР»СЊРЅРѕСЃС‚СЊ<\/span>.*?<span class="course-widget-item__val">.*?<\/span>/s', '<span class="course-widget-item__label">Длительность</span><span class="course-widget-item__val">' . $duration . '</span>', $html);
+        $html = preg_replace('/<span class="course-widget-item__label">Длительность<\/span>.*?<span class="course-widget-item__val">.*?<\/span>/s', '<span class="course-widget-item__label">Длительность</span><span class="course-widget-item__val">' . $duration . '</span>', $html);
         // Дата
-        $html = preg_replace('/<span class="course-widget-item__label">Р‘Р»РёР¶Р°Р№С€РёР№ СЃС‚Р°СЂС‚<\/span>.*?<span class="course-widget-item__val">.*?<\/span>/s', '<span class="course-widget-item__label">Ближайший старт</span><span class="course-widget-item__val">' . $date . '</span>', $html);
+        $html = preg_replace('/<span class="course-widget-item__label">Ближайший старт<\/span>.*?<span class="course-widget-item__val">.*?<\/span>/s', '<span class="course-widget-item__label">Ближайший старт</span><span class="course-widget-item__val">' . $date . '</span>', $html);
         // Цена
-        $html = preg_replace('/<span class="course-widget-item__label">РЎС‚РѕРёРјРѕСЃС‚СЊ<\/span>.*?<span class="course-widget-item__val course-widget-item__price">.*?<\/span>/s', '<span class="course-widget-item__label">Стоимость</span><span class="course-widget-item__val course-widget-item__price">' . $price . '</span>', $html);
+        $html = preg_replace('/<span class="course-widget-item__label">Стоимость<\/span>.*?<span class="course-widget-item__val course-widget-item__price">.*?<\/span>/s', '<span class="course-widget-item__label">Стоимость</span><span class="course-widget-item__val course-widget-item__price">' . $price . '</span>', $html);
 
         // 6. О курсе
-        $aboutText = nl2br(htmlspecialchars($course['description'] ?? ''));
-        $html = preg_replace('/<div class="course-about__text">.*?<\/div>/s', '<div class="course-about__text"><p>' . $aboutText . '</p></div>', $html);
+        $aboutText = nl2br($course['description'] ?? '');
+        $html = preg_replace('/<div class="course-about__text">.*?<\/div>/s', '<div class="course-about__text">' . $aboutText . '</div>', $html);
 
         // 6.5 Для кого (Целевая аудитория)
         $audienceHtml = '';
