@@ -166,6 +166,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       promoTitle: 'Защищаем\nваши интересы',
       promoTitleColor: '#FFFFFF',
       promoImage: 'assets/img/img1_processed.png',
+      promoLink: '',
       allCoursesLink: '#courses',
       allCoursesFileName: '',
       courseDaysByMonth: {
@@ -812,6 +813,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         promoTitle: rawCalendar.promoTitle || OBUCHENIE_DEFAULTS.calendar.promoTitle,
         promoTitleColor: rawCalendar.promoTitleColor || OBUCHENIE_DEFAULTS.calendar.promoTitleColor,
         promoImage: rawCalendar.promoImage || OBUCHENIE_DEFAULTS.calendar.promoImage,
+        promoLink: rawCalendar.promoLink || OBUCHENIE_DEFAULTS.calendar.promoLink || '',
         allCoursesLink: rawCalendar.allCoursesLink || OBUCHENIE_DEFAULTS.calendar.allCoursesLink,
         allCoursesFileName: rawCalendar.allCoursesFileName || '',
         courseDaysByMonth: resolveCalendarCourseDays(rawCalendar, courseRegistry)
@@ -1292,6 +1294,14 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     }
     if (promoEl) {
       promoEl.classList.toggle('obuchenie-calendar-promo--has-image', Boolean(promoImage));
+      var promoLink = (data.promoLink || '').trim();
+      if (promoLink) {
+        promoEl.href = promoLink;
+        promoEl.style.cursor = 'pointer';
+      } else {
+        promoEl.removeAttribute('href');
+        promoEl.style.cursor = 'default';
+      }
     }
     if (allLinkEl) {
       var link = (data.allCoursesLink || '#courses').trim() || '#courses';

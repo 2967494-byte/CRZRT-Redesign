@@ -1561,6 +1561,7 @@ body[data-page="obuchenie"] .obuchenie-calendar-promo {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
 }
 
 body[data-page="obuchenie"] .obuchenie-calendar-promo--has-image {
