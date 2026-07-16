@@ -1,108 +1,108 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 window.AdminQuiz = {
   quizQuestions: [],
-  QUIZ_OPTION_LETTERS: ['Рђ', 'Р‘', 'Р’', 'Р“', 'Р”', 'Р•'],
+  QUIZ_OPTION_LETTERS: ['А', 'Б', 'В', 'Г', 'Д', 'Е'],
   QUIZ_CORRECT_ANSWERS: {
-    1: 'Рђ',
-    2: 'Р’',
-    3: 'Р“',
-    4: 'Р’',
-    5: 'Рђ',
-    6: 'Р”',
-    7: 'Р”',
-    8: 'Р’',
-    9: 'Рђ',
-    10: 'Р“',
-    11: 'Р“',
-    12: 'Р“',
-    13: 'Р‘',
-    14: 'Р‘',
-    15: 'Р‘',
-    16: 'Рђ',
-    17: 'Рђ',
-    18: 'Рђ',
-    19: 'Рђ',
-    20: 'Р’',
-    21: 'Рђ',
-    22: 'Рђ',
-    23: 'Р‘',
-    24: 'Р“',
-    25: 'Р‘',
-    26: 'Р“',
-    27: 'Р’',
-    28: 'Р“',
-    29: 'Рђ',
-    30: 'Р’',
-    31: 'Р•',
-    32: 'Р‘',
-    33: 'Р“',
-    34: 'Р“',
-    35: 'Р‘',
-    36: 'Р’',
-    37: 'Р“',
-    38: 'Р“',
-    39: 'Р•',
-    40: 'Р”',
-    41: 'Рђ',
-    42: 'Рђ',
-    43: 'Рђ',
-    44: 'Рђ',
-    45: 'Рђ',
-    46: 'Р’',
-    47: 'Р’',
-    48: 'Р“',
-    49: 'Рђ',
-    50: 'Р‘',
-    51: 'Рђ',
-    52: 'Рђ',
-    53: 'Рђ',
-    54: 'Рђ',
-    55: 'Рђ',
-    56: 'Рђ',
-    57: 'Рђ',
-    58: 'Рђ',
-    59: 'Рђ',
-    60: 'Рђ',
-    61: 'Рђ',
-    62: 'Рђ',
-    63: 'Рђ',
-    64: 'Рђ',
-    65: 'Рђ',
-    66: 'Рђ',
-    67: 'Рђ',
-    68: 'Рђ',
-    69: 'Рђ',
-    70: 'Рђ',
-    71: 'Рђ',
-    72: 'Рђ',
-    73: 'Рђ',
-    74: 'Рђ',
-    75: 'Рђ',
-    76: 'Рђ',
-    77: 'Рђ',
-    78: 'Рђ',
-    79: 'Рђ',
-    80: 'Рђ',
-    81: 'Рђ',
-    82: 'Рђ',
-    83: 'Рђ',
-    84: 'Рђ',
-    85: 'Рђ',
-    86: 'Рђ',
-    87: 'Рђ',
-    88: 'Рђ',
-    89: 'Рђ',
-    90: 'Рђ',
-    91: 'Рђ',
-    92: 'Рђ',
-    93: 'Рђ',
-    94: 'Рђ',
-    95: 'Рђ',
-    96: 'Рђ',
-    97: 'Рђ',
-    98: 'Рђ',
-    99: 'Рђ',
-    100: 'Рђ'
+    1: 'А',
+    2: 'В',
+    3: 'Г',
+    4: 'В',
+    5: 'А',
+    6: 'Д',
+    7: 'Д',
+    8: 'В',
+    9: 'А',
+    10: 'Г',
+    11: 'Г',
+    12: 'Г',
+    13: 'Б',
+    14: 'Б',
+    15: 'Б',
+    16: 'А',
+    17: 'А',
+    18: 'А',
+    19: 'А',
+    20: 'В',
+    21: 'А',
+    22: 'А',
+    23: 'Б',
+    24: 'Г',
+    25: 'Б',
+    26: 'Г',
+    27: 'В',
+    28: 'Г',
+    29: 'А',
+    30: 'В',
+    31: 'Е',
+    32: 'Б',
+    33: 'Г',
+    34: 'Г',
+    35: 'Б',
+    36: 'В',
+    37: 'Г',
+    38: 'Г',
+    39: 'Е',
+    40: 'Д',
+    41: 'А',
+    42: 'А',
+    43: 'А',
+    44: 'А',
+    45: 'А',
+    46: 'В',
+    47: 'В',
+    48: 'Г',
+    49: 'А',
+    50: 'Б',
+    51: 'А',
+    52: 'А',
+    53: 'А',
+    54: 'А',
+    55: 'А',
+    56: 'А',
+    57: 'А',
+    58: 'А',
+    59: 'А',
+    60: 'А',
+    61: 'А',
+    62: 'А',
+    63: 'А',
+    64: 'А',
+    65: 'А',
+    66: 'А',
+    67: 'А',
+    68: 'А',
+    69: 'А',
+    70: 'А',
+    71: 'А',
+    72: 'А',
+    73: 'А',
+    74: 'А',
+    75: 'А',
+    76: 'А',
+    77: 'А',
+    78: 'А',
+    79: 'А',
+    80: 'А',
+    81: 'А',
+    82: 'А',
+    83: 'А',
+    84: 'А',
+    85: 'А',
+    86: 'А',
+    87: 'А',
+    88: 'А',
+    89: 'А',
+    90: 'А',
+    91: 'А',
+    92: 'А',
+    93: 'А',
+    94: 'А',
+    95: 'А',
+    96: 'А',
+    97: 'А',
+    98: 'А',
+    99: 'А',
+    100: 'А'
   },
   extractOptionText: function extractOptionText(value) {
     if (value == null) return '';
@@ -114,6 +114,23 @@ window.AdminQuiz = {
       if (typeof value.label === 'string') return value.label;
     }
     return '';
+  },
+  /** Чинит буквы А–Е, сохранённые с битой кодировкой (UTF-8 как CP1252). */
+  fixQuizLetter: function fixQuizLetter(letter) {
+    var raw = String(letter || '').trim();
+    if (!raw) return '';
+    var mojibakeMap = {
+      '\u0420\u0452': 'А',
+      '\u0420\u2018': 'Б',
+      '\u0420\u2019': 'В',
+      '\u0420\u201C': 'Г',
+      '\u0420\u201D': 'Д',
+      '\u0420\u2022': 'Е'
+    };
+    if (mojibakeMap[raw]) return mojibakeMap[raw];
+    var upper = raw.toUpperCase();
+    if (this.QUIZ_OPTION_LETTERS.indexOf(upper) !== -1) return upper;
+    return upper;
   },
   normalizeQuizOption: function normalizeQuizOption(opt, index) {
     var _ref, _opt$letter, _ref2, _opt$text;
@@ -136,7 +153,7 @@ window.AdminQuiz = {
       var idx = parseInt(letter, 10);
       letter = letters[idx] || defaultLetter;
     }
-    letter = String(letter || defaultLetter).trim().toUpperCase();
+    letter = this.fixQuizLetter(letter || defaultLetter) || defaultLetter;
     var text = this.extractOptionText((_ref2 = (_opt$text = opt.text) !== null && _opt$text !== void 0 ? _opt$text : opt.value) !== null && _ref2 !== void 0 ? _ref2 : opt);
     if (text === '[object Object]') text = '';
     return {
@@ -161,7 +178,7 @@ window.AdminQuiz = {
     for (var i = 0; i < 4; i++) {
       options.push(this.normalizeQuizOption(rawOptions[i], i));
     }
-    var correctAnswer = String(raw && raw.correctAnswer || '').trim().toUpperCase();
+    var correctAnswer = this.fixQuizLetter(raw && raw.correctAnswer || '');
     if (!correctAnswer) {
       correctAnswer = this.QUIZ_CORRECT_ANSWERS[id] || letters[0];
     }
@@ -195,7 +212,7 @@ window.AdminQuiz = {
     if (!window.TEST_QUESTIONS || !window.TEST_QUESTIONS.length) return [];
     return window.TEST_QUESTIONS.map(function (q, index) {
       var normalized = _this2.normalizeQuizQuestion(q, index);
-      normalized.correctAnswer = _this2.QUIZ_CORRECT_ANSWERS[normalized.id] || normalized.correctAnswer || 'Рђ';
+      normalized.correctAnswer = _this2.QUIZ_CORRECT_ANSWERS[normalized.id] || normalized.correctAnswer || 'А';
       return normalized;
     });
   },
@@ -221,7 +238,7 @@ window.AdminQuiz = {
     var _this4 = this;
     var container = document.getElementById('testingQuestionsAdminContainer');
     if (!container) return;
-    var html = "\n            <div style=\"margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;\">\n                <h4 style=\"margin: 0; font-size: 1.1rem;\">\u0420\u2019\u0421\u0403\u0420\xB5\u0420\u0456\u0420\u0455 \u0420\u0406\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403\u0420\u0455\u0420\u0406: <span id=\"quizQuestionsCount\">".concat(this.quizQuestions.length, "</span></h4>\n                <button type=\"button\" class=\"btn-secondary\" onclick=\"AdminQuiz.addQuizQuestion()\">+ \u0420\u201D\u0420\u0455\u0420\xB1\u0420\xB0\u0420\u0406\u0420\u0451\u0421\u201A\u0421\u040A \u0420\u0406\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403</button>\n            </div>\n            <div id=\"quizQuestionsList\" style=\"display: flex; flex-direction: column; gap: 20px;\"></div>\n        ");
+    var html = "\n            <div style=\"margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;\">\n                <h4 style=\"margin: 0; font-size: 1.1rem;\">\u0412\u0441\u0435\u0433\u043e \u0432\u043e\u043f\u0440\u043e\u0441\u043e\u0432: <span id=\"quizQuestionsCount\">".concat(this.quizQuestions.length, "</span></h4>\n                <button type=\"button\" class=\"btn-secondary\" onclick=\"AdminQuiz.addQuizQuestion()\">+ \u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432\u043e\u043f\u0440\u043e\u0441</button>\n            </div>\n            <div id=\"quizQuestionsList\" style=\"display: flex; flex-direction: column; gap: 20px;\"></div>\n        ");
     container.innerHTML = html;
     var listContainer = document.getElementById('quizQuestionsList');
     this.quizQuestions.forEach(function (q, qIndex) {
@@ -230,13 +247,12 @@ window.AdminQuiz = {
       div.style.cssText = 'border: 1px solid var(--card-border); padding: 20px; border-radius: 8px; position: relative; background: #fff;';
       div.dataset.id = q.id || 'q_' + Date.now() + Math.random().toString(36).substr(2, 5);
       var optionsHtml = '';
-      var defaultLetters = _this4.QUIZ_OPTION_LETTERS;
       for (var i = 0; i < 4; i++) {
         var opt = _this4.normalizeQuizOption(q.options && q.options[i] ? q.options[i] : null, i);
         var isCorrect = q.correctAnswer === opt.letter;
-        optionsHtml += "\n                    <div style=\"display: flex; gap: 10px; align-items: center; margin-bottom: 10px;\">\n                        <span style=\"font-weight: 600; min-width: 25px;\">".concat(opt.letter, ")</span>\n                        <input type=\"hidden\" class=\"q-opt-letter\" value=\"").concat(opt.letter, "\">\n                        <input type=\"text\" class=\"form-control q-opt-text\" value=\"").concat(_this4.escapeHtml(opt.text), "\" placeholder=\"\u0420\u2019\u0420\xB0\u0421\u0402\u0420\u0451\u0420\xB0\u0420\u0405\u0421\u201A \u0420\u0455\u0421\u201A\u0420\u0406\u0420\xB5\u0421\u201A\u0420\xB0\" style=\"flex: 1; margin-bottom: 0;\">\n                        <label style=\"display: flex; align-items: center; gap: 5px; cursor: pointer; margin: 0; min-width: 100px;\">\n                            <input type=\"radio\" name=\"q_correct_").concat(qIndex, "\" value=\"").concat(opt.letter, "\" ").concat(isCorrect ? 'checked' : '', ">\n                            \u0420\u045F\u0421\u0402\u0420\xB0\u0420\u0406\u0420\u0451\u0420\xBB\u0421\u040A\u0420\u0405\u0421\u2039\u0420\u2116\n                        </label>\n                    </div>\n                ");
+        optionsHtml += "\n                    <div style=\"display: flex; gap: 10px; align-items: center; margin-bottom: 10px;\">\n                        <span style=\"font-weight: 600; min-width: 25px;\">".concat(opt.letter, ")</span>\n                        <input type=\"hidden\" class=\"q-opt-letter\" value=\"").concat(opt.letter, "\">\n                        <input type=\"text\" class=\"form-control q-opt-text\" value=\"").concat(_this4.escapeHtml(opt.text), "\" placeholder=\"\u0412\u0430\u0440\u0438\u0430\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430\" style=\"flex: 1; margin-bottom: 0;\">\n                        <label style=\"display: flex; align-items: center; gap: 5px; cursor: pointer; margin: 0; min-width: 100px;\">\n                            <input type=\"radio\" name=\"q_correct_").concat(qIndex, "\" value=\"").concat(opt.letter, "\" ").concat(isCorrect ? 'checked' : '', ">\n                            \u041f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u044b\u0439\n                        </label>\n                    </div>\n                ");
       }
-      div.innerHTML = "\n                <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;\">\n                    <h5 style=\"margin: 0; color: var(--accent-color);\">\u0420\u2019\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403 ".concat(qIndex + 1, "</h5>\n                    <button type=\"button\" class=\"btn-secondary\" style=\"color: #e53935; border-color: #e53935;\" onclick=\"this.parentElement.parentElement.remove(); AdminQuiz.updateQuizQuestionsCount();\">\u0420\u0408\u0420\u0491\u0420\xB0\u0420\xBB\u0420\u0451\u0421\u201A\u0421\u040A</button>\n                </div>\n                <div class=\"form-group\">\n                    <label>\u0420\u045E\u0420\xB5\u0420\u0454\u0421\u0403\u0421\u201A \u0420\u0406\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403\u0420\xB0</label>\n                    <textarea class=\"form-control q-text\" style=\"min-height: 80px;\" placeholder=\"\u0420\u2019\u0420\u0406\u0420\xB5\u0420\u0491\u0420\u0451\u0421\u201A\u0420\xB5 \u0421\u201A\u0420\xB5\u0420\u0454\u0421\u0403\u0421\u201A \u0420\u0406\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403\u0420\xB0\">").concat(_this4.escapeHtml(q.text || ''), "</textarea>\n                </div>\n                <div class=\"options-container\">\n                    <label>\u0420\u2019\u0420\xB0\u0421\u0402\u0420\u0451\u0420\xB0\u0420\u0405\u0421\u201A\u0421\u2039 \u0420\u0455\u0421\u201A\u0420\u0406\u0420\xB5\u0421\u201A\u0420\xB0</label>\n                    ").concat(optionsHtml, "\n                </div>\n            ");
+      div.innerHTML = "\n                <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;\">\n                    <h5 style=\"margin: 0; color: var(--accent-color);\">\u0412\u043e\u043f\u0440\u043e\u0441 ".concat(qIndex + 1, "</h5>\n                    <button type=\"button\" class=\"btn-secondary\" style=\"color: #e53935; border-color: #e53935;\" onclick=\"this.parentElement.parentElement.remove(); AdminQuiz.updateQuizQuestionsCount();\">\u0423\u0434\u0430\u043b\u0438\u0442\u044c</button>\n                </div>\n                <div class=\"form-group\">\n                    <label>\u0422\u0435\u043a\u0441\u0442 \u0432\u043e\u043f\u0440\u043e\u0441\u0430</label>\n                    <textarea class=\"form-control q-text\" style=\"min-height: 80px;\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043a\u0441\u0442 \u0432\u043e\u043f\u0440\u043e\u0441\u0430\">").concat(_this4.escapeHtml(q.text || ''), "</textarea>\n                </div>\n                <div class=\"options-container\">\n                    <label>\u0412\u0430\u0440\u0438\u0430\u043d\u0442\u044b \u043e\u0442\u0432\u0435\u0442\u0430</label>\n                    ").concat(optionsHtml, "\n                </div>\n            ");
       listContainer.appendChild(div);
     });
   },
@@ -247,13 +263,13 @@ window.AdminQuiz = {
     var defaultLetters = this.QUIZ_OPTION_LETTERS;
     var optionsHtml = '';
     for (var i = 0; i < 4; i++) {
-      optionsHtml += "\n                <div style=\"display: flex; gap: 10px; align-items: center; margin-bottom: 10px;\">\n                    <span style=\"font-weight: 600; min-width: 25px;\">".concat(defaultLetters[i], ")</span>\n                    <input type=\"hidden\" class=\"q-opt-letter\" value=\"").concat(defaultLetters[i], "\">\n                    <input type=\"text\" class=\"form-control q-opt-text\" value=\"\" placeholder=\"\u0420\u2019\u0420\xB0\u0421\u0402\u0420\u0451\u0420\xB0\u0420\u0405\u0421\u201A \u0420\u0455\u0421\u201A\u0420\u0406\u0420\xB5\u0421\u201A\u0420\xB0\" style=\"flex: 1; margin-bottom: 0;\">\n                    <label style=\"display: flex; align-items: center; gap: 5px; cursor: pointer; margin: 0; min-width: 100px;\">\n                        <input type=\"radio\" name=\"q_correct_").concat(qId, "\" value=\"").concat(defaultLetters[i], "\" ").concat(i === 0 ? 'checked' : '', ">\n                        \u0420\u045F\u0421\u0402\u0420\xB0\u0420\u0406\u0420\u0451\u0420\xBB\u0421\u040A\u0420\u0405\u0421\u2039\u0420\u2116\n                    </label>\n                </div>\n            ");
+      optionsHtml += "\n                <div style=\"display: flex; gap: 10px; align-items: center; margin-bottom: 10px;\">\n                    <span style=\"font-weight: 600; min-width: 25px;\">".concat(defaultLetters[i], ")</span>\n                    <input type=\"hidden\" class=\"q-opt-letter\" value=\"").concat(defaultLetters[i], "\">\n                    <input type=\"text\" class=\"form-control q-opt-text\" value=\"\" placeholder=\"\u0412\u0430\u0440\u0438\u0430\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430\" style=\"flex: 1; margin-bottom: 0;\">\n                    <label style=\"display: flex; align-items: center; gap: 5px; cursor: pointer; margin: 0; min-width: 100px;\">\n                        <input type=\"radio\" name=\"q_correct_").concat(qId, "\" value=\"").concat(defaultLetters[i], "\" ").concat(i === 0 ? 'checked' : '', ">\n                        \u041f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u044b\u0439\n                    </label>\n                </div>\n            ");
     }
     var div = document.createElement('div');
     div.className = 'obuchenie-question-item';
     div.style.cssText = 'border: 1px solid var(--card-border); padding: 20px; border-radius: 8px; position: relative; background: #fff; margin-bottom: 20px;';
     div.dataset.id = qId;
-    div.innerHTML = "\n            <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;\">\n                <h5 style=\"margin: 0; color: var(--accent-color);\">\u0420\u045C\u0420\u0455\u0420\u0406\u0421\u2039\u0420\u2116 \u0420\u0406\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403</h5>\n                <button type=\"button\" class=\"btn-secondary\" style=\"color: #e53935; border-color: #e53935;\" onclick=\"this.parentElement.parentElement.remove(); AdminQuiz.updateQuizQuestionsCount();\">\u0420\u0408\u0420\u0491\u0420\xB0\u0420\xBB\u0420\u0451\u0421\u201A\u0421\u040A</button>\n            </div>\n            <div class=\"form-group\">\n                <label>\u0420\u045E\u0420\xB5\u0420\u0454\u0421\u0403\u0421\u201A \u0420\u0406\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403\u0420\xB0</label>\n                <textarea class=\"form-control q-text\" style=\"min-height: 80px;\" placeholder=\"\u0420\u2019\u0420\u0406\u0420\xB5\u0420\u0491\u0420\u0451\u0421\u201A\u0420\xB5 \u0421\u201A\u0420\xB5\u0420\u0454\u0421\u0403\u0421\u201A \u0420\u0406\u0420\u0455\u0420\u0457\u0421\u0402\u0420\u0455\u0421\u0403\u0420\xB0\"></textarea>\n            </div>\n            <div class=\"options-container\">\n                <label>\u0420\u2019\u0420\xB0\u0421\u0402\u0420\u0451\u0420\xB0\u0420\u0405\u0421\u201A\u0421\u2039 \u0420\u0455\u0421\u201A\u0420\u0406\u0420\xB5\u0421\u201A\u0420\xB0</label>\n                ".concat(optionsHtml, "\n            </div>\n        ");
+    div.innerHTML = "\n            <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;\">\n                <h5 style=\"margin: 0; color: var(--accent-color);\">\u041d\u043e\u0432\u044b\u0439 \u0432\u043e\u043f\u0440\u043e\u0441</h5>\n                <button type=\"button\" class=\"btn-secondary\" style=\"color: #e53935; border-color: #e53935;\" onclick=\"this.parentElement.parentElement.remove(); AdminQuiz.updateQuizQuestionsCount();\">\u0423\u0434\u0430\u043b\u0438\u0442\u044c</button>\n            </div>\n            <div class=\"form-group\">\n                <label>\u0422\u0435\u043a\u0441\u0442 \u0432\u043e\u043f\u0440\u043e\u0441\u0430</label>\n                <textarea class=\"form-control q-text\" style=\"min-height: 80px;\" placeholder=\"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u0435\u043a\u0441\u0442 \u0432\u043e\u043f\u0440\u043e\u0441\u0430\"></textarea>\n            </div>\n            <div class=\"options-container\">\n                <label>\u0412\u0430\u0440\u0438\u0430\u043d\u0442\u044b \u043e\u0442\u0432\u0435\u0442\u0430</label>\n                ".concat(optionsHtml, "\n            </div>\n        ");
     listContainer.insertBefore(div, listContainer.firstChild);
     this.updateQuizQuestionsCount();
   },
@@ -278,7 +294,7 @@ window.AdminQuiz = {
       var options = [];
       var correctAnswer = '';
       var optRows = item.querySelectorAll('.options-container > div');
-      optRows.forEach(function (row, optIndex) {
+      optRows.forEach(function (row) {
         var letter = row.querySelector('.q-opt-letter').value;
         var optText = row.querySelector('.q-opt-text').value;
         var radio = row.querySelector('input[type="radio"]');

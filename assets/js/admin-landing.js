@@ -154,7 +154,8 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       operatorAvatar: 'assets/img/chat-avatar.png',
       welcomeMessages: ['Здравствуйте! 👋 Я специалист Центра развития закупок РТ.', 'Чем я могу вам помочь? Вы можете задать любой вопрос по обучению, тендерному сопровождению или работе на нашей ЭТП.'],
       autoReplies: ['Спасибо за ваше обращение! Ваше сообщение отправлено в отдел поддержки. Наш специалист свяжется с вами в ближайшее время. Если хотите ускорить процесс, оставьте ваши контактные данные.']
-    }
+    },
+    logo: 'assets/img/logo.svg'
   };
   function escapeAttr(s) {
     return String(s !== null && s !== void 0 ? s : '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -217,6 +218,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       welcomeMessages: normalizeChatTextList(raw === null || raw === void 0 || (_raw$chatWidget3 = raw.chatWidget) === null || _raw$chatWidget3 === void 0 ? void 0 : _raw$chatWidget3.welcomeMessages, DEFAULT_LANDING_MAIN.chatWidget.welcomeMessages),
       autoReplies: normalizeChatTextList((_raw$chatWidget$autoR = raw === null || raw === void 0 || (_raw$chatWidget4 = raw.chatWidget) === null || _raw$chatWidget4 === void 0 ? void 0 : _raw$chatWidget4.autoReplies) !== null && _raw$chatWidget$autoR !== void 0 ? _raw$chatWidget$autoR : raw === null || raw === void 0 || (_raw$chatWidget5 = raw.chatWidget) === null || _raw$chatWidget5 === void 0 ? void 0 : _raw$chatWidget5.autoReply, DEFAULT_LANDING_MAIN.chatWidget.autoReplies)
     };
+    data.logo = raw && raw.logo ? raw.logo : DEFAULT_LANDING_MAIN.logo;
     return data;
   }
 
@@ -580,6 +582,11 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   }
   function renderMainPageAdmin(mainPageData) {
     var _mainPageData$consult;
+    var logoEl = document.getElementById('mLogoAdmin');
+    if (logoEl) {
+      logoEl.innerHTML = imageUploadHtml('m_logo', 'Логотип');
+      setImageUploadState('m_logo', mainPageData.logo || '');
+    }
     var heroEl = document.getElementById('mHeroSlidesAdmin');
     var svcEl = document.getElementById('mServiceCardsAdmin');
     var promoEl = document.getElementById('mPromoBannerAdmin');
@@ -720,6 +727,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         return items.length ? items : _toConsumableArray(DEFAULT_LANDING_MAIN.chatWidget.autoReplies);
       }()
     };
+    mainPageData.logo = readImageVal('m_logo');
     return mainPageData;
   }
   function pickImage(uploadId) {
@@ -737,7 +745,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_consult_photo_')) {
       clearConsultPhotoInMemory(uploadId);
     }
-    if (uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_consult_photo_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_hero_bg_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_svc_icon_')) {
+    if (uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_consult_photo_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_hero_bg_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_svc_icon_') || uploadId === 'm_logo') {
       setImageUploadState(uploadId, '');
       return;
     }
@@ -755,7 +763,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_consult_photo_')) {
       syncConsultPhotoToMemory(uploadId, dataUrl);
     }
-    if (uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_consult_photo_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_hero_bg_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_svc_icon_')) {
+    if (uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_consult_photo_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_hero_bg_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_svc_icon_') || uploadId === 'm_logo') {
       setImageUploadState(uploadId, dataUrl);
       return;
     }
@@ -880,6 +888,12 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     };
   }
   function getCroppedCanvasOptions(uploadId) {
+    if (uploadId === 'm_logo') {
+      return {
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high'
+      };
+    }
     if (uploadId.startsWith('m_hero_bg_')) {
       return {
         imageSmoothingEnabled: true,
@@ -908,6 +922,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     return direction < 0 ? -0.1 : 0.1;
   }
   function getAspect(uploadId) {
+    if (uploadId === 'm_logo') return NaN;
     if (uploadId.startsWith('m_hero_bg_')) return 1520 / 420;
     if (uploadId === 'm_promo_img') return 1520 / 253;
     if (uploadId.startsWith('m_consult_photo_')) return 396 / 509;
@@ -917,6 +932,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     return 16 / 9;
   }
   function getCropSize(uploadId) {
+    if (uploadId === 'm_logo') return [800, 400];
     if (uploadId.startsWith('m_hero_bg_')) return [1520, 420];
     if (uploadId === 'm_promo_img') return [1520, 253];
     if (uploadId.startsWith('m_consult_photo_')) return [396, 509];

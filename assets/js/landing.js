@@ -331,7 +331,43 @@ function initBitrixChatWidget() {
   }
 }
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initBitrixChatWidget);
+  document.addEventListener('DOMContentLoaded', function() {
+    initBitrixChatWidget();
+    applyDynamicLogo();
+  });
 } else {
   initBitrixChatWidget();
+  applyDynamicLogo();
+}
+
+function applyDynamicLogo() {
+  var local = localStorage.getItem('crzrt_main_page_data');
+  if (local) {
+    try {
+      var data = JSON.parse(local);
+      if (data && data.logo) {
+        var logoImgs = document.querySelectorAll('.logo__img');
+        logoImgs.forEach(function (img) {
+          img.src = data.logo;
+        });
+      }
+    } catch (e) {
+      console.warn('Error parsing logo settings:', e);
+    }
+  }
+  
+  fetch('api/settings.php?key=crzrt_main_page_data')
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data && data.logo) {
+        localStorage.setItem('crzrt_main_page_data', JSON.stringify(data));
+        var logoImgs = document.querySelectorAll('.logo__img');
+        logoImgs.forEach(function (img) {
+          img.src = data.logo;
+        });
+      }
+    })
+    .catch(function (err) {
+      console.warn('Failed to load logo from server', err);
+    });
 }
