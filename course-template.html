@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="assets/css/course.css?v=1">
   <script>document.documentElement.classList.add('landing-content-pending', 'obuchenie-content-pending');</script>
 </head>
-<body class="theme-purple" data-page="obuchenie">
+<body class="theme-purple" data-page="course">
 <!-- HEADER -->
 <header class="header">
   <div class="container header__inner">
@@ -68,9 +68,7 @@
   </div>
 </header>
 
-<div class="first-screen">
-  <main class="course-main">
-    <div class="course-page-wrapper">
+<div class="course-page-wrapper">
   <!-- HERO SECTION -->
   <section class="course-hero">
     <div class="container course-hero__container">
@@ -120,7 +118,7 @@
           </div>
           <div class="course-widget-item">
             <div class="course-widget-item__icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6v12 M8 6h5.5a3 3 0 0 1 0 6H8 M6 12h6 M6 15h6"></path></svg>
             </div>
             <div class="course-widget-item__text">
               <span class="course-widget-item__label">Стоимость</span>
@@ -334,20 +332,28 @@
   </section>
 
   <!-- CTA FOOTER SECTION -->
-  <section class="course-section course-cta" style="padding: 40px 0 80px;">
+  <section class="course-section course-cta bg-purple">
     <div class="container">
-      <div class="course-cta__inner" style="background-color: #00AE4D; border-radius: 32px; padding: 60px 40px; display: flex; flex-direction: column; align-items: center; gap: 32px; text-align: center;">
-        <div class="course-cta__text" style="max-width: 600px; margin: 0 auto;">
+      <div class="course-cta__inner">
+        <div class="course-cta__text">
           <h2 class="course-cta__title">Готовы повысить свою квалификацию?</h2>
           <p class="course-cta__desc">Оставьте заявку на обучение прямо сейчас. Наш менеджер свяжется с вами для уточнения деталей.</p>
         </div>
-        <button type="button" class="btn btn--white btn--large btn-enroll" style="background: #fff; color: #00AE4D; min-width: 240px; font-weight: bold; border-radius: 999px; cursor: pointer; transition: 0.2s;">Записаться на курс</button>
+        <div class="course-cta__form">
+          <form class="consult-form" style="background: transparent; padding: 0;">
+            <input type="text" class="form-input form-input--white" placeholder="Ваше имя" required>
+            <input type="tel" class="form-input form-input--white" placeholder="Телефон" required>
+            <button type="button" class="btn btn--green btn--large" style="width: 100%; margin-top: 10px;">Записаться</button>
+            <label class="form-check" style="color: #fff; margin-top: 15px; font-size: 13px;">
+              <input type="checkbox" required checked>
+              <span>Согласен с политикой персональных данных</span>
+            </label>
+          </form>
+        </div>
       </div>
     </div>
   </section>
 
-</div>
-  </main>
 </div>
 
 <footer class="footer">
