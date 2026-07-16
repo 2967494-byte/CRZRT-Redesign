@@ -210,8 +210,31 @@
   background-color: #F8F9FA;
 }
 
-.bg-purple {
-  background-color: #8D5A8D;
+.bg-green {
+  background: linear-gradient(135deg, #009341 0%, #00AE4D 100%);
+}
+
+.course-cta .btn--green {
+  background: #ffffff !important;
+  color: #009341 !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.course-cta .btn--green:hover {
+  background: #e8f7ef !important;
+  color: #007A33 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.course-cta .btn--green:active {
+  transform: translateY(0);
+}
+
+/* Fix rounded footer corner gaps on the course page */
+body[data-page="course"] .footer {
+  border-radius: 0 !important;
 }
 
 .course-section__title {

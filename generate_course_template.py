@@ -9,7 +9,7 @@ head = head_match.group(1)
 
 # Modify head to include course.css
 head = head.replace('<link rel="stylesheet" href="assets/css/obuchenie.css?v=56">',
-                    '<link rel="stylesheet" href="assets/css/obuchenie.css?v=56">\n  <link rel="stylesheet" href="assets/css/course.css?v=2">')
+                    '<link rel="stylesheet" href="assets/css/obuchenie.css?v=56">\n  <link rel="stylesheet" href="assets/css/course.css?v=3">')
 
 # Extract header
 header_match = re.search(r'(<!-- HEADER -->.*?)</header>', obuchenie_html, re.DOTALL)
@@ -290,7 +290,7 @@ course_content = """
   </section>
 
   <!-- CTA FOOTER SECTION -->
-  <section class="course-section course-cta bg-purple">
+  <section class="course-section course-cta bg-green">
     <div class="container">
       <div class="course-cta__inner">
         <div class="course-cta__text">
