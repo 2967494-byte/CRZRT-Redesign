@@ -53,6 +53,7 @@ body {
   color: var(--text);
   font-size: 15px;
   line-height: 1.6;
+  overflow-x: hidden; /* Никогда не допускать горизонтальный скролл */
 }
 
 @media (min-width: 1100px) {
@@ -135,8 +136,15 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   background: #EEEEFA;
   min-height: 1281px;
   width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
   padding-top: 90px;
   padding-bottom: 80px;
+}
+
+.third-screen {
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 /* 90px от карточек услуг до границы экранов и до блока «События / Новости» */
@@ -1350,7 +1358,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 .social-banner,
 .consultation-card {
-  width: var(--landing-content-width);
+  width: 100%;            /* было: var(--landing-content-width) = 1520px фиксированно */
   max-width: 100%;
   margin-inline: auto;
   box-sizing: border-box;
@@ -1385,12 +1393,41 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   min-width: 0;
 }
 
+/* ============================================================
+   Защита от переполнения при увеличении масштаба браузера
+   ============================================================ */
+
+/* Секции-обёртки не должны быть шире вьюпорта */
+.partners-section,
+.reviews-section,
+.social-section,
+.consultation-section {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Внутренние контейнеры: не вылезать за ширину родителя */
+.partners-section > .container,
+.reviews-section > .container,
+.social-section > .container,
+.consultation-section > .container {
+  max-width: min(var(--landing-content-width), 100%);
+  box-sizing: border-box;
+}
+
+/* social-banner и consultation-card тоже ограничиваем */
+.social-banner,
+.consultation-card {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 @media (max-width: 1540px) {
   .partners-section > .container,
   .reviews-section > .container,
   .social-section > .container,
   .consultation-section > .container {
-    max-width: none;
+    max-width: 100%;
     padding-left: 24px;
     padding-right: 24px;
   }
@@ -2433,3 +2470,175 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   z-index: 9998 !important;
 }
 
+/* ==========================================================================
+   MOBILE REDESIGN — главная страница
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+  /* ---- ШАПКА ---- */
+  /* Логотип влево, телефон вправо, кнопка логина скрыта */
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    flex-wrap: nowrap;
+    min-height: 64px;
+    height: 64px;
+    padding: 0 16px;
+  }
+
+  .logo {
+    margin: 0;          /* убираем авто-центрирование из 560px-правила */
+    flex-shrink: 0;
+  }
+
+  .logo__img {
+    width: auto;
+    height: 44px;
+  }
+
+  /* Навигация уже скрыта на 1100px, здесь тоже */
+  .nav {
+    display: none;
+  }
+
+  /* Скрываем кнопку входа (иконка пользователя) */
+  #openLoginModal,
+  #loginModal {
+    display: none !important;
+  }
+
+  /* Телефон — прижимаем вправо */
+  .header__actions {
+    flex: 1;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .header__actions .btn--green {
+    width: auto;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 15px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+
+  /* ---- БАННЕР ---- */
+  /* Убираем фиксированную высоту, растягиваем на ширину экрана */
+  .first-screen {
+    padding-top: 64px; /* высота шапки */
+  }
+
+  .hero-section .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .hero-slider {
+    border-radius: 0;          /* на мобиле без скруглений — от края до края */
+    min-height: 240px;
+    height: auto;
+  }
+
+  .hero-slide {
+    min-height: 240px;
+    padding: 24px 16px 64px;    /* снизу место для стрелок/точек */
+    border-radius: 0;
+  }
+
+  .hero-slide__title {
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  .hero-slide__subtitle {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .hero-slide__image {
+    display: none;
+  }
+
+  /* ---- КАРТОЧКИ НАПРАВЛЕНИЙ (плитка 2×2) ---- */
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .service-card {
+    aspect-ratio: auto;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .service-card__title {
+    font-size: 16px;
+  }
+
+  .service-card__desc {
+    font-size: 13px;
+  }
+
+  .service-card__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* ---- ОТЗЫВЫ (2 в строку) ---- */
+  .reviews-grid {
+    grid-template-columns: repeat(2, 1fr) !important;  /* перебиваем правило 992px (1fr) */
+    gap: 12px;
+  }
+
+  .review-card {
+    aspect-ratio: auto !important;
+    padding: 20px 16px 16px;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .review-card__text {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+
+  .review-card__name {
+    font-size: 14px;
+    max-width: none;
+  }
+
+  .review-card__role {
+    font-size: 12px;
+  }
+
+  /* Декоративные кавычки немного уменьшаем */
+  .review-card__quote {
+    width: calc(100% * 140 / 483);
+  }
+
+  /* ---- ИКОНКА КАРТОЧКИ: растягиваем на всю карточку ---- */
+  .service-card {
+    min-height: 160px;
+  }
+
+  .service-card__icon {
+    position: absolute;
+    inset: 0;               /* top:0, right:0, bottom:0, left:0 */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center bottom;
+    opacity: 0.35;          /* фон-декор под текстом, не перекрывает его */
+  }
+
+  /* Текст поднимаем над иконкой */
+  .service-card__body {
+    position: relative;
+    z-index: 2;
+  }
+}
