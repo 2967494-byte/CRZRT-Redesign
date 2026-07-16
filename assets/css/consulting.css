@@ -486,7 +486,8 @@ body.theme-purple .consulting-competencies-section.section {
   grid-template-columns: minmax(0, 494fr) 22px minmax(0, 494fr) 21px minmax(0, 489fr);
   grid-template-rows: 418px 16px 329px;
   width: 100%;
-  max-width: 1520px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .consulting-why-card {
@@ -617,6 +618,31 @@ body.theme-purple .consulting-competencies-section.section {
 }
 
 /* Partners on consulting */
+body[data-page="consulting"] .partners-section,
+body[data-page="consulting"] .reviews-section,
+body[data-page="consulting"] .consulting-competencies-section,
+body[data-page="consulting"] .consulting-why-section {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+body[data-page="consulting"] .partners-section > .container,
+body[data-page="consulting"] .reviews-section > .container,
+body[data-page="consulting"] .consulting-competencies-section > .container,
+body[data-page="consulting"] .consulting-why-section > .container,
+body[data-page="consulting"] .social-section > .container,
+body[data-page="consulting"] .consultation-section > .container {
+  max-width: min(var(--landing-content-width), 100%);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+body[data-page="consulting"] .partners-slider {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
 body[data-page="consulting"] .partners-section {
   padding-top: 99px;
 }
@@ -1690,6 +1716,8 @@ body[data-page="consulting"] .consultation-card__title {
   padding-top: 98px;
   padding-bottom: 100px;
   box-sizing: border-box;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 .ecp-videos__title {
@@ -1703,25 +1731,31 @@ body[data-page="consulting"] .consultation-card__title {
 
 .ecp-videos__grid {
   display: grid;
-  grid-template-columns: repeat(3, 474px);
-  column-gap: 49px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: clamp(16px, 3.2%, 49px);
   row-gap: 40px;
   justify-content: flex-start;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .ecp-video-card {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 474px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   text-decoration: none;
   color: inherit;
 }
 
 .ecp-video-card__thumbnail {
   position: relative;
-  width: 474px;
-  height: 290px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 474 / 290;
   border-radius: 20px;
   background-color: #C4B5FD;
   background-repeat: no-repeat;
@@ -1767,54 +1801,41 @@ body[data-page="consulting"] .consultation-card__title {
 
 .ecp-video-card__label {
   font-family: 'Google Sans', 'Inter', sans-serif;
-  font-size: 30px;
+  font-size: clamp(18px, 2vw, 30px);
   font-weight: 500;
   color: #575B6D;
   line-height: 110%;
   margin: 0;
-  width: 405px;
-  height: 99px;
+  width: 100%;
+  max-width: 405px;
+  min-height: 0;
   letter-spacing: 0%;
 }
 
-@media (max-width: 1540px) {
+@media (max-width: 1100px) {
   .ecp-videos-section {
     padding: 60px 0;
   }
   .ecp-videos__title {
-    padding: 0 24px;
     font-size: 36px;
     margin-bottom: 30px;
   }
   .ecp-videos__grid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    padding: 0 24px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 30px 24px;
-    justify-content: center;
-  }
-  .ecp-video-card {
-    width: 100%;
-    margin: 0 auto;
-  }
-  .ecp-video-card__thumbnail {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 474/290;
   }
   .ecp-video-card__play {
     width: 90px;
     height: 90px;
   }
-  .ecp-video-card__label {
-    font-size: 20px;
-    width: auto;
-    height: auto;
-  }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .ecp-videos__title {
     font-size: 28px;
+  }
+  .ecp-videos__grid {
+    grid-template-columns: minmax(0, 1fr);
   }
   .ecp-video-card__play {
     width: 74px;
@@ -1859,60 +1880,39 @@ body.theme-purple .review-card__quote {
   background-position: center;
 }
 
-/* ECP: сетка отзывов = сетка видео (3×474 + 2×49) */
+/* Отзывы: резиновая сетка 3 колонки, без снятия max-width */
 body.theme-purple {
   --ecp-content-gap: 49px;
 }
 
-body.theme-purple .ecp-videos__inner {
-  max-width: var(--landing-content-width);
-  padding-left: 0;
-  padding-right: 0;
-}
-
 body.theme-purple .reviews-grid {
-  grid-template-columns: repeat(3, 474px);
-  gap: var(--ecp-content-gap);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 3.2%, var(--ecp-content-gap));
   justify-content: flex-start;
   justify-items: stretch;
+  width: 100%;
+  max-width: 100%;
 }
 
 body.theme-purple .review-card {
   max-width: none;
   width: 100%;
+  min-width: 0;
 }
 
-@media (max-width: 1540px) {
-  body.theme-purple .ecp-videos__inner {
-    max-width: none;
-    padding-left: 24px;
-    padding-right: 24px;
-  }
-
-  body.theme-purple .ecp-videos__title,
-  body.theme-purple .ecp-videos__grid {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
+@media (max-width: 1100px) {
   body.theme-purple .reviews-grid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 30px 24px;
-    justify-content: center;
-    justify-items: center;
-  }
-
-  body.theme-purple .review-card {
-    max-width: 483px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
   }
 }
 
 @media (max-width: 992px) {
   body.theme-purple .reviews-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 20px;
     justify-content: stretch;
-    justify-items: center;
+    justify-items: stretch;
   }
 }
 
