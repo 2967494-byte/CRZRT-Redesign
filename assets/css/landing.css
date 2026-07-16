@@ -2611,4 +2611,66 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     position: relative;
     z-index: 2;
   }
+
+  /* ---- ПРЕДСТОЯЩИЕ СОБЫТИЯ (КОМПАКТНОСТЬ) ---- */
+  .events-card__title, .news-card__title {
+    font-size: 24px !important;
+    margin-bottom: 16px !important;
+  }
+  .events-list__btn {
+    padding: 14px 12px !important;
+    gap: 16px !important;
+  }
+  .event-date {
+    min-width: 70px !important;
+  }
+  .event-date__range {
+    font-size: 20px !important;
+  }
+  .event-date__month {
+    font-size: 14px !important;
+  }
+  .event-desc {
+    font-size: 14px !important;
+  }
+
+  /* ---- ПРОМО-БАННЕР НА ВСЮ ШИРИНУ ---- */
+  .promo-banner {
+    border-radius: 0 !important;
+    margin-inline: -24px !important;
+    width: calc(100% + 48px) !important;
+    max-width: none !important;
+  }
+
+  /* ---- МЫ В СОЦСЕТЯХ (КОМПАКТНОСТЬ) ---- */
+  .social-banner {
+    padding: 24px 16px !important;
+    gap: 16px !important;
+  }
+  .social-banner__title {
+    font-size: 22px !important;
+  }
+  .social-banner__links {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  .social-btn {
+    height: 48px !important;
+    font-size: 14px !important;
+    border-radius: 12px !important;
+    gap: 8px !important;
+    flex: 1 1 130px !important;
+    max-width: 220px !important;
+    padding: 0 12px !important;
+    margin-inline: 0 !important; /* отменяем центрирование из 560px */
+  }
+  .social-btn__icon {
+    width: 20px !important;
+    height: 20px !important;
+  }
 }
+
