@@ -1347,8 +1347,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .social-section > .container,
 .consultation-section > .container {
   max-width: var(--landing-content-width);
-  padding-left: 0;
-  padding-right: 0;
 }
 
 .partners-slider {

@@ -714,9 +714,11 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       link.rel = 'preload';
       link.as = 'image';
       link.setAttribute('data-preload-lcp', 'hero');
+      link.href = href;
       document.head.appendChild(link);
+    } else {
+      link.href = href;
     }
-    link.href = href;
   }
   function preloadImage(url, options) {
     if (!url || String(url).startsWith('data:')) return;
