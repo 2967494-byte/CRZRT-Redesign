@@ -633,10 +633,19 @@ body[data-page="support"] .support-nav-cards-section {
 }
 
 body[data-page="support"] .support-nav-cards.ecp-cards-grid {
-  grid-template-columns: repeat(3, 238px);
-  max-width: 750px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: min(750px, 100%);
+  width: 100%;
   gap: 18px;
   margin: 36px auto 0;
+  padding: 0 var(--support-page-gutter);
+  box-sizing: border-box;
+}
+
+body[data-page="support"] .support-nav-cards .ecp-card {
+  width: 100%;
+  max-width: 238px;
+  margin: 0 auto;
 }
 
 body[data-page="support"] .support-nav-cards .ecp-card__icon-wrap {
@@ -671,18 +680,21 @@ body[data-page="support"] .partners-section > .container,
 body[data-page="support"] .reviews-section > .container,
 body[data-page="support"] .footer .footer__inner,
 body[data-page="support"] .footer .footer__bottom-inner {
-  max-width: var(--landing-content-width);
+  max-width: min(var(--landing-content-width), 100%);
+  width: 100%;
+  box-sizing: border-box;
   padding-left: var(--support-page-gutter);
   padding-right: var(--support-page-gutter);
 }
 
 body[data-page="support"] .social-section > .container,
 body[data-page="support"] .consultation-section > .container {
-  max-width: 1519px;
+  max-width: min(var(--landing-content-width), 100%);
   width: 100%;
   margin-inline: auto;
-  padding-left: 0;
-  padding-right: 0;
+  padding-left: var(--support-page-gutter);
+  padding-right: var(--support-page-gutter);
+  box-sizing: border-box;
 }
 
 body[data-page="support"] .footer .footer__inner {
@@ -694,8 +706,19 @@ body[data-page="support"] .footer .footer__bottom-inner {
   padding-bottom: 40px;
 }
 
+body[data-page="support"] .partners-section,
+body[data-page="support"] .reviews-section,
+body[data-page="support"] .support-customers-section,
+body[data-page="support"] .support-suppliers-section,
+body[data-page="support"] .support-calculator-section {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
 body[data-page="support"] .partners-slider {
   max-width: 100%;
+  width: 100%;
+  min-width: 0;
 }
 
 body[data-page="support"] .social-banner,
@@ -925,11 +948,11 @@ body[data-page="support"] .support-service-card__price {
   font-family: 'Google Sans', sans-serif;
   font-weight: 500;
   font-style: normal;
-  font-size: 50px;
+  font-size: clamp(28px, 3.2vw, 50px);
   line-height: 100%;
   letter-spacing: 0;
   color: #575B6D;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 body[data-page="support"] .support-service-card__btn {
@@ -1142,7 +1165,7 @@ body[data-page="support"] .support-checklist-card__text {
   font-family: 'Google Sans', sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: 28px;
+  font-size: clamp(18px, 1.8vw, 28px);
   line-height: 110%;
   letter-spacing: 0;
   color: #FFFFFF;
@@ -1150,7 +1173,7 @@ body[data-page="support"] .support-checklist-card__text {
 
 body[data-page="support"] .support-checklist-card__text-line {
   display: block;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 body[data-page="support"] .support-checklist-card__text--bottom {
@@ -1206,7 +1229,7 @@ body[data-page="support"] .support-calculator-section {
 }
 
 body[data-page="support"] .support-calculator-section__inner {
-  max-width: var(--landing-content-width);
+  max-width: min(var(--landing-content-width), 100%);
   padding-left: var(--support-page-gutter);
   padding-right: var(--support-page-gutter);
 }
@@ -1217,7 +1240,7 @@ body[data-page="support"] .support-calculator {
   gap: 35px;
   align-items: start;
   width: 100%;
-  max-width: 1520px;
+  max-width: 100%;
   height: auto;
 }
 
@@ -1564,7 +1587,7 @@ body[data-page="support"] .support-calculator__title {
 
   body[data-page="support"] .support-service-card {
     width: 100%;
-    max-width: var(--support-card-width);
+    max-width: min(var(--support-card-width), 100%);
     margin: 0 auto;
   }
 
@@ -1590,12 +1613,12 @@ body[data-page="support"] .support-calculator__title {
 
   body[data-page="support"] .support-checklist-card {
     width: 100%;
-    max-width: var(--support-card-width);
+    max-width: min(var(--support-card-width), 100%);
     margin: 0 auto;
   }
 
   body[data-page="support"] .support-checklist-item {
-    max-width: var(--support-card-width);
+    max-width: min(var(--support-card-width), 100%);
     margin: 0 auto;
   }
 
@@ -2930,100 +2953,59 @@ body.theme-purple .review-card__quote {
   background-position: center;
 }
 
-/* ECP: сетка отзывов = сетка видео (3×474 + 2×49) */
+/* Отзывы / партнёры: резиновая сетка, без снятия max-width */
 body.theme-purple {
   --ecp-content-gap: 49px;
 }
 
-body.theme-purple .ecp-videos__inner {
-  max-width: var(--landing-content-width);
-  padding-left: 0;
-  padding-right: 0;
-}
-
 body.theme-purple .reviews-grid {
-  grid-template-columns: repeat(3, 474px);
-  gap: var(--ecp-content-gap);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 3.2%, var(--ecp-content-gap));
   justify-content: flex-start;
   justify-items: stretch;
+  width: 100%;
+  max-width: 100%;
 }
 
 body.theme-purple .review-card {
   max-width: none;
   width: 100%;
+  min-width: 0;
 }
 
 body[data-page="support"] .reviews-grid {
   width: 100%;
+  max-width: 100%;
   --support-review-gap: 49px;
-  grid-template-columns: repeat(3, calc((100% - 2 * var(--support-review-gap)) / 3));
-  gap: var(--support-review-gap);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 3.2%, var(--support-review-gap));
 }
 
-@media (max-width: 1540px) {
-  body[data-page="support"] .support-customers-section__inner,
-  body[data-page="support"] .support-suppliers-section__inner,
-  body[data-page="support"] .support-calculator-section__inner,
-  body[data-page="support"] .partners-section > .container,
-  body[data-page="support"] .reviews-section > .container,
-  body[data-page="support"] .footer .footer__inner,
-  body[data-page="support"] .footer .footer__bottom-inner {
-    max-width: none;
-  }
-}
-
-@media (max-width: 1540px) {
-  body.theme-purple .ecp-videos__inner {
-    max-width: none;
-    padding-left: 24px;
-    padding-right: 24px;
-  }
-
-  body.theme-purple .ecp-videos__title,
-  body.theme-purple .ecp-videos__grid {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
+@media (max-width: 1100px) {
+  body[data-page="support"] .reviews-grid,
   body.theme-purple .reviews-grid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 30px 24px;
-    justify-content: center;
-    justify-items: center;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
   }
 
-  body.theme-purple .review-card {
-    max-width: 483px;
+  body[data-page="support"] .support-service-cards,
+  body[data-page="support"] .support-checklist-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 992px) {
-  body.theme-purple .reviews-grid {
-    grid-template-columns: 1fr;
+  body.theme-purple .reviews-grid,
+  body[data-page="support"] .reviews-grid {
+    grid-template-columns: minmax(0, 1fr);
     gap: 20px;
     justify-content: stretch;
-    justify-items: center;
+    justify-items: stretch;
   }
-  .ecp-tariffs__grid {
-    grid-template-columns: 1fr;
-  }
-  .ecp-blanks__grid {
-    grid-template-columns: 1fr;
-  }
-  .ecp-manual__inner {
-    flex-direction: column-reverse;
-  }
-  .ecp-manual__content {
-    width: 100%;
-    align-items: center;
-    text-align: center;
-  }
-  .ecp-manual__title {
-    text-align: center;
-  }
-  .ecp-manual__graphic {
-    width: 100%;
-    max-width: 320px;
+
+  body[data-page="support"] .support-service-cards,
+  body[data-page="support"] .support-checklist-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
