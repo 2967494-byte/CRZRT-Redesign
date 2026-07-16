@@ -356,7 +356,8 @@ function applyDynamicLogo() {
     }
   }
   
-  fetch('api/settings.php?key=crzrt_main_page_data')
+  var apiPath = window.location.pathname.indexOf('/courses/') !== -1 ? '../api/settings.php' : 'api/settings.php';
+  fetch(apiPath + '?key=crzrt_main_page_data')
     .then(function (res) { return res.json(); })
     .then(function (data) {
       if (data && data.logo) {

@@ -24,7 +24,9 @@ footer = footer.replace('</body>', '<script src="assets/js/course.js?v=1" defer>
 
 # Create the body content
 course_content = """
-<div class="course-page-wrapper">
+<div class="first-screen">
+  <main class="course-main">
+    <div class="course-page-wrapper">
   <!-- HERO SECTION -->
   <section class="course-hero">
     <div class="container course-hero__container">
@@ -310,10 +312,12 @@ course_content = """
     </div>
   </section>
 
+    </div>
+  </main>
 </div>
 """
 
-final_html = f"<!DOCTYPE html>\n<html lang=\"ru\">\n{head}\n<body class=\"theme-purple\" data-page=\"course\">\n{header}\n{course_content}\n{footer}"
+final_html = f"<!DOCTYPE html>\n<html lang=\"ru\">\n{head}\n<body data-page=\"course\">\n{header}\n{course_content}\n{footer}"
 
 with open('course-template.html', 'w', encoding='utf-8') as f:
     f.write(final_html)
