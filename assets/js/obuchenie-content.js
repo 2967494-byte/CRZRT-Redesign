@@ -794,10 +794,10 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         })
       });
     }) : [];
-    var heroSlides = window.HeroSlides ? window.HeroSlides.migrateHeroSlides(raw, OBUCHENIE_HERO_SLIDE_DEFAULTS) : [buildObuchenieHeroFromSlides([], raw === null || raw === void 0 ? void 0 : raw.hero)];
+    var heroSlides = window.HeroSlides ? window.HeroSlides.migrateHeroSlides(raw, OBUCHENIE_HERO_SLIDE_DEFAULTS) : (Array.isArray(raw === null || raw === void 0 ? void 0 : raw.heroSlides) ? raw.heroSlides : [buildObuchenieHeroFromSlides([], raw === null || raw === void 0 ? void 0 : raw.hero)]);
     return {
       heroSlides: heroSlides,
-      hero: buildObuchenieHeroFromSlides(heroSlides, raw === null || raw === void 0 ? void 0 : raw.hero),
+      hero: window.HeroSlides ? buildObuchenieHeroFromSlides(heroSlides, raw === null || raw === void 0 ? void 0 : raw.hero) : (raw === null || raw === void 0 ? void 0 : raw.hero) || buildObuchenieHeroFromSlides(heroSlides, null),
       navCards: navCards,
       courseSearch: {
         title: rawSearch.title || OBUCHENIE_DEFAULTS.courseSearch.title,
