@@ -210,6 +210,10 @@
   background-color: #F8F9FA;
 }
 
+.bg-purple {
+  background-color: #8D5A8D;
+}
+
 .course-section__title {
   font-family: 'Google Sans', sans-serif;
   font-size: 36px;
