@@ -1622,8 +1622,13 @@ body[data-page="obuchenie"] .obuchenie-calendar-promo__image {
 
   body[data-page="obuchenie"] .obuchenie-calendar-day {
     width: min(94px, 100%);
-    height: var(--occ-calendar-day-h);
+    aspect-ratio: 1;
+    height: auto !important;
     font-size: 22px;
+  }
+
+  body[data-page="obuchenie"] .obuchenie-calendar-block__grid {
+    grid-template-rows: repeat(6, auto);
   }
 
   body[data-page="obuchenie"] .obuchenie-calendar-promo {
@@ -3609,7 +3614,8 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
 
   .obuchenie-testing-banner__content {
     padding: 36px 28px 32px;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
   }
 
   .obuchenie-testing-banner__title {
