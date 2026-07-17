@@ -749,3 +749,19 @@ body[data-page="testing"] .testing-main {
     display: grid;
   }
 }
+
+@media (max-width: 560px) {
+  .testing-card__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .btn-start-test, .btn-cancel {
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .questions-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}

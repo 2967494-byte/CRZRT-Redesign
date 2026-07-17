@@ -297,3 +297,11 @@ body[data-page="knowledge"] .knowledge-download-btn:hover span.arrow-down-right 
     font-size: 16px;
   }
 }
+
+@media (max-width: 560px) {
+  body[data-page="knowledge"] .knowledge-group__title {
+    font-size: 20px !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+}

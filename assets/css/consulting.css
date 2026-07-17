@@ -2347,3 +2347,61 @@ body.theme-purple .review-card {
   }
 }
 
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVENESS PATCHES
+   ========================================================================== */
+@media (max-width: 560px) {
+  /* Why Choose Us Mosaic Layout adjustments */
+  .consulting-why-card--lead {
+    padding: 24px 16px !important;
+    min-height: 240px !important;
+  }
+  .consulting-why-card__lead-text {
+    font-size: 22px !important;
+  }
+
+  .consulting-why-card--support {
+    padding: 24px 16px !important;
+    min-height: 200px !important;
+    justify-content: flex-start !important;
+  }
+  .consulting-why-card__support-text {
+    font-size: 18px !important;
+  }
+
+  .consulting-why-card--side {
+    padding: 32px 20px 24px !important;
+    min-height: 320px !important;
+  }
+  .consulting-why-card__side-text {
+    font-size: 22px !important;
+  }
+
+  .consulting-why-card__photo-caption {
+    font-size: 18px !important;
+    left: 20px !important;
+    bottom: 24px !important;
+  }
+
+  /* Competency Cards adjustments */
+  .consulting-competency-card {
+    padding: 16px !important;
+    min-height: 120px !important;
+    height: auto !important;
+  }
+  .consulting-competency-card__icon-circle {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  .consulting-competency-card__icon {
+    width: 56px !important;
+    height: 56px !important;
+  }
+  .consulting-competency-card__title {
+    margin-left: 20px !important;
+    width: auto !important;
+    min-height: auto !important;
+    font-size: 18px !important;
+  }
+}
+

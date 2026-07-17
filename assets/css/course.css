@@ -642,7 +642,9 @@ body[data-page="course"] .footer {
     font-size: 36px;
   }
 
-  .course-audience__grid {
+  .course-about__grid,
+  .course-audience__grid,
+  .course-experts__grid {
     grid-template-columns: 1fr;
   }
 }
@@ -658,5 +660,22 @@ body[data-page="course"] .footer {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  .course-hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  .course-hero__actions .btn {
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .course-hero__widget {
+    padding: 24px;
+    min-width: 0;
   }
 }

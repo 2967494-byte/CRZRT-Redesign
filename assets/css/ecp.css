@@ -1373,7 +1373,7 @@ body.theme-blue .review-card {
   }
   .ecp-tariffs__grid,
   .ecp-blanks__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 
