@@ -2672,5 +2672,152 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     width: 20px !important;
     height: 20px !important;
   }
+
+  /* ---- SUBPAGES HERO SLIDER MOBILE MATCH ---- */
+  .consulting-hero-section .container,
+  .ecp-hero-section .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  body.theme-purple .consulting-hero,
+  body[data-page="obuchenie"] .consulting-hero,
+  body[data-page="support"] .consulting-hero,
+  body.theme-blue .ecp-hero-section .hero-slider {
+    border-radius: 0 !important;
+    min-height: 240px !important;
+    height: auto !important;
+    background-size: cover !important;
+  }
+
+  body.theme-purple .consulting-hero__inner,
+  body[data-page="obuchenie"] .consulting-hero__inner,
+  body[data-page="support"] .consulting-hero__inner,
+  body.theme-blue .ecp-hero-section .hero-slide {
+    padding: 24px 16px 64px !important;
+    min-height: 240px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-end !important;
+    box-sizing: border-box !important;
+    text-align: left !important;
+  }
+
+  body.theme-purple .consulting-hero__title,
+  body.theme-purple .consulting-hero__subtitle,
+  body[data-page="obuchenie"] .consulting-hero__title,
+  body[data-page="obuchenie"] .consulting-hero__subtitle,
+  body[data-page="support"] .consulting-hero__title,
+  body[data-page="support"] .consulting-hero__subtitle,
+  body.theme-blue .ecp-hero-section .hero-slide__title,
+  body.theme-blue .ecp-hero-section .hero-slide__subtitle {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: left !important;
+    margin: 0 !important;
+  }
+
+  body.theme-purple .consulting-hero__title,
+  body[data-page="obuchenie"] .consulting-hero__title,
+  body[data-page="support"] .consulting-hero__title,
+  body.theme-blue .ecp-hero-section .hero-slide__title {
+    font-size: 24px !important;
+    line-height: 120% !important;
+    font-weight: 700 !important;
+    margin-bottom: 12px !important;
+  }
+
+  body.theme-purple .consulting-hero__subtitle,
+  body[data-page="obuchenie"] .consulting-hero__subtitle,
+  body[data-page="support"] .consulting-hero__subtitle,
+  body.theme-blue .ecp-hero-section .hero-slide__subtitle {
+    font-size: 14px !important;
+    line-height: 140% !important;
+    font-weight: 400 !important;
+  }
+
+  /* Dots */
+  body.theme-purple .consulting-hero .hero-slide__dots,
+  body[data-page="obuchenie"] .consulting-hero .hero-slide__dots,
+  body[data-page="support"] .consulting-hero .hero-slide__dots,
+  body.theme-blue .ecp-hero-section .hero-slide__dots {
+    position: absolute !important;
+    top: 24px !important;
+    left: 16px !important;
+    right: 16px !important;
+    display: flex !important;
+    gap: 12px !important;
+    z-index: 10 !important;
+  }
+
+  body.theme-purple .consulting-hero .hero-slide__dots .dot,
+  body[data-page="obuchenie"] .consulting-hero .hero-slide__dots .dot,
+  body[data-page="support"] .consulting-hero .hero-slide__dots .dot,
+  body.theme-blue .ecp-hero-section .hero-slide__dots .dot {
+    height: 3px !important;
+    flex: 1 1 auto !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 2px !important;
+    cursor: pointer !important;
+    transition: background 0.3s ease !important;
+  }
+
+  body.theme-purple .consulting-hero .hero-slide__dots .dot.active,
+  body[data-page="obuchenie"] .consulting-hero .hero-slide__dots .dot.active,
+  body[data-page="support"] .consulting-hero .hero-slide__dots .dot.active,
+  body.theme-blue .ecp-hero-section .hero-slide__dots .dot.active {
+    background: #FFFFFF !important;
+  }
+
+  /* Arrows */
+  body.theme-purple .consulting-hero .hero-slide__arrows,
+  body[data-page="obuchenie"] .consulting-hero .hero-slide__arrows,
+  body[data-page="support"] .consulting-hero .hero-slide__arrows,
+  body.theme-blue .ecp-hero-section .hero-slide__arrows {
+    position: absolute !important;
+    bottom: 16px !important;
+    right: 16px !important;
+    left: auto !important;
+    top: auto !important;
+    display: flex !important;
+    gap: 12px !important;
+    z-index: 10 !important;
+  }
+
+  body.theme-purple .consulting-hero .arrow-btn,
+  body[data-page="obuchenie"] .consulting-hero .arrow-btn,
+  body[data-page="support"] .consulting-hero .arrow-btn,
+  body.theme-blue .ecp-hero-section .arrow-btn {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    border-radius: 12px !important;
+    background: var(--green) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  body.theme-purple .consulting-hero .arrow-btn svg,
+  body[data-page="obuchenie"] .consulting-hero .arrow-btn svg,
+  body[data-page="support"] .consulting-hero .arrow-btn svg,
+  body.theme-blue .ecp-hero-section .arrow-btn svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  /* Graphic hidden */
+  body.theme-purple .consulting-banner__graphic,
+  body[data-page="obuchenie"] .consulting-banner__graphic,
+  body[data-page="support"] .consulting-banner__graphic,
+  body.theme-blue .ecp-hero-section .ecp-banner__graphic {
+    display: none !important;
+  }
 }
 
