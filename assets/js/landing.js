@@ -341,6 +341,20 @@ if (document.readyState === 'loading') {
 }
 
 function applyDynamicLogo() {
+  function resolvePageAssetUrl(url) {
+    if (!url) return url;
+    var value = String(url).trim();
+    if (/^https?:\/\//i.test(value) || value.startsWith('data:')) return value;
+    if (value.startsWith('/')) return value;
+    var isCoursePage = window.location.pathname.indexOf('/courses/') !== -1;
+    if (isCoursePage && !value.startsWith('../')) {
+      if (value.startsWith('assets/') || value.startsWith('uploads/')) {
+        return '../' + value;
+      }
+    }
+    return value;
+  }
+
   var local = localStorage.getItem('crzrt_main_page_data');
   if (local) {
     try {
@@ -348,7 +362,7 @@ function applyDynamicLogo() {
       if (data && data.logo) {
         var logoImgs = document.querySelectorAll('.logo__img');
         logoImgs.forEach(function (img) {
-          img.src = data.logo;
+          img.src = resolvePageAssetUrl(data.logo);
         });
       }
     } catch (e) {
@@ -364,7 +378,7 @@ function applyDynamicLogo() {
         localStorage.setItem('crzrt_main_page_data', JSON.stringify(data));
         var logoImgs = document.querySelectorAll('.logo__img');
         logoImgs.forEach(function (img) {
-          img.src = data.logo;
+          img.src = resolvePageAssetUrl(data.logo);
         });
       }
     })
