@@ -825,34 +825,88 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   function handleFileUpload(e, targetInput, apiUrl) {
     var file = e.target.files[0];
     if (!file) return;
-    
-    var formData = new FormData();
-    formData.append('file', file);
-    formData.append('slot', 'course');
 
     targetInput.value = 'Загрузка...';
 
-    fetch(apiUrl, {
-      method: 'POST',
-      body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(res) {
-      if (res.success && res.url) {
-        targetInput.value = res.url;
-      } else {
+    if (apiUrl.indexOf('upload-file.php') !== -1) {
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('slot', 'course');
+
+      fetch(apiUrl, {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res.success && res.url) {
+          targetInput.value = res.url;
+        } else {
+          targetInput.value = '';
+          alert('Ошибка загрузки: ' + (res.error || 'неизвестно'));
+        }
+      })
+      .catch(function(err) {
+        console.error(err);
         targetInput.value = '';
-        alert('Ошибка загрузки: ' + (res.error || 'неизвестно'));
-      }
-    })
-    .catch(function(err) {
-      console.error(err);
+        alert('Ошибка при загрузке файла');
+      })
+      .finally(function() {
+        e.target.value = '';
+      });
+      return;
+    }
+
+    if (!file.type || file.type.indexOf('image/') !== 0) {
       targetInput.value = '';
-      alert('Ошибка при загрузке файла');
-    })
-    .finally(function() {
+      alert('Можно загрузить только изображение');
       e.target.value = '';
-    });
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var dataUrl = ev.target && ev.target.result;
+      if (!dataUrl) {
+        targetInput.value = '';
+        alert('Не удалось прочитать файл');
+        return;
+      }
+
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dataUrl: dataUrl,
+          slot: 'course_image',
+          maxWidth: 1200,
+          maxHeight: 1200
+        })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res.success && res.url) {
+          targetInput.value = res.url;
+        } else {
+          targetInput.value = '';
+          alert('Ошибка загрузки: ' + (res.error || 'неизвестно'));
+        }
+      })
+      .catch(function(err) {
+        console.error(err);
+        targetInput.value = '';
+        alert('Ошибка при загрузке файла');
+      })
+      .finally(function() {
+        e.target.value = '';
+      });
+    };
+    reader.onerror = function() {
+      targetInput.value = '';
+      alert('Не удалось прочитать файл');
+      e.target.value = '';
+    };
+    reader.readAsDataURL(file);
   }
 
   function addProgramModule(moduleData) {
