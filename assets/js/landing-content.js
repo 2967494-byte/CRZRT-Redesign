@@ -160,6 +160,19 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     if (!str) return '';
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
+  function resolveAssetPathForPage(url) {
+    var value = String(url || '').trim();
+    if (!value) return '';
+    if (/^https?:\/\//i.test(value) || value.startsWith('data:') || value.startsWith('/')) {
+      return value;
+    }
+    if (window.location.pathname.indexOf('/courses/') !== -1 && !value.startsWith('../')) {
+      if (value.startsWith('assets/') || value.startsWith('uploads/')) {
+        return '../' + value;
+      }
+    }
+    return value;
+  }
   function multilineHtml(str) {
     return escapeHtml(str || '').split('\n').filter(function (line, i, arr) {
       return line.length || i < arr.length - 1;
@@ -654,7 +667,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         var href = link.href || '#';
         var ext = /^https?:\/\//i.test(href);
         var target = ext ? ' target="_blank" rel="noopener noreferrer"' : '';
-        return "<a href=\"".concat(escapeHtml(href), "\" class=\"social-btn\" aria-label=\"").concat(escapeHtml(link.label || link.id), "\"").concat(target, ">\n            <span class=\"social-btn__icon-wrap\">\n              <img src=\"").concat(escapeAttr(assets.banner), "\" alt=\"\" class=\"social-btn__icon\" width=\"57\" height=\"57\" decoding=\"async\">\n            </span>\n            <span class=\"social-btn__label\">").concat(escapeHtml(link.label || link.id), "</span>\n          </a>");
+        return "<a href=\"".concat(escapeHtml(href), "\" class=\"social-btn\" aria-label=\"").concat(escapeHtml(link.label || link.id), "\"").concat(target, ">\n            <span class=\"social-btn__icon-wrap\">\n              <img src=\"").concat(escapeAttr(resolveAssetPathForPage(assets.banner)), "\" alt=\"\" class=\"social-btn__icon\" width=\"57\" height=\"57\" decoding=\"async\">\n            </span>\n            <span class=\"social-btn__label\">").concat(escapeHtml(link.label || link.id), "</span>\n          </a>");
       }).join('');
     }
     if (footerLinks) {
@@ -664,7 +677,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         var href = link.href || '#';
         var ext = /^https?:\/\//i.test(href);
         var target = ext ? ' target="_blank" rel="noopener noreferrer"' : '';
-        return "<a href=\"".concat(escapeHtml(href), "\" class=\"footer-social-icon ").concat(assets.footerClass, "\" aria-label=\"").concat(escapeHtml(link.label || link.id), "\"").concat(target, ">\n            <img src=\"").concat(escapeAttr(assets.footer), "\" alt=\"").concat(escapeHtml(link.label || link.id), "\">\n          </a>");
+        return "<a href=\"".concat(escapeHtml(href), "\" class=\"footer-social-icon ").concat(assets.footerClass, "\" aria-label=\"").concat(escapeHtml(link.label || link.id), "\"").concat(target, ">\n            <img src=\"").concat(escapeAttr(resolveAssetPathForPage(assets.footer)), "\" alt=\"").concat(escapeHtml(link.label || link.id), "\">\n          </a>");
       }).join('');
     }
   }
