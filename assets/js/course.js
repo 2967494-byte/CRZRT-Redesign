@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+  wireCourseProgramPdfLinks();
+
   /* ========================================================================
      COURSE ACCORDION LOGIC
      ======================================================================== */
@@ -114,3 +116,83 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 });
+
+function resolveCourseIdFromPath() {
+  const file = (window.location.pathname.split('/').pop() || '').trim();
+  return file.replace(/\.html$/i, '');
+}
+
+function resolveCourseAssetUrl(url) {
+  if (!url) return '';
+  const value = String(url).trim();
+  if (/^https?:\/\//i.test(value)) return value;
+  if (value.startsWith('../')) return value;
+  if (value.startsWith('uploads/')) return '../' + value;
+  if (value.startsWith('/uploads/')) return '..' + value;
+  return value;
+}
+
+function isBrokenPdfHref(href) {
+  if (!href) return true;
+  return href.endsWith('#') || href.endsWith('.html') || href.endsWith('.html#') || href.includes('#') && !href.includes('/uploads/');
+}
+
+async function wireCourseProgramPdfLinks() {
+  const heroLink = document.querySelector('.course-hero__download');
+  const heroButton = document.querySelector('.course-hero__actions .btn--white-outline');
+  const programLink = document.querySelector('.course-program__download');
+
+  const needsHero = Boolean(
+    (heroLink && isBrokenPdfHref(heroLink.getAttribute('href'))) ||
+    (heroButton && heroButton.tagName === 'BUTTON')
+  );
+  const needsProgram = Boolean(programLink && isBrokenPdfHref(programLink.getAttribute('href')));
+
+  if (!needsHero && !needsProgram) return;
+
+  const courseId = resolveCourseIdFromPath();
+  if (!courseId) return;
+
+  try {
+    const resp = await fetch('../api/settings.php?key=crzrt_obuchenie_page_data&_=' + Date.now(), {
+      cache: 'no-store'
+    });
+    if (!resp.ok) return;
+
+    const data = await resp.json();
+    const course = Array.isArray(data.courseRegistry)
+      ? data.courseRegistry.find((item) => item && item.id === courseId)
+      : null;
+    const pdfUrl = resolveCourseAssetUrl(course && course.programPdf);
+    if (!pdfUrl) {
+      if (needsHero) {
+        const target = heroLink || heroButton;
+        if (target) target.remove();
+      }
+      if (needsProgram && programLink) programLink.remove();
+      return;
+    }
+
+    if (needsHero) {
+      const target = heroLink || heroButton;
+      if (!target) return;
+
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.className = target.className + ' course-hero__download';
+      link.textContent = target.textContent.trim() || 'Скачать программу (PDF)';
+      link.setAttribute('download', '');
+      target.replaceWith(link);
+    }
+
+    if (needsProgram && programLink) {
+      programLink.href = pdfUrl;
+      programLink.target = '_blank';
+      programLink.rel = 'noopener noreferrer';
+    }
+  } catch (error) {
+    console.warn('Course PDF link init failed', error);
+  }
+}

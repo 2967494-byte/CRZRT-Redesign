@@ -2,6 +2,36 @@
 // Р¤Р°Р№Р»: api/generate_courses.php
 // Р­С‚РѕС‚ СЃРєСЂРёРїС‚ РіРµРЅРµСЂРёСЂСѓРµС‚ СЃС‚Р°С‚РёС‡РµСЃРєРёРµ HTML СЃС‚СЂР°РЅРёС†С‹ РґР»СЏ РєР°Р¶РґРѕРіРѕ РєСѓСЂСЃР°
 
+function normalize_course_asset_url($url) {
+    $url = trim((string)$url);
+    if ($url === '') {
+        return '';
+    }
+    $url = htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    if (preg_match('#^https?://#i', $url)) {
+        return $url;
+    }
+    if (strpos($url, '../') === 0) {
+        return $url;
+    }
+    if (strpos($url, 'uploads/') === 0) {
+        return '../' . $url;
+    }
+    if (strpos($url, '/uploads/') === 0) {
+        return '..' . $url;
+    }
+    return $url;
+}
+
+function build_course_program_pdf_link($url, $className, $label, $withDownloadAttr = false) {
+    $normalized = normalize_course_asset_url($url);
+    if ($normalized === '') {
+        return '';
+    }
+    $downloadAttr = $withDownloadAttr ? ' download' : '';
+    return '<a href="' . $normalized . '" target="_blank" rel="noopener noreferrer" class="' . $className . '"' . $downloadAttr . '>' . $label . '</a>';
+}
+
 function generate_static_courses($courseRegistry) {
     $templatePath = __DIR__ . '/../course-template.html';
     if (!file_exists($templatePath)) {
@@ -132,14 +162,30 @@ function generate_static_courses($courseRegistry) {
         $html = preg_replace('/<div class="course-audience__grid">.*?<\/div>\s*<\/div>\s*<\/section>/s', '<div class="course-audience__grid">' . $audienceHtml . '</div></div></section>', $html);
 
         // 7. Программа обучения (Конструктор)
-        $pdfHtml = '';
-        if (!empty($course['programPdf'])) {
-            $pdfUrl = htmlspecialchars($course['programPdf']);
-            if (strpos($pdfUrl, 'uploads/') === 0) {
-                $pdfUrl = '../' . $pdfUrl;
-            }
-            $pdfHtml = '<a href="' . $pdfUrl . '" target="_blank" class="course-program__download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Скачать PDF</a>';
-        }
+        $heroPdfHtml = build_course_program_pdf_link(
+            $course['programPdf'] ?? '',
+            'btn btn--white-outline btn--large course-hero__download',
+            'Скачать программу (PDF)',
+            true
+        );
+        $html = preg_replace(
+            '/<(?:button|a)[^>]*class="[^"]*course-hero__download[^"]*"[^>]*>.*?<\/(?:button|a)>/s',
+            $heroPdfHtml,
+            $html,
+            1
+        );
+        $html = preg_replace(
+            '/<button class="btn btn--white-outline btn--large">Скачать программу \(PDF\)<\/button>/s',
+            $heroPdfHtml,
+            $html,
+            1
+        );
+
+        $pdfHtml = build_course_program_pdf_link(
+            $course['programPdf'] ?? '',
+            'course-program__download',
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Скачать PDF'
+        );
         $html = preg_replace('/<a href="#" class="course-program__download">.*?<\/a>/s', $pdfHtml, $html);
 
         $programHtml = '';
