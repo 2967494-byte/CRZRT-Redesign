@@ -51,8 +51,44 @@ function generate_static_courses($courseRegistry) {
         $html = preg_replace('/<p class="course-hero__desc">.*?<\/p>/s', '<p class="course-hero__desc">' . $desc . '</p>', $html);
 
         // 5. Виджеты (Длительность, Дата, Цена)
-        $duration = htmlspecialchars($course['duration'] ?? '');
-        $date = htmlspecialchars($course['date'] ?? '');
+        $duration = '';
+        if (!empty($course['duration'])) {
+            $duration = $course['duration'];
+        } elseif (!empty($course['durationDays'])) {
+            $days = intval($course['durationDays']);
+            $mod100 = $days % 100;
+            $mod10 = $days % 10;
+            if ($mod100 >= 11 && $mod100 <= 19) {
+                $duration = $days . ' дней';
+            } elseif ($mod10 == 1) {
+                $duration = $days . ' день';
+            } elseif ($mod10 >= 2 && $mod10 <= 4) {
+                $duration = $days . ' дня';
+            } else {
+                $duration = $days . ' дней';
+            }
+        }
+        $duration = htmlspecialchars($duration);
+
+        $date = '';
+        if (!empty($course['date'])) {
+            $date = $course['date'];
+        } elseif (!empty($course['dateFrom'])) {
+            $time = strtotime($course['dateFrom']);
+            if ($time) {
+                $day = date('j', $time);
+                $monthNum = intval(date('n', $time));
+                $months = [
+                    1 => 'января', 2 => 'февраля', 3 => 'марта', 4 => 'апреля',
+                    5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'августа',
+                    9 => 'сентября', 10 => 'октября', 11 => 'ноября', 12 => 'декабря'
+                ];
+                $monthName = $months[$monthNum] ?? '';
+                $date = $day . ' ' . $monthName;
+            }
+        }
+        $date = htmlspecialchars($date);
+
         $price = htmlspecialchars($course['price'] ?? '');
         
         // Заменяем значения в виджетах.
