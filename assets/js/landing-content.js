@@ -26,17 +26,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   var promoBound = false;
   document.documentElement.classList.add(CONTENT_PENDING_CLASS);
   var LANDING_DEFAULTS = {
-    heroSlides: [{
-      title: 'Надежное тендерное\nсопровождение',
-      titleColor: '#ffffff',
-      titleTop: 122,
-      titleLeft: 70,
-      subtitle: 'Поиск выгодных закупок\nи оценка целесообразности участия',
-      subtitleColor: '#ffffff',
-      subtitleTop: 213,
-      subtitleLeft: 70,
-      background: 'assets/img/hero_section.png'
-    }],
+    heroSlides: [{"title": "Надежное тендерное\nсопровождение", "titleColor": "#ffffff", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "Поиск выгодных закупок\nи оценка целесообразности участия", "subtitleColor": "#ffffff", "subtitleTop": 310, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_0_20260708195254_098ee4.webp"}, {"title": "Профи в закупках быстро", "titleColor": "", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "", "subtitleColor": "", "subtitleTop": 213, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_1_20260714160657_1e59d8.webp"}, {"title": "Цифровые закупки легко", "titleColor": "", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "", "subtitleColor": "", "subtitleTop": 213, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_2_20260714160658_2c486c.webp"}, {"title": "Законно. Четко. Надежно", "titleColor": "", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "", "subtitleColor": "", "subtitleTop": 213, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_3_20260714162016_9855ae.webp"}],
     serviceCards: [{
       title: 'Обучение',
       desc: 'Как зарабатывать на госзакупках и тендерах',

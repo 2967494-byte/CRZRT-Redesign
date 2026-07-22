@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <script src="assets/js/page-zoom-sync.js?v=4"></script>
+  <title>Вебинар для заказчиков. Центр развития закупок</title>
+  <meta name="description" content="Программа обучения: Вебинар для заказчиков">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" as="style" crossorigin>
+  <link rel="preload" href="https://fonts.gstatic.com/s/googlesans/v69/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrw2IJlhpynSEg.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="https://fonts.gstatic.com/s/googlesans/v69/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrw2IJllpyk.woff2" as="font" type="font/woff2" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
+  <link rel="preload" href="assets/css/landing.css?v=23" as="style">
+  <link rel="preload" href="assets/css/obuchenie.css?v=56" as="style">
+  <link rel="stylesheet" href="assets/css/landing.css?v=23">
+  <link rel="stylesheet" href="assets/css/obuchenie.css?v=56">
+  <link rel="stylesheet" href="assets/css/course.css?v=4">
+  <script>document.documentElement.classList.add('landing-content-pending', 'obuchenie-content-pending');</script>
+</head>
+<body data-page="course">
+<!-- HEADER -->
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="logo">
+      <img src="assets/img/logo.svg" alt="Центр развития закупок" class="logo__img">
+    </a>
+
+    <nav class="nav">
+      <a href="index.html#about" class="nav__link">О нас</a>
+      <a href="index.html#news" class="nav__link">Новости</a>
+      <a href="index.html#reviews" class="nav__link">Нам доверяют</a>
+      <a href="#contacts" class="nav__link">Контакты</a>
+    </nav>
+
+    <div class="header__actions">
+      <a href="tel:88001017892" class="btn btn--green">8 800 101-78-92</a>
+      <button id="openLoginModal" class="btn-icon" aria-label="Личный кабинет">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <div id="loginModal" class="login-popover">
+        <button id="closeLoginModal" class="btn-modal-close" aria-label="Закрыть">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <h2 class="modal-title">Вход в систему</h2>
+        <div id="loginError" class="modal-error">Неверный e-mail или пароль</div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">E-mail</label>
+            <input type="email" id="loginEmail" class="form-control" required placeholder="example@mail.ru">
+          </div>
+          <div class="form-group">
+            <label for="loginPass">Пароль</label>
+            <input type="password" id="loginPass" class="form-control" required placeholder="********">
+          </div>
+          <button type="submit" class="btn-save" style="width: 100%; margin-top: 20px;">Войти</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="first-screen">
+  <main class="course-main">
+    <div class="course-page-wrapper">
+  <!-- HERO SECTION -->
+  <section class="course-hero">
+    <div class="container course-hero__container">
+      <div class="course-hero__breadcrumbs">
+        <a href="index.html">Главная</a>
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <a href="obuchenie.html">Обучение</a>
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="current">Вебинар для заказчиков</span>
+      </div>
+      
+      <div class="course-hero__content">
+        <div class="course-hero__text">
+          <div class="course-hero__tags">
+            <span class="course-tag">Дистанционно</span>
+            <span class="course-tag">44-ФЗ</span>
+            <span class="course-tag course-tag--accent">Для заказчиков</span>
+          </div>
+          <h1 class="course-hero__title">Вебинар для заказчиков</h1>
+          <p class="course-hero__desc"><div class="container do__learning" style="outline: none; width: 684.98px; padding-right: 15px; padding-left: 15px; max-width: 1140px; color: rgb(33, 37, 41); font-family: &quot;Open Sans&quot;, sans-serif; font-size: 14px; margin-bottom: 10px;"><div class="row" style="outline: none; display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; justify-content: center;"><div class="col-md-12" style="outline: none; position: relative; width: 684.98px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 100%; max-width: 100%;"><p style="outline: none; margin-bottom: 25px; color: rgb(0, 79, 152); text-align: center; font-size: 18px; font-weight: 600; font-family: montserrat, Arial, sans-serif;"><span style="outline: none; font-weight: bolder;">На вебинаре будут рассмотрены следующие вопросы:</span></p></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 342.48px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%; margin-bottom: 20px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 0px;"><p style="outline: none; margin-top: 21.8555px; margin-bottom: 24.9805px; color: rgb(0, 79, 152); text-align: center; font-weight: bold; font-size: 16px; font-family: montserrat, Arial, sans-serif;">• какие товары, работы, услуги можно закупить по ч.12 ст. 93 с полки</p></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 342.48px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%; margin-bottom: 20px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 0px;"><p style="outline: none; margin-top: 21.8555px; margin-bottom: 24.9805px; color: rgb(0, 79, 152); text-align: center; font-weight: bold; font-size: 16px; font-family: montserrat, Arial, sans-serif;">• какие документы необходимо приложить</p></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 342.48px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%; margin-bottom: 20px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 0px;"><p style="outline: none; margin-top: 21.8555px; margin-bottom: 24.9805px; color: rgb(0, 79, 152); text-align: center; font-weight: bold; font-size: 16px; font-family: montserrat, Arial, sans-serif;">• порядок составления описания объекта закупки при проведении закупки</p></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 342.48px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%; margin-bottom: 20px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 0px;"><p style="outline: none; margin-top: 21.8555px; margin-bottom: 24.9805px; color: rgb(0, 79, 152); text-align: center; font-weight: bold; font-size: 16px; font-family: montserrat, Arial, sans-serif;">• преимущество закупки с полки</p></div></div><div class="wrapper" style="outline: none;"><div class="half" style="outline: none; float: left; width: 654.98px; padding-right: 1em; padding-left: 1em;"><p style="outline: none; margin-bottom: 30px; color: rgb(0, 79, 152); text-align: center; font-size: 30px; font-weight: bold; font-family: montserrat, Arial, sans-serif;">Спикер</p><div class="container" style="outline: none; width: 627.012px; padding-right: 15px; padding-left: 15px; max-width: 1140px;"><div class="row" style="outline: none; display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; justify-content: center;"><div class="col-lg-6 col-md-12 col-sm-12" style="outline: none; position: relative; width: 313.496px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%; margin-bottom: 40px;"><p style="outline: none; margin-bottom: 1rem; color: rgb(51, 51, 51); text-align: center;"><img src="https://zakupki.tatar/wp-content/uploads/2023/05/ilnar-novoe-foto.png" style="outline: none; vertical-align: middle; border-style: none; max-width: 60%;"></p><p style="outline: none; margin-bottom: 3px; color: rgb(0, 79, 152); text-align: center; font-size: 18px; line-height: 1.35; font-family: montserrat, Arial, sans-serif; font-weight: bold;">Магданов Ильнар</p><p style="outline: none; margin-bottom: 1rem; color: rgb(0, 79, 152); text-align: center; font-size: 18px; line-height: 1.35; font-family: montserrat, Arial, sans-serif; font-weight: bold;">Илдарович</p><p style="outline: none; margin-bottom: 19px; color: rgb(0, 79, 152); text-align: center; line-height: 1.55; font-weight: bold;">Руководитель отдела сопровождения закупочной деятельности АО «Центр развития закупок РТ»</p></div></div></div></div></div></div><div class="container" style="outline: none; width: 684.98px; padding-right: 15px; padding-left: 15px; max-width: 1140px; color: rgb(33, 37, 41); font-family: &quot;Open Sans&quot;, sans-serif; font-size: 14px; margin-bottom: 20px;"><div class="row" style="outline: none; display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; justify-content: center;"><div id="bitrix" class="col-md-6 col-sm-12" style="outline: none; position: relative; width: 342.48px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%; display: flex; flex-direction: column; align-items: center;"><p style="outline: none; margin-bottom: 15px; color: rgb(45, 147, 213); text-align: center; font-size: 20px; font-weight: 600; font-family: montserrat, Arial, sans-serif;">Стоимость: Бесплатно</p></div></div></div></p>
+          
+          <div class="course-hero__actions">
+            <button class="btn btn--green btn--large btn-enroll">Записаться на курс</button>
+            <a href="#" class="btn btn--white-outline btn--large course-hero__download">Скачать программу (PDF)</a>
+          </div>
+        </div>
+        
+        <!-- Info Widget overlaying right side -->
+        <div class="course-hero__widget">
+          <div class="course-widget-item">
+            <div class="course-widget-item__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div class="course-widget-item__text">
+              <span class="course-widget-item__label">Длительность</span><span class="course-widget-item__val">1 день</span>
+            </div>
+          </div>
+          <div class="course-widget-item">
+            <div class="course-widget-item__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+            <div class="course-widget-item__text">
+              <span class="course-widget-item__label">Ближайший старт</span>
+              <span class="course-widget-item__val">22 июля</span>
+            </div>
+          </div>
+          <div class="course-widget-item">
+            <div class="course-widget-item__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6v12 M8 6h5.5a3 3 0 0 1 0 6H8 M6 12h6 M6 15h6"></path></svg>
+            </div>
+            <div class="course-widget-item__text">
+              <span class="course-widget-item__label">Стоимость</span><span class="course-widget-item__val course-widget-item__price"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAVIGATION TABS (Sticky) -->
+  <div class="course-nav-bar" id="courseNav">
+    <div class="container">
+      <nav class="course-nav">
+        <a href="#about" class="course-nav__link active">О курсе</a>
+        <a href="#audience" class="course-nav__link">Для кого</a>
+        <a href="#program" class="course-nav__link">Программа</a>
+        <a href="#experts" class="course-nav__link">Спикеры</a>
+        <a href="#document" class="course-nav__link">Документ</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="course-section course-about" id="about">
+    <div class="container">
+      <h2 class="course-section__title">О курсе</h2>
+      <div class="course-about__grid">
+        <div class="course-about__text">
+          <p>Программа разработана с учетом последних изменений в законодательстве о контрактной системе. Мы даем не просто теорию, а разбираем реальные кейсы из практики заказчиков и контрольных органов Республики Татарстан.</p>
+          <p>Обучение проходит на современной образовательной платформе с круглосуточным доступом к материалам. Вы можете учиться в удобное время без отрыва от производства.</p>
+        </div>
+        <div class="course-about__features">
+          <div class="feature-item">
+            <div class="feature-item__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <span>Актуальная нормативная база со всеми изменениями</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <span>Помощь в решении сложных рабочих ситуаций во время обучения</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            </div>
+            <span>Доступ к материалам курса на 6 месяцев после окончания</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIENCE -->
+  <section class="course-section course-audience bg-grey" id="audience">
+    <div class="container">
+      <h2 class="course-section__title">Кому подойдет курс</h2>
+      <div class="course-audience__grid">
+        <div class="audience-card">
+          <div class="audience-card__icon">
+            <img src="assets/img/obuchenie/icon-programs.png" alt="" width="60">
+          </div>
+          <h3 class="audience-card__title">Начинающим специалистам</h3>
+          <p class="audience-card__desc">Кто только планирует работать в сфере госзакупок со стороны заказчика. Научитесь работать без ошибок с первого дня.</p>
+        </div>
+        <div class="audience-card">
+          <div class="audience-card__icon">
+            <img src="assets/img/obuchenie/icon-corporate.png" alt="" width="60">
+          </div>
+          <h3 class="audience-card__title">Контрактным управляющим</h3>
+          <p class="audience-card__desc">Кому необходимо обновить знания и разобраться в последних поправках 44-ФЗ для минимизации рисков ФАС.</p>
+        </div>
+        <div class="audience-card">
+          <div class="audience-card__icon">
+            <img src="assets/img/obuchenie/icon-certificates.png" alt="" width="60">
+          </div>
+          <h3 class="audience-card__title">Руководителям учреждений</h3>
+          <p class="audience-card__desc">Для контроля работы отдела закупок и понимания ответственности при подписании контрактов.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYLLABUS -->
+  <section class="course-section course-program" id="program">
+    <div class="container">
+      <div class="course-program__header">
+        <h2 class="course-section__title">Программа обучения</h2>
+        <a href="#" class="course-program__download">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Скачать PDF
+        </a>
+      </div>
+      
+      <div class="course-accordion">
+        <div class="course-accordion__item">
+          <button class="course-accordion__trigger">
+            <span class="course-accordion__title">Модуль 1. Основы контрактной системы. Законодательная база.</span>
+            <span class="course-accordion__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+          </button>
+          <div class="course-accordion__content">
+            <ul class="course-accordion__list">
+              <li>Общие положения 44-ФЗ. Цели и принципы контрактной системы.</li>
+              <li>Участники контрактной системы, их права и обязанности.</li>
+              <li>Информационное обеспечение закупок (ЕИС).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="course-accordion__item">
+          <button class="course-accordion__trigger">
+            <span class="course-accordion__title">Модуль 2. Планирование и обоснование закупок.</span>
+            <span class="course-accordion__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+          </button>
+          <div class="course-accordion__content">
+            <ul class="course-accordion__list">
+              <li>Порядок формирования, утверждения и ведения плана-графика.</li>
+              <li>Обоснование начальной (максимальной) цены контракта.</li>
+              <li>Описание объекта закупки. Использование КТРУ.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="course-accordion__item">
+          <button class="course-accordion__trigger">
+            <span class="course-accordion__title">Модуль 3. Осуществление закупок. Способы определения поставщиков.</span>
+            <span class="course-accordion__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+          </button>
+          <div class="course-accordion__content">
+            <ul class="course-accordion__list">
+              <li>Электронный аукцион: порядок проведения, рассмотрение заявок.</li>
+              <li>Открытый конкурс в электронной форме: критерии оценки.</li>
+              <li>Запрос котировок в электронной форме.</li>
+              <li>Закупка у единственного поставщика (электронный магазин).</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="course-accordion__item">
+          <button class="course-accordion__trigger">
+            <span class="course-accordion__title">Модуль 4. Государственные контракты. Контроль и аудит.</span>
+            <span class="course-accordion__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+          </button>
+          <div class="course-accordion__content">
+            <ul class="course-accordion__list">
+              <li>Заключение, изменение, расторжение контракта.</li>
+              <li>Приемка товаров, работ, услуг (электронное актирование).</li>
+              <li>Контроль в сфере закупок, обжалование действий заказчика.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERTS -->
+  <section class="course-section course-experts bg-grey" id="experts">
+    <div class="container">
+      <h2 class="course-section__title">Эксперты курса</h2>
+      <div class="course-experts__grid">
+        <div class="expert-card">
+          <div class="expert-card__img-wrap">
+            <div class="expert-card__img-placeholder">
+               <svg viewBox="0 0 24 24" fill="none" stroke="#ADB8C6" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+          </div>
+          <h3 class="expert-card__name">Иванов Иван Иванович</h3>
+          <p class="expert-card__role">Руководитель отдела образовательных программ</p>
+          <p class="expert-card__desc">Опыт работы в закупках более 10 лет. Эксперт-практик по 44-ФЗ и 223-ФЗ.</p>
+        </div>
+        <div class="expert-card">
+          <div class="expert-card__img-wrap">
+            <div class="expert-card__img-placeholder">
+               <svg viewBox="0 0 24 24" fill="none" stroke="#ADB8C6" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+          </div>
+          <h3 class="expert-card__name">Петрова Анна Сергеевна</h3>
+          <p class="expert-card__role">Ведущий юрисконсульт</p>
+          <p class="expert-card__desc">Специалист по защите интересов заказчиков в ФАС России.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOCUMENT -->
+  <section class="course-section course-document" id="document">
+    <div class="container">
+      <div class="course-doc-wrapper">
+        <div class="course-doc-text">
+          <h2 class="course-section__title">Выдаваемый документ</h2>
+          <p class="course-doc-text__desc">По окончании курса и успешном прохождении итогового тестирования вы получите <strong>Удостоверение о повышении квалификации установленного образца</strong> (120 академических часов).</p>
+          <ul class="course-doc-text__list">
+            <li>Вносится в федеральный реестр ФИС ФРДО</li>
+            <li>Действительно на всей территории РФ</li>
+            <li>Отправляем оригинал Почтой России</li>
+          </ul>
+        </div>
+        <div class="course-doc-img">
+          <!-- Placeholder for certificate -->
+          <div class="doc-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>Образец удостоверения</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FOOTER SECTION -->
+  <section class="course-section course-cta bg-green">
+    <div class="container">
+      <div class="course-cta__inner">
+        <div class="course-cta__text">
+          <h2 class="course-cta__title">Готовы повысить свою квалификацию?</h2>
+          <p class="course-cta__desc">Оставьте заявку на обучение прямо сейчас. Наш менеджер свяжется с вами для уточнения деталей.</p>
+        </div>
+        <div class="course-cta__form">
+          <form class="consult-form" style="background: transparent; padding: 0;">
+            <input type="text" class="form-input form-input--white" placeholder="Ваше имя" required>
+            <input type="tel" class="form-input form-input--white" placeholder="Телефон" required>
+            <button type="button" class="btn btn--green btn--large" style="width: 100%; margin-top: 10px;">Записаться</button>
+            <label class="form-check" style="color: #fff; margin-top: 15px; font-size: 13px;">
+              <input type="checkbox" required checked>
+              <span>Согласен с политикой персональных данных</span>
+            </label>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__col footer__col--address">
+      <p>г. Казань,</p>
+      <p>ул. Петербургская, 86</p>
+      <p>Пн-Чт с 09:00 до 18:00</p>
+      <p>Пт с 09:00 до 17:00</p>
+    </div>
+
+    <div class="footer__col footer__col--nav">
+      <a href="index.html#about">О нас</a>
+      <a href="index.html#news">Новости</a>
+      <a href="index.html#reviews">Нам доверяют</a>
+      <a href="index.html#contacts">Контакты</a>
+    </div>
+
+    <div class="footer__col footer__col--links">
+      <a href="knowledge.html">Документы</a>
+      <a href="team.html">Карьера</a>
+    </div>
+
+    <div class="footer__col footer__col--contacts">
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Телефон</p>
+        <a href="tel:88001017892" class="footer-phone">8 800 101-78-92</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Основная почта</p>
+        <a href="mailto:crz.rt@tatar.ru" class="footer-email">crz.rt@tatar.ru</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Социальные сети</p>
+        <div class="footer-socials landing-dynamic"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner">
+      <a href="#" class="footer__bottom-link footer__bottom-link--policy">Политика конфиденциальности</a>
+      <a href="#" class="footer__bottom-link footer__bottom-link--consent">Согласие на обработку персональных данных</a>
+      <div class="footer__bottom-aside">
+        <p class="footer__bottom-text">Мы используем файлы cookie, для персонализации сервисов и<br>повышения удобства пользования сайтом. Если вы не согласны<br>на их использование, поменяйте настройки браузера.</p>
+        <p class="footer__copyright">АО «Центр развития закупок РТ» 2026 (с) Все права защищены</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Modal for Calendar Course Info -->
+<div id="calendar-course-modal" class="calendar-modal" style="display: none;">
+  <div class="calendar-modal__overlay"></div>
+  <div class="calendar-modal__content">
+    <button type="button" class="calendar-modal__close" aria-label="Закрыть">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div class="calendar-modal__header">
+      <div class="calendar-modal__header-row">
+        <div class="calendar-modal__header-info">
+          <div class="calendar-modal__header-meta">
+            <div id="calendar-modal-format"></div>
+            <h3 class="calendar-modal__title calendar-modal__title--inline">Курсы на <span id="calendar-modal-date-label" class="calendar-modal__date-accent"></span></h3>
+          </div>
+          <div id="calendar-modal-price" class="calendar-modal__header-price"></div>
+        </div>
+        <div id="calendar-modal-action" class="calendar-modal__action"></div>
+      </div>
+    </div>
+    <div class="calendar-modal__body" id="calendar-modal-courses">
+      <!-- Course cards will be injected here -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Course Enrollment -->
+<div id="enroll-modal" class="calendar-modal" style="display: none;">
+  <div class="calendar-modal__overlay"></div>
+  <div class="enroll-modal__content">
+    <button type="button" class="calendar-modal__close" aria-label="Закрыть">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="enroll-modal__header">
+      <h3 class="enroll-modal__title" id="enroll-modal-title">Курс</h3>
+      <p class="enroll-modal__date" id="enroll-modal-date">Даты</p>
+    </div>
+    <div class="enroll-modal__audience" id="enroll-audience-switch" hidden>
+      <span class="enroll-modal__audience-label enroll-modal__audience-label--active" data-audience-label="individual">Физическое лицо</span>
+      <label class="enroll-audience-toggle" aria-label="Переключить тип лица">
+        <input type="checkbox" id="enroll-audience-toggle" class="enroll-audience-toggle__input">
+        <span class="enroll-audience-toggle__track" aria-hidden="true">
+          <span class="enroll-audience-toggle__thumb"></span>
+        </span>
+      </label>
+      <span class="enroll-modal__audience-label" data-audience-label="legal">Юридическое лицо</span>
+    </div>
+    <input type="hidden" id="enroll-audience-type" name="audienceType" value="individual">
+    <form class="enroll-modal__form" id="enroll-form">
+      <div class="enroll-modal__field">
+        <input type="text" id="enroll-name" class="enroll-modal__input" placeholder="Имя *" required>
+      </div>
+      <div class="enroll-modal__field">
+        <input type="tel" id="enroll-phone" class="enroll-modal__input" placeholder="Телефон *" required>
+      </div>
+      <div class="enroll-modal__field">
+        <input type="email" id="enroll-email" class="enroll-modal__input" placeholder="E-mail *" required>
+      </div>
+      <div class="enroll-modal__field" id="enroll-company-field" hidden>
+        <input type="text" id="enroll-company" class="enroll-modal__input" placeholder="Название компании *">
+      </div>
+      <div class="enroll-modal__field">
+        <select id="enroll-source" class="enroll-modal__select" required>
+          <option value="" disabled selected hidden>Откуда узнали о мероприятии *</option>
+          <option value="1156">Реклама</option>
+          <option value="1158">Поисковая система</option>
+          <option value="1160">Рассылка по ЭДО</option>
+          <option value="1162">Рассылка по эл. почте</option>
+          <option value="1164">Звонок от АО ЦРЗ РТ</option>
+          <option value="1166">От коллег</option>
+          <option value="1168">Обучался ранее</option>
+          <option value="1170">Телеграм</option>
+          <option value="1172">ВКонтакте</option>
+          <option value="1174">Другие соц сети</option>
+        </select>
+      </div>
+      <p class="enroll-modal__status" id="enroll-form-status" hidden></p>
+      <label class="enroll-modal__checkbox-label">
+        <input type="checkbox" class="enroll-modal__checkbox" required>
+        <span class="enroll-modal__checkbox-text">Нажимая на кнопку, я принимаю <a href="#">условия соглашения</a>. *</span>
+      </label>
+      <button type="submit" class="enroll-modal__submit btn btn--primary">Отправить</button>
+    </form>
+    <div id="enroll-bitrix-embed" class="enroll-bitrix-embed" hidden></div>
+  </div>
+</div>
+
+<script src="assets/js/hero-slides.js?v=11" defer></script>
+<script src="assets/js/landing-content.js?v=17" defer></script>
+<script src="assets/js/obuchenie-calendar.js?v=16" defer></script>
+<script src="assets/js/obuchenie-content.js?v=39" defer></script>
+<script src="assets/js/landing.js?v=14" defer></script>
+<script src="assets/js/csr-dropdown.js?v=2" defer></script>
+<script src="assets/js/course-search.js?v=8" defer></script>
+
+<script src="assets/js/course.js?v=2" defer></script>
+</body>
+</html>
