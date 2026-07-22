@@ -33,9 +33,12 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   }
   function formatDateLabel(iso) {
     if (!iso) return '—';
-    var parts = iso.split('-');
-    if (parts.length !== 3) return iso;
-    return "".concat(parts[2], ".").concat(parts[1], ".").concat(parts[0]);
+    var dates = iso.split(', ');
+    return dates.map(function (dateStr) {
+      var parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      return "".concat(parts[2], ".").concat(parts[1], ".").concat(parts[0]);
+    }).join(', ');
   }
   function formatCourseFormat(format) {
     return format === 'dist' ? 'Заочный' : 'Очный';
@@ -105,8 +108,8 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   }
   function sortCourses(list) {
     return _toConsumableArray(list).sort(function (left, right) {
-      var leftDate = String(left.dateFrom || '');
-      var rightDate = String(right.dateFrom || '');
+      var leftDate = String(left.dateFrom || '').split(', ')[0] || '';
+      var rightDate = String(right.dateFrom || '').split(', ')[0] || '';
       if (leftDate && rightDate && leftDate !== rightDate) {
         return leftDate.localeCompare(rightDate);
       }
@@ -1294,6 +1297,8 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (typeof flatpickr !== 'undefined' && els.formDateFrom) {
       datePickerInstance = flatpickr(els.formDateFrom, {
         locale: 'ru',
+        mode: 'multiple',
+        conjunction: ', ',
         dateFormat: 'Y-m-d',
         altInput: true,
         altFormat: 'd.m.Y',

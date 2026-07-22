@@ -210,14 +210,34 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   }
   function parseIsoDate(value) {
     if (!value || typeof value !== 'string') return null;
-    var match = value.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (!match) return null;
-    var year = parseInt(match[1], 10);
-    var month = parseInt(match[2], 10);
-    var day = parseInt(match[3], 10);
-    var date = new Date(year, month - 1, day);
-    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
-    return date;
+    var str = value.trim();
+    var match = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (match) {
+      var year = parseInt(match[1], 10);
+      var month = parseInt(match[2], 10);
+      var day = parseInt(match[3], 10);
+      var date = new Date(year, month - 1, day);
+      if (date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day) return date;
+    }
+    match = str.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+    if (match) {
+      var day = parseInt(match[1], 10);
+      var month = parseInt(match[2], 10);
+      var year = parseInt(match[3], 10);
+      var date = new Date(year, month - 1, day);
+      if (date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day) return date;
+    }
+    return null;
+  }
+  function normalizeDateFrom(rawDateFrom) {
+    if (!rawDateFrom) return '';
+    var str = String(rawDateFrom).trim();
+    var parts = str.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    var validIsoStrings = parts.map(function(p) {
+      var d = parseIsoDate(p);
+      return d ? formatIsoDate(d) : p;
+    });
+    return validIsoStrings.join(', ');
   }
   function formatIsoDate(date) {
     var y = date.getFullYear();
@@ -233,16 +253,25 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     next.setDate(next.getDate() + days);
     return next;
   }
-  function getCourseDateRange(course) {
-    var start = parseIsoDate(course === null || course === void 0 ? void 0 : course.dateFrom);
-    if (!start) return null;
+  function getCourseDateRanges(course) {
+    if (!course || !course.dateFrom) return [];
+    var datesStr = String(course.dateFrom);
+    var dateStrings = datesStr.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
     var explicitEnd = parseIsoDate(course === null || course === void 0 ? void 0 : course.dateTo);
     var durationDays = Math.max(1, parseInt(course === null || course === void 0 ? void 0 : course.durationDays, 10) || 1);
-    var end = explicitEnd && explicitEnd >= start ? explicitEnd : addDays(start, durationDays - 1);
-    return {
-      from: start,
-      to: end
-    };
+    return dateStrings.map(function(dateStr) {
+      var start = parseIsoDate(dateStr);
+      if (!start) return null;
+      var end = explicitEnd && explicitEnd >= start && dateStrings.length === 1 ? explicitEnd : addDays(start, durationDays - 1);
+      return {
+        from: start,
+        to: end
+      };
+    }).filter(Boolean);
+  }
+  function getCourseDateRange(course) {
+    var ranges = getCourseDateRanges(course);
+    return ranges.length ? ranges[0] : null;
   }
   function normalizeSpeaker(raw) {
     return {
@@ -616,13 +645,14 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   }
   function normalizeCourseRegistryItem(raw, index) {
     var format = (raw === null || raw === void 0 ? void 0 : raw.format) === 'dist' ? 'dist' : 'och';
-    var dateFrom = parseIsoDate(raw === null || raw === void 0 ? void 0 : raw.dateFrom) ? String(raw.dateFrom).trim() : '';
+    var dateFrom = normalizeDateFrom(raw === null || raw === void 0 ? void 0 : raw.dateFrom);
     var durationDays = Math.max(1, parseInt(raw === null || raw === void 0 ? void 0 : raw.durationDays, 10) || 1);
-    var range = dateFrom ? getCourseDateRange({
+    var ranges = dateFrom ? getCourseDateRanges({
       dateFrom: dateFrom,
       dateTo: raw === null || raw === void 0 ? void 0 : raw.dateTo,
       durationDays: durationDays
-    }) : null;
+    }) : [];
+    var lastRange = ranges.length ? ranges[ranges.length - 1] : null;
     var speakers = Array.isArray(raw === null || raw === void 0 ? void 0 : raw.speakers) && raw.speakers.length ? raw.speakers.map(normalizeSpeaker).filter(function (speaker) {
       return speaker.name || speaker.role || speaker.position;
     }) : [];
@@ -641,7 +671,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       title: String((raw === null || raw === void 0 ? void 0 : raw.title) || '').trim(),
       format: format,
       dateFrom: dateFrom,
-      dateTo: range ? formatIsoDate(range.to) : parseIsoDate(raw === null || raw === void 0 ? void 0 : raw.dateTo) ? String(raw.dateTo).trim() : dateFrom,
+      dateTo: lastRange ? formatIsoDate(lastRange.to) : parseIsoDate(raw === null || raw === void 0 ? void 0 : raw.dateTo) ? String(raw.dateTo).trim() : dateFrom,
       durationDays: durationDays,
       description: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.description) ? raw.description : String((raw === null || raw === void 0 ? void 0 : raw.description) || '').trim(),
       price: String((raw === null || raw === void 0 ? void 0 : raw.price) || '').trim(),
@@ -677,13 +707,15 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     var list = Array.isArray(registry) ? registry : [];
     list.forEach(function (course) {
       if (!course || course.active === false) return;
-      var range = getCourseDateRange(course);
-      if (!range) return;
-      var start = range.from;
-      var key = "".concat(start.getFullYear(), "-").concat(start.getMonth() + 1);
-      if (!result[key]) result[key] = [];
-      var day = start.getDate();
-      if (!result[key].includes(day)) result[key].push(day);
+      var ranges = getCourseDateRanges(course);
+      ranges.forEach(function (range) {
+        if (!range) return;
+        var start = range.from;
+        var key = "".concat(start.getFullYear(), "-").concat(start.getMonth() + 1);
+        if (!result[key]) result[key] = [];
+        var day = start.getDate();
+        if (!result[key].includes(day)) result[key].push(day);
+      });
     });
     Object.keys(result).forEach(function (key) {
       result[key].sort(function (a, b) {
@@ -1320,12 +1352,19 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   }
   var MONTH_NAMES_GENITIVE_RU = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
   var MONTH_NAMES_NOMINATIVE_RU = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
-  function formatUpcomingEventDate(course) {
-    var range = getCourseDateRange(course);
-    if (!range) return {
-      range: '—',
-      month: ''
-    };
+  function formatUpcomingEventDate(range, course) {
+    if (!range) {
+      if (course && (course.dateFrom || course.date)) {
+        return {
+          range: String(course.dateFrom || course.date),
+          month: ''
+        };
+      }
+      return {
+        range: '—',
+        month: ''
+      };
+    }
     var start = range.from;
     var end = range.to;
     var startDay = start.getDate();
@@ -1355,18 +1394,25 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     var activeCourses = (courseRegistry || []).filter(function (course) {
       return course && course.active !== false;
     });
-    return activeCourses.map(function (course) {
-      return {
-        course: course,
-        startDate: parseIsoDate(course.dateFrom) || new Date(2099, 11, 31)
-      };
-    }).filter(function (item) {
-      return item.startDate >= todayZero;
-    }).sort(function (a, b) {
-      return a.startDate - b.startDate;
-    }).slice(0, limit).map(function (item) {
-      return item.course;
+    var expanded = [];
+    activeCourses.forEach(function (course) {
+      var ranges = getCourseDateRanges(course);
+      if (!ranges.length) {
+        expanded.push({ course: course, startDate: new Date(2099, 11, 31), range: null });
+      } else {
+        ranges.forEach(function (range) {
+          expanded.push({ course: course, startDate: range.from, range: range });
+        });
+      }
     });
+    var upcoming = expanded.filter(function (item) {
+      return item.startDate >= todayZero;
+    });
+    var listToUse = upcoming.length > 0 ? upcoming : expanded;
+    listToUse.sort(function (a, b) {
+      return a.startDate - b.startDate;
+    });
+    return listToUse.slice(0, limit);
   }
   function renderLandingUpcomingEvents(courseRegistry, options) {
     var list = document.getElementById('landingUpcomingEvents');
@@ -1375,8 +1421,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     setupEnrollModal();
     var limit = (options === null || options === void 0 ? void 0 : options.limit) || 4;
     var upcoming = getUpcomingCourses(courseRegistry, limit);
-    list.innerHTML = upcoming.map(function (course) {
-      var _formatUpcomingEventD = formatUpcomingEventDate(course),
+    list.innerHTML = upcoming.map(function (item) {
+      var course = item.course;
+      var _formatUpcomingEventD = formatUpcomingEventDate(item.range, course),
         range = _formatUpcomingEventD.range,
         month = _formatUpcomingEventD.month;
       var monthHtml = month ? "<span class=\"event-date__month\">".concat(escapeHtml(month), "</span>") : '';
@@ -1434,12 +1481,16 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     // Map and calculate dates for sorting
     var today = new Date();
     var todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    var mapped = activeCourses.map(function (course) {
-      var start = parseIsoDate(course.dateFrom);
-      return {
-        course: course,
-        startDate: start || new Date(2099, 11, 31) // Fallback for sorting if date is invalid
-      };
+    var mapped = [];
+    activeCourses.forEach(function (course) {
+      var ranges = getCourseDateRanges(course);
+      if (!ranges.length) {
+        mapped.push({ course: course, startDate: new Date(2099, 11, 31), range: null });
+      } else {
+        ranges.forEach(function (range) {
+          mapped.push({ course: course, startDate: range.from, range: range });
+        });
+      }
     });
 
     // Only upcoming courses! (start date must be today or in the future)
@@ -1447,13 +1498,15 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       return item.startDate >= todayZero;
     });
 
-    // Sort upcoming ascending (closest first)
-    upcoming.sort(function (a, b) {
+    var listToRender = upcoming.length > 0 ? upcoming : mapped;
+
+    // Sort ascending (closest first)
+    listToRender.sort(function (a, b) {
       return a.startDate - b.startDate;
     });
 
     // Take top 3
-    var top3 = upcoming.slice(0, 3);
+    var top3 = listToRender.slice(0, 3);
 
     // If there are no upcoming courses (all are in the past), render empty grid
     if (top3.length === 0) {
@@ -1653,6 +1706,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     deriveCourseDaysByMonth: deriveCourseDaysByMonth,
     resolveCalendarCourseDays: resolveCalendarCourseDays,
     getCourseDateRange: getCourseDateRange,
+    getCourseDateRanges: getCourseDateRanges,
     createCourseId: createCourseId,
     parseIsoDate: parseIsoDate,
     formatIsoDate: formatIsoDate,

@@ -102,22 +102,28 @@ function generate_static_courses($courseRegistry) {
 
         $date = '';
         if (!empty($course['date'])) {
-            $date = $course['date'];
+            $date = htmlspecialchars($course['date']);
         } elseif (!empty($course['dateFrom'])) {
-            $time = strtotime($course['dateFrom']);
-            if ($time) {
-                $day = date('j', $time);
-                $monthNum = intval(date('n', $time));
-                $months = [
-                    1 => 'января', 2 => 'февраля', 3 => 'марта', 4 => 'апреля',
-                    5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'августа',
-                    9 => 'сентября', 10 => 'октября', 11 => 'ноября', 12 => 'декабря'
-                ];
-                $monthName = $months[$monthNum] ?? '';
-                $date = $day . ' ' . $monthName;
+            $months = [
+                1 => 'января', 2 => 'февраля', 3 => 'марта', 4 => 'апреля',
+                5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'августа',
+                9 => 'сентября', 10 => 'октября', 11 => 'ноября', 12 => 'декабря'
+            ];
+            $dateStrArr = explode(',', $course['dateFrom']);
+            $formattedDates = [];
+            foreach ($dateStrArr as $dStr) {
+                $time = strtotime(trim($dStr));
+                if ($time) {
+                    $day = date('j', $time);
+                    $monthNum = intval(date('n', $time));
+                    $monthName = $months[$monthNum] ?? '';
+                    $formattedDates[] = htmlspecialchars($day . ' ' . $monthName);
+                }
+            }
+            if (!empty($formattedDates)) {
+                $date = implode('<br>', $formattedDates);
             }
         }
-        $date = htmlspecialchars($date);
 
         $price = htmlspecialchars($course['price'] ?? '');
         
