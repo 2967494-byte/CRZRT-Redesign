@@ -37,37 +37,74 @@
         activeFilters.push(val);
       }
     });
-    return COURSE_REGISTRY.filter(function (c) {
-      if (!c.active) return false;
 
-      // Filter out past courses
-      if (c.dateFrom) {
-        var dates = String(c.dateFrom).split(',').map(function (s) { return s.trim(); });
-        var today = new Date();
-        today.setHours(0, 0, 0, 0);
-        var hasUpcoming = dates.some(function (iso) {
-          var parts = iso.split('-');
-          if (parts.length !== 3) return true;
-          var courseDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-          return courseDate >= today;
-        });
-        if (!hasUpcoming) return false;
-      }
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    var items = [];
+
+    (COURSE_REGISTRY || []).forEach(function (c) {
+      if (!c || !c.active) return;
 
       // Dynamic check for selected options
       for (var i = 0; i < activeFilters.length; i++) {
         var filterVal = activeFilters[i];
         if (!c.options || c.options.indexOf(filterVal) === -1) {
-          return false;
+          return;
         }
       }
-      return true;
+
+      if (!c.dateFrom) {
+        items.push({
+          course: c,
+          dateIso: '',
+          dateObj: null
+        });
+        return;
+      }
+
+      var dates = String(c.dateFrom).split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+
+      dates.forEach(function (singleDate) {
+        var parts = singleDate.split('-');
+        if (parts.length === 3) {
+          var courseDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          if (courseDate >= today) {
+            items.push({
+              course: c,
+              dateIso: singleDate,
+              dateObj: courseDate
+            });
+          }
+        } else {
+          items.push({
+            course: c,
+            dateIso: singleDate,
+            dateObj: null
+          });
+        }
+      });
     });
+
+    // Sort chronologically by start date
+    items.sort(function (a, b) {
+      if (a.dateObj && b.dateObj) {
+        return a.dateObj - b.dateObj;
+      }
+      if (a.dateObj) return -1;
+      if (b.dateObj) return 1;
+      return 0;
+    });
+
+    return items;
   }
 
   // ─── Render Card ──────────────────────────────────────────────────────────────
 
-  function renderCard(course) {
+  function renderCard(item) {
+    var course = item.course || item;
+    var dateIso = item.dateIso || course.dateFrom;
+
     var card = document.createElement('div');
     card.className = 'csr-card';
     card.setAttribute('role', 'button');
@@ -88,10 +125,10 @@
     // Meta
     var meta = document.createElement('div');
     meta.className = 'csr-card__meta';
-    if (course.dateFrom) {
+    if (dateIso) {
       var dateItem = document.createElement('span');
       dateItem.className = 'csr-card__meta-item csr-card__meta-item--date';
-      dateItem.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' + '<span>' + formatDate(course.dateFrom) + '</span>';
+      dateItem.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' + '<span>' + formatDate(dateIso) + '</span>';
       meta.appendChild(dateItem);
     }
     if (course.durationDays) {
@@ -117,11 +154,10 @@
     card.appendChild(meta);
     card.appendChild(footer);
 
-    // Click → open existing calendar modal
+    // Click → open calendar modal for specific date
     function openModal() {
-      if (!course.dateFrom) return;
-      var firstDate = String(course.dateFrom).split(',')[0].trim();
-      var parts = firstDate.split('-');
+      if (!dateIso) return;
+      var parts = dateIso.split('-');
       if (parts.length !== 3) return;
       var year = parseInt(parts[0], 10);
       var month = parseInt(parts[1], 10) - 1; // 0-based
@@ -160,11 +196,13 @@
         grid.innerHTML = '<div class="csr-no-results">' + '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' + '<p>По выбранным фильтрам курсы не найдены.<br>Попробуйте изменить параметры поиска.</p>' + '</div>';
       }
     } else {
-      results.forEach(function (c) {
-        grid.appendChild(renderCard(c));
+      results.forEach(function (item) {
+        grid.appendChild(renderCard(item));
       });
     }
-    count.textContent = results.length ? 'Найдено: ' + results.length + (results.length === 1 ? ' курс' : results.length < 5 ? ' курса' : ' курсов') : '';
+    var n = results.length;
+    var word = (n % 100 >= 11 && n % 100 <= 19) ? ' курсов' : (n % 10 === 1) ? ' курс' : (n % 10 >= 2 && n % 10 <= 4) ? ' курса' : ' курсов';
+    count.textContent = n ? 'Найдено: ' + n + word : '';
     wrapper.hidden = false;
   }
 
