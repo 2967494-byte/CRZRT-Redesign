@@ -12,9 +12,12 @@
 
   function formatDate(iso) {
     if (!iso) return '—';
-    var p = iso.split('-');
-    if (p.length !== 3) return iso;
-    return p[2] + ' ' + MONTH_NAMES_GENITIVE[parseInt(p[1], 10) - 1] + ' ' + p[0];
+    var dates = String(iso).split(',').map(function (s) { return s.trim(); });
+    return dates.map(function (d) {
+      var p = d.split('-');
+      if (p.length !== 3) return d;
+      return p[2] + ' ' + MONTH_NAMES_GENITIVE[parseInt(p[1], 10) - 1] + ' ' + p[0];
+    }).join(', ');
   }
   function hasActiveFilters() {
     var active = false;
@@ -39,13 +42,16 @@
 
       // Filter out past courses
       if (c.dateFrom) {
-        var parts = c.dateFrom.split('-');
-        if (parts.length === 3) {
+        var dates = String(c.dateFrom).split(',').map(function (s) { return s.trim(); });
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var hasUpcoming = dates.some(function (iso) {
+          var parts = iso.split('-');
+          if (parts.length !== 3) return true;
           var courseDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-          var today = new Date();
-          today.setHours(0, 0, 0, 0);
-          if (courseDate < today) return false;
-        }
+          return courseDate >= today;
+        });
+        if (!hasUpcoming) return false;
       }
 
       // Dynamic check for selected options
@@ -114,7 +120,8 @@
     // Click → open existing calendar modal
     function openModal() {
       if (!course.dateFrom) return;
-      var parts = course.dateFrom.split('-');
+      var firstDate = String(course.dateFrom).split(',')[0].trim();
+      var parts = firstDate.split('-');
       if (parts.length !== 3) return;
       var year = parseInt(parts[0], 10);
       var month = parseInt(parts[1], 10) - 1; // 0-based

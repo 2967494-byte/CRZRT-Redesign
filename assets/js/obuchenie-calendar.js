@@ -22,13 +22,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function formatCourseDateLabel(course) {
     if (!course || !course.dateFrom) return '';
-    var parts = course.dateFrom.split('-');
-    if (parts.length !== 3) return '';
-    var year = parseInt(parts[0], 10);
-    var monthIndex = parseInt(parts[1], 10) - 1;
-    var day = parseInt(parts[2], 10);
-    if (!year || monthIndex < 0 || monthIndex > 11 || !day) return '';
-    return day + ' ' + MONTH_NAMES_GENITIVE[monthIndex] + ' ' + year;
+    var dates = String(course.dateFrom).split(',').map(function (s) { return s.trim(); });
+    return dates.map(function (iso) {
+      var parts = iso.split('-');
+      if (parts.length !== 3) return iso;
+      var year = parseInt(parts[0], 10);
+      var monthIndex = parseInt(parts[1], 10) - 1;
+      var day = parseInt(parts[2], 10);
+      if (!year || monthIndex < 0 || monthIndex > 11 || !day) return iso;
+      return day + ' ' + MONTH_NAMES_GENITIVE[monthIndex] + ' ' + year;
+    }).join(', ');
   }
   function createFormatPill(course) {
     if (!course.format) return null;
@@ -144,11 +147,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var modal = document.getElementById('calendar-course-modal');
     if (!modal) return;
     var targetIso = formatIsoDate(year, monthIndex, day);
+    var targetDate = new Date(year, monthIndex, day);
     var dateLabel = day + ' ' + MONTH_NAMES_GENITIVE[monthIndex] + ' ' + year;
     var coursesOnDate = COURSE_REGISTRY.filter(function (course) {
       if (!course || course.active === false) return false;
       if (!course.dateFrom) return false;
-      return String(course.dateFrom).trim() === targetIso;
+
+      if (window.ObuchenieContent && window.ObuchenieContent.getCourseDateRanges) {
+        var ranges = window.ObuchenieContent.getCourseDateRanges(course);
+        if (ranges && ranges.length) {
+          return ranges.some(function (r) {
+            if (!r || !r.from) return false;
+            var rFromDate = new Date(r.from.getFullYear(), r.from.getMonth(), r.from.getDate());
+            var rToDate = r.to ? new Date(r.to.getFullYear(), r.to.getMonth(), r.to.getDate()) : rFromDate;
+            return targetDate >= rFromDate && targetDate <= rToDate;
+          });
+        }
+      }
+
+      var dates = String(course.dateFrom).split(',').map(function (s) { return s.trim(); });
+      return dates.indexOf(targetIso) !== -1;
     });
     
     if (coursesOnDate.length === 1) {
