@@ -154,23 +154,20 @@
     card.appendChild(meta);
     card.appendChild(footer);
 
-    // Click → open calendar modal for specific date
-    function openModal() {
-      if (!dateIso) return;
-      var parts = dateIso.split('-');
-      if (parts.length !== 3) return;
-      var year = parseInt(parts[0], 10);
-      var month = parseInt(parts[1], 10) - 1; // 0-based
-      var day = parseInt(parts[2], 10);
-      if (typeof window.openCalendarModal === 'function') {
-        window.openCalendarModal(year, month, day);
+    // Click → open course page for specific date
+    function openCoursePage() {
+      if (!course || !course.id) return;
+      var url = 'courses/' + course.id + '.html';
+      if (dateIso) {
+        url += '?date=' + encodeURIComponent(dateIso);
       }
+      window.location.href = url;
     }
-    card.addEventListener('click', openModal);
+    card.addEventListener('click', openCoursePage);
     card.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        openModal();
+        openCoursePage();
       }
     });
     return card;

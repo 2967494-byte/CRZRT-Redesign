@@ -121,7 +121,7 @@ function generate_static_courses($courseRegistry) {
                 }
             }
             if (!empty($formattedDates)) {
-                $date = implode('<br>', $formattedDates);
+                $date = $formattedDates[0];
             }
         }
 

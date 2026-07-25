@@ -115,7 +115,52 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  updateCourseStartDate();
 });
+
+function updateCourseStartDate() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const dateParam = urlParams.get('date');
+
+  const MONTH_NAMES_GENITIVE = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+  function formatIso(isoStr) {
+    if (!isoStr) return '';
+    const p = String(isoStr).trim().split('-');
+    if (p.length !== 3) return isoStr;
+    const y = parseInt(p[0], 10);
+    const m = parseInt(p[1], 10) - 1;
+    const d = parseInt(p[2], 10);
+    if (!y || m < 0 || m > 11 || !d) return isoStr;
+    return d + ' ' + MONTH_NAMES_GENITIVE[m] + ' ' + y;
+  }
+
+  const widgetItems = document.querySelectorAll('.course-widget-item');
+  let dateValEl = null;
+  widgetItems.forEach(item => {
+    const label = item.querySelector('.course-widget-item__label');
+    if (label && label.textContent.trim().toLowerCase().includes('старт')) {
+      dateValEl = item.querySelector('.course-widget-item__val');
+    }
+  });
+
+  if (!dateValEl) return;
+
+  if (dateParam) {
+    const formatted = formatIso(dateParam);
+    if (formatted) {
+      dateValEl.textContent = formatted;
+    }
+  } else {
+    const currentText = dateValEl.textContent.trim();
+    if (dateValEl.innerHTML.includes('<br>') || currentText.includes(',') || currentText.includes('\n')) {
+      const firstPart = currentText.split('\n')[0].split(',')[0].trim();
+      if (firstPart) {
+        dateValEl.textContent = firstPart;
+      }
+    }
+  }
+}
 
 function resolveCourseIdFromPath() {
   const file = (window.location.pathname.split('/').pop() || '').trim();

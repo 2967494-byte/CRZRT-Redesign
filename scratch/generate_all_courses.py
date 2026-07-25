@@ -62,6 +62,24 @@ for course in course_registry:
     html = re.sub(r'<span class="course-widget-item__label">Стоимость</span>.*?<span class="course-widget-item__val course-widget-item__price">.*?</span>',
                   f'<span class="course-widget-item__label">Стоимость</span><span class="course-widget-item__val course-widget-item__price">{price}</span>', html, flags=re.DOTALL)
 
+    # 5.5 Date
+    date_from = course.get('dateFrom', '')
+    if date_from:
+        first_date = str(date_from).split(',')[0].strip()
+        parts = first_date.split('-')
+        if len(parts) == 3:
+            y = int(parts[0])
+            m = int(parts[1])
+            d = int(parts[2])
+            date_str = f"{d} {months.get(m, '')} {y}"
+        else:
+            date_str = first_date
+    else:
+        date_str = '—'
+
+    html = re.sub(r'<span class="course-widget-item__label">Ближайший старт</span>.*?<span class="course-widget-item__val">.*?</span>',
+                  f'<span class="course-widget-item__label">Ближайший старт</span><span class="course-widget-item__val">{date_str}</span>', html, flags=re.DOTALL)
+
     # 6. Save HTML file
     file_id = course.get('id')
     if file_id:

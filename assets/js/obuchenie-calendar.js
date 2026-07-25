@@ -41,9 +41,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     pill.className = 'calendar-modal__format-pill' + (isDist ? ' calendar-modal__format-pill--dist' : ' calendar-modal__format-pill--och');
     return pill;
   }
-  function createEnrollButton(course, dateLabel) {
+  function createEnrollButton(course, dateLabel, dateIso) {
     var enrollBtn = document.createElement('a');
-    enrollBtn.href = 'courses/' + course.id + '.html';
+    var href = 'courses/' + course.id + '.html';
+    if (dateIso) {
+      href += '?date=' + encodeURIComponent(dateIso);
+    }
+    enrollBtn.href = href;
     enrollBtn.className = 'btn btn--green calendar-modal__header-enroll';
     enrollBtn.textContent = 'Подробнее';
     return enrollBtn;
@@ -73,7 +77,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       container.appendChild(desc);
     }
   }
-  function renderCoursesInModal(courses, dateLabel) {
+  function renderCoursesInModal(courses, dateLabel, targetIso) {
     var coursesContainer = document.getElementById('calendar-modal-courses');
     var priceContainer = document.getElementById('calendar-modal-price');
     var actionContainer = document.getElementById('calendar-modal-action');
@@ -128,7 +132,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           meta.appendChild(price);
         }
       }
-      var enrollBtn = createEnrollButton(course, dateLabel);
+      var enrollBtn = createEnrollButton(course, dateLabel, targetIso);
       div.appendChild(descContainer);
       if (meta.hasChildNodes()) div.appendChild(meta);
       if (isSingle && actionContainer) {
@@ -170,11 +174,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     
     if (coursesOnDate.length === 1) {
-      window.location.href = 'courses/' + coursesOnDate[0].id + '.html';
+      window.location.href = 'courses/' + coursesOnDate[0].id + '.html?date=' + targetIso;
       return;
     }
     
-    renderCoursesInModal(coursesOnDate, dateLabel);
+    renderCoursesInModal(coursesOnDate, dateLabel, targetIso);
     modal.style.display = 'flex';
   }
   function openCourseDetailModal(course) {
