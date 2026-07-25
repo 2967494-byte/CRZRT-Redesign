@@ -1317,6 +1317,11 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   }
   var MONTH_NAMES_GENITIVE_RU = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
   var MONTH_NAMES_NOMINATIVE_RU = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
+  function padZeroDay(num) {
+    var n = parseInt(num, 10);
+    if (isNaN(n)) return String(num || '');
+    return n < 10 && n > 0 ? '0' + n : String(n);
+  }
   function formatUpcomingEventDate(range, course) {
     if (!range) {
       if (course && (course.dateFrom || course.date)) {
@@ -1332,24 +1337,24 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     }
     var start = range.from;
     var end = range.to;
-    var startDay = start.getDate();
-    var endDay = end.getDate();
-    if (startDay === endDay) {
+    var startDay = padZeroDay(start.getDate());
+    var endDay = padZeroDay(end.getDate());
+    if (start.getDate() === end.getDate() && start.getMonth() === end.getMonth()) {
       return {
-        range: String(startDay),
-        month: MONTH_NAMES_NOMINATIVE_RU[start.getMonth()]
+        range: startDay,
+        month: MONTH_NAMES_GENITIVE_RU[start.getMonth()]
       };
     }
     var sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
     if (sameMonth) {
       return {
         range: "".concat(startDay, "\u2013").concat(endDay),
-        month: MONTH_NAMES_NOMINATIVE_RU[start.getMonth()]
+        month: MONTH_NAMES_GENITIVE_RU[start.getMonth()]
       };
     }
     return {
       range: "".concat(startDay, "\u2013").concat(endDay),
-      month: "".concat(MONTH_NAMES_NOMINATIVE_RU[start.getMonth()], "\u2013").concat(MONTH_NAMES_NOMINATIVE_RU[end.getMonth()])
+      month: "".concat(MONTH_NAMES_GENITIVE_RU[start.getMonth()], "\u2013").concat(MONTH_NAMES_GENITIVE_RU[end.getMonth()])
     };
   }
   function getUpcomingCourses(courseRegistry) {
@@ -1491,7 +1496,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       var durUnit = formatDaysPlural(durDays);
 
       // Format start date
-      var startDay = start.getFullYear() === 2099 ? '—' : String(start.getDate());
+      var startDay = start.getFullYear() === 2099 ? '—' : padZeroDay(start.getDate());
       var startMonth = start.getFullYear() === 2099 ? '' : MONTH_NAMES_GENITIVE_RU[start.getMonth()];
       var dateLabel = start.getFullYear() === 2099 ? '' : "".concat(startDay, " ").concat(startMonth, " ").concat(start.getFullYear());
       var enrollAttrs = buildEnrollAttrs(c, dateLabel);
