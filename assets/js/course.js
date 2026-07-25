@@ -150,15 +150,15 @@ function updateCourseStartDate() {
     const formatted = formatIso(dateParam);
     if (formatted) {
       dateValEl.textContent = formatted;
+      return;
     }
-  } else {
-    const currentText = dateValEl.textContent.trim();
-    if (dateValEl.innerHTML.includes('<br>') || currentText.includes(',') || currentText.includes('\n')) {
-      const firstPart = currentText.split('\n')[0].split(',')[0].trim();
-      if (firstPart) {
-        dateValEl.textContent = firstPart;
-      }
-    }
+  }
+
+  // Fallback: extract only the first single date if multiple dates were merged in HTML
+  const currentText = dateValEl.textContent.trim();
+  const match = currentText.match(/^(\d{1,2}\s+[а-яА-Я]+(?:\s+\d{4})?)/);
+  if (match && match[1]) {
+    dateValEl.textContent = match[1].trim();
   }
 }
 
