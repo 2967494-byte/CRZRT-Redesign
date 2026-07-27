@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   wireCourseProgramPdfLinks();
+  initCourseEnrollModal();
 
   /* ========================================================================
      COURSE ACCORDION LOGIC
@@ -98,6 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const enrollBtns = document.querySelectorAll('.btn-enroll');
   const enrollModal = document.getElementById('enroll-modal');
   const enrollTitle = document.getElementById('enroll-modal-title');
+  const enrollDate = document.getElementById('enroll-modal-date');
+  const enrollForm = document.getElementById('enroll-form');
 
   if (enrollModal) {
     enrollBtns.forEach(btn => {
@@ -106,6 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const titleEl = document.querySelector('.course-hero__title');
         if (titleEl && enrollTitle) {
           enrollTitle.textContent = titleEl.textContent;
+        }
+        if (enrollDate) {
+          enrollDate.textContent = getCourseStartDateLabel();
+        }
+        if (enrollForm) {
+          enrollForm.dataset.courseId = resolveCourseIdFromPath();
         }
         
         // Show modal
@@ -165,6 +174,99 @@ function updateCourseStartDate() {
 function resolveCourseIdFromPath() {
   const file = (window.location.pathname.split('/').pop() || '').trim();
   return file.replace(/\.html$/i, '');
+}
+
+function getCourseStartDateLabel() {
+  const widgetItems = document.querySelectorAll('.course-widget-item');
+  for (const item of widgetItems) {
+    const label = item.querySelector('.course-widget-item__label');
+    if (label && label.textContent.trim().toLowerCase().includes('старт')) {
+      const val = item.querySelector('.course-widget-item__val');
+      return val ? val.textContent.trim() : '';
+    }
+  }
+  return '';
+}
+
+function applyCourseEnrollAudienceMode(mode) {
+  const normalizedMode = mode === 'legal' ? 'legal' : 'individual';
+  const audienceInput = document.getElementById('enroll-audience-type');
+  const companyField = document.getElementById('enroll-company-field');
+  const companyInput = document.getElementById('enroll-company');
+  const labels = document.querySelectorAll('[data-audience-label]');
+
+  if (audienceInput) audienceInput.value = normalizedMode;
+  labels.forEach((label) => {
+    label.classList.toggle('enroll-modal__audience-label--active', label.dataset.audienceLabel === normalizedMode);
+  });
+
+  if (companyField && companyInput) {
+    const isLegal = normalizedMode === 'legal';
+    companyField.hidden = !isLegal;
+    companyInput.required = isLegal;
+    if (!isLegal) companyInput.value = '';
+  }
+}
+
+function initCourseEnrollModal() {
+  const modal = document.getElementById('enroll-modal');
+  if (!modal || modal.dataset.courseEnrollBound === 'true') return;
+  modal.dataset.courseEnrollBound = 'true';
+
+  const closeBtn = modal.querySelector('.calendar-modal__close');
+  const overlay = modal.querySelector('.calendar-modal__overlay');
+  const content = modal.querySelector('.enroll-modal__content');
+  const form = document.getElementById('enroll-form');
+  const audienceToggle = document.getElementById('enroll-audience-toggle');
+  const audienceSwitch = document.getElementById('enroll-audience-switch');
+
+  if (audienceSwitch) audienceSwitch.hidden = false;
+  applyCourseEnrollAudienceMode('individual');
+
+  const closeEnrollModal = () => {
+    modal.classList.remove('calendar-modal--visible');
+    modal.style.display = 'none';
+    if (form) {
+      form.reset();
+      delete form.dataset.courseId;
+    }
+    if (audienceToggle) audienceToggle.checked = false;
+    applyCourseEnrollAudienceMode('individual');
+    const status = document.getElementById('enroll-form-status');
+    if (status) {
+      status.hidden = true;
+      status.textContent = '';
+      status.className = 'enroll-modal__status';
+    }
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', closeEnrollModal);
+  if (overlay) overlay.addEventListener('click', closeEnrollModal);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal || (overlay && event.target === overlay)) {
+      closeEnrollModal();
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modal.style.display !== 'none') {
+      closeEnrollModal();
+    }
+  });
+
+  if (audienceToggle) {
+    audienceToggle.addEventListener('change', () => {
+      const mode = audienceToggle.checked ? 'legal' : 'individual';
+      applyCourseEnrollAudienceMode(mode);
+      if (window.ObuchenieContent && typeof window.ObuchenieContent.setEnrollAudienceMode === 'function') {
+        window.ObuchenieContent.setEnrollAudienceMode(mode);
+      }
+    });
+  }
+
+  // Prevent accidental close from clicks inside dialog body.
+  if (content) {
+    content.addEventListener('click', (event) => event.stopPropagation());
+  }
 }
 
 function resolveCourseAssetUrl(url) {
