@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   wireCourseProgramPdfLinks();
   initCourseEnrollModal();
+  initCourseEnrollSubmit();
 
   /* ========================================================================
      COURSE ACCORDION LOGIC
@@ -267,6 +268,169 @@ function initCourseEnrollModal() {
   if (content) {
     content.addEventListener('click', (event) => event.stopPropagation());
   }
+}
+
+let courseEnrollMetaCache = null;
+
+function parseDurationDaysFromWidget() {
+  const widgetItems = document.querySelectorAll('.course-widget-item');
+  for (const item of widgetItems) {
+    const label = item.querySelector('.course-widget-item__label');
+    if (!label || !label.textContent.trim().toLowerCase().includes('длительность')) continue;
+    const val = item.querySelector('.course-widget-item__val');
+    if (!val) return 1;
+    const m = val.textContent.replace(/\s+/g, ' ').match(/(\d+)/);
+    return m ? Math.max(1, parseInt(m[1], 10) || 1) : 1;
+  }
+  return 1;
+}
+
+function parseFormatFromTags() {
+  const tags = Array.from(document.querySelectorAll('.course-hero__tags .course-tag'))
+    .map((el) => el.textContent.trim().toLowerCase())
+    .filter(Boolean);
+  return tags.some((t) => t.includes('дистан')) ? 'dist' : 'och';
+}
+
+async function loadCourseEnrollMeta() {
+  if (courseEnrollMetaCache) return courseEnrollMetaCache;
+  const courseId = resolveCourseIdFromPath();
+  const fallback = {
+    id: courseId,
+    title: (document.querySelector('.course-hero__title')?.textContent || '').trim(),
+    dateFrom: '',
+    dateTo: '',
+    durationDays: parseDurationDaysFromWidget(),
+    format: parseFormatFromTags(),
+    price: (document.querySelector('.course-widget-item__price')?.textContent || '').trim(),
+    bitrixCourseElementId: null,
+    forCustomers: false,
+    forSuppliers: false,
+    is44fz: false,
+    is223fz: false,
+    options: []
+  };
+
+  if (!courseId) {
+    courseEnrollMetaCache = fallback;
+    return fallback;
+  }
+
+  try {
+    const resp = await fetch('../api/settings.php?key=crzrt_obuchenie_page_data&_=' + Date.now(), { cache: 'no-store' });
+    if (!resp.ok) {
+      courseEnrollMetaCache = fallback;
+      return fallback;
+    }
+    const data = await resp.json();
+    const course = Array.isArray(data.courseRegistry)
+      ? data.courseRegistry.find((item) => item && item.id === courseId)
+      : null;
+    courseEnrollMetaCache = course ? { ...fallback, ...course } : fallback;
+    return courseEnrollMetaCache;
+  } catch (_error) {
+    courseEnrollMetaCache = fallback;
+    return fallback;
+  }
+}
+
+function setEnrollStatus(message, type = 'info') {
+  const status = document.getElementById('enroll-form-status');
+  if (!status) return;
+  if (!message) {
+    status.hidden = true;
+    status.textContent = '';
+    status.className = 'enroll-modal__status';
+    return;
+  }
+  status.hidden = false;
+  status.textContent = message;
+  status.className = `enroll-modal__status enroll-modal__status--${type}`;
+}
+
+function initCourseEnrollSubmit() {
+  const form = document.getElementById('enroll-form');
+  if (!form || form.dataset.courseSubmitBound === 'true') return;
+  form.dataset.courseSubmitBound = 'true';
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    setEnrollStatus('');
+
+    const submitBtn = form.querySelector('.enroll-modal__submit');
+    const originalText = submitBtn?.textContent || 'Отправить';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Отправка...';
+    }
+
+    try {
+      const name = (document.getElementById('enroll-name')?.value || '').trim();
+      const phone = (document.getElementById('enroll-phone')?.value || '').trim();
+      const email = (document.getElementById('enroll-email')?.value || '').trim();
+      const company = (document.getElementById('enroll-company')?.value || '').trim();
+      const audienceType = (document.getElementById('enroll-audience-type')?.value || '') === 'legal' ? 'legal' : 'individual';
+      const sourceSelect = document.getElementById('enroll-source');
+      const sourceValue = sourceSelect?.value || '';
+      const sourceLabel = sourceSelect?.selectedOptions?.[0]?.textContent?.trim() || '';
+
+      if (!name || !phone) {
+        throw new Error('Укажите имя и телефон');
+      }
+      if (audienceType === 'legal' && !company) {
+        throw new Error('Укажите название компании');
+      }
+
+      const course = await loadCourseEnrollMeta();
+      const response = await fetch('../api/bitrix-lead-enroll.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          phone,
+          email,
+          company,
+          audienceType,
+          source: sourceValue,
+          sourceLabel,
+          courseTitle: course?.title || '',
+          dateFrom: course?.dateFrom || '',
+          dateTo: course?.dateTo || '',
+          durationDays: course?.durationDays || 1,
+          format: course?.format || 'och',
+          price: course?.price || '',
+          bitrixCourseElementId: course?.bitrixCourseElementId || null,
+          forCustomers: Boolean(course?.forCustomers),
+          forSuppliers: Boolean(course?.forSuppliers),
+          is44fz: Boolean(course?.is44fz),
+          is223fz: Boolean(course?.is223fz),
+          options: Array.isArray(course?.options) ? course.options : []
+        })
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Не удалось отправить заявку в Bitrix24');
+      }
+
+      setEnrollStatus(result.message || 'Заявка принята', 'success');
+      window.setTimeout(() => {
+        const modal = document.getElementById('enroll-modal');
+        if (!modal) return;
+        modal.classList.remove('calendar-modal--visible');
+        modal.style.display = 'none';
+        form.reset();
+        setEnrollStatus('');
+      }, 1800);
+    } catch (error) {
+      setEnrollStatus(error?.message || 'Ошибка отправки', 'error');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    }
+  });
 }
 
 function resolveCourseAssetUrl(url) {
