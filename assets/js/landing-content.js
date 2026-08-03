@@ -161,6 +161,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         return '../' + value;
       }
     }
+    if (value.startsWith('assets/') || value.startsWith('uploads/')) {
+      return '/' + value;
+    }
     return value;
   }
   function multilineHtml(str) {
@@ -679,7 +682,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     }).filter(Boolean);
     var pool = list.length ? list : LANDING_DEFAULTS.consultation.photos;
     var chosen = pool[Math.floor(Math.random() * pool.length)];
-    var safeUrl = String(chosen).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    var resolved = resolveAssetPathForPage(chosen);
+    var safeUrl = String(resolved).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     person.style.backgroundImage = "url(\"".concat(safeUrl, "\")");
     person.style.backgroundRepeat = 'no-repeat';
     person.style.backgroundPosition = 'right bottom';

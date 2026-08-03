@@ -386,3 +386,52 @@ function applyDynamicLogo() {
       console.warn('Failed to load logo from server', err);
     });
 }
+
+// MOBILE MENU TOGGLE ("3 полоски")
+function initMobileMenu() {
+  var headerActions = document.querySelector('.header__actions');
+  var burgerBtn = document.getElementById('openMobileMenu');
+  var nav = document.querySelector('.nav');
+
+  if (!burgerBtn && headerActions) {
+    burgerBtn = document.createElement('button');
+    burgerBtn.id = 'openMobileMenu';
+    burgerBtn.className = 'btn-icon btn-burger';
+    burgerBtn.setAttribute('aria-label', 'Меню');
+    burgerBtn.setAttribute('aria-expanded', 'false');
+    burgerBtn.innerHTML = '<svg class="burger-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><svg class="burger-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="display:none;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    headerActions.appendChild(burgerBtn);
+  }
+
+  if (!burgerBtn || !nav) return;
+
+  function toggleMobileMenu(show) {
+    var isExpanded = typeof show === 'boolean' ? show : !nav.classList.contains('active');
+    nav.classList.toggle('active', isExpanded);
+    burgerBtn.classList.toggle('active', isExpanded);
+    burgerBtn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+  }
+
+  burgerBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    toggleMobileMenu();
+  });
+
+  nav.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      toggleMobileMenu(false);
+    });
+  });
+
+  document.addEventListener('click', function (e) {
+    if (nav.classList.contains('active') && !nav.contains(e.target) && !burgerBtn.contains(e.target)) {
+      toggleMobileMenu(false);
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMobileMenu);
+} else {
+  initMobileMenu();
+}

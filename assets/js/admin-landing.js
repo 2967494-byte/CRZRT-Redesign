@@ -222,15 +222,32 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     return data;
   }
 
+  /** Пути uploads/assets всегда от корня сайта — иначе превью в админке/кэше может «ломаться». */
+  function resolveAdminMediaUrl(src) {
+    var v = src ? String(src).trim() : '';
+    if (!v) return '';
+    if (/^https?:\/\//i.test(v) || v.indexOf('data:') === 0 || v.charAt(0) === '/') return v;
+    if (v.indexOf('uploads/') === 0 || v.indexOf('assets/') === 0) return '/'.concat(v);
+    return v;
+  }
+
   /** Заполняет превью/hidden без вставки base64 в HTML-разметку (иначе браузер обрезает длинные value/src). */
   function setImageUploadState(id, src) {
     var v = src ? String(src) : '';
+    // Обрезанный data-URL из localStorage даёт «битую» картинку — не подставляем в <img>
+    if (v.indexOf('data:image/') === 0 && v.length < 64) {
+      v = '';
+    }
     var prev = document.getElementById("".concat(id, "_preview"));
     var val = document.getElementById("".concat(id, "_val"));
     var clr = document.getElementById("".concat(id, "_clear"));
     if (val) val.value = v;
     if (prev) {
-      prev.src = v;
+      var previewSrc = resolveAdminMediaUrl(v);
+      if (previewSrc && previewSrc.indexOf('data:') !== 0 && previewSrc.charAt(0) === '/') {
+        previewSrc = previewSrc.split('?')[0] + '?v=' + encodeURIComponent(previewSrc.split('/').pop() || '1');
+      }
+      prev.src = previewSrc;
       if (!document.querySelector("[data-upload-frame-for=\"".concat(id, "\"]"))) {
         prev.style.display = v ? 'block' : 'none';
       }
@@ -246,7 +263,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       var livePreview = document.getElementById("m_hero_live_preview_".concat(idx));
       if (livePreview) {
         if (v) {
-          livePreview.style.backgroundImage = "url('".concat(v, "')");
+          livePreview.style.backgroundImage = "url('".concat(resolveAdminMediaUrl(v), "')");
         } else {
           livePreview.style.backgroundImage = 'radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #B8FDC6 100%)';
         }
@@ -480,7 +497,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     var titleLive = document.getElementById('m_promo_live_title');
     var dateLive = document.getElementById('m_promo_live_date');
     if (!preview) return;
-    var bg = readImageVal('m_promo_img');
+    var bg = resolveAdminMediaUrl(readImageVal('m_promo_img'));
     preview.style.backgroundImage = bg ? "url('".concat(bg.replace(/'/g, "\\'"), "')") : 'radial-gradient(32.3% 55.38% at 71.22% 54%, #FFFFFF 0%, #B8FDC6 100%)';
     var titleTop = parseFloat((_document$getElementById3 = document.getElementById('m_promo_title_top')) === null || _document$getElementById3 === void 0 ? void 0 : _document$getElementById3.value) || 40;
     var titleLeft = parseFloat((_document$getElementById4 = document.getElementById('m_promo_title_left')) === null || _document$getElementById4 === void 0 ? void 0 : _document$getElementById4.value) || 80;
@@ -603,7 +620,380 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     setImageUploadState('m_chat_operator_avatar', chatWidget.operatorAvatar || '');
     renderChatTextList(document.getElementById('mChatWelcomeAdmin'), chatWidget.welcomeMessages || DEFAULT_LANDING_MAIN.chatWidget.welcomeMessages, 'welcome', 'Приветствие');
     renderChatTextList(document.getElementById('mChatAutoReplyAdmin'), chatWidget.autoReplies || DEFAULT_LANDING_MAIN.chatWidget.autoReplies, 'autoreply', 'Автоответ');
+    refreshMainBlockSaveButtons();
   }
+
+  var MAIN_BLOCK_IDS = ['logo', 'hero', 'services', 'promo', 'partners', 'reviews', 'social', 'consultation', 'chat'];
+  var MAIN_BLOCK_FIELDS = {
+    logo: 'logo',
+    hero: 'heroSlides',
+    services: 'serviceCards',
+    promo: 'promoBanner',
+    partners: 'partners',
+    reviews: 'reviews',
+    social: 'socialLinks',
+    consultation: 'consultation',
+    chat: 'chatWidget'
+  };
+  var mainBlockSavedSnapshots = {};
+  var mainBlockDirty = {};
+  var mainBlockSaveBound = false;
+  var mainBlockSuppressDirty = false;
+
+  function stableStringify(value) {
+    return JSON.stringify(value, function (_key, val) {
+      return val === undefined ? null : val;
+    });
+  }
+
+  function normalizeMediaForCompare(src) {
+    var v = String(src || '').trim();
+    if (!v) return '';
+    if (v.indexOf('data:image/') === 0) return 'data:' + v.length;
+    return v.split('?')[0];
+  }
+
+  function normalizeBlockForCompare(blockId, value) {
+    if (blockId === 'logo') return normalizeMediaForCompare(value);
+    if (blockId === 'promo') {
+      var p = value && typeof value === 'object' ? value : {};
+      return {
+        title: p.title || '',
+        titleColor: p.titleColor || '',
+        titleTop: p.titleTop,
+        titleLeft: p.titleLeft,
+        titleFontSize: p.titleFontSize || '',
+        titleFontWeight: p.titleFontWeight || '',
+        titleItalic: !!p.titleItalic,
+        titleUnderline: !!p.titleUnderline,
+        date: p.date || '',
+        dateColor: p.dateColor || '',
+        dateTop: p.dateTop,
+        dateLeft: p.dateLeft,
+        dateFontSize: p.dateFontSize || '',
+        dateFontWeight: p.dateFontWeight || '',
+        dateItalic: !!p.dateItalic,
+        dateUnderline: !!p.dateUnderline,
+        link: p.link || '',
+        image: normalizeMediaForCompare(p.image)
+      };
+    }
+    if (blockId === 'hero') {
+      return (Array.isArray(value) ? value : []).map(function (slide) {
+        return {
+          title: (slide && slide.title) || '',
+          titleColor: (slide && slide.titleColor) || '',
+          titleTop: slide && slide.titleTop,
+          titleLeft: slide && slide.titleLeft,
+          titleFontSize: (slide && slide.titleFontSize) || '',
+          titleFontWeight: (slide && slide.titleFontWeight) || '',
+          titleItalic: !!(slide && slide.titleItalic),
+          titleUnderline: !!(slide && slide.titleUnderline),
+          subtitle: (slide && slide.subtitle) || '',
+          subtitleColor: (slide && slide.subtitleColor) || '',
+          subtitleTop: slide && slide.subtitleTop,
+          subtitleLeft: slide && slide.subtitleLeft,
+          subtitleFontSize: (slide && slide.subtitleFontSize) || '',
+          subtitleFontWeight: (slide && slide.subtitleFontWeight) || '',
+          subtitleItalic: !!(slide && slide.subtitleItalic),
+          subtitleUnderline: !!(slide && slide.subtitleUnderline),
+          background: normalizeMediaForCompare(slide && slide.background)
+        };
+      });
+    }
+    if (blockId === 'services') {
+      return (Array.isArray(value) ? value : []).map(function (card) {
+        return {
+          title: (card && card.title) || '',
+          desc: (card && card.desc) || '',
+          link: (card && card.link) || '',
+          variant: (card && card.variant) || '',
+          icon: normalizeMediaForCompare(card && card.icon),
+          external: !!(card && card.external)
+        };
+      });
+    }
+    if (blockId === 'partners') {
+      return (Array.isArray(value) ? value : []).map(function (p) {
+        return {
+          alt: (p && p.alt) || '',
+          image: normalizeMediaForCompare(p && p.image)
+        };
+      });
+    }
+    if (blockId === 'consultation') {
+      var photos = value && Array.isArray(value.photos) ? value.photos : Array.isArray(value) ? value : [];
+      return {
+        photos: photos.map(normalizeMediaForCompare)
+      };
+    }
+    if (blockId === 'chat') {
+      var chat = value && typeof value === 'object' ? value : {};
+      return {
+        operatorName: chat.operatorName || '',
+        operatorAvatar: normalizeMediaForCompare(chat.operatorAvatar),
+        welcomeMessages: Array.isArray(chat.welcomeMessages) ? chat.welcomeMessages.map(String) : [],
+        autoReplies: Array.isArray(chat.autoReplies) ? chat.autoReplies.map(String) : []
+      };
+    }
+    return value;
+  }
+
+  function collectHeroSlidesFromForm() {
+    var heroSlides = [];
+    var heroCount = document.querySelectorAll('[id^="m_hero_bg_"][type="hidden"]').length;
+    for (var i = 0; i < heroCount; i++) {
+      var _t, _tc, _tt, _tl, _tfs, _tfw, _ti, _tu, _s, _sc, _st, _sl, _sfs, _sfw, _si, _su;
+      heroSlides.push({
+        title: ((_t = document.getElementById("m_hero_title_".concat(i))) === null || _t === void 0 ? void 0 : _t.value) || '',
+        titleColor: ((_tc = document.getElementById("m_hero_title_color_".concat(i))) === null || _tc === void 0 ? void 0 : _tc.value) || '',
+        titleTop: parseInt(((_tt = document.getElementById("m_hero_title_top_".concat(i))) === null || _tt === void 0 ? void 0 : _tt.value) || 122, 10),
+        titleLeft: parseInt(((_tl = document.getElementById("m_hero_title_left_".concat(i))) === null || _tl === void 0 ? void 0 : _tl.value) || 70, 10),
+        titleFontSize: ((_tfs = document.getElementById("m_hero_title_size_".concat(i))) === null || _tfs === void 0 ? void 0 : _tfs.value) || '',
+        titleFontWeight: ((_tfw = document.getElementById("m_hero_title_weight_".concat(i))) === null || _tfw === void 0 ? void 0 : _tfw.value) || '',
+        titleItalic: ((_ti = document.getElementById("m_hero_title_italic_".concat(i))) === null || _ti === void 0 ? void 0 : _ti.checked) || false,
+        titleUnderline: ((_tu = document.getElementById("m_hero_title_underline_".concat(i))) === null || _tu === void 0 ? void 0 : _tu.checked) || false,
+        subtitle: ((_s = document.getElementById("m_hero_subtitle_".concat(i))) === null || _s === void 0 ? void 0 : _s.value) || '',
+        subtitleColor: ((_sc = document.getElementById("m_hero_subtitle_color_".concat(i))) === null || _sc === void 0 ? void 0 : _sc.value) || '',
+        subtitleTop: parseInt(((_st = document.getElementById("m_hero_subtitle_top_".concat(i))) === null || _st === void 0 ? void 0 : _st.value) || 213, 10),
+        subtitleLeft: parseInt(((_sl = document.getElementById("m_hero_subtitle_left_".concat(i))) === null || _sl === void 0 ? void 0 : _sl.value) || 70, 10),
+        subtitleFontSize: ((_sfs = document.getElementById("m_hero_subtitle_size_".concat(i))) === null || _sfs === void 0 ? void 0 : _sfs.value) || '',
+        subtitleFontWeight: ((_sfw = document.getElementById("m_hero_subtitle_weight_".concat(i))) === null || _sfw === void 0 ? void 0 : _sfw.value) || '',
+        subtitleItalic: ((_si = document.getElementById("m_hero_subtitle_italic_".concat(i))) === null || _si === void 0 ? void 0 : _si.checked) || false,
+        subtitleUnderline: ((_su = document.getElementById("m_hero_subtitle_underline_".concat(i))) === null || _su === void 0 ? void 0 : _su.checked) || false,
+        background: readImageVal("m_hero_bg_".concat(i))
+      });
+    }
+    return heroSlides;
+  }
+
+  function collectServiceCardsFromForm() {
+    var serviceCards = [];
+    var svcCount = document.querySelectorAll('[id^="m_svc_title_"]').length;
+    for (var i = 0; i < svcCount; i++) {
+      var _link, _title, _desc, _variant;
+      var link = ((_link = document.getElementById("m_svc_link_".concat(i))) === null || _link === void 0 ? void 0 : _link.value) || '#';
+      serviceCards.push({
+        title: ((_title = document.getElementById("m_svc_title_".concat(i))) === null || _title === void 0 ? void 0 : _title.value) || '',
+        desc: ((_desc = document.getElementById("m_svc_desc_".concat(i))) === null || _desc === void 0 ? void 0 : _desc.value) || '',
+        link: link,
+        variant: ((_variant = document.getElementById("m_svc_variant_".concat(i))) === null || _variant === void 0 ? void 0 : _variant.value) || 'green',
+        icon: readImageVal("m_svc_icon_".concat(i)),
+        external: /^https?:\/\//i.test(link)
+      });
+    }
+    return serviceCards;
+  }
+
+  function collectPartnersFromForm() {
+    var partners = [];
+    var pCount = document.querySelectorAll('[id^="m_partner_alt_"]').length;
+    for (var i = 0; i < pCount; i++) {
+      var _alt;
+      partners.push({
+        alt: ((_alt = document.getElementById("m_partner_alt_".concat(i))) === null || _alt === void 0 ? void 0 : _alt.value) || '',
+        image: readImageVal("m_partner_img_".concat(i))
+      });
+    }
+    return partners;
+  }
+
+  function collectReviewsFromForm() {
+    var reviews = [];
+    var rCount = document.querySelectorAll('[id^="m_rev_text_"]').length;
+    for (var i = 0; i < rCount; i++) {
+      var _text, _n1, _n2, _r1, _r2;
+      reviews.push({
+        text: truncateReviewText(((_text = document.getElementById("m_rev_text_".concat(i))) === null || _text === void 0 ? void 0 : _text.value) || ''),
+        nameLines: [((_n1 = document.getElementById("m_rev_name1_".concat(i))) === null || _n1 === void 0 ? void 0 : _n1.value) || '', ((_n2 = document.getElementById("m_rev_name2_".concat(i))) === null || _n2 === void 0 ? void 0 : _n2.value) || ''].filter(Boolean),
+        roleLines: [((_r1 = document.getElementById("m_rev_role1_".concat(i))) === null || _r1 === void 0 ? void 0 : _r1.value) || '', ((_r2 = document.getElementById("m_rev_role2_".concat(i))) === null || _r2 === void 0 ? void 0 : _r2.value) || ''].filter(Boolean)
+      });
+    }
+    return reviews;
+  }
+
+  function collectChatWidgetFromForm() {
+    var _name;
+    return {
+      operatorName: ((_name = document.getElementById('m_chat_operator_name')) === null || _name === void 0 ? void 0 : _name.value) || 'Анна',
+      operatorAvatar: readImageVal('m_chat_operator_avatar'),
+      welcomeMessages: function () {
+        var items = collectChatTextList('welcome');
+        return items.length ? items : _toConsumableArray(DEFAULT_LANDING_MAIN.chatWidget.welcomeMessages);
+      }(),
+      autoReplies: function () {
+        var items = collectChatTextList('autoreply');
+        return items.length ? items : _toConsumableArray(DEFAULT_LANDING_MAIN.chatWidget.autoReplies);
+      }()
+    };
+  }
+
+  function collectBlockValueFromForm(blockId) {
+    if (blockId === 'logo') return readImageVal('m_logo');
+    if (blockId === 'hero') return collectHeroSlidesFromForm();
+    if (blockId === 'services') return collectServiceCardsFromForm();
+    if (blockId === 'promo') return collectPromoBannerFromForm();
+    if (blockId === 'partners') return collectPartnersFromForm();
+    if (blockId === 'reviews') return collectReviewsFromForm();
+    if (blockId === 'social') return collectSocialLinksFromForm();
+    if (blockId === 'consultation') return {
+      photos: consultationPhotosForSave()
+    };
+    if (blockId === 'chat') return collectChatWidgetFromForm();
+    return null;
+  }
+
+  function setBlockSaveButtonState(blockId, dirty, saving) {
+    var btn = document.querySelector("[data-block-save=\"".concat(blockId, "\"]"));
+    if (!btn) return;
+    btn.classList.toggle('is-dirty', !!dirty && !saving);
+    btn.classList.toggle('is-saving', !!saving);
+    if (saving) {
+      btn.disabled = true;
+      btn.textContent = 'Сохранение...';
+      return;
+    }
+    btn.textContent = 'Сохранить';
+    btn.disabled = !dirty;
+  }
+
+  function refreshMainBlockSaveButtons() {
+    MAIN_BLOCK_IDS.forEach(function (blockId) {
+      var current = collectBlockValueFromForm(blockId);
+      var snap = mainBlockSavedSnapshots[blockId];
+      if (snap === undefined) {
+        mainBlockSavedSnapshots[blockId] = stableStringify(normalizeBlockForCompare(blockId, current));
+        mainBlockDirty[blockId] = false;
+      } else {
+        var now = stableStringify(normalizeBlockForCompare(blockId, current));
+        mainBlockDirty[blockId] = now !== snap;
+      }
+      setBlockSaveButtonState(blockId, !!mainBlockDirty[blockId], false);
+    });
+  }
+
+  function acceptMainBlockSnapshotsFromForm() {
+    MAIN_BLOCK_IDS.forEach(function (blockId) {
+      var current = collectBlockValueFromForm(blockId);
+      mainBlockSavedSnapshots[blockId] = stableStringify(normalizeBlockForCompare(blockId, current));
+      mainBlockDirty[blockId] = false;
+      setBlockSaveButtonState(blockId, false, false);
+    });
+  }
+
+  function markMainBlockDirty(blockId) {
+    if (mainBlockSuppressDirty || !blockId) return;
+    mainBlockDirty[blockId] = true;
+    setBlockSaveButtonState(blockId, true, false);
+  }
+
+  function markMainBlockDirtyFromUploadId(uploadId) {
+    if (!uploadId) return;
+    if (uploadId === 'm_logo') return markMainBlockDirty('logo');
+    if (uploadId.indexOf('m_hero_bg_') === 0) return markMainBlockDirty('hero');
+    if (uploadId.indexOf('m_svc_icon_') === 0) return markMainBlockDirty('services');
+    if (uploadId === 'm_promo_img') return markMainBlockDirty('promo');
+    if (uploadId.indexOf('m_partner_img_') === 0) return markMainBlockDirty('partners');
+    if (uploadId.indexOf('m_consult_photo_') === 0) return markMainBlockDirty('consultation');
+    if (uploadId === 'm_chat_operator_avatar') return markMainBlockDirty('chat');
+  }
+
+  function bindMainBlockSaveUI() {
+    if (mainBlockSaveBound) return;
+    mainBlockSaveBound = true;
+    var root = document.getElementById('mainPageBlock');
+    if (!root) return;
+    root.addEventListener('input', function (e) {
+      var card = e.target && e.target.closest ? e.target.closest('[data-main-block]') : null;
+      if (card) markMainBlockDirty(card.getAttribute('data-main-block'));
+    });
+    root.addEventListener('change', function (e) {
+      var card = e.target && e.target.closest ? e.target.closest('[data-main-block]') : null;
+      if (card) markMainBlockDirty(card.getAttribute('data-main-block'));
+    });
+    root.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('[data-block-save]') : null;
+      if (!btn || btn.disabled) return;
+      var blockId = btn.getAttribute('data-block-save');
+      if (blockId) saveMainPageBlock(blockId);
+    });
+  }
+
+  function applyBlockValue(target, blockId, value) {
+    var field = MAIN_BLOCK_FIELDS[blockId];
+    if (!field) return;
+    target[field] = value;
+  }
+
+  function saveMainPageBlock(blockId) {
+    var field = MAIN_BLOCK_FIELDS[blockId];
+    if (!field || !mainBlockDirty[blockId]) return Promise.resolve();
+    setBlockSaveButtonState(blockId, true, true);
+    return Promise.resolve().then(function () {
+      var localPatch = collectBlockValueFromForm(blockId);
+      if (blockId === 'hero' && (!Array.isArray(localPatch) || !localPatch.length)) {
+        throw new Error('Добавьте хотя бы один слайд перед сохранением');
+      }
+      if (blockId === 'partners' && (!Array.isArray(localPatch) || !localPatch.length)) {
+        throw new Error('Список партнёров пуст — добавьте хотя бы одного');
+      }
+      return fetch('api/settings.php?key=crzrt_main_page_data&_=' + Date.now(), {
+        cache: 'no-store'
+      }).then(function (resp) {
+        if (!resp.ok) throw new Error('Не удалось загрузить текущие данные с сервера');
+        return resp.json();
+      }).then(function (serverRaw) {
+        var serverData = migrateMainPageData(serverRaw && Object.keys(serverRaw).length ? serverRaw : window.mainPageData || {});
+        var merged = JSON.parse(JSON.stringify(serverData));
+        applyBlockValue(merged, blockId, localPatch);
+        var uploadFn = window.replaceMainPageBase64WithUploads;
+        return (typeof uploadFn === 'function' ? uploadFn(merged) : Promise.resolve(merged)).then(function (uploaded) {
+          return fetch('api/settings.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              key: 'crzrt_main_page_data',
+              value: uploaded
+            })
+          }).then(function (resp) {
+            return resp.json().then(function (result) {
+              if (!resp.ok || !(result && result.success)) {
+                throw new Error(result && result.error || 'Ошибка сохранения');
+              }
+              return uploaded;
+            });
+          });
+        });
+      }).then(function (uploaded) {
+        var formState = window.mainPageData ? JSON.parse(JSON.stringify(window.mainPageData)) : migrateMainPageData({});
+        collectMainPageFromForm(formState);
+        var savedValue = uploaded[field];
+        applyBlockValue(formState, blockId, savedValue);
+        window.mainPageData = formState;
+        try {
+          localStorage.setItem('crzrt_main_page_data', JSON.stringify(formState));
+        } catch (storageErr) {
+          console.warn('localStorage backup failed', storageErr);
+        }
+        mainBlockSuppressDirty = true;
+        renderMainPageAdmin(formState);
+        mainBlockSuppressDirty = false;
+        mainBlockSavedSnapshots[blockId] = stableStringify(normalizeBlockForCompare(blockId, savedValue));
+        mainBlockDirty[blockId] = false;
+        refreshMainBlockSaveButtons();
+        setBlockSaveButtonState(blockId, false, false);
+      });
+    })['catch'](function (err) {
+      console.error(blockId, err);
+      alert('Не удалось сохранить блок: ' + ((err && err.message) || err));
+      setBlockSaveButtonState(blockId, true, false);
+    });
+  }
+
+  bindMainBlockSaveUI();
+
   function readImageVal(id) {
     var _document$getElementB4;
     return ((_document$getElementB4 = document.getElementById("".concat(id, "_val"))) === null || _document$getElementB4 === void 0 ? void 0 : _document$getElementB4.value) || '';
@@ -706,15 +1096,39 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         roleLines: [((_document$getElementB27 = document.getElementById("m_rev_role1_".concat(_i3))) === null || _document$getElementB27 === void 0 ? void 0 : _document$getElementB27.value) || '', ((_document$getElementB28 = document.getElementById("m_rev_role2_".concat(_i3))) === null || _document$getElementB28 === void 0 ? void 0 : _document$getElementB28.value) || ''].filter(Boolean)
       });
     }
-    mainPageData.heroSlides = heroSlides;
-    mainPageData.serviceCards = serviceCards;
-    mainPageData.promoBanner = collectPromoBannerFromForm();
-    mainPageData.partners = partners;
-    mainPageData.reviews = reviews;
+    // Защита от случайной перезаписи: если форма не отрисовала блоки, не затираем сохранённые данные пустыми массивами
+    if (heroSlides.length) {
+      mainPageData.heroSlides = heroSlides;
+    } else if (!Array.isArray(mainPageData.heroSlides) || !mainPageData.heroSlides.length) {
+      mainPageData.heroSlides = heroSlides;
+    }
+    if (serviceCards.length) {
+      mainPageData.serviceCards = serviceCards;
+    }
+    var promoFromForm = collectPromoBannerFromForm();
+    var hadPromo = mainPageData.promoBanner && (mainPageData.promoBanner.title || mainPageData.promoBanner.image);
+    if (promoFromForm.title || promoFromForm.image || !hadPromo) {
+      mainPageData.promoBanner = promoFromForm;
+    }
+    if (partners.length) {
+      mainPageData.partners = partners;
+    } else if (!Array.isArray(mainPageData.partners)) {
+      mainPageData.partners = [];
+    }
+    if (reviews.length) {
+      mainPageData.reviews = reviews;
+    } else if (!Array.isArray(mainPageData.reviews)) {
+      mainPageData.reviews = [];
+    }
     mainPageData.socialLinks = collectSocialLinksFromForm();
-    mainPageData.consultation = {
-      photos: consultationPhotosForSave()
-    };
+    var consultPhotos = consultationPhotosForSave();
+    var hadConsult = mainPageData.consultation && Array.isArray(mainPageData.consultation.photos) && mainPageData.consultation.photos.filter(Boolean).length > 1;
+    var consultLooksEmpty = !consultPhotos.length || consultPhotos.length === 1 && String(consultPhotos[0]).indexOf('mask_group') !== -1;
+    if (!consultLooksEmpty || !hadConsult) {
+      mainPageData.consultation = {
+        photos: consultPhotos
+      };
+    }
     mainPageData.chatWidget = {
       operatorName: ((_document$getElementB32 = document.getElementById('m_chat_operator_name')) === null || _document$getElementB32 === void 0 ? void 0 : _document$getElementB32.value) || 'Анна',
       operatorAvatar: readImageVal('m_chat_operator_avatar'),
@@ -747,6 +1161,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     if (uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_consult_photo_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_hero_bg_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_svc_icon_') || uploadId === 'm_logo') {
       setImageUploadState(uploadId, '');
+      markMainBlockDirtyFromUploadId(uploadId);
       return;
     }
     var prev = document.getElementById("".concat(uploadId, "_preview"));
@@ -758,6 +1173,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     if (val) val.value = '';
     if (clr) clr.style.display = 'none';
+    markMainBlockDirtyFromUploadId(uploadId);
   }
   function applyCroppedImage(uploadId, dataUrl) {
     if (uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_consult_photo_')) {
@@ -765,6 +1181,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     if (uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_consult_photo_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_hero_bg_') || uploadId !== null && uploadId !== void 0 && uploadId.startsWith('m_svc_icon_') || uploadId === 'm_logo') {
       setImageUploadState(uploadId, dataUrl);
+      markMainBlockDirtyFromUploadId(uploadId);
       return;
     }
     var prev = document.getElementById("".concat(uploadId, "_preview"));
@@ -776,6 +1193,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     if (val) val.value = dataUrl;
     if (clr) clr.style.display = 'inline-flex';
+    markMainBlockDirtyFromUploadId(uploadId);
   }
   function isPartnerUploadId(uploadId) {
     return Boolean(uploadId && uploadId.startsWith('m_partner_img_'));
@@ -949,6 +1367,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     migrateMainPageData: migrateMainPageData,
     renderMainPageAdmin: renderMainPageAdmin,
     collectMainPageFromForm: collectMainPageFromForm,
+    saveMainPageBlock: saveMainPageBlock,
+    markMainBlockDirty: markMainBlockDirty,
+    refreshMainBlockSaveButtons: refreshMainBlockSaveButtons,
+    acceptMainBlockSnapshotsFromForm: acceptMainBlockSnapshotsFromForm,
     pickImage: pickImage,
     clearImage: clearImage,
     applyCroppedImage: applyCroppedImage,
@@ -982,6 +1404,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         background: ''
       });
       renderMainPageAdmin(main);
+      markMainBlockDirty('hero');
     },
     removeHeroSlide: function removeHeroSlide(i) {
       var _window$saveMainPageS2, _window2;
@@ -989,6 +1412,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       (_window$saveMainPageS2 = (_window2 = window).saveMainPageStateToMemory) === null || _window$saveMainPageS2 === void 0 || _window$saveMainPageS2.call(_window2);
       main.heroSlides.splice(i, 1);
       renderMainPageAdmin(main);
+      markMainBlockDirty('hero');
     },
     addPartner: function addPartner() {
       var _window$saveMainPageS3, _window3;
@@ -1000,6 +1424,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         image: ''
       });
       renderMainPageAdmin(main);
+      markMainBlockDirty('partners');
     },
     removePartner: function removePartner(i) {
       var _window$saveMainPageS4, _window4;
@@ -1007,6 +1432,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       (_window$saveMainPageS4 = (_window4 = window).saveMainPageStateToMemory) === null || _window$saveMainPageS4 === void 0 || _window$saveMainPageS4.call(_window4);
       main.partners.splice(i, 1);
       renderMainPageAdmin(main);
+      markMainBlockDirty('partners');
     },
     addReview: function addReview() {
       var _window$saveMainPageS5, _window5;
@@ -1019,6 +1445,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         roleLines: ['', '']
       });
       renderMainPageAdmin(main);
+      markMainBlockDirty('reviews');
     },
     removeReview: function removeReview(i) {
       var _window$saveMainPageS6, _window6;
@@ -1026,6 +1453,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       (_window$saveMainPageS6 = (_window6 = window).saveMainPageStateToMemory) === null || _window$saveMainPageS6 === void 0 || _window$saveMainPageS6.call(_window6);
       main.reviews.splice(i, 1);
       renderMainPageAdmin(main);
+      markMainBlockDirty('reviews');
     },
     addChatWelcome: function addChatWelcome() {
       var _window$saveMainPageS7, _window7;
@@ -1037,6 +1465,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       }
       main.chatWidget.welcomeMessages.push('');
       renderMainPageAdmin(main);
+      markMainBlockDirty('chat');
     },
     addChatAutoReply: function addChatAutoReply() {
       var _window$saveMainPageS8, _window8;
@@ -1048,6 +1477,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       }
       main.chatWidget.autoReplies.push('');
       renderMainPageAdmin(main);
+      markMainBlockDirty('chat');
     },
     removeChatText: function removeChatText(prefix, i) {
       var _window$saveMainPageS9, _window9;
@@ -1064,6 +1494,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         main.chatWidget[key] = _toConsumableArray(fallback);
       }
       renderMainPageAdmin(main);
+      markMainBlockDirty('chat');
     },
     addConsultPhoto: function addConsultPhoto() {
       var _window$saveMainPageS0, _window0;
@@ -1074,6 +1505,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       };
       main.consultation.photos.push('');
       renderMainPageAdmin(main);
+      markMainBlockDirty('consultation');
     },
     removeConsultPhoto: function removeConsultPhoto(i) {
       var _window$saveMainPageS1, _window1;
@@ -1082,6 +1514,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       main.consultation.photos.splice(i, 1);
       if (!main.consultation.photos.length) main.consultation.photos.push('');
       renderMainPageAdmin(main);
+      markMainBlockDirty('consultation');
     }
   };
 })();

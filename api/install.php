@@ -1,10 +1,24 @@
 <?php
-// Файл: api/install.php
+/**
+ * Первичная установка таблиц CMS.
+ * Только для авторизованного superadmin.
+ * НЕ сбрасывает пароль существующих пользователей.
+ */
+session_start();
+require_once __DIR__ . '/db.php';
 
-require_once 'db.php';
+header('Content-Type: application/json; charset=utf-8');
+
+if (!isset($_SESSION['user_id']) || (($_SESSION['user_role'] ?? '') !== 'superadmin')) {
+    http_response_code(403);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Несанкционированный доступ',
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 try {
-    // 1. Таблица пользователей (администраторов)
     $pdo->exec("CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
@@ -14,7 +28,6 @@ try {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
 
-    // 2. Таблица настроек
     $pdo->exec("CREATE TABLE IF NOT EXISTS settings (
         id INT AUTO_INCREMENT PRIMARY KEY,
         setting_key VARCHAR(100) NOT NULL UNIQUE,
@@ -22,23 +35,18 @@ try {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )");
 
-    // Создаем или сбрасываем пароль первого админа
-    $hash = password_hash('crzrt_2026', PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->execute(['admin@crzrt.ru']);
-    $user = $stmt->fetch();
+    $stmt = $pdo->query('SELECT COUNT(*) AS cnt FROM users');
+    $count = (int)($stmt->fetch()['cnt'] ?? 0);
 
-    if (!$user) {
-        $stmt = $pdo->prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)");
-        $stmt->execute(['Главный Админ', 'admin@crzrt.ru', $hash, 'superadmin']);
-        echo "✅ Пользователь admin@crzrt.ru создан с паролем crzrt_2026.";
-    } else {
-        $stmt = $pdo->prepare("UPDATE users SET password_hash = ?, role = 'superadmin' WHERE email = ?");
-        $stmt->execute([$hash, 'admin@crzrt.ru']);
-        echo "✅ Пароль для admin@crzrt.ru сброшен на crzrt_2026.";
-    }
-
+    echo json_encode([
+        'success' => true,
+        'message' => 'Таблицы проверены',
+        'users_count' => $count,
+    ], JSON_UNESCAPED_UNICODE);
 } catch (\PDOException $e) {
-    echo "❌ Ошибка при создании таблиц: " . $e->getMessage();
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Ошибка при создании таблиц',
+    ], JSON_UNESCAPED_UNICODE);
 }
-?>

@@ -270,16 +270,23 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
+}
+
+/* Burger menu button hidden on desktop (must beat .btn-icon display) */
+.btn-icon.btn-burger {
+  display: none;
 }
 
 @media (max-width: 1100px) {
   .header__actions .btn--green {
     width: auto;
     min-width: 0;
-    height: 56px;
-    padding: 0 18px;
-    font-size: clamp(18px, 2.2vw, 25px);
+    height: 44px;
+    padding: 0 14px;
+    font-size: 15px;
     line-height: 1;
+    border-radius: 12px;
   }
 }
 
@@ -1698,8 +1705,80 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 @media (max-width: 1100px) {
+  .btn-icon.btn-burger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-burger.active {
+    background: var(--green);
+    color: #ffffff;
+  }
+  .btn-burger.active .burger-icon-open {
+    display: none !important;
+  }
+  .btn-burger.active .burger-icon-close {
+    display: block !important;
+  }
+
   .nav {
     display: none;
+  }
+
+  .nav.active {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    max-width: none;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 12px 24px 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    z-index: 1500;
+    animation: mobileNavSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes mobileNavSlide {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .nav.active .nav__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 4px;
+    font-size: 17px;
+    font-weight: 500;
+    color: #1E2D3D;
+    border-bottom: 1px solid #EEF2F7;
+    transition: all 0.2s ease;
+  }
+
+  .nav.active .nav__link:last-child {
+    border-bottom: none;
+  }
+
+  .nav.active .nav__link:hover,
+  .nav.active .nav__link:active {
+    color: var(--green);
+    padding-left: 8px;
   }
 }
 
@@ -1868,13 +1947,30 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   }
 
   .header__inner {
-    height: auto;
-    padding: 15px 0;
-    flex-wrap: wrap;
-    gap: 15px;
+    height: 70px;
+    min-height: 70px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+  .logo {
+    margin: 0;
+    flex-shrink: 0;
   }
   .logo__img {
-    height: 50px;
+    height: 44px;
+    width: auto;
+    max-width: 145px;
+    object-fit: contain;
+  }
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
     width: auto;
   }
 }
@@ -1936,25 +2032,45 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     font-size: 26px;
   }
 
-  .header__actions .btn--green {
-    font-size: 16px;
-    padding: 0 12px;
-    height: 44px;
+  .header__inner {
+    height: 64px;
+    min-height: 64px;
+    gap: 6px;
   }
-  .btn-icon {
-    width: 44px;
-    height: 44px;
-  }
-  .header__actions {
-    width: 100%;
-    justify-content: space-between;
-  }
+
   .logo {
-    margin: 0 auto;
+    margin: 0;
   }
+
+  .logo__img {
+    height: 38px;
+    max-width: 120px;
+  }
+
+  .header__actions {
+    width: auto;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .header__actions .btn--green {
+    font-size: 13.5px;
+    padding: 0 10px;
+    height: 40px;
+    border-radius: 10px;
+    letter-spacing: -0.03em;
+  }
+
+  .btn-icon, .btn-burger {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 10px;
+  }
+
   .first-screen {
-    padding-top: 140px;
-    --hero-banner-end: calc(140px + 48px + 380px);
+    padding-top: 100px;
+    --hero-banner-end: calc(100px + 48px + 380px);
   }
 
   .partners-track {
@@ -2469,9 +2585,16 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     height: 44px;
   }
 
-  /* Навигация уже скрыта на 1100px, здесь тоже */
+  /* Навигация уже скрыта на 1100px, здесь показана только при .active */
   .nav {
     display: none;
+  }
+  .nav.active {
+    display: flex !important;
+  }
+
+  .btn-icon.btn-burger {
+    display: flex !important;
   }
 
   /* Скрываем кнопку входа (иконка пользователя) */
@@ -2480,20 +2603,21 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     display: none !important;
   }
 
-  /* Телефон — прижимаем вправо */
+  /* Телефон и гамбургер — прижимаем вправо */
   .header__actions {
-    flex: 1;
+    flex: 0 0 auto;
     justify-content: flex-end;
-    gap: 8px;
+    gap: 6px;
   }
 
   .header__actions .btn--green {
     width: auto;
     height: 40px;
-    padding: 0 14px;
-    font-size: 15px;
-    border-radius: 12px;
+    padding: 0 10px;
+    font-size: 13.5px;
+    border-radius: 10px;
     white-space: nowrap;
+    letter-spacing: -0.03em;
   }
 
   /* ---- БАННЕР ---- */

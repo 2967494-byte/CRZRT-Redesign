@@ -1,0 +1,12 @@
+# Запрет прямого доступа к конфигам и служебным файлам
+<FilesMatch "(?i)^(db\.php|bitrix-config\.local\.php|.*\.local\.php)$">
+  Require all denied
+</FilesMatch>
+
+# На старых Apache без Require
+<IfModule !mod_authz_core.c>
+  <FilesMatch "(?i)^(db\.php|bitrix-config\.local\.php|.*\.local\.php)$">
+    Order allow,deny
+    Deny from all
+  </FilesMatch>
+</IfModule>

@@ -378,7 +378,12 @@ function _syncAllDataFromServer() {
         case 8:
           // Refresh appropriate views
           try {
-            if (currentTarget === 'main-page') renderMainPageAdmin();else if (currentTarget === 'ecp-page') renderEcpPageAdmin();else if (currentTarget === 'consulting-page') renderConsultingPageAdmin();else if (currentTarget === 'support-page') renderSupportPageAdmin();else if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();else if (currentTarget === 'testing-page') renderQuizPageAdmin();else if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();else if (currentTarget === 'news-page') renderNewsPageAdmin();else if (currentTarget === 'about-us') renderAboutUsAdmin();else if (currentTarget === 'contacts') renderContactsAdmin();else if (currentTarget === 'education') renderEducationAdmin();else if (currentTarget === 'consulting') renderConsultingAdmin();
+            if (currentTarget === 'main-page') {
+              renderMainPageAdmin();
+              if (AdminLanding && AdminLanding.acceptMainBlockSnapshotsFromForm) {
+                AdminLanding.acceptMainBlockSnapshotsFromForm();
+              }
+            } else if (currentTarget === 'ecp-page') renderEcpPageAdmin();else if (currentTarget === 'consulting-page') renderConsultingPageAdmin();else if (currentTarget === 'support-page') renderSupportPageAdmin();else if (currentTarget === 'obuchenie-page') renderObucheniePageAdmin();else if (currentTarget === 'testing-page') renderQuizPageAdmin();else if (currentTarget === 'knowledge-page') renderKnowledgePageAdmin();else if (currentTarget === 'news-page') renderNewsPageAdmin();else if (currentTarget === 'about-us') renderAboutUsAdmin();else if (currentTarget === 'contacts') renderContactsAdmin();else if (currentTarget === 'education') renderEducationAdmin();else if (currentTarget === 'consulting') renderConsultingAdmin();
           } catch (e) {
             console.error('Error rendering current target in syncAllDataFromServer:', currentTarget, e);
           }
@@ -1001,7 +1006,7 @@ function updateAccess() {
     }
     var gBtn = document.getElementById('globalSaveBtn');
     if (gBtn) {
-      gBtn.style.display = currentTarget === 'users' || currentTarget === 'settings' || currentTarget === 'education' ? 'none' : 'flex';
+      gBtn.style.display = currentTarget === 'users' || currentTarget === 'settings' || currentTarget === 'education' || currentTarget === 'main-page' ? 'none' : 'flex';
     }
   } else {
     permissionDenied.style.display = 'block';
@@ -2019,20 +2024,30 @@ function _replaceMainPageBase64WithUploads() {
           break;
         case 21:
           if (!data.chatWidget) {
-            _context8.n = 23;
+            _context8.n = 25;
             break;
           }
-          _context8.n = 22;
+          _context8.n = 24;
           return uploadOrReuse(data.chatWidget.operatorAvatar, 'chat_operator_avatar', 400, 400);
-        case 22:
+        case 24:
           data.chatWidget.operatorAvatar = _context8.v;
-        case 23:
+        case 25:
+          if (!data.logo) {
+            _context8.n = 27;
+            break;
+          }
+          _context8.n = 26;
+          return uploadOrReuse(data.logo, 'site_logo', 800, 400);
+        case 26:
+          data.logo = _context8.v;
+        case 27:
           return _context8.a(2, data);
       }
     }, _callee8);
   }));
   return _replaceMainPageBase64WithUploads.apply(this, arguments);
 }
+window.replaceMainPageBase64WithUploads = replaceMainPageBase64WithUploads;
 function replaceEcpBase64WithUploads(_x6) {
   return _replaceEcpBase64WithUploads.apply(this, arguments);
 }
@@ -2628,11 +2643,8 @@ var handleSaveClick = /*#__PURE__*/function () {
             _context4.n = 3;
             break;
           }
-          saveMainPageStateToMemory();
-          keyToSave = 'crzrt_main_page_data';
-          dataToSave = mainPageData;
-          _context4.n = 13;
-          break;
+          alert('На главной странице сохраняйте каждый блок отдельно кнопкой «Сохранить» у блока.');
+          return _context4.a(2);
         case 3:
           if (!(currentTarget === 'ecp-page')) {
             _context4.n = 4;

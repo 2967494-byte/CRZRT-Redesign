@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -13,9 +13,9 @@
   <link rel="preload" href="https://fonts.gstatic.com/s/googlesans/v69/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrw2IJlhpynSEg.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="https://fonts.gstatic.com/s/googlesans/v69/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrw2IJllpyk.woff2" as="font" type="font/woff2" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
-  <link rel="preload" href="assets/css/landing.css?v=32" as="style">
+  <link rel="preload" href="assets/css/landing.css?v=33" as="style">
   <link rel="preload" href="assets/css/obuchenie.css?v=57" as="style">
-  <link rel="stylesheet" href="assets/css/landing.css?v=32">
+  <link rel="stylesheet" href="assets/css/landing.css?v=33">
   <link rel="stylesheet" href="assets/css/obuchenie.css?v=57">
   <script>document.documentElement.classList.add('landing-content-pending', 'obuchenie-content-pending');</script>
 </head>
@@ -41,6 +41,17 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
           <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <button id="openMobileMenu" class="btn-icon btn-burger" aria-label="Меню" aria-expanded="false">
+        <svg class="burger-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="4" y1="6" x2="20" y2="6"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="18" x2="20" y2="18"/>
+        </svg>
+        <svg class="burger-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="display:none;">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
       <div id="loginModal" class="login-popover">
@@ -613,201 +624,6 @@
         <span class="enroll-modal__checkbox-text">Нажимая на кнопку, я принимаю <a href="#">условия соглашения</a>. *</span>
       </label>
       <button type="submit" class="enroll-modal__submit btn btn--primary">Отправить</button>
-        </svg>
-      </button>
-    </div>
-  </div>
-</section>
-
-<div class="third-screen">
-  <!-- SOCIAL NETWORKS BANNER -->
-  <section class="section social-section landing-dynamic">
-    <div class="container">
-      <div class="social-banner reveal-init">
-        <h2 class="social-banner__title">Мы в социальных сетях</h2>
-        <div class="social-banner__links"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONSULTATION FORM -->
-  <section class="section consultation-section" id="contacts">
-    <div class="container">
-      <div class="consultation-card">
-        <div class="consultation-card__left reveal-init">
-          <h2 class="consultation-card__title">
-            <span class="consultation-card__title-line">Получить</span>
-            <span class="consultation-card__title-line">консультацию</span>
-          </h2>
-          <div class="consultation-card__person landing-dynamic"></div>
-        </div>
-        <div class="consultation-card__right reveal-init">
-          <form class="consult-form" id="consultForm">
-            <div class="consult-form__row">
-              <input type="text" class="form-input" placeholder="Имя" id="consultName">
-              <input type="text" class="form-input" placeholder="Фамилия" id="consultSurname">
-            </div>
-            <input type="tel" class="form-input" placeholder="Телефон" id="consultPhone">
-            <input type="email" class="form-input" placeholder="Электронная почта" id="consultEmail">
-            <p class="form-label">Мне интересно</p>
-            <select class="form-input form-select" id="consultInterest" required>
-              <option value="" disabled selected hidden>---Выберите---</option>
-              <option>Обучение</option>
-              <option>Сопровождение</option>
-              <option>Юридический консалтинг</option>
-              <option>ЭТП</option>
-            </select>
-            <label class="form-check" for="agreePolicy">
-              <input type="checkbox" id="agreePolicy">
-              <span>Я соглашаюсь с политикой персональных данных</span>
-            </label>
-            <label class="form-check" for="agreeNews">
-              <input type="checkbox" id="agreeNews">
-              <span>Я хочу получать новости и полезные материалы на эл. почту</span>
-            </label>
-            <button type="submit" class="btn btn--green btn--large">Отправить</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<footer class="footer">
-  <div class="container footer__inner">
-    <div class="footer__col footer__col--address">
-      <p>г. Казань,</p>
-      <p>ул. Петербургская, 86</p>
-      <p>Пн-Чт с 09:00 до 18:00</p>
-      <p>Пт с 09:00 до 17:00</p>
-    </div>
-
-    <div class="footer__col footer__col--nav">
-      <a href="index.html#about">О нас</a>
-      <a href="index.html#news">Новости</a>
-      <a href="index.html#reviews">Нам доверяют</a>
-      <a href="index.html#contacts">Контакты</a>
-    </div>
-
-    <div class="footer__col footer__col--links">
-      <a href="knowledge.html">Документы</a>
-      <a href="team.html">Карьера</a>
-    </div>
-
-    <div class="footer__col footer__col--contacts">
-      <div class="footer-contact-group">
-        <p class="footer-contact-label">Телефон</p>
-        <a href="tel:88001017892" class="footer-phone">8 800 101-78-92</a>
-      </div>
-      <div class="footer-contact-group">
-        <p class="footer-contact-label">Основная почта</p>
-        <a href="mailto:crz.rt@tatar.ru" class="footer-email">crz.rt@tatar.ru</a>
-      </div>
-      <div class="footer-contact-group">
-        <p class="footer-contact-label">Социальные сети</p>
-        <div class="footer-socials landing-dynamic"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer__bottom">
-    <div class="container footer__bottom-inner">
-      <a href="#" class="footer__bottom-link footer__bottom-link--policy">Политика конфиденциальности</a>
-      <a href="#" class="footer__bottom-link footer__bottom-link--consent">Согласие на обработку персональных данных</a>
-      <div class="footer__bottom-aside">
-        <p class="footer__bottom-text">Мы используем файлы cookie, для персонализации сервисов и<br>повышения удобства пользования сайтом. Если вы не согласны<br>на их использование, поменяйте настройки браузера.</p>
-        <p class="footer__copyright">АО «Центр развития закупок РТ» 2026 (с) Все права защищены</p>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<!-- Modal for Calendar Course Info -->
-<div id="calendar-course-modal" class="calendar-modal" style="display: none;">
-  <div class="calendar-modal__overlay"></div>
-  <div class="calendar-modal__content">
-    <button type="button" class="calendar-modal__close" aria-label="Закрыть">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-    <div class="calendar-modal__header">
-      <div class="calendar-modal__header-row">
-        <div class="calendar-modal__header-info">
-          <div class="calendar-modal__header-meta">
-            <div id="calendar-modal-format"></div>
-            <h3 class="calendar-modal__title calendar-modal__title--inline">Курсы на <span id="calendar-modal-date-label" class="calendar-modal__date-accent"></span></h3>
-          </div>
-          <div id="calendar-modal-price" class="calendar-modal__header-price"></div>
-        </div>
-        <div id="calendar-modal-action" class="calendar-modal__action"></div>
-      </div>
-    </div>
-    <div class="calendar-modal__body" id="calendar-modal-courses">
-      <!-- Course cards will be injected here -->
-    </div>
-  </div>
-</div>
-
-<!-- Modal for Course Enrollment -->
-<div id="enroll-modal" class="calendar-modal" style="display: none;">
-  <div class="calendar-modal__overlay"></div>
-  <div class="enroll-modal__content">
-    <button type="button" class="calendar-modal__close" aria-label="Закрыть">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-    <div class="enroll-modal__header">
-      <h3 class="enroll-modal__title" id="enroll-modal-title">Курс</h3>
-      <p class="enroll-modal__date" id="enroll-modal-date">Даты</p>
-    </div>
-    <div class="enroll-modal__audience" id="enroll-audience-switch" hidden>
-      <span class="enroll-modal__audience-label enroll-modal__audience-label--active" data-audience-label="individual">Физическое лицо</span>
-      <label class="enroll-audience-toggle" aria-label="Переключить тип лица">
-        <input type="checkbox" id="enroll-audience-toggle" class="enroll-audience-toggle__input">
-        <span class="enroll-audience-toggle__track" aria-hidden="true">
-          <span class="enroll-audience-toggle__thumb"></span>
-        </span>
-      </label>
-      <span class="enroll-modal__audience-label" data-audience-label="legal">Юридическое лицо</span>
-    </div>
-    <input type="hidden" id="enroll-audience-type" name="audienceType" value="individual">
-    <form class="enroll-modal__form" id="enroll-form">
-      <div class="enroll-modal__field">
-        <input type="text" id="enroll-name" class="enroll-modal__input" placeholder="Имя *" required>
-      </div>
-      <div class="enroll-modal__field">
-        <input type="tel" id="enroll-phone" class="enroll-modal__input" placeholder="Телефон *" required>
-      </div>
-      <div class="enroll-modal__field">
-        <input type="email" id="enroll-email" class="enroll-modal__input" placeholder="E-mail *" required>
-      </div>
-      <div class="enroll-modal__field" id="enroll-company-field" hidden>
-        <input type="text" id="enroll-company" class="enroll-modal__input" placeholder="Название компании *">
-      </div>
-      <div class="enroll-modal__field">
-        <select id="enroll-source" class="enroll-modal__select" required>
-          <option value="" disabled selected hidden>Откуда узнали о мероприятии *</option>
-          <option value="1156">Реклама</option>
-          <option value="1158">Поисковая система</option>
-          <option value="1160">Рассылка по ЭДО</option>
-          <option value="1162">Рассылка по эл. почте</option>
-          <option value="1164">Звонок от АО ЦРЗ РТ</option>
-          <option value="1166">От коллег</option>
-          <option value="1168">Обучался ранее</option>
-          <option value="1170">Телеграм</option>
-          <option value="1172">ВКонтакте</option>
-          <option value="1174">Другие соц сети</option>
-        </select>
-      </div>
-      <p class="enroll-modal__status" id="enroll-form-status" hidden></p>
-      <label class="enroll-modal__checkbox-label">
-        <input type="checkbox" class="enroll-modal__checkbox" required>
-        <span class="enroll-modal__checkbox-text">Нажимая на кнопку, я принимаю <a href="#">условия соглашения</a>. *</span>
-      </label>
-      <button type="submit" class="enroll-modal__submit btn btn--primary">Отправить</button>
     </form>
     <div id="enroll-bitrix-embed" class="enroll-bitrix-embed" hidden></div>
   </div>
@@ -815,11 +631,11 @@
 
 <script src="assets/js/hero-slides.js?v=11" defer></script>
 <script src="assets/js/landing-content.js?v=16" defer></script>
-<script src="assets/js/obuchenie-calendar.js?v=20" defer></script>
-<script src="assets/js/obuchenie-content.js?v=41" defer></script>
+<script src="assets/js/obuchenie-calendar.js?v=21" defer></script>
+<script src="assets/js/obuchenie-content.js?v=42" defer></script>
 <script src="assets/js/landing.js?v=13" defer></script>
 <script src="assets/js/csr-dropdown.js?v=2" defer></script>
-<script src="assets/js/course-search.js?v=20" defer></script>
+<script src="assets/js/course-search.js?v=21" defer></script>
 
 </body>
 </html>

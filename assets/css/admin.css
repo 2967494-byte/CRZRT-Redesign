@@ -183,7 +183,7 @@ body {
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity var(--transition-fast), transform var(--transition-fast);
+            transition: opacity var(--transition-fast), transform var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
             font-size: 0.95rem;
             display: inline-flex;
             align-items: center;
@@ -193,6 +193,63 @@ body {
         .btn-save:hover {
             opacity: 0.9;
             transform: translateY(-2px);
+        }
+
+        .card-header--with-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .card-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-add-item {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .btn-block-save {
+            background-color: #9aa3b2;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: not-allowed;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.85;
+            transition: background-color var(--transition-fast), opacity var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .btn-block-save.is-dirty {
+            background-color: #00AE4D;
+            cursor: pointer;
+            opacity: 1;
+        }
+
+        .btn-block-save.is-dirty:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-block-save.is-saving {
+            cursor: wait;
+            opacity: 0.8;
+        }
+
+        [data-theme="light"] .btn-block-save:not(.is-dirty) {
+            background-color: #b8bfc9;
+            color: #fff;
         }
 
         .image-upload-wrapper {
