@@ -67,9 +67,22 @@ function bitrix_load_config(): array
     return $config;
 }
 
+function bitrix_normalize_iso_date(?string $value): string
+{
+    $value = trim((string)$value);
+    if ($value === '') {
+        return '';
+    }
+    if (preg_match('/(\d{4}-\d{2}-\d{2})/', $value, $m)) {
+        return $m[1];
+    }
+    return '';
+}
+
 function bitrix_format_date_dmY(?string $iso): string
 {
-    if (!$iso || !preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', trim($iso), $m)) {
+    $iso = bitrix_normalize_iso_date($iso);
+    if ($iso === '' || !preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $iso, $m)) {
         return '';
     }
     return sprintf('%02d.%02d.%04d', (int)$m[3], (int)$m[2], (int)$m[1]);
@@ -95,8 +108,8 @@ function bitrix_format_date_human_ru(?string $iso): string
 
 function bitrix_format_date_range_ru(?string $dateFrom, ?string $dateTo): string
 {
-    $from = trim((string)$dateFrom);
-    $to = trim((string)$dateTo);
+    $from = bitrix_normalize_iso_date($dateFrom);
+    $to = bitrix_normalize_iso_date($dateTo);
     if ($from === '' || !preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $from, $fm)) {
         return '';
     }
@@ -121,9 +134,9 @@ function bitrix_format_date_range_ru(?string $dateFrom, ?string $dateTo): string
 
 function bitrix_course_end_iso(?string $dateFrom, ?string $dateTo, int $durationDays = 1): string
 {
-    $from = trim((string)$dateFrom);
-    $explicitTo = trim((string)$dateTo);
-    if ($explicitTo !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $explicitTo)) {
+    $from = bitrix_normalize_iso_date($dateFrom);
+    $explicitTo = bitrix_normalize_iso_date($dateTo);
+    if ($explicitTo !== '') {
         return $explicitTo;
     }
     if ($from === '' || !preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $from, $m)) {
@@ -149,7 +162,8 @@ function bitrix_parse_opportunity(?string $price): ?float
 function bitrix_format_course_application_label(array $input): string
 {
     $title = trim((string)($input['title'] ?? ''));
-    $dateFrom = trim((string)($input['dateFrom'] ?? ''));
+    $dateFrom = bitrix_normalize_iso_date($input['selectedDate'] ?? '')
+        ?: bitrix_normalize_iso_date($input['dateFrom'] ?? '');
     $dateTo = bitrix_course_end_iso(
         $dateFrom,
         $input['dateTo'] ?? '',
@@ -216,13 +230,26 @@ function bitrix_build_enroll_lead_fields(array $input): array
     $sourceId = trim((string)($input['sourceId'] ?? $input['source'] ?? ''));
     $audienceType = trim((string)($input['audienceType'] ?? 'individual'));
     $courseElementId = (int)($input['courseElementId'] ?? $input['bitrixCourseElementId'] ?? 0);
+    $rawDateFrom = (string)($input['dateFrom'] ?? '');
+    $selectedDate = bitrix_normalize_iso_date($input['selectedDate'] ?? '');
+    $dateFrom = $selectedDate !== '' ? $selectedDate : bitrix_normalize_iso_date($rawDateFrom);
+    $durationDays = max(1, (int)($input['durationDays'] ?? 1));
+    // При нескольких датах старта (или выбранной дате из URL) конец считаем от длительности, иначе берём dateTo курса
+    $useCourseDateTo = $selectedDate === '' && strpos($rawDateFrom, ',') === false;
+    $dateTo = bitrix_course_end_iso(
+        $dateFrom,
+        $useCourseDateTo ? ($input['dateTo'] ?? '') : '',
+        $durationDays
+    );
+
     $courseLabel = trim((string)($input['courseLabel'] ?? ''));
     if ($courseLabel === '') {
         $courseLabel = bitrix_format_course_application_label([
             'title' => $courseTitle,
-            'dateFrom' => $input['dateFrom'] ?? '',
-            'dateTo' => $input['dateTo'] ?? '',
-            'durationDays' => (int)($input['durationDays'] ?? 1),
+            'selectedDate' => $dateFrom,
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+            'durationDays' => $durationDays,
             'format' => $input['format'] ?? 'och',
         ]);
     }
@@ -265,6 +292,16 @@ function bitrix_build_enroll_lead_fields(array $input): array
         $fields[BITRIX_UF_COURSE_TEXT] = $courseLabel;
     }
 
+    // Дата начала/окончания — те же UF, что у мероприятий в CRM
+    $startDmY = bitrix_format_date_dmY($dateFrom);
+    if ($startDmY !== '') {
+        $fields[BITRIX_UF_EVENT_START] = $startDmY;
+    }
+    $endDmY = bitrix_format_date_dmY($dateTo);
+    if ($endDmY !== '') {
+        $fields[BITRIX_UF_EVENT_END] = $endDmY;
+    }
+
     $opportunity = bitrix_parse_opportunity($input['price'] ?? '');
     if ($opportunity !== null && $opportunity > 0) {
         $fields['OPPORTUNITY'] = $opportunity;
@@ -280,7 +317,18 @@ function bitrix_build_enroll_lead_fields(array $input): array
         $fields[BITRIX_UF_CUSTOMER_LAW] = $customerLaw;
     }
 
-    $comments = trim((string)($input['comments'] ?? ''));
+    $commentParts = [];
+    $baseComments = trim((string)($input['comments'] ?? ''));
+    if ($baseComments !== '') {
+        $commentParts[] = $baseComments;
+    }
+    if ($startDmY !== '') {
+        $commentParts[] = 'Дата начала: ' . $startDmY;
+    }
+    if ($opportunity !== null && $opportunity > 0) {
+        $commentParts[] = 'Стоимость: ' . number_format($opportunity, 0, '.', ' ') . ' ₽';
+    }
+    $comments = implode("\n", $commentParts);
     if ($comments !== '') {
         $fields['COMMENTS'] = $comments;
     }

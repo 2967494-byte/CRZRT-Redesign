@@ -52,6 +52,7 @@ $fields = bitrix_build_enroll_lead_fields([
     'courseTitle' => $courseTitle,
     'sourceId' => $sourceId,
     'audienceType' => ($payload['audienceType'] ?? '') === 'legal' ? 'legal' : 'individual',
+    'selectedDate' => $payload['selectedDate'] ?? '',
     'dateFrom' => $payload['dateFrom'] ?? '',
     'dateTo' => $payload['dateTo'] ?? '',
     'durationDays' => (int)($payload['durationDays'] ?? 1),

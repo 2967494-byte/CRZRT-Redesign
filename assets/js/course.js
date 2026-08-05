@@ -178,6 +178,20 @@ function resolveCourseIdFromPath() {
   return key;
 }
 
+function resolveSelectedCourseDate(course) {
+  const urlDate = (new URLSearchParams(window.location.search).get('date') || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(urlDate)) return urlDate;
+  const raw = String((course && course.dateFrom) || '');
+  const first = raw.split(',')[0].trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(first) ? first : first;
+}
+
+function resolveCourseEnrollPrice(course) {
+  const fromCourse = String((course && course.price) || '').trim();
+  if (fromCourse) return fromCourse;
+  return (document.querySelector('.course-widget-item__price')?.textContent || '').trim();
+}
+
 function findCourseByPathKey(registry, pathKey) {
   if (!pathKey || !Array.isArray(registry)) return null;
   const key = String(pathKey).trim().toLowerCase();
@@ -394,6 +408,7 @@ function initCourseEnrollSubmit() {
       }
 
       const course = await loadCourseEnrollMeta();
+      const selectedDate = resolveSelectedCourseDate(course);
       const response = await fetch('../api/bitrix-lead-enroll.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -406,11 +421,12 @@ function initCourseEnrollSubmit() {
           source: sourceValue,
           sourceLabel,
           courseTitle: course?.title || '',
-          dateFrom: course?.dateFrom || '',
+          selectedDate,
+          dateFrom: selectedDate || course?.dateFrom || '',
           dateTo: course?.dateTo || '',
           durationDays: course?.durationDays || 1,
           format: course?.format || 'och',
-          price: course?.price || '',
+          price: resolveCourseEnrollPrice(course),
           bitrixCourseElementId: course?.bitrixCourseElementId || null,
           forCustomers: Boolean(course?.forCustomers),
           forSuppliers: Boolean(course?.forSuppliers),
