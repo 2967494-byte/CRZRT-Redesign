@@ -156,11 +156,10 @@
 
     // Click → open course page for specific date
     function openCoursePage() {
-      if (!course || !course.id) return;
-      var url = 'courses/' + course.id + '.html';
-      if (dateIso) {
-        url += '?date=' + encodeURIComponent(dateIso);
-      }
+      if (!course || !(course.slug || course.id)) return;
+      var url = (window.ObuchenieContent && window.ObuchenieContent.getCoursePageUrl)
+        ? window.ObuchenieContent.getCoursePageUrl(course, dateIso ? { date: dateIso } : null)
+        : ('courses/' + (course.slug || course.id) + '.html' + (dateIso ? '?date=' + encodeURIComponent(dateIso) : ''));
       window.location.href = url;
     }
     card.addEventListener('click', openCoursePage);

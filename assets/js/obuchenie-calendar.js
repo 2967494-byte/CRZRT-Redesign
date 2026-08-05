@@ -43,7 +43,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function createEnrollButton(course, dateLabel, dateIso) {
     var enrollBtn = document.createElement('a');
-    var href = 'courses/' + course.id + '.html';
+    var href = (window.ObuchenieContent && window.ObuchenieContent.getCoursePageUrl)
+      ? window.ObuchenieContent.getCoursePageUrl(course)
+      : ('courses/' + (course.slug || course.id) + '.html');
     if (dateIso) {
       href += '?date=' + encodeURIComponent(dateIso);
     }
@@ -174,7 +176,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     
     if (coursesOnDate.length === 1) {
-      window.location.href = 'courses/' + coursesOnDate[0].id + '.html?date=' + targetIso;
+      var singleUrl = (window.ObuchenieContent && window.ObuchenieContent.getCoursePageUrl)
+        ? window.ObuchenieContent.getCoursePageUrl(coursesOnDate[0], { date: targetIso })
+        : ('courses/' + (coursesOnDate[0].slug || coursesOnDate[0].id) + '.html?date=' + targetIso);
+      window.location.href = singleUrl;
       return;
     }
     
@@ -183,7 +188,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function openCourseDetailModal(course) {
     if (!course) return;
-    window.location.href = 'courses/' + course.id + '.html';
+    var detailUrl = (window.ObuchenieContent && window.ObuchenieContent.getCoursePageUrl)
+      ? window.ObuchenieContent.getCoursePageUrl(course)
+      : ('courses/' + (course.slug || course.id) + '.html');
+    window.location.href = detailUrl;
   }
   function setCourseDays(map) {
     if (!map || _typeof(map) !== 'object') return;

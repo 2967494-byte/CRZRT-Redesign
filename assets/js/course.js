@@ -174,7 +174,19 @@ function updateCourseStartDate() {
 
 function resolveCourseIdFromPath() {
   const file = (window.location.pathname.split('/').pop() || '').trim();
-  return file.replace(/\.html$/i, '');
+  const key = file.replace(/\.html$/i, '');
+  return key;
+}
+
+function findCourseByPathKey(registry, pathKey) {
+  if (!pathKey || !Array.isArray(registry)) return null;
+  const key = String(pathKey).trim().toLowerCase();
+  return registry.find((item) => {
+    if (!item) return false;
+    if (item.id === pathKey || item.id === key) return true;
+    const slug = String(item.slug || '').trim().toLowerCase();
+    return slug && slug === key;
+  }) || null;
 }
 
 function getCourseStartDateLabel() {
@@ -324,9 +336,9 @@ async function loadCourseEnrollMeta() {
     }
     const data = await resp.json();
     const course = Array.isArray(data.courseRegistry)
-      ? data.courseRegistry.find((item) => item && item.id === courseId)
+      ? findCourseByPathKey(data.courseRegistry, courseId)
       : null;
-    courseEnrollMetaCache = course ? { ...fallback, ...course } : fallback;
+    courseEnrollMetaCache = course ? { ...fallback, ...course, id: course.id || courseId } : fallback;
     return courseEnrollMetaCache;
   } catch (_error) {
     courseEnrollMetaCache = fallback;
@@ -472,7 +484,7 @@ async function wireCourseProgramPdfLinks() {
 
     const data = await resp.json();
     const course = Array.isArray(data.courseRegistry)
-      ? data.courseRegistry.find((item) => item && item.id === courseId)
+      ? findCourseByPathKey(data.courseRegistry, courseId)
       : null;
     const pdfUrl = resolveCourseAssetUrl(course && course.programPdf);
     if (!pdfUrl) {

@@ -71,6 +71,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once 'generate_courses.php';
             $genResult = generate_static_courses($data['value']['courseRegistry']);
             $response['generated_pages'] = $genResult;
+
+            // Сохраняем вычисленные slug обратно в настройки
+            if (!empty($genResult['courseRegistry']) && is_array($genResult['courseRegistry'])) {
+                $data['value']['courseRegistry'] = $genResult['courseRegistry'];
+                $valueWithSlugs = json_encode($data['value'], JSON_UNESCAPED_UNICODE);
+                $stmt->execute([$key, $valueWithSlugs, $valueWithSlugs]);
+                $response['size'] = strlen($valueWithSlugs);
+            }
         }
 
         echo json_encode($response);

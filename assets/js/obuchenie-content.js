@@ -208,6 +208,111 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   function createCourseId() {
     return "course_".concat(Date.now(), "_").concat(Math.random().toString(36).slice(2, 8));
   }
+  var COURSE_SLUG_TRANSLIT = {
+    а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z', и: 'i', й: 'i',
+    к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f',
+    х: 'h', ц: 'c', ч: 'ch', ш: 'sh', щ: 'sch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya'
+  };
+  function slugifyCourseText(value) {
+    var raw = String(value || '').trim().toLowerCase();
+    if (!raw) return '';
+    var out = '';
+    for (var i = 0; i < raw.length; i++) {
+      var ch = raw.charAt(i);
+      if (COURSE_SLUG_TRANSLIT.hasOwnProperty(ch)) {
+        out += COURSE_SLUG_TRANSLIT[ch];
+      } else if (/[a-z0-9]/.test(ch)) {
+        out += ch;
+      } else if (/[\s_./\\+,;:()[\]{}«»"']/.test(ch) || ch === '-' || ch === '—') {
+        out += '-';
+      }
+    }
+    return out.replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
+  }
+  function isLegacyCourseSlug(slug) {
+    var value = String(slug || '').trim();
+    if (!value) return true;
+    return /^(distancionnyi|ochnyi)(-|$)/.test(value);
+  }
+  function buildCourseSlugBase(course) {
+    var title = String((course === null || course === void 0 ? void 0 : course.title) || '').trim();
+    var isWebinar = /вебинар/i.test(title);
+    var typePart = isWebinar ? 'vebinar' : 'kurs';
+    var hoursMatch = title.match(/\((\d+)\s*ак/i);
+    var hours = hoursMatch ? hoursMatch[1] : '';
+    var core = title;
+    core = core.replace(/[«»„""]/g, '');
+    core = core.replace(/^\s*вебинар\s+для\s+(заказчиков|поставщиков)\s*(на\s+тему)?\s*:?\s*/i, '');
+    core = core.replace(/^\s*вебинар\s*:?\s*/i, '');
+    core = core.replace(/^\s*(дистанционный|очный)\s+/i, '');
+    core = core.replace(/^\s*курс\s+повышения\s+квалификации(\s+для\s+поставщиков)?(\s+по)?\s*/i, '');
+    core = core.replace(/^\s*по\s+/i, '');
+    var coreSlug = slugifyCourseText(core);
+    coreSlug = coreSlug.replace(/-?\d+-ak-ch-?/g, '-');
+    coreSlug = coreSlug.replace(/-(44-fz|223-fz)(?=-|$)/g, '');
+    coreSlug = coreSlug.replace(/^(44-fz|223-fz)(?=-|$)/g, '');
+    coreSlug = coreSlug.replace(/-+/g, '-').replace(/^-|-$/g, '');
+    if (!coreSlug || /^(po|po-\d+-fz|\d+-fz)$/.test(coreSlug)) {
+      coreSlug = isWebinar ? '' : 'pk';
+    }
+    if (coreSlug.length > 40) {
+      coreSlug = coreSlug.slice(0, 40).replace(/-+$/g, '');
+      var cut = coreSlug.lastIndexOf('-');
+      if (cut >= 18) coreSlug = coreSlug.slice(0, cut);
+    }
+    var parts = [typePart];
+    if (!isWebinar) {
+      parts.push((course === null || course === void 0 ? void 0 : course.format) === 'dist' ? 'dist' : 'och');
+    }
+    if (coreSlug) parts.push(coreSlug);
+    if (hours) parts.push(hours);
+    var joined = parts.join('-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    var lawParts = [];
+    if (course !== null && course !== void 0 && course.is44fz && joined.indexOf('44') === -1) lawParts.push('44');
+    if (course !== null && course !== void 0 && course.is223fz && joined.indexOf('223') === -1) lawParts.push('223');
+    if (lawParts.length) joined += '-' + lawParts.join('-');
+    joined = joined.replace(/-+/g, '-').replace(/^-|-$/g, '');
+    if (joined.length > 60) {
+      joined = joined.slice(0, 60).replace(/-+$/g, '');
+      var joinCut = joined.lastIndexOf('-');
+      if (joinCut >= 24) joined = joined.slice(0, joinCut);
+    }
+    return joined || 'course';
+  }
+  function ensureUniqueCourseSlug(desiredSlug, registry, excludeId) {
+    var base = slugifyCourseText(desiredSlug) || 'course';
+    // Не даём slug совпасть с техническим id-шаблоном course_* без необходимости
+    if (/^course_\d+_/.test(base)) base = 'course';
+    var list = Array.isArray(registry) ? registry : [];
+    var taken = {};
+    list.forEach(function (item) {
+      if (!item) return;
+      if (excludeId && item.id === excludeId) return;
+      var existing = slugifyCourseText(item.slug || '');
+      if (existing) taken[existing] = true;
+    });
+    if (!taken[base]) return base;
+    var n = 2;
+    while (taken["".concat(base, "-").concat(n)]) n += 1;
+    return "".concat(base, "-").concat(n);
+  }
+  function getCoursePagePath(course) {
+    if (!course) return '';
+    var slug = slugifyCourseText(course.slug || '') || String(course.id || '').trim();
+    if (!slug) return '';
+    return "courses/".concat(slug, ".html");
+  }
+  function getCoursePageUrl(course, query) {
+    var path = getCoursePagePath(course);
+    if (!path) return '#';
+    if (!query || typeof query !== 'object') return path;
+    var params = Object.keys(query).filter(function (key) {
+      return query[key] !== undefined && query[key] !== null && String(query[key]) !== '';
+    }).map(function (key) {
+      return "".concat(encodeURIComponent(key), "=").concat(encodeURIComponent(String(query[key])));
+    });
+    return params.length ? "".concat(path, "?").concat(params.join('&')) : path;
+  }
   function addDays(date, days) {
     var next = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     next.setDate(next.getDate() + days);
@@ -633,6 +738,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     }
     return {
       id: String((raw === null || raw === void 0 ? void 0 : raw.id) || createCourseId() || "course_".concat(index)),
+      slug: slugifyCourseText((raw === null || raw === void 0 ? void 0 : raw.slug) || '') || '',
       title: String((raw === null || raw === void 0 ? void 0 : raw.title) || '').trim(),
       format: format,
       dateFrom: dateFrom,
@@ -656,6 +762,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       targetAudience: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.targetAudience) ? raw.targetAudience : String((raw === null || raw === void 0 ? void 0 : raw.targetAudience) || '').trim(),
       outcomes: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.outcomes) ? raw.outcomes : String((raw === null || raw === void 0 ? void 0 : raw.outcomes) || '').trim(),
       documentType: String((raw === null || raw === void 0 ? void 0 : raw.documentType) || '').trim(),
+      issueDocument: (raw === null || raw === void 0 ? void 0 : raw.issueDocument) !== false,
       documentImage: String((raw === null || raw === void 0 ? void 0 : raw.documentImage) || '').trim(),
       programPdf: String((raw === null || raw === void 0 ? void 0 : raw.programPdf) || '').trim(),
       program: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.program) ? raw.program : []
@@ -663,9 +770,14 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   }
   function normalizeCourseRegistry(raw) {
     if (!Array.isArray(raw)) return [];
-    return raw.map(function (item, index) {
+    var list = raw.map(function (item, index) {
       return normalizeCourseRegistryItem(item, index);
     });
+    list.forEach(function (course) {
+      var desired = !isLegacyCourseSlug(course.slug) ? course.slug : buildCourseSlugBase(course);
+      course.slug = ensureUniqueCourseSlug(desired || buildCourseSlugBase(course), list, course.id);
+    });
+    return list;
   }
   function deriveCourseDaysByMonth(registry) {
     var result = {};
@@ -1398,7 +1510,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         month = _formatUpcomingEventD.month;
       var monthHtml = month ? "<span class=\"event-date__month\">".concat(escapeHtml(month), "</span>") : '';
       var detailAttrs = buildCourseDetailAttrs(course);
-      return "<li class=\"events-list__item\">\n          <a href=\"courses/".concat(escapeHtml(course.id), ".html\" class=\"events-list__btn\">\n            <div class=\"event-date\"><span class=\"event-date__range\">").concat(escapeHtml(range), "</span>").concat(monthHtml, "</div>\n            <div class=\"event-desc\">").concat(escapeHtml(course.title), "</div>\n          </a>\n        </li>");
+      return "<li class=\"events-list__item\">\n          <a href=\"".concat(escapeHtml(getCoursePagePath(course)), "\" class=\"events-list__btn\">\n            <div class=\"event-date\"><span class=\"event-date__range\">").concat(escapeHtml(range), "</span>").concat(monthHtml, "</div>\n            <div class=\"event-desc\">").concat(escapeHtml(course.title), "</div>\n          </a>\n        </li>");
     }).join('');
     var allLink = document.getElementById('landingAllEventsLink');
     if (allLink) {
@@ -1522,8 +1634,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
               </div>
             </div>
           </div>
-          <a href="courses/${escapeHtml(c.id)}.html" class="occ-card__btn">\u0417\u0430\u043F\u0438\u0441\u0430\u0442\u044C\u0441\u044F</a>
-          <a href="courses/${escapeHtml(c.id)}.html" class="occ-card__more">\u043F\u043E\u0434\u0440\u043E\u0431\u043D\u0435\u0435 ${MORE_ARROW_SVG}</a>
+          <a href="${escapeHtml(getCoursePagePath(c))}" class="occ-card__btn">\u0417\u0430\u043F\u0438\u0441\u0430\u0442\u044C\u0441\u044F</a>
+          <a href="${escapeHtml(getCoursePagePath(c))}" class="occ-card__more">\u043F\u043E\u0434\u0440\u043E\u0431\u043D\u0435\u0435 ${MORE_ARROW_SVG}</a>
         </article>`;
     }).join('');
   }
@@ -1680,6 +1792,11 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 
     getCourseDateRanges: getCourseDateRanges,
     createCourseId: createCourseId,
+    slugifyCourseText: slugifyCourseText,
+    buildCourseSlugBase: buildCourseSlugBase,
+    ensureUniqueCourseSlug: ensureUniqueCourseSlug,
+    getCoursePagePath: getCoursePagePath,
+    getCoursePageUrl: getCoursePageUrl,
     parseIsoDate: parseIsoDate,
     formatIsoDate: formatIsoDate,
     parseBitrixFormRef: parseBitrixFormRef,

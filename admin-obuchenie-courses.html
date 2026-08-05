@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 
 <head>
@@ -80,6 +80,16 @@
                 <div class="form-group">
                     <label for="courseFormTitle">Название</label>
                     <input type="text" class="form-control" id="courseFormTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="courseFormSlug">Адрес страницы (URL)</label>
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        <span style="color:var(--text-secondary);font-size:0.85rem;white-space:nowrap;">/courses/</span>
+                        <input type="text" class="form-control" id="courseFormSlug" placeholder="ochnyi-course-223-fz" style="flex:1;min-width:200px;" autocomplete="off">
+                        <span style="color:var(--text-secondary);font-size:0.85rem;">.html</span>
+                        <button type="button" class="btn-save" id="courseFormSlugGenerate" style="padding:8px 12px;font-size:0.85rem;">Из названия</button>
+                    </div>
+                    <p class="form-hint" style="margin:4px 0 0;font-size:0.8rem;color:var(--text-secondary);">Человекочитаемый адрес. Не меняется при смене дат курса. Латиница, цифры и дефисы.</p>
                 </div>
                 
                 <div class="admin-courses-modal__row-4">
@@ -204,6 +214,13 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="checkbox-group" style="font-weight: 600; cursor: pointer;">
+                        <input type="checkbox" id="courseFormIssueDocument" checked> Выдаем документ
+                    </label>
+                    <p class="form-hint" style="margin: 4px 0 0; font-size: 0.8rem; color: var(--text-secondary);">Если галочка снята, блок «Выдаваемый документ» и навигация к нему не будут отображаться на странице курса.</p>
+                </div>
+
+                <div class="form-group">
                     <label for="courseFormDocumentType">Документ об окончании</label>
                     <input type="text" class="form-control" id="courseFormDocumentType" placeholder="Удостоверение о повышении квалификации">
                 </div>
@@ -313,8 +330,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
-    <script src="assets/js/obuchenie-content.js?v=28"></script>
-    <script src="assets/js/admin-obuchenie-courses.js?v=15"></script>
+    <script src="assets/js/obuchenie-content.js?v=42"></script>
+    <script src="assets/js/admin-obuchenie-courses.js?v=16"></script>
 </body>
 
 </html>

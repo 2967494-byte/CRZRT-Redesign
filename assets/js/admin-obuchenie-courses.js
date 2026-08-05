@@ -131,7 +131,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   }
   function _loadPageData() {
     _loadPageData = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-      var raw, response, text, local, _t;
+      var raw, response, text, local, needsSlugPersist, _t;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.p = _context.n) {
           case 0:
@@ -170,7 +170,19 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
             courses = normalizeCourses(pageData.courseRegistry || []);
             pageData.courseRegistry = courses;
             syncCalendarDays();
+            needsSlugPersist = Array.isArray(raw && raw.courseRegistry) && raw.courseRegistry.some(function (item) {
+              return !(item && String(item.slug || '').trim());
+            });
+            if (!needsSlugPersist) {
+              _context.n = 8;
+              break;
+            }
+            _context.n = 7;
+            return persistPageData('Адреса страниц курсов обновлены');
           case 7:
+            courses = normalizeCourses(pageData.courseRegistry || courses);
+            pageData.courseRegistry = courses;
+          case 8:
             return _context.a(2);
         }
       }, _callee, null, [[1, 5]]);
@@ -307,6 +319,28 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       return "\n        <tr data-course-id=\"".concat(escapeHtml(course.id), "\">\n          <td>").concat(escapeHtml(formatDateLabel(course.dateFrom)), "</td>\n          <td><strong>").concat(escapeHtml(course.title || 'Без названия'), "</strong></td>\n          <td>").concat(escapeHtml(formatCourseFormat(course.format)), "</td>\n          <td>").concat(escapeHtml(String(course.durationDays || 1)), "</td>\n          <td class=\"courses-table__description\" title=\"").concat(escapeHtml(stripHtml(typeof course.description === 'string' ? course.description : ((_course$description = course.description) === null || _course$description === void 0 || (_course$description = _course$description[0]) === null || _course$description === void 0 ? void 0 : _course$description.text) || '')), "\">").concat(escapeHtml(truncateText(typeof course.description === 'string' ? course.description : ((_course$description2 = course.description) === null || _course$description2 === void 0 || (_course$description2 = _course$description2[0]) === null || _course$description2 === void 0 ? void 0 : _course$description2.text) || '')) || '—', "</td>\n          <td>").concat(escapeHtml(course.price || '—'), "</td>\n          <td>").concat(escapeHtml(formatCourseAudience(course)), "</td>\n          <td class=\"courses-table__actions\">\n            <button type=\"button\" class=\"btn-edit\" data-action=\"edit\" data-id=\"").concat(escapeHtml(course.id), "\">\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C</button>\n            <button type=\"button\" class=\"btn-delete\" data-action=\"delete\" data-id=\"").concat(escapeHtml(course.id), "\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</button>\n          </td>\n        </tr>");
     }).join('');
   }
+  function refreshCourseSlugSuggestion(force) {
+    if (!els.formSlug || !api.buildCourseSlugBase) return;
+    if (!force && els.formSlug.dataset.manual === '1') return;
+    var draft = {
+      title: (els.formTitle && els.formTitle.value || '').trim(),
+      format: els.formFormat && els.formFormat.value === 'dist' ? 'dist' : 'och',
+      is44fz: false,
+      is223fz: false
+    };
+    var checks = document.querySelectorAll('#courseFormDynamicOptions input[type="checkbox"]');
+    checks.forEach(function (cb) {
+      if (!cb.checked) return;
+      if (cb.value === '44-ФЗ') draft.is44fz = true;
+      if (cb.value === '223-ФЗ') draft.is223fz = true;
+    });
+    var base = api.buildCourseSlugBase(draft);
+    var unique = api.ensureUniqueCourseSlug
+      ? api.ensureUniqueCourseSlug(base, courses, els.formId && els.formId.value || '')
+      : base;
+    els.formSlug.value = unique;
+    els.formSlug.dataset.manual = '0';
+  }
   function openModal(course) {
     var isEdit = Boolean(course);
     els.modalTitle.textContent = isEdit ? 'Редактировать курс' : 'Добавить курс';
@@ -317,6 +351,13 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       els.formDateFrom.value = (course === null || course === void 0 ? void 0 : course.dateFrom) || '';
     }
     els.formTitle.value = (course === null || course === void 0 ? void 0 : course.title) || '';
+    if (els.formSlug) {
+      els.formSlug.value = (course === null || course === void 0 ? void 0 : course.slug) || '';
+      els.formSlug.dataset.manual = isEdit && course && course.slug ? '1' : '0';
+      if (!isEdit || !(course && course.slug)) {
+        refreshCourseSlugSuggestion(true);
+      }
+    }
     els.formFormat.value = (course === null || course === void 0 ? void 0 : course.format) === 'dist' ? 'dist' : 'och';
     els.formDurationDays.value = String((course === null || course === void 0 ? void 0 : course.durationDays) || 1);
     var descHtml = '';
@@ -375,6 +416,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (els.formDocumentType) {
       els.formDocumentType.value = (course === null || course === void 0 ? void 0 : course.documentType) || '';
     }
+    if (els.formIssueDocument) {
+      els.formIssueDocument.checked = course ? (course === null || course === void 0 ? void 0 : course.issueDocument) !== false : true;
+    }
     if (els.formProgramContainer) {
       els.formProgramContainer.innerHTML = '';
       if (Array.isArray(course === null || course === void 0 ? void 0 : course.program)) {
@@ -404,6 +448,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       datePickerInstance.clear();
     }
     els.formId.value = '';
+    if (els.formSlug) {
+      els.formSlug.value = '';
+      els.formSlug.dataset.manual = '0';
+    }
     if (els.formForIndividuals) els.formForIndividuals.checked = true;
     if (els.formForLegalEntities) els.formForLegalEntities.checked = true;
     var dynamicContainer = document.getElementById('courseFormDynamicOptions');
@@ -420,6 +468,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (els.formTargetAudience) els.formTargetAudience.value = '';
     if (els.formOutcomes) els.formOutcomes.value = '';
     if (els.formDocumentType) els.formDocumentType.value = '';
+    if (els.formIssueDocument) els.formIssueDocument.checked = true;
     if (els.formProgramContainer) els.formProgramContainer.innerHTML = '';
     if (els.formProgramPdf) els.formProgramPdf.value = '';
     if (els.formDocumentImage) els.formDocumentImage.value = '';
@@ -490,6 +539,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
             existingLeadId = existingIndex >= 0 ? courses[existingIndex].bitrixLeadId : null;
             payload = {
               id: els.formId.value || (api.createCourseId ? api.createCourseId() : "course_".concat(Date.now())),
+              slug: els.formSlug && els.formSlug.value ? els.formSlug.value.trim() : '',
               title: els.formTitle.value.trim(),
               format: els.formFormat.value === 'dist' ? 'dist' : 'och',
               dateFrom: els.formDateFrom.value,
@@ -511,6 +561,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               targetAudience: els.formTargetAudience ? els.formTargetAudience.value.trim() : '',
               outcomes: els.formOutcomes ? els.formOutcomes.value.trim() : '',
               documentType: els.formDocumentType ? els.formDocumentType.value.trim() : '',
+              issueDocument: els.formIssueDocument ? Boolean(els.formIssueDocument.checked) : true,
               documentImage: els.formDocumentImage ? els.formDocumentImage.value.trim() : '',
               programPdf: els.formProgramPdf ? els.formProgramPdf.value.trim() : '',
               speakers: extractSpeakersData(),
@@ -518,6 +569,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               active: true
             };
             normalized = api.normalizeCourseRegistryItem ? api.normalizeCourseRegistryItem(payload, courses.length) : payload;
+            if (api.ensureUniqueCourseSlug) {
+              normalized.slug = api.ensureUniqueCourseSlug(normalized.slug || api.buildCourseSlugBase(normalized), courses, normalized.id);
+            }
             isNew = existingIndex < 0;
             bitrixSyncNote = '';
             if (existingIndex >= 0) {
@@ -745,6 +799,31 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     });
     (_$6 = $('courseModalClose')) === null || _$6 === void 0 || _$6.addEventListener('click', closeModal);
     (_$7 = $('courseModalCancel')) === null || _$7 === void 0 || _$7.addEventListener('click', closeModal);
+    if (els.formTitle) {
+      els.formTitle.addEventListener('input', function () {
+        return refreshCourseSlugSuggestion(false);
+      });
+    }
+    if (els.formFormat) {
+      els.formFormat.addEventListener('change', function () {
+        return refreshCourseSlugSuggestion(false);
+      });
+    }
+    if (els.formSlug) {
+      els.formSlug.addEventListener('input', function () {
+        els.formSlug.dataset.manual = '1';
+      });
+    }
+    if (els.formSlugGenerate) {
+      els.formSlugGenerate.addEventListener('click', function () {
+        refreshCourseSlugSuggestion(true);
+      });
+    }
+    document.addEventListener('change', function (e) {
+      if (e.target && e.target.closest && e.target.closest('#courseFormDynamicOptions')) {
+        refreshCourseSlugSuggestion(false);
+      }
+    });
     (_els$wysiwygBtns = els.wysiwygBtns) === null || _els$wysiwygBtns === void 0 || _els$wysiwygBtns.forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.preventDefault();
@@ -1261,12 +1340,15 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.formId = $('courseFormId');
     els.formDateFrom = $('courseFormDateFrom');
     els.formTitle = $('courseFormTitle');
+    els.formSlug = $('courseFormSlug');
+    els.formSlugGenerate = $('courseFormSlugGenerate');
     els.formFormat = $('courseFormFormat');
     els.formDurationDays = $('courseFormDurationDays');
     els.formDescription = $('courseFormDescription');
     els.formTargetAudience = $('courseFormTargetAudience');
     els.formOutcomes = $('courseFormOutcomes');
     els.formDocumentType = $('courseFormDocumentType');
+    els.formIssueDocument = $('courseFormIssueDocument');
     els.formProgramContainer = $('courseFormProgramContainer');
     els.btnAddProgramModule = $('btnAddProgramModule');
 

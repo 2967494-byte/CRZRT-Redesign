@@ -32,6 +32,128 @@ function build_course_program_pdf_link($url, $className, $label, $withDownloadAt
     return '<a href="' . $normalized . '" target="_blank" rel="noopener noreferrer" class="' . $className . '"' . $downloadAttr . '>' . $label . '</a>';
 }
 
+function crzrt_slugify_course_text($value) {
+    $map = [
+        'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'ж' => 'zh',
+        'з' => 'z', 'и' => 'i', 'й' => 'i', 'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o',
+        'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't', 'у' => 'u', 'ф' => 'f', 'х' => 'h', 'ц' => 'c',
+        'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch', 'ъ' => '', 'ы' => 'y', 'ь' => '', 'э' => 'e', 'ю' => 'yu',
+        'я' => 'ya',
+    ];
+    $raw = mb_strtolower(trim((string)$value), 'UTF-8');
+    if ($raw === '') {
+        return '';
+    }
+    $out = '';
+    $len = mb_strlen($raw, 'UTF-8');
+    for ($i = 0; $i < $len; $i++) {
+        $ch = mb_substr($raw, $i, 1, 'UTF-8');
+        if (isset($map[$ch])) {
+            $out .= $map[$ch];
+        } elseif (preg_match('/[a-z0-9]/u', $ch)) {
+            $out .= $ch;
+        } else {
+            $out .= '-';
+        }
+    }
+    $out = preg_replace('/-+/', '-', $out);
+    $out = trim($out, '-');
+    return mb_substr($out, 0, 80, 'UTF-8');
+}
+
+function crzrt_is_legacy_course_slug($slug) {
+    $slug = trim((string)$slug);
+    if ($slug === '') {
+        return true;
+    }
+    // Старая авто-формула: distancionnyi-… / ochnyi-…
+    return (bool)preg_match('/^(distancionnyi|ochnyi)(-|$)/', $slug);
+}
+
+function crzrt_build_course_slug_auto($course) {
+    $title = trim((string)($course['title'] ?? ''));
+    $isWebinar = (bool)preg_match('/вебинар/ui', $title);
+    $typePart = $isWebinar ? 'vebinar' : 'kurs';
+
+    $hours = '';
+    if (preg_match('/\((\d+)\s*ак/ui', $title, $m)) {
+        $hours = $m[1];
+    }
+
+    $core = $title;
+    $core = preg_replace('/[«»„""]/u', '', $core);
+    $core = preg_replace('/^\s*вебинар\s+для\s+(заказчиков|поставщиков)\s*(на\s+тему)?\s*:?\s*/ui', '', $core);
+    $core = preg_replace('/^\s*вебинар\s*:?\s*/ui', '', $core);
+    $core = preg_replace('/^\s*(дистанционный|очный)\s+/ui', '', $core);
+    $core = preg_replace('/^\s*курс\s+повышения\s+квалификации(\s+для\s+поставщиков)?(\s+по)?\s*/ui', '', $core);
+    $core = preg_replace('/^\s*по\s+/ui', '', $core);
+
+    $coreSlug = crzrt_slugify_course_text($core);
+    $coreSlug = preg_replace('/-?\d+-ak-ch-?/u', '-', $coreSlug);
+    $coreSlug = preg_replace('/-(44-fz|223-fz)(?=-|$)/u', '', $coreSlug);
+    $coreSlug = preg_replace('/^(44-fz|223-fz)(?=-|$)/u', '', $coreSlug);
+    $coreSlug = trim(preg_replace('/-+/', '-', (string)$coreSlug), '-');
+
+    if ($coreSlug === '' || preg_match('/^(po|po-\d+-fz|\d+-fz)$/', $coreSlug)) {
+        $coreSlug = $isWebinar ? '' : 'pk';
+    }
+
+    if (mb_strlen($coreSlug, 'UTF-8') > 40) {
+        $coreSlug = rtrim(mb_substr($coreSlug, 0, 40, 'UTF-8'), '-');
+        $pos = mb_strrpos($coreSlug, '-', 0, 'UTF-8');
+        if ($pos !== false && $pos >= 18) {
+            $coreSlug = mb_substr($coreSlug, 0, $pos, 'UTF-8');
+        }
+    }
+
+    $parts = [$typePart];
+    if (!$isWebinar) {
+        $parts[] = (($course['format'] ?? '') === 'dist') ? 'dist' : 'och';
+    }
+    if ($coreSlug !== '') {
+        $parts[] = $coreSlug;
+    }
+    if ($hours !== '') {
+        $parts[] = $hours;
+    }
+
+    $joined = trim(preg_replace('/-+/', '-', implode('-', $parts)), '-');
+
+    $lawParts = [];
+    if (!empty($course['is44fz']) && strpos($joined, '44') === false) {
+        $lawParts[] = '44';
+    }
+    if (!empty($course['is223fz']) && strpos($joined, '223') === false) {
+        $lawParts[] = '223';
+    }
+    if ($lawParts) {
+        $joined .= '-' . implode('-', $lawParts);
+    }
+
+    $joined = trim(preg_replace('/-+/', '-', $joined), '-');
+    if (mb_strlen($joined, 'UTF-8') > 60) {
+        $joined = rtrim(mb_substr($joined, 0, 60, 'UTF-8'), '-');
+        $pos = mb_strrpos($joined, '-', 0, 'UTF-8');
+        if ($pos !== false && $pos >= 24) {
+            $joined = mb_substr($joined, 0, $pos, 'UTF-8');
+        }
+    }
+
+    return $joined !== '' ? $joined : 'course';
+}
+
+function crzrt_build_course_slug($course) {
+    $existing = '';
+    if (!empty($course['slug']) && is_string($course['slug'])) {
+        $existing = crzrt_slugify_course_text($course['slug']);
+    }
+    // Ручные/короткие slug сохраняем; старые длинные distancionnyi-/ochnyi- пересобираем
+    if ($existing !== '' && !crzrt_is_legacy_course_slug($existing)) {
+        return $existing;
+    }
+    return crzrt_build_course_slug_auto($course);
+}
+
 function generate_static_courses($courseRegistry) {
     $templatePath = __DIR__ . '/../course-template.html';
     if (!file_exists($templatePath)) {
@@ -41,14 +163,15 @@ function generate_static_courses($courseRegistry) {
     $template = file_get_contents($templatePath);
     $generatedFiles = [];
 
-    foreach ($courseRegistry as $course) {
+    $usedSlugs = [];
+    foreach ($courseRegistry as $idx => $course) {
         if (empty($course['active'])) {
-            continue; // РџСЂРѕРїСѓСЃРєР°РµРј РЅРµР°РєС‚РёРІРЅС‹Рµ
+            continue; // Пропускаем неактивные
         }
 
         $html = $template;
 
-        // 1. SEO С‚РµРіРё
+        // 1. SEO теги
         $title = htmlspecialchars($course['title'] ?? 'Курс');
         $html = preg_replace('/<title>.*?<\/title>/', "<title>{$title}. Центр развития закупок</title>", $html);
         $html = preg_replace('/<meta name="description" content=".*?">/', '<meta name="description" content="Программа обучения: ' . $title . '">', $html);
@@ -247,16 +370,24 @@ function generate_static_courses($courseRegistry) {
         $html = preg_replace('/<div class="course-experts__grid">.*?<\/div>\s*<\/div>\s*<\/section>/s', '<div class="course-experts__grid">' . $speakersHtml . '</div></div></section>', $html);
 
         // 8. Документ
-        $docName = htmlspecialchars($course['documentType'] ?? 'Удостоверение о повышении квалификации');
-        $html = preg_replace('/<strong>Удостоверение о повышении квалификации установленного образца<\/strong>/s', '<strong>' . $docName . '</strong>', $html);
-
-        if (!empty($course['documentImage'])) {
-            $docImg = htmlspecialchars($course['documentImage']);
-            if (strpos($docImg, 'uploads/') === 0) {
-                $docImg = '../' . $docImg;
+        $issueDocument = ($course['issueDocument'] ?? true) !== false;
+        if (!$issueDocument) {
+            $html = preg_replace('/<a href="#document" class="course-nav__link">.*?<\/a>\s*/s', '', $html);
+            $html = preg_replace('/<!-- DOCUMENT -->\s*<section class="course-section course-document" id="document">.*?<\/section>\s*/s', '', $html);
+        } else {
+            $docName = htmlspecialchars($course['documentType'] ?? 'Удостоверение о повышении квалификации');
+            if ($docName !== '') {
+                $html = preg_replace('/<strong>Удостоверение о повышении квалификации установленного образца<\/strong>/s', '<strong>' . $docName . '</strong>', $html);
             }
-            $docImgHtml = '<img src="' . $docImg . '" alt="Образец документа" style="max-width:100%; height:auto; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.1);">';
-            $html = preg_replace('/<div class="doc-placeholder">.*?<\/div>/s', $docImgHtml, $html);
+
+            if (!empty($course['documentImage'])) {
+                $docImg = htmlspecialchars($course['documentImage']);
+                if (strpos($docImg, 'uploads/') === 0) {
+                    $docImg = '../' . $docImg;
+                }
+                $docImgHtml = '<img src="' . $docImg . '" alt="Образец документа" style="max-width:100%; height:auto; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.1);">';
+                $html = preg_replace('/<div class="doc-placeholder">.*?<\/div>/s', $docImgHtml, $html);
+            }
         }
 
         // 9. Относительные пути (так как мы теперь в папке courses/)
@@ -266,22 +397,60 @@ function generate_static_courses($courseRegistry) {
         // Ссылки на .html файлы в корне
         $html = preg_replace('/href="([^\\/:]+\.html)(#[^"]*)?"/', 'href="../$1$2"', $html);
 
-        // 10. Сохранение файла
+        $slug = crzrt_build_course_slug($course);
+        $baseSlug = $slug;
+        if (preg_match('/^course_\d+_/', $baseSlug)) {
+            $baseSlug = 'course';
+            $slug = $baseSlug;
+        }
+        $n = 2;
+        while (isset($usedSlugs[$slug])) {
+            $slug = $baseSlug . '-' . $n;
+            $n++;
+        }
+        $usedSlugs[$slug] = true;
+        $courseRegistry[$idx]['slug'] = $slug;
+
+        // 10. Сохранение файла по человекочитаемому slug
         $coursesDir = __DIR__ . '/../courses';
         if (!is_dir($coursesDir)) {
             mkdir($coursesDir, 0777, true);
         }
-        $fileName = $course['id'] . '.html';
+        $fileName = $slug . '.html';
         $filePath = $coursesDir . '/' . $fileName;
         file_put_contents($filePath, $html);
         $generatedFiles[] = 'courses/' . $fileName;
+
+        // Редирект со старого technical id → новый slug (чтобы старые ссылки не ломались)
+        $courseId = isset($course['id']) ? (string)$course['id'] : '';
+        if ($courseId !== '' && $courseId !== $slug) {
+            $safeTarget = htmlspecialchars($fileName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $redirectHtml = "<!DOCTYPE html>\n<html lang=\"ru\">\n<head>\n"
+                . "<meta charset=\"UTF-8\">\n"
+                . "<meta http-equiv=\"refresh\" content=\"0;url={$safeTarget}\">\n"
+                . "<link rel=\"canonical\" href=\"{$safeTarget}\">\n"
+                . "<title>Перенаправление…</title>\n"
+                . "<script>location.replace(" . json_encode($fileName, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . " + location.search + location.hash);</script>\n"
+                . "</head>\n<body></body>\n</html>\n";
+            file_put_contents($coursesDir . '/' . $courseId . '.html', $redirectHtml);
+            $generatedFiles[] = 'courses/' . $courseId . '.html (redirect)';
+        }
     }
 
-    return ['success' => true, 'generated' => $generatedFiles];
+    return ['success' => true, 'generated' => $generatedFiles, 'courseRegistry' => $courseRegistry];
 }
 
-// Если скрипт вызван напрямую (для тестов или ручного запуска)
+// Прямой запуск только для авторизованного админа
 if (basename(__FILE__) === basename($_SERVER['PHP_SELF'])) {
+    session_start();
+    header('Content-Type: application/json; charset=utf-8');
+
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Несанкционированный доступ'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
     require_once 'db.php';
     $stmt = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'crzrt_obuchenie_page_data'");
     $stmt->execute();
@@ -290,12 +459,16 @@ if (basename(__FILE__) === basename($_SERVER['PHP_SELF'])) {
         $data = json_decode($row['setting_value'], true);
         if (isset($data['courseRegistry'])) {
             $result = generate_static_courses($data['courseRegistry']);
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode($result);
+            if (!empty($result['courseRegistry']) && is_array($result['courseRegistry'])) {
+                $data['courseRegistry'] = $result['courseRegistry'];
+                $value = json_encode($data, JSON_UNESCAPED_UNICODE);
+                $upd = $pdo->prepare("UPDATE settings SET setting_value = ? WHERE setting_key = 'crzrt_obuchenie_page_data'");
+                $upd->execute([$value]);
+            }
+            echo json_encode($result, JSON_UNESCAPED_UNICODE);
             exit;
         }
     }
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['success' => false, 'error' => 'Нет данных курсов']);
+    echo json_encode(['success' => false, 'error' => 'Нет данных курсов'], JSON_UNESCAPED_UNICODE);
 }
 ?>
