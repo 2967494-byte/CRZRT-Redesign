@@ -1,0 +1,4 @@
+RewriteEngine On
+
+# Protect nothing special yet; endpoints are under /api/*.php
+Options -Indexes

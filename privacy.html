@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <script src="assets/js/page-zoom-sync.js?v=4"></script>
+  <title>Политика конфиденциальности | Центр развития закупок РТ</title>
+  <meta name="description" content="Политика конфиденциальности и обработки персональных данных АО «Центр развития закупок Республики Татарстан».">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
+  <link rel="stylesheet" href="assets/css/landing.css?v=24">
+  <link rel="stylesheet" href="assets/css/privacy.css?v=2">
+  <script>document.documentElement.classList.add('landing-content-pending');</script>
+</head>
+<body class="theme-purple" data-page="legal">
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="logo">
+      <img src="assets/img/logo.svg" alt="Центр развития закупок" class="logo__img">
+    </a>
+
+    <nav class="nav">
+      <a href="index.html#about" class="nav__link">О нас</a>
+      <a href="news.html" class="nav__link">Новости</a>
+      <a href="index.html#reviews" class="nav__link">Нам доверяют</a>
+      <a href="index.html#contacts" class="nav__link">Контакты</a>
+    </nav>
+
+    <div class="header__actions">
+      <a href="tel:88001017892" class="btn btn--green">8 800 101-78-92</a>
+      <button id="openLoginModal" class="btn-icon" aria-label="Личный кабинет">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <button id="openMobileMenu" class="btn-icon btn-burger" aria-label="Меню" aria-expanded="false">
+        <svg class="burger-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="4" y1="6" x2="20" y2="6"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="18" x2="20" y2="18"/>
+        </svg>
+        <svg class="burger-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="display:none;">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+            <div id="loginModal" class="login-popover login-popover--split">
+        <button id="closeLoginModal" class="btn-modal-close" aria-label="Закрыть">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <h2 class="modal-title">Вход в систему</h2>
+        <div class="login-split">
+          <div class="login-split__block">
+            <h3 class="login-split__heading">Администратор сайта</h3>
+            <p class="login-split__hint">Вход в панель управления порталом</p>
+            <div id="loginError" class="modal-error">Неверный e-mail или пароль</div>
+            <form id="loginForm">
+              <div class="form-group">
+                <label for="loginEmail">E-mail</label>
+                <input type="email" id="loginEmail" class="form-control" required placeholder="example@mail.ru" autocomplete="username">
+              </div>
+              <div class="form-group">
+                <label for="loginPass">Пароль</label>
+                <input type="password" id="loginPass" class="form-control" required placeholder="********" autocomplete="current-password">
+              </div>
+              <button type="submit" class="btn-save" style="width: 100%; margin-top: 12px;">Войти</button>
+            </form>
+          </div>
+          <div class="login-split__divider" aria-hidden="true"></div>
+          <div class="login-split__block">
+            <h3 class="login-split__heading">Участник тестирования</h3>
+            <p class="login-split__hint">Модуль Assessment (отдельный сервис)</p>
+            <a id="asmtLoginLink" class="btn-asmt btn-asmt--primary" href="https://test.zakupki.tatar/login.html">Войти как участник</a>
+            <a id="asmtRegisterLink" class="btn-asmt btn-asmt--ghost" href="https://test.zakupki.tatar/register.html">Регистрация</a>
+          </div>
+        </div>
+      </div></div>
+  </div>
+</header>
+
+<main class="legal-wrap">
+  <div class="container">
+    <article class="legal-card">
+      <p class="legal-card__kicker">152-ФЗ</p>
+      <h1>Политика конфиденциальности</h1>
+      <p class="legal-card__meta">
+        Политика в отношении обработки персональных данных пользователей сайта
+        <strong>zakupki.tatar</strong> и связанных сервисов АО «Центр развития закупок Республики Татарстан».<br>
+        Дата публикации: 13 августа 2026&nbsp;г.
+      </p>
+
+      <div class="legal-doc">
+        <h2>1. Общие положения</h2>
+        <p>1.1. Настоящая Политика определяет порядок обработки и защиты персональных данных пользователей сайта <a href="https://zakupki.tatar">https://zakupki.tatar</a>, модуля профессионального тестирования и иных сервисов Оператора (далее — Сайт).</p>
+        <p>1.2. Политика разработана во исполнение требований Федерального закона от 27.07.2006 №&nbsp;152-ФЗ «О персональных данных» и действует в отношении всех персональных данных, которые Оператор получает от субъектов персональных данных.</p>
+        <p>1.3. Используя Сайт и направляя заявки, пользователь подтверждает, что ознакомился с настоящей Политикой и согласен с её условиями. Если пользователь не согласен с Политикой, он обязан прекратить использование Сайта.</p>
+
+        <h2>2. Сведения об операторе</h2>
+        <table>
+          <tr><th>Полное наименование</th><td>Акционерное общество «Центр развития закупок Республики Татарстан»</td></tr>
+          <tr><th>Сокращённое наименование</th><td>АО «ЦРЗ РТ»</td></tr>
+          <tr><th>ИНН / КПП</th><td>1655429272 / 165501001</td></tr>
+          <tr><th>ОГРН</th><td>1191690102251</td></tr>
+          <tr><th>Адрес</th><td>420107, Республика Татарстан, г.&nbsp;Казань, ул.&nbsp;Петербургская, д.&nbsp;86, помещ.&nbsp;1001</td></tr>
+          <tr><th>Телефон</th><td><a href="tel:88001017892">8&nbsp;800&nbsp;101-78-92</a></td></tr>
+          <tr><th>E-mail</th><td><a href="mailto:crz.rt@tatar.ru">crz.rt@tatar.ru</a></td></tr>
+        </table>
+
+        <h2>3. Правовые основания обработки</h2>
+        <p>Оператор обрабатывает персональные данные на основании:</p>
+        <ul>
+          <li>согласия субъекта персональных данных (ст.&nbsp;6, ст.&nbsp;9 Федерального закона №&nbsp;152-ФЗ);</li>
+          <li>исполнения договора, стороной которого является субъект персональных данных, либо заключения договора по инициативе субъекта;</li>
+          <li>исполнения обязанностей, предусмотренных законодательством Российской Федерации;</li>
+          <li>осуществления прав и законных интересов Оператора при условии, что при этом не нарушаются права субъекта.</li>
+        </ul>
+
+        <h2>4. Цели обработки</h2>
+        <p>Персональные данные обрабатываются в следующих целях:</p>
+        <ul>
+          <li>рассмотрение заявок на обучение, сопровождение закупок, юридический консалтинг, услуги ЭТП и выдачу электронной подписи;</li>
+          <li>обратная связь, консультации и направление информационных материалов (при отдельном согласии);</li>
+          <li>регистрация и работа личного кабинета, в том числе модуля профессионального тестирования;</li>
+          <li>идентификация пользователя, учёт результатов тестирования и формирование отчётности;</li>
+          <li>исполнение договорных обязательств и требований законодательства;</li>
+          <li>обеспечение работоспособности Сайта, анализ посещаемости и повышение удобства пользования (включая файлы cookie).</li>
+        </ul>
+
+        <h2>5. Состав обрабатываемых данных</h2>
+        <p>В зависимости от сценария использования Сайта Оператор может обрабатывать:</p>
+        <ul>
+          <li>фамилию, имя, отчество;</li>
+          <li>номер телефона и адрес электронной почты;</li>
+          <li>должность, сведения об организации (наименование, ИНН), опыт работы, образование и специальность — при регистрации в модуле тестирования и заявках на услуги;</li>
+          <li>технические данные: IP-адрес, сведения о браузере и устройстве, файлы cookie, дата и время обращения к Сайту.</li>
+        </ul>
+        <p>Оператор не запрашивает специальные категории персональных данных (сведения о здоровье, политических взглядах и т.&nbsp;п.), если иное прямо не требуется законом.</p>
+
+        <h2>6. Порядок и сроки обработки</h2>
+        <p>6.1. Обработка осуществляется с использованием средств автоматизации и без таковых: сбор, запись, систематизация, накопление, хранение, уточнение, использование, передача (предоставление, доступ), обезличивание, блокирование, удаление и уничтожение.</p>
+        <p>6.2. Персональные данные хранятся не дольше, чем этого требуют цели обработки, если иной срок не установлен законом, договором или согласием субъекта. После достижения целей данные уничтожаются либо обезличиваются, если иное не предусмотрено законодательством.</p>
+        <p>6.3. Оператор принимает необходимые правовые, организационные и технические меры для защиты персональных данных от неправомерного или случайного доступа, уничтожения, изменения, блокирования, копирования и распространения.</p>
+
+        <h2>7. Файлы cookie</h2>
+        <p>Сайт использует файлы cookie для персонализации сервисов и повышения удобства пользования. Cookie могут применяться для сохранения сессии, запоминания настроек и сбора обезличенной статистики. Пользователь может ограничить или отключить cookie в настройках браузера; в этом случае отдельные функции Сайта могут работать ограниченно.</p>
+
+        <h2>8. Передача третьим лицам</h2>
+        <p>Оператор не продаёт персональные данные. Передача допускается:</p>
+        <ul>
+          <li>с согласия субъекта персональных данных;</li>
+          <li>уполномоченным государственным органам в случаях, предусмотренных законодательством Российской Федерации;</li>
+          <li>лицам, привлекаемым Оператором для обеспечения работы Сайта и оказания услуг (хостинг, почтовая рассылка, аналитика), при условии соблюдения конфиденциальности и целей обработки.</li>
+        </ul>
+        <p>Трансграничная передача персональных данных не осуществляется, если иное не будет отдельно сообщено пользователю.</p>
+
+        <h2>9. Права субъекта персональных данных</h2>
+        <p>Субъект персональных данных вправе:</p>
+        <ul>
+          <li>получать сведения об обработке своих персональных данных;</li>
+          <li>требовать уточнения, блокирования или уничтожения данных, если они являются неполными, устаревшими, неточными либо обрабатываются незаконно;</li>
+          <li>отозвать согласие на обработку персональных данных;</li>
+          <li>обжаловать действия Оператора в Роскомнадзор или в судебном порядке.</li>
+        </ul>
+        <p>Для реализации прав направьте обращение на <a href="mailto:crz.rt@tatar.ru">crz.rt@tatar.ru</a> либо письменно по адресу Оператора. В обращении укажите ФИО, способ связи и существо требования.</p>
+
+        <h2>10. Согласие на обработку</h2>
+        <p>Направляя форму на Сайте, регистрируясь либо отмечая соответствующее поле, пользователь даёт согласие на обработку персональных данных на условиях настоящей Политики и документа <a href="consent.html">«Согласие на обработку персональных данных»</a>.</p>
+
+        <h2>11. Изменение Политики</h2>
+        <p>Оператор вправе изменять настоящую Политику. Актуальная редакция всегда размещается на данной странице. Продолжение использования Сайта после публикации изменений означает согласие с новой редакцией.</p>
+      </div>
+    </article>
+  </div>
+</main>
+
+<footer class="footer" id="contacts">
+  <div class="container footer__inner">
+    <div class="footer__col footer__col--address">
+      <p>г. Казань,</p>
+      <p>ул. Петербургская, 86</p>
+      <p>Пн-Чт с 09:00 до 18:00</p>
+      <p>Пт с 09:00 до 17:00</p>
+    </div>
+
+    <div class="footer__col footer__col--nav">
+      <a href="index.html#about">О нас</a>
+      <a href="news.html">Новости</a>
+      <a href="index.html#reviews">Нам доверяют</a>
+      <a href="#contacts">Контакты</a>
+    </div>
+
+    <div class="footer__col footer__col--links">
+      <a href="knowledge.html">Документы</a>
+      <a href="team.html">Карьера</a>
+    </div>
+
+    <div class="footer__col footer__col--contacts">
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Телефон</p>
+        <a href="tel:88001017892" class="footer-phone">8 800 101-78-92</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Основная почта</p>
+        <a href="mailto:crz.rt@tatar.ru" class="footer-email">crz.rt@tatar.ru</a>
+      </div>
+      <div class="footer-contact-group">
+        <p class="footer-contact-label">Социальные сети</p>
+        <div class="footer-socials landing-dynamic"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner">
+      <a href="privacy.html" class="footer__bottom-link footer__bottom-link--policy">Политика конфиденциальности</a>
+      <a href="consent.html" class="footer__bottom-link footer__bottom-link--consent">Согласие на обработку персональных данных</a>
+      <div class="footer__bottom-aside">
+        <p class="footer__bottom-text">Мы используем файлы cookie, для персонализации сервисов и<br>повышения удобства пользования сайтом. Если вы не согласны<br>на их использование, поменяйте настройки браузера.</p>
+        <p class="footer__copyright">АО «Центр развития закупок РТ» 2026 (с) Все права защищены</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/landing-content.js?v=16" defer></script>
+<script src="assets/js/asmt-portal-config.js"></script>
+<script src="assets/js/landing.js?v=13" defer></script>
+</body>
+</html>

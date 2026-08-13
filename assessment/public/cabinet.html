@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <title>Личный кабинет | Assessment</title>
+  <link rel="stylesheet" href="assets/css/assessment.css">
+  <style>
+    .asmt-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(30, 51, 76, 0.45);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .asmt-modal-backdrop.hidden { display: none !important; }
+
+    .region-modal-content {
+      background: #ffffff;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      box-shadow: 0 24px 60px rgba(30, 51, 76, 0.22);
+      border: 1px solid var(--border);
+      animation: modalFadeIn 0.22s ease;
+    }
+  </style>
+</head>
+<body>
+  <header class="asmt-header">
+    <div class="asmt-header__inner">
+      <a class="asmt-logo" href="cabinet.html" aria-label="Центр развития закупок РТ">
+        <img src="assets/img/logo.svg" alt="ЦРЗ РТ" class="asmt-logo__img">
+        <span class="asmt-logo__divider"></span>
+        <span class="asmt-logo__tag">Модуль тестирования</span>
+      </a>
+
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button type="button" id="btnHeaderRegion" class="btn btn--ghost btn--sm" style="display:inline-flex; align-items:center; gap:6px; font-weight:700; border-radius:999px; background:rgba(15,170,75,0.08); color:var(--green-dark); padding:6px 14px; font-size:0.85rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span id="headerRegionName">Регион: Республика Татарстан</span> ▾
+        </button>
+
+        <nav class="asmt-nav" id="asmtNav">
+          <button type="button" class="asmt-nav__item is-active" data-tab="main" id="btnTabMain">
+            <svg class="asmt-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+            </svg>
+            <span>Главная</span>
+          </button>
+          <button type="button" class="asmt-nav__item" data-tab="profile" id="btnTabProfile">
+            <svg class="asmt-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Мой профиль</span>
+          </button>
+          <a class="asmt-nav__item asmt-nav__item--admin hidden" href="admin.html" id="headerAdminLink">
+            <svg class="asmt-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>Админка</span>
+          </a>
+          <button type="button" class="asmt-nav__item asmt-nav__item--logout" id="headerLogoutBtn" title="Выйти из системы">
+            <svg class="asmt-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Выйти</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="asmt-main" id="cabinetRoot">
+    <div class="asmt-card"><p class="lead">Загрузка личного кабинета…</p></div>
+  </main>
+
+  <!-- МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ / ВЫБОРА РЕГИОНА -->
+  <div id="regionModalBackdrop" class="asmt-modal-backdrop hidden">
+    <div class="region-modal-content">
+      
+      <!-- STEP 1: Подтверждение -->
+      <div id="regionStepConfirm">
+        <div style="text-align:center; margin-bottom:14px;">
+          <div style="width:44px; height:44px; border-radius:12px; background:rgba(15,170,75,0.1); color:var(--green); display:inline-flex; align-items:center; justify-content:center; margin-bottom:10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          </div>
+          <h3 style="margin:0 0 6px; font-size:1.15rem; font-weight:800; line-height:1.3;">Ваш регион — <span id="modalDetectedRegionName" style="color:var(--green-dark);">Республика Татарстан</span>?</h3>
+          <p class="lead" style="font-size:0.85rem; color:var(--muted); margin:0;">Подбираем актуальные аттестационные программы для вашего региона.</p>
+        </div>
+        <div class="actions" style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+          <button type="button" class="btn btn--primary" id="btnConfirmRegionYes" style="width:100%;">Да, всё верно</button>
+          <button type="button" class="btn btn--ghost" id="btnConfirmRegionChange" style="width:100%;">Выбрать другой регион</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Поиск и выбор региона из 89 субъектов -->
+      <div id="regionStepSelect" class="hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="margin:0; font-size:1.15rem; font-weight:800;">Выберите ваш регион</h3>
+          <button type="button" class="asmt-modal-close" id="btnCloseRegionSelect" style="border:none; background:transparent; font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="field" style="margin-bottom:12px;">
+          <input type="search" id="inputRegionSearch" placeholder="Поиск по названию или коду…">
+        </div>
+        <div id="regionSelectList" style="max-height:340px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:6px; background:#fff;"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Retake request modal -->
+  <div id="retakeModalBackdrop" class="asmt-modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="region-modal-content" style="max-width:440px; padding:24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid var(--border-light); padding-bottom:12px;">
+        <h3 style="margin:0; font-size:1.15rem; font-weight:800; color:var(--text);">Запрос на повторный тест</h3>
+        <button type="button" class="asmt-modal-close" id="btnRetakeClose" style="border:none; background:transparent; font-size:1.5rem; cursor:pointer; color:var(--muted); padding:0; line-height:1;">&times;</button>
+      </div>
+      <p class="lead" style="margin:0 0 14px; font-size:0.88rem; color:var(--muted); line-height:1.45;">Укажите причину повторной попытки. Запрос будет направлен модератору на рассмотрение.</p>
+      
+      <label class="field" style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;">
+        <span style="font-weight:700; font-size:0.88rem;">Причина обращения <span class="req">*</span></span>
+        <textarea id="retakeReasonInput" rows="4" placeholder="Укажите причину (например: технический сбой во время тестирования)…" style="width:100%;"></textarea>
+      </label>
+
+      <div id="retakeModalStatus" class="status" style="margin-bottom:12px;"></div>
+
+      <div class="actions" style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+        <button type="button" class="btn btn--ghost" id="btnRetakeCancel">Отмена</button>
+        <button type="button" class="btn btn--primary" id="btnRetakeSubmit">Отправить запрос</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/asmt-api.js"></script>
+  <script src="assets/js/cabinet.js"></script>
+</body>
+</html>

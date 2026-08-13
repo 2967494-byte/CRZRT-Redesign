@@ -556,6 +556,83 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.login-popover--split {
+  width: min(560px, calc(100vw - 24px));
+  padding: 28px 24px 24px;
+}
+
+.login-split {
+  display: grid;
+  gap: 18px;
+}
+
+@media (min-width: 640px) {
+  .login-split {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
+    gap: 16px;
+  }
+  .login-split__divider {
+    width: 1px;
+    align-self: stretch;
+    background: #E5E9F0;
+    min-height: 180px;
+  }
+}
+
+.login-split__heading {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1f36;
+}
+
+.login-split__hint {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: #6b7280;
+}
+
+.btn-asmt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  box-sizing: border-box;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-asmt--primary {
+  background: #1f8a5b;
+  color: #fff;
+  border: 1px solid #1f8a5b;
+}
+
+.btn-asmt--primary:hover {
+  background: #18734c;
+  color: #fff;
+}
+
+.btn-asmt--ghost {
+  background: #fff;
+  color: #1f8a5b;
+  border: 1px solid #c9ddd2;
+}
+
+.btn-asmt--ghost:hover {
+  background: #f0f7f3;
+  color: #18734c;
+}
+
 .login-popover.active {
   opacity: 1;
   visibility: visible;
@@ -2090,6 +2167,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .login-popover {
     width: calc(100vw - 40px);
     right: -20px; /* shift because container has 24px padding */
+  }
+  .login-popover--split {
+    width: calc(100vw - 40px);
+    max-height: min(80vh, 640px);
+    overflow-y: auto;
+  }
+  .login-split__divider {
+    display: none;
   }
 }
 

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <title>Вход | Assessment</title>
+  <link rel="stylesheet" href="assets/css/assessment.css">
+</head>
+<body>
+  <header class="asmt-header">
+    <div class="asmt-header__inner">
+      <a class="asmt-logo" href="index.html" aria-label="Центр развития закупок РТ">
+        <img src="assets/img/logo.svg" alt="ЦРЗ РТ" class="asmt-logo__img">
+        <span class="asmt-logo__divider"></span>
+        <span class="asmt-logo__tag">Модуль тестирования</span>
+      </a>
+      <nav class="asmt-nav">
+        <a class="asmt-nav__item" href="register.html">
+          <svg class="asmt-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
+          </svg>
+          <span>Регистрация</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="asmt-main">
+    <div class="asmt-card login-card">
+      <div class="form-header">
+        <div class="form-header__tag">
+          <svg class="asmt-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          <span>Авторизация</span>
+        </div>
+        <h1 class="form-header__title">Вход в личный кабинет</h1>
+        <p class="form-header__sub">Укажите ваш электронный адрес и пароль для доступа к тестированию</p>
+      </div>
+
+      <form id="loginForm">
+        <div class="login-form-fields">
+          <label class="field">
+            <span class="field__label">Адрес электронной почты (Логин) <span class="req">*</span></span>
+            <input name="email" type="email" required autocomplete="username" placeholder="name@domain.ru">
+          </label>
+
+          <label class="field">
+            <div class="field__label-row">
+              <span class="field__label">Пароль <span class="req">*</span></span>
+              <a href="reset.html" class="field__link">Забыли пароль?</a>
+            </div>
+            <input name="password" type="password" required autocomplete="current-password" placeholder="••••••••">
+          </label>
+        </div>
+
+        <div id="formStatus" class="status"></div>
+
+        <div class="login-actions">
+          <button class="btn btn--primary btn--hero btn--full" type="submit">
+            <svg class="asmt-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            <span>Войти в кабинет</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="login-register-prompt">
+        <span>Ещё нет учетной записи?</span>
+        <a href="register.html" class="link-highlight">Пройти регистрацию участника</a>
+      </div>
+
+      <div class="form-divider">
+        <span>Альтернативная авторизация</span>
+      </div>
+
+      <div class="esia-box">
+        <div class="esia-box__header">
+          <svg class="asmt-ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div>
+            <strong>Авторизация через Госуслуги (ЕСИА)</strong>
+            <p class="lead" id="esiaHint">Вход с использованием учетной записи портала Госуслуг</p>
+          </div>
+        </div>
+        <button type="button" class="btn btn--ghost btn--full" id="btnEsia" disabled title="Интеграция ЕСИА активируется после подключения ключей Заказчика">Войти через Госуслуги</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="assets/js/asmt-api.js"></script>
+  <script src="assets/js/login.js"></script>
+  <script src="assets/js/esia-stub.js"></script>
+</body>
+</html>

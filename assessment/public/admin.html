@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <title>Панель администрирования | Assessment</title>
+  <link rel="stylesheet" href="assets/css/assessment.css">
+</head>
+<body>
+  <header class="asmt-header">
+    <div class="asmt-header__inner">
+      <a href="admin.html" class="asmt-logo" title="Центр развития закупок">
+        <img src="assets/img/logo.svg" alt="Центр развития закупок" style="height:38px; width:auto; display:block;">
+      </a>
+      <div class="actions" style="margin:0; gap:10px;">
+        <span class="user-hero-card__role-tag" style="background:#eef6ff; color:#2563eb;">Администратор</span>
+        <a class="btn btn--ghost" href="cabinet.html">ЛК Участника</a>
+        <button type="button" class="btn btn--ghost" id="btnLogout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="asmt-main">
+    <div class="asmt-container">
+      
+      <!-- HERO -->
+      <div style="margin-bottom: 28px;">
+        <h1 style="font-size: 1.7rem; font-weight: 800; margin: 0 0 6px;">Администрирование системы</h1>
+        <p class="lead" id="adminMeta" style="margin: 0; color: var(--muted); font-size: 0.95rem;">Загрузка данных профиля администратора…</p>
+      </div>
+
+      <!-- 4 MAIN NAVIGATION BLOCKS -->
+      <div class="admin-tiles-grid">
+        
+        <!-- BLOCK 1: QUESTIONS -->
+        <div class="admin-tile">
+          <div>
+            <div class="admin-tile__header">
+              <div class="admin-tile__icon admin-tile__icon--blue">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              </div>
+              <h3 class="admin-tile__title">Вопросы</h3>
+            </div>
+            <p class="admin-tile__desc">Редактирование вопросов, вариантов ответов, разбор вариаций и управление банком заданий.</p>
+          </div>
+          <div class="admin-tile__footer" style="justify-content:center; margin-top:16px;">
+            <a href="admin-questions.html" class="btn btn--ghost" style="width:100%; text-align:center; justify-content:center;">Перейти →</a>
+          </div>
+        </div>
+
+        <!-- BLOCK 2: STATISTICS -->
+        <div class="admin-tile">
+          <div>
+            <div class="admin-tile__header">
+              <div class="admin-tile__icon admin-tile__icon--purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              </div>
+              <h3 class="admin-tile__title">Статистика</h3>
+            </div>
+            <p class="admin-tile__desc">Сводные результаты участников, отчёты по организациям, экспорт CSV и аналитика сложностей.</p>
+          </div>
+          <div class="admin-tile__footer" style="justify-content:center; margin-top:16px;">
+            <a href="admin-stats.html" class="btn btn--ghost" style="width:100%; text-align:center; justify-content:center;">Перейти →</a>
+          </div>
+        </div>
+
+        <!-- BLOCK 3: CAMPAIGNS -->
+        <div class="admin-tile">
+          <div>
+            <div class="admin-tile__header">
+              <div class="admin-tile__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+              </div>
+              <h3 class="admin-tile__title">Кампании</h3>
+            </div>
+            <p class="admin-tile__desc">Создание, редактирование, настройка сроков проведения и администрирование аттестаций.</p>
+          </div>
+          <div class="admin-tile__footer" style="justify-content:center; margin-top:16px;">
+            <a href="admin-campaigns.html" class="btn btn--ghost" style="width:100%; text-align:center; justify-content:center;">Перейти →</a>
+          </div>
+        </div>
+
+        <!-- BLOCK 4: MODERATION -->
+        <div class="admin-tile">
+          <div>
+            <div class="admin-tile__header">
+              <div class="admin-tile__icon admin-tile__icon--amber">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+              <h3 class="admin-tile__title">Модерация</h3>
+            </div>
+            <p class="admin-tile__desc">Модерация организаций, подтверждение физических лиц и проверка допусков участников.</p>
+          </div>
+          <div class="admin-tile__footer" style="justify-content:center; margin-top:16px;">
+            <a href="admin-moderation.html" class="btn btn--ghost" style="width:100%; text-align:center; justify-content:center;">Перейти →</a>
+          </div>
+        </div>
+
+        <!-- BLOCK 5: DICTIONARIES -->
+        <div class="admin-tile">
+          <div>
+            <div class="admin-tile__header">
+              <div class="admin-tile__icon admin-tile__icon--blue">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              </div>
+              <h3 class="admin-tile__title">Справочники</h3>
+            </div>
+            <p class="admin-tile__desc">Управление справочниками регионов, муниципальных районов, ведомственной иерархии и банеров.</p>
+          </div>
+          <div class="admin-tile__footer" style="justify-content:center; margin-top:16px;">
+            <a href="admin-dicts.html" class="btn btn--ghost" style="width:100%; text-align:center; justify-content:center;">Перейти →</a>
+          </div>
+        </div>
+
+        <!-- BLOCK 6: RETAKE REQUESTS -->
+        <div class="admin-tile">
+          <div>
+            <div class="admin-tile__header">
+              <div class="admin-tile__icon admin-tile__icon--amber">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </div>
+              <h3 class="admin-tile__title">Запросы</h3>
+            </div>
+            <p class="admin-tile__desc">Запросы участников на повторное прохождение аттестации после завершения или выхода из теста.</p>
+          </div>
+          <div class="admin-tile__footer" style="justify-content:center; margin-top:16px;">
+            <a href="admin-requests.html" class="btn btn--ghost" style="width:100%; text-align:center; justify-content:center;">Перейти →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="assets/js/asmt-api.js"></script>
+  <script>
+    (async function() {
+      try {
+        const me = await AsmtApi.get('api/auth.php?action=me');
+        if (!me.authenticated || !['superadmin', 'region_admin', 'moderator', 'analyst'].includes(me.user.role)) {
+          location.href = 'login.html';
+          return;
+        }
+        document.getElementById('adminMeta').textContent = `${me.user.lastName || ''} ${me.user.firstName || ''} · Роль: ${me.user.role}`;
+      } catch(e) {
+        location.href = 'login.html';
+      }
+
+      document.getElementById('btnLogout').addEventListener('click', async () => {
+        await AsmtApi.get('api/auth.php?action=logout');
+        location.href = 'login.html';
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <title>Статистика | Администрирование</title>
+  <link rel="stylesheet" href="assets/css/assessment.css">
+  <style>
+    .admin-filters { display:grid; gap:12px; grid-template-columns:1fr; margin-bottom:18px; }
+    @media (min-width:768px){ .admin-filters{ grid-template-columns:repeat( auto-fit, minmax(180px, 1fr) ); } }
+    .admin-table-wrap--full { border:1px solid var(--border); border-radius:12px; background:#fff; overflow-x:auto; }
+    .admin-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    .admin-table th,.admin-table td { padding:10px 12px; border-bottom:1px solid var(--border-light); text-align:left; white-space:nowrap; }
+    .admin-table th { background:#f8fafc; font-weight:700; color:var(--muted); text-transform:uppercase; font-size:0.75rem; letter-spacing:0.04em; }
+    .admin-table tbody tr:hover { background: #f8fafc; }
+    .admin-table td.wrap { white-space:normal; max-width:450px; line-height:1.4; }
+    .sub-tabs { display:flex; gap:8px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px; }
+    .sub-tab-btn { padding:8px 16px; border-radius:8px; border:none; background:transparent; font-size:0.9rem; font-weight:600; color:var(--muted); cursor:pointer; transition:all 0.2s ease; }
+    .sub-tab-btn.is-active { background:var(--green-light); color:var(--green); }
+    .rating-pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:600; background:#eef3f8; }
+    .rating-pill.easy { background:#e8f8ee; color:var(--green-dark); }
+    .rating-pill.hard { background:#fff4e5; color:var(--amber); }
+    .rating-pill.needs_correction { background:#fde8e8; color:var(--danger); }
+  </style>
+</head>
+<body>
+  <header class="asmt-header">
+    <div class="asmt-header__inner">
+      <a href="admin.html" class="asmt-logo" title="Центр развития закупок">
+        <img src="assets/img/logo.svg" alt="Центр развития закупок" style="height:38px; width:auto; display:block;">
+      </a>
+      <div class="actions" style="margin:0; gap:10px;">
+        <a class="btn btn--ghost" href="admin.html">Дашборд</a>
+        <button type="button" class="btn btn--ghost" id="btnLogout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="asmt-main">
+    <div class="asmt-container">
+      
+      <!-- NAV BAR -->
+      <div class="admin-nav-bar">
+        <a href="admin.html" class="admin-nav-btn">← Дашборд</a>
+        <a href="admin-campaigns.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+          Кампании
+        </a>
+        <a href="admin-questions.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          Вопросы
+        </a>
+        <a href="admin-moderation.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Модерация
+        </a>
+        <a href="admin-requests.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          Запросы
+        </a>
+        <a href="admin-stats.html" class="admin-nav-btn is-active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Статистика
+        </a>
+        <a href="admin-dicts.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          Справочники
+        </a>
+      </div>
+
+      <div class="asmt-card">
+        <div class="sub-tabs">
+          <button type="button" class="sub-tab-btn is-active" data-subtab="results">Результаты участников</button>
+          <button type="button" class="sub-tab-btn" data-subtab="orgstats">Свод по организациям</button>
+          <button type="button" class="sub-tab-btn" data-subtab="qanalytics">Аналитика вопросов</button>
+        </div>
+
+        <!-- SUBPANEL 1: RESULTS -->
+        <div id="subpanel-results">
+          <div class="admin-filters">
+            <label class="field">Кампания
+              <select id="filterCampaign"><option value="">Все кампании</option></select>
+            </label>
+            <label class="field">Статус
+              <select id="filterStatus">
+                <option value="">Все статусы</option>
+                <option value="finished" selected>Завершенные</option>
+                <option value="in_progress">В процессе</option>
+                <option value="expired">Истекли</option>
+              </select>
+            </label>
+            <label class="field">С даты<input type="date" id="filterFrom"></label>
+            <label class="field">По дату<input type="date" id="filterTo"></label>
+            <label class="field">Поиск<input type="search" id="filterQ" placeholder="ФИО, email, ИНН"></label>
+          </div>
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+            <label class="checkbox">
+              <input type="checkbox" id="filterApprovedOnly"> Только подтвержденные (approved)
+            </label>
+            <div class="actions" style="margin:0;">
+              <button type="button" class="btn btn--primary" id="btnReload">Обновить</button>
+              <button type="button" class="btn btn--ghost" id="btnExport">Скачать CSV (Excel)</button>
+            </div>
+          </div>
+
+          <div id="status" class="status"></div>
+          
+          <div class="admin-table-wrap--full" style="margin-top:14px;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>ФИО</th>
+                  <th>Email</th>
+                  <th>Организация</th>
+                  <th>Кампания</th>
+                  <th>Модерация</th>
+                  <th>Статус</th>
+                  <th>Балл</th>
+                  <th>%</th>
+                  <th>Устройство</th>
+                  <th>IP</th>
+                  <th>Начало</th>
+                  <th>Конец</th>
+                </tr>
+              </thead>
+              <tbody id="resultsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUBPANEL 2: ORG STATS -->
+        <div id="subpanel-orgstats" class="panel hidden">
+          <p class="lead">Свод формируется по участникам со статусом <strong>approved</strong>.</p>
+          <div class="admin-filters">
+            <label class="field">Кампания
+              <select id="statsCampaign"><option value="">Все кампании</option></select>
+            </label>
+            <label class="field">ИНН организации<input type="search" id="statsInn" placeholder="опционально"></label>
+            <div style="align-self:end;">
+              <button type="button" class="btn btn--primary" id="btnStatsReload">Сформировать</button>
+            </div>
+          </div>
+
+          <div id="statsStatus" class="status"></div>
+
+          <div class="admin-table-wrap--full" style="margin-top:14px;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Организация</th>
+                  <th>ИНН</th>
+                  <th>Кампания</th>
+                  <th>Попыток</th>
+                  <th>Средний балл</th>
+                  <th>Средний %</th>
+                  <th>Min</th>
+                  <th>Max</th>
+                </tr>
+              </thead>
+              <tbody id="statsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUBPANEL 3: Q ANALYTICS -->
+        <div id="subpanel-qanalytics" class="panel hidden">
+          <div class="admin-filters">
+            <label class="field">Кампания
+              <select id="qaCampaign"><option value="">Все кампании</option></select>
+            </label>
+            <label class="field">Сложность
+              <select id="qaRating">
+                <option value="all">Все рейтинги</option>
+                <option value="easy">Простые (easy)</option>
+                <option value="hard">Сложные (hard)</option>
+                <option value="needs_correction">Требуют правки</option>
+                <option value="no_data">Без данных</option>
+              </select>
+            </label>
+            <label class="field">Поиск<input type="search" id="qaQ" placeholder="текст или №"></label>
+            <div style="align-self:end;">
+              <button type="button" class="btn btn--primary" id="btnQaReload">Анализ</button>
+              <button type="button" class="btn btn--ghost" id="btnQaExport">Экспорт CSV</button>
+            </div>
+          </div>
+
+          <div id="qaStatus" class="status"></div>
+
+          <div class="admin-table-wrap--full" style="margin-top:14px;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>Текст вопроса</th>
+                  <th>Ответов</th>
+                  <th>Верных</th>
+                  <th>Неверных</th>
+                  <th>% верных</th>
+                  <th>% ошибок</th>
+                  <th>Рейтинг</th>
+                  <th>Форм.</th>
+                </tr>
+              </thead>
+              <tbody id="qaBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script src="assets/js/asmt-api.js"></script>
+  <script src="assets/js/admin-stats.js"></script>
+</body>
+</html>

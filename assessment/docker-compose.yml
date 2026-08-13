@@ -1,0 +1,51 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    environment:
+      ASMT_DB_DSN: "pgsql:host=postgres;port=5432;dbname=asmt"
+      ASMT_DB_USER: asmt
+      ASMT_DB_PASS: asmt_secret
+      ASMT_APP_URL: "http://localhost:8080"
+      ASMT_SESSION_NAME: ASMTSESSID
+      ASMT_MAIL_MODE: mailhog
+      ASMT_MAILHOG_HOST: mailhog
+      ASMT_MAILHOG_PORT: "1025"
+      ASMT_ADMIN_EMAIL: admin@assessment.local
+      ASMT_ADMIN_PASSWORD: Admin123!
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: asmt
+      POSTGRES_USER: asmt
+      POSTGRES_PASSWORD: asmt_secret
+    ports:
+      - "5433:5432"
+    volumes:
+      - asmt_pgdata:/var/lib/postgresql/data
+      - ./sql/schema.pgsql.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U asmt -d asmt"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  asmt_pgdata:

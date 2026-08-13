@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <title>Запросы | Администрирование</title>
+  <link rel="stylesheet" href="assets/css/assessment.css">
+  <style>
+    .admin-filters { display:grid; gap:12px; grid-template-columns:1fr; margin-bottom:18px; }
+    @media (min-width:768px){ .admin-filters{ grid-template-columns:1fr auto; } }
+    .admin-table-wrap--full { border:1px solid var(--border); border-radius:12px; background:#fff; overflow-x:auto; }
+    .admin-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    .admin-table th,.admin-table td { padding:10px 12px; border-bottom:1px solid var(--border-light); text-align:left; }
+    .admin-table th { background:#f8fafc; font-weight:700; color:var(--muted); text-transform:uppercase; font-size:0.75rem; letter-spacing:0.04em; white-space:nowrap; }
+    .admin-table tbody tr:hover { background: #f8fafc; }
+    .req-actions { display:flex; flex-wrap:wrap; gap:6px; }
+    .req-reason { max-width:280px; white-space:normal; line-height:1.35; }
+  </style>
+</head>
+<body>
+  <header class="asmt-header">
+    <div class="asmt-header__inner">
+      <a href="admin.html" class="asmt-logo" title="Центр развития закупок">
+        <img src="assets/img/logo.svg" alt="Центр развития закупок" style="height:38px; width:auto; display:block;">
+      </a>
+      <div class="actions" style="margin:0; gap:10px;">
+        <a class="btn btn--ghost" href="admin.html">Дашборд</a>
+        <button type="button" class="btn btn--ghost" id="btnLogout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="asmt-main">
+    <div class="asmt-container">
+      <div class="admin-nav-bar">
+        <a href="admin.html" class="admin-nav-btn">← Дашборд</a>
+        <a href="admin-campaigns.html" class="admin-nav-btn">Кампании</a>
+        <a href="admin-questions.html" class="admin-nav-btn">Вопросы</a>
+        <a href="admin-moderation.html" class="admin-nav-btn">Модерация</a>
+        <a href="admin-requests.html" class="admin-nav-btn is-active">Запросы</a>
+        <a href="admin-stats.html" class="admin-nav-btn">Статистика</a>
+        <a href="admin-dicts.html" class="admin-nav-btn">Справочники</a>
+      </div>
+
+      <div class="asmt-card">
+        <div class="asmt-card__header">
+          <div>
+            <h1 class="asmt-card__title" style="font-size:1.5rem;">Запросы на повторное прохождение</h1>
+            <p class="asmt-card__sub">Пользователи, вышедшие из теста или завершившие попытку, могут запросить пересдачу</p>
+          </div>
+        </div>
+
+        <div class="admin-filters">
+          <label class="field">Статус
+            <select id="reqStatus">
+              <option value="pending" selected>На рассмотрении</option>
+              <option value="approved">Одобренные</option>
+              <option value="rejected">Отклонённые</option>
+              <option value="used">Использованные</option>
+              <option value="all">Все</option>
+            </select>
+          </label>
+          <div style="display:flex; align-items:flex-end;">
+            <button type="button" class="btn btn--ghost" id="btnReqReload">Обновить</button>
+          </div>
+        </div>
+
+        <div id="reqStatusMsg" class="status" style="margin-bottom:12px;"></div>
+
+        <div class="admin-table-wrap--full">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Участник</th>
+                <th>Кампания</th>
+                <th>Попытка</th>
+                <th>Причина</th>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>Действие</th>
+              </tr>
+            </thead>
+            <tbody id="reqBody">
+              <tr><td colspan="8">Загрузка…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="assets/js/asmt-api.js"></script>
+  <script src="assets/js/admin-requests.js"></script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <title>Результаты тестирования | Assessment</title>
+  <link rel="stylesheet" href="assets/css/assessment.css">
+  <style>
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 20px 0 24px;
+    }
+    .result-stat {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 14px;
+      text-align: center;
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgba(30, 51, 76, 0.02);
+    }
+    .result-stat__val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .result-stat__lbl {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    @media (max-width: 600px) {
+      .result-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header class="asmt-header">
+    <div class="asmt-header__inner">
+      <a class="asmt-logo" href="cabinet.html" aria-label="Центр развития закупок РТ">
+        <img src="assets/img/logo.svg" alt="ЦРЗ РТ" class="asmt-logo__img">
+        <span class="asmt-logo__divider"></span>
+        <span class="asmt-logo__tag">Модуль тестирования</span>
+      </a>
+      <div class="actions">
+        <a href="cabinet.html" class="btn btn--ghost">В личный кабинет</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="asmt-main">
+    <div class="asmt-card" id="resultCard" style="max-width:720px; margin:0 auto; padding:32px;">
+      <h1 style="margin:0 0 8px; font-size:1.6rem; font-weight:800;">Загрузка результатов…</h1>
+      <p class="lead">Пожалуйста, подождите</p>
+    </div>
+  </main>
+
+  <script src="assets/js/asmt-api.js"></script>
+  <script>
+    (async function () {
+      const card = document.getElementById('resultCard');
+      const params = new URLSearchParams(location.search);
+      const attemptParam = params.get('attempt') || params.get('attemptId');
+
+      function esc(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function render(r) {
+        const total = Number(r.totalQuestions ?? r.total_questions ?? 0) || 0;
+        const correct = Number(r.correctCount ?? r.correct_count ?? r.score ?? 0) || 0;
+        const incorrect = total > 0 ? Math.max(0, total - correct) : Number(r.incorrectCount ?? r.incorrect_count ?? 0) || 0;
+        const percent = Math.round(Number(r.percentCorrect ?? r.percent_correct ?? (total > 0 ? (correct / total) * 100 : 0)));
+        const duration = Number(r.durationSeconds ?? r.duration_seconds ?? 0) || 0;
+        const mins = Math.floor(duration / 60);
+        const secs = duration % 60;
+        const timeFormatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        const campaign = r.campaignName ?? r.campaign_name ?? 'Аттестация';
+
+        const isPassed = percent >= 70;
+        const statusBadge = isPassed
+          ? `<span class="badge" style="background:var(--green-light); color:var(--green-dark); font-size:0.9rem; padding:6px 14px; font-weight:700;">Попытка зачтена (${percent}%)</span>`
+          : `<span class="badge" style="background:#fee2e2; color:#dc2626; font-size:0.9rem; padding:6px 14px; font-weight:700;">Попытка не зачтена (${percent}%)</span>`;
+
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+            <h1 style="margin:0; font-size:1.6rem; font-weight:800;">Тестирование завершено</h1>
+            ${statusBadge}
+          </div>
+          <p class="lead" style="margin:0 0 20px; color:var(--muted); font-weight:600;">${esc(campaign)}</p>
+
+          <div class="result-grid">
+            <div class="result-stat">
+              <div class="result-stat__val">${total}</div>
+              <div class="result-stat__lbl">Вопросов</div>
+            </div>
+            <div class="result-stat">
+              <div class="result-stat__val" style="color:var(--green-dark);">${correct}</div>
+              <div class="result-stat__lbl">Верных ответов</div>
+            </div>
+            <div class="result-stat">
+              <div class="result-stat__val" style="color:${incorrect > 0 ? '#dc2626' : 'var(--text)'};">${incorrect}</div>
+              <div class="result-stat__lbl">Ошибок</div>
+            </div>
+            <div class="result-stat">
+              <div class="result-stat__val" style="color:${isPassed ? 'var(--green-dark)' : '#dc2626'};">${percent}%</div>
+              <div class="result-stat__lbl">Результат</div>
+            </div>
+          </div>
+
+          <p class="lead" style="font-size:0.95rem; color:var(--muted); margin:0 0 24px;">
+            ⏱️ Затрачено времени на тест: <strong style="color:var(--text);">${timeFormatted}</strong>
+          </p>
+
+          <div class="actions" style="margin-top:0;">
+            <a class="btn btn--primary" href="cabinet.html" style="width:100%; text-align:center; justify-content:center;">Вернуться в личный кабинет</a>
+          </div>
+        `;
+      }
+
+      try {
+        const me = await AsmtApi.get('api/auth.php?action=me');
+        if (!me.authenticated) {
+          location.href = 'login.html';
+          return;
+        }
+
+        // 1. Проверяем кэш сессии
+        try {
+          const raw = sessionStorage.getItem('asmt_last_result');
+          if (raw) {
+            const stored = JSON.parse(raw);
+            if (stored && stored.result && (!attemptParam || String(stored.attemptId) === String(attemptParam))) {
+              render(stored.result);
+              return;
+            }
+          }
+        } catch (_e) {}
+
+        // 2. Получаем историю из API Личного кабинета
+        const data = await AsmtApi.get('api/cabinet.php');
+        const hist = data.attemptsHistory || data.history || [];
+        let last = null;
+        if (attemptParam) {
+          last = hist.find((h) => String(h.id) === String(attemptParam));
+        }
+        if (!last) {
+          last = hist.find((h) => h.status === 'finished');
+        }
+
+        if (!last) {
+          card.innerHTML = `
+            <h1 style="margin:0 0 10px; font-size:1.5rem; font-weight:800;">Результаты не найдены</h1>
+            <p class="lead" style="margin:0 0 20px;">Завершённая попытка не найдена.</p>
+            <div class="actions">
+              <a class="btn btn--primary" href="cabinet.html" style="width:100%; text-align:center; justify-content:center;">В личный кабинет</a>
+            </div>`;
+          return;
+        }
+
+        render({
+          campaignName: last.campaignName || last.campaign_name,
+          totalQuestions: last.totalQuestions || last.total_questions,
+          correctCount: last.score != null ? last.score : last.correct_count,
+          percentCorrect: last.percentCorrect != null ? last.percentCorrect : last.percent_correct,
+          durationSeconds: last.durationSeconds != null ? last.durationSeconds : last.duration_seconds,
+        });
+      } catch (e) {
+        card.innerHTML = `<h1 style="margin:0 0 10px; font-size:1.5rem;">Ошибка</h1><div class="status status--error">${esc(e.message)}</div>`;
+      }
+    })();
+  </script>
+</body>
+</html>

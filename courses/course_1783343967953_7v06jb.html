@@ -13,9 +13,9 @@
   <link rel="preload" href="https://fonts.gstatic.com/s/googlesans/v69/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrw2IJlhpynSEg.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="https://fonts.gstatic.com/s/googlesans/v69/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrw2IJllpyk.woff2" as="font" type="font/woff2" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
-  <link rel="preload" href="assets/css/landing.css?v=23" as="style">
+  <link rel="preload" href="assets/css/landing.css?v=24" as="style">
   <link rel="preload" href="assets/css/obuchenie.css?v=56" as="style">
-  <link rel="stylesheet" href="assets/css/landing.css?v=23">
+  <link rel="stylesheet" href="assets/css/landing.css?v=24">
   <link rel="stylesheet" href="assets/css/obuchenie.css?v=56">
   <link rel="stylesheet" href="assets/css/course.css?v=4">
   <script>document.documentElement.classList.add('landing-content-pending', 'obuchenie-content-pending');</script>
@@ -43,7 +43,7 @@
           <circle cx="12" cy="7" r="4"/>
         </svg>
       </button>
-      <div id="loginModal" class="login-popover">
+            <div id="loginModal" class="login-popover login-popover--split">
         <button id="closeLoginModal" class="btn-modal-close" aria-label="Закрыть">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -51,20 +51,32 @@
           </svg>
         </button>
         <h2 class="modal-title">Вход в систему</h2>
-        <div id="loginError" class="modal-error">Неверный e-mail или пароль</div>
-        <form id="loginForm">
-          <div class="form-group">
-            <label for="loginEmail">E-mail</label>
-            <input type="email" id="loginEmail" class="form-control" required placeholder="example@mail.ru">
+        <div class="login-split">
+          <div class="login-split__block">
+            <h3 class="login-split__heading">Администратор сайта</h3>
+            <p class="login-split__hint">Вход в панель управления порталом</p>
+            <div id="loginError" class="modal-error">Неверный e-mail или пароль</div>
+            <form id="loginForm">
+              <div class="form-group">
+                <label for="loginEmail">E-mail</label>
+                <input type="email" id="loginEmail" class="form-control" required placeholder="example@mail.ru" autocomplete="username">
+              </div>
+              <div class="form-group">
+                <label for="loginPass">Пароль</label>
+                <input type="password" id="loginPass" class="form-control" required placeholder="********" autocomplete="current-password">
+              </div>
+              <button type="submit" class="btn-save" style="width: 100%; margin-top: 12px;">Войти</button>
+            </form>
           </div>
-          <div class="form-group">
-            <label for="loginPass">Пароль</label>
-            <input type="password" id="loginPass" class="form-control" required placeholder="********">
+          <div class="login-split__divider" aria-hidden="true"></div>
+          <div class="login-split__block">
+            <h3 class="login-split__heading">Участник тестирования</h3>
+            <p class="login-split__hint">Модуль Assessment (отдельный сервис)</p>
+            <a id="asmtLoginLink" class="btn-asmt btn-asmt--primary" href="https://test.zakupki.tatar/login.html">Войти как участник</a>
+            <a id="asmtRegisterLink" class="btn-asmt btn-asmt--ghost" href="https://test.zakupki.tatar/register.html">Регистрация</a>
           </div>
-          <button type="submit" class="btn-save" style="width: 100%; margin-top: 20px;">Войти</button>
-        </form>
-      </div>
-    </div>
+        </div>
+      </div></div>
   </div>
 </header>
 
@@ -345,7 +357,7 @@
             <button type="button" class="btn btn--green btn--large" style="width: 100%; margin-top: 10px;">Записаться</button>
             <label class="form-check" style="color: #fff; margin-top: 15px; font-size: 13px;">
               <input type="checkbox" required checked>
-              <span>Согласен с политикой персональных данных</span>
+              <span>Согласен с <a href="privacy.html" target="_blank" rel="noopener">политикой персональных данных</a></span>
             </label>
           </form>
         </div>
@@ -396,8 +408,8 @@
 
   <div class="footer__bottom">
     <div class="container footer__bottom-inner">
-      <a href="#" class="footer__bottom-link footer__bottom-link--policy">Политика конфиденциальности</a>
-      <a href="#" class="footer__bottom-link footer__bottom-link--consent">Согласие на обработку персональных данных</a>
+      <a href="privacy.html" class="footer__bottom-link footer__bottom-link--policy">Политика конфиденциальности</a>
+      <a href="consent.html" class="footer__bottom-link footer__bottom-link--consent">Согласие на обработку персональных данных</a>
       <div class="footer__bottom-aside">
         <p class="footer__bottom-text">Мы используем файлы cookie, для персонализации сервисов и<br>повышения удобства пользования сайтом. Если вы не согласны<br>на их использование, поменяйте настройки браузера.</p>
         <p class="footer__copyright">АО «Центр развития закупок РТ» 2026 (с) Все права защищены</p>
@@ -501,6 +513,7 @@
 <script src="assets/js/landing-content.js?v=17" defer></script>
 <script src="assets/js/obuchenie-calendar.js?v=20" defer></script>
 <script src="assets/js/obuchenie-content.js?v=39" defer></script>
+<script src="assets/js/asmt-portal-config.js"></script>
 <script src="assets/js/landing.js?v=14" defer></script>
 <script src="assets/js/csr-dropdown.js?v=2" defer></script>
 <script src="assets/js/course-search.js?v=20" defer></script>

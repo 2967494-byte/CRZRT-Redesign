@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <title>Восстановление пароля | Assessment</title>
+  <link rel="stylesheet" href="assets/css/assessment.css">
+</head>
+<body>
+  <header class="asmt-header">
+    <div class="asmt-header__inner">
+      <a class="asmt-logo" href="index.html">ЦРЗ РТ<span>Восстановление доступа</span></a>
+      <a class="btn btn--ghost" href="login.html">Войти</a>
+    </div>
+  </header>
+  <main class="asmt-main">
+    <div class="asmt-card" style="max-width:480px;margin:0 auto;" id="requestCard">
+      <h1>Забыли пароль?</h1>
+      <p class="lead">Укажите email — пришлём ссылку на сброс (24 часа). Локально письмо пишется в <code>storage/mail.log</code>.</p>
+      <form id="requestForm">
+        <label class="field">Email<input name="email" type="email" required></label>
+        <div class="actions">
+          <button class="btn btn--primary" type="submit">Отправить ссылку</button>
+        </div>
+      </form>
+      <div id="requestStatus" class="status"></div>
+    </div>
+
+    <div class="asmt-card hidden" style="max-width:480px;margin:0 auto;" id="resetCard">
+      <h1>Новый пароль</h1>
+      <p class="lead">Придумайте пароль не короче 8 символов.</p>
+      <form id="resetForm">
+        <label class="field">Новый пароль<input name="password" type="password" minlength="8" required></label>
+        <label class="field">Повтор<input name="password2" type="password" minlength="8" required></label>
+        <div class="actions">
+          <button class="btn btn--primary" type="submit">Сохранить</button>
+        </div>
+      </form>
+      <div id="resetStatus" class="status"></div>
+    </div>
+  </main>
+  <script src="assets/js/asmt-api.js"></script>
+  <script src="assets/js/reset.js"></script>
+</body>
+</html>

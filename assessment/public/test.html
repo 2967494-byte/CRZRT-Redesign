@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <title>Тестирование | Assessment</title>
+  <link rel="stylesheet" href="assets/css/assessment.css">
+</head>
+<body>
+  <header class="test-header">
+    <div class="test-header__inner">
+      <a class="asmt-logo" href="cabinet.html" aria-label="Центр развития закупок РТ">
+        <img src="assets/img/logo.svg" alt="ЦРЗ РТ" class="asmt-logo__img">
+        <span class="asmt-logo__divider"></span>
+        <span class="asmt-logo__tag">Модуль тестирования</span>
+      </a>
+
+      <div style="display:flex; align-items:center; gap:24px;">
+        <div style="display:flex; align-items:center; gap:10px; background:rgba(15,170,75,0.06); padding:6px 16px; border-radius:999px; border:1px solid rgba(15,170,75,0.2);">
+          <span style="font-size:0.85rem; color:var(--muted); font-weight:600;">⏱️ Время:</span>
+          <span class="test-topbar__timer" id="timerDisplay">90:00</span>
+        </div>
+        <div id="progressLabel" style="font-weight:700; font-size:0.95rem; color:var(--text);">Вопрос 1 из 12</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="asmt-main">
+    <div class="asmt-card" style="margin-bottom:20px; padding:28px;">
+      <h2 class="quiz-card__question" id="questionText" style="margin:0 0 20px; font-size:1.2rem; font-weight:700; line-height:1.45; color:var(--text);">Загрузка билета…</h2>
+      <div id="optionsList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:24px;"></div>
+      <div class="actions" style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; border-top:1px solid var(--border-light); padding-top:20px;">
+        <button type="button" class="btn btn--ghost" id="btnPrev">← Назад</button>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn btn--danger" id="btnFinish">Завершить тест</button>
+          <button type="button" class="btn btn--primary" id="btnNext">Далее →</button>
+        </div>
+      </div>
+      <div id="testStatus" class="status"></div>
+    </div>
+
+    <div class="asmt-card">
+      <h3 style="margin:0 0 14px; font-size:1rem; font-weight:700; color:var(--text);">Навигация по вопросам</h3>
+      <div class="nav-grid" id="navGrid"></div>
+    </div>
+  </main>
+
+  <script src="assets/js/asmt-api.js"></script>
+  <script src="assets/js/test.js"></script>
+</body>
+</html>
