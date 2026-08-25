@@ -3661,6 +3661,8 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
   overflow: hidden;
   transform-origin: center center;
   animation: modalPopOut 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(30, 51, 76, 0.25) transparent;
 }
 
 /* Enrollment Modal Styles */
@@ -3675,10 +3677,35 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  overflow-x: hidden;
   transform-origin: center center;
   animation: modalPopOut 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
   padding: 48px 40px 40px;
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(30, 51, 76, 0.25) transparent;
+}
+
+.calendar-modal__content::-webkit-scrollbar,
+.enroll-modal__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.calendar-modal__content::-webkit-scrollbar-track,
+.enroll-modal__content::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 16px 0;
+}
+
+.calendar-modal__content::-webkit-scrollbar-thumb,
+.enroll-modal__content::-webkit-scrollbar-thumb {
+  background: rgba(30, 51, 76, 0.25);
+  border-radius: 10px;
+}
+
+.calendar-modal__content::-webkit-scrollbar-thumb:hover,
+.enroll-modal__content::-webkit-scrollbar-thumb:hover {
+  background: rgba(30, 51, 76, 0.45);
 }
 
 .enroll-modal__content > .calendar-modal__close {

@@ -3068,3 +3068,34 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   }
 }
 
+/* Modal Scrollbars & Rounded Corners Preservation */
+.calendar-modal__content,
+.enroll-modal__content {
+  border-radius: 20px !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(30, 51, 76, 0.25) transparent;
+}
+
+.calendar-modal__content::-webkit-scrollbar,
+.enroll-modal__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.calendar-modal__content::-webkit-scrollbar-track,
+.enroll-modal__content::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 16px 0;
+}
+
+.calendar-modal__content::-webkit-scrollbar-thumb,
+.enroll-modal__content::-webkit-scrollbar-thumb {
+  background: rgba(30, 51, 76, 0.25);
+  border-radius: 10px;
+}
+
+.calendar-modal__content::-webkit-scrollbar-thumb:hover,
+.enroll-modal__content::-webkit-scrollbar-thumb:hover {
+  background: rgba(30, 51, 76, 0.45);
+}
+
+
