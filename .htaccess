@@ -1,5 +1,9 @@
 # CRZRT-Site — кэш и сжатие статики (этап 3, Apache / ISPmanager)
 
+# Принудительная кодировка UTF-8 для всех файлов
+AddDefaultCharset UTF-8
+AddCharset UTF-8 .html .css .js .json .xml .php
+
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
   AddOutputFilterByType DEFLATE application/javascript application/json
