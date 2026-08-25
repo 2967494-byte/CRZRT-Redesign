@@ -3855,13 +3855,14 @@ body[data-page="obuchenie"] .obuchenie-testing-section > .container {
 }
 
 .enroll-modal__checkbox-text a {
-  color: #00AE4D;
+  color: #1a73e8;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .enroll-modal__checkbox-text a:hover {
-  text-decoration: none;
+  color: #0b57d0;
+  text-decoration: underline;
 }
 
 .enroll-modal__submit {
