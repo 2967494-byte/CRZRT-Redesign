@@ -660,7 +660,8 @@ body[data-page="obuchenie"] .consultation-card {
 }
 
 body[data-page="obuchenie"] .consultation-card__left {
-  height: 570px;
+  height: 100%;
+  min-height: 570px;
 }
 
 html:has(body[data-page="obuchenie"]) {

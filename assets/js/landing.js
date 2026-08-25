@@ -120,6 +120,8 @@ window.addEventListener('scroll', function () {
           email = ((_document$getElementB7 = document.getElementById('consultEmail')) === null || _document$getElementB7 === void 0 ? void 0 : _document$getElementB7.value.trim()) || '';
           interest = ((_document$getElementB8 = document.getElementById('consultInterest')) === null || _document$getElementB8 === void 0 ? void 0 : _document$getElementB8.value.trim()) || '';
           agreePolicy = ((_document$getElementB9 = document.getElementById('agreePolicy')) === null || _document$getElementB9 === void 0 ? void 0 : _document$getElementB9.checked) || false;
+          var agreeConsentEl = document.getElementById('agreeConsent');
+          var agreeConsentChecked = agreeConsentEl ? agreeConsentEl.checked : true;
           agreeNews = ((_document$getElementB0 = document.getElementById('agreeNews')) === null || _document$getElementB0 === void 0 ? void 0 : _document$getElementB0.checked) || false;
           if (!(!name || !phone)) {
             _context.n = 1;
@@ -135,7 +137,7 @@ window.addEventListener('scroll', function () {
           alert('Выберите направление в поле «Мне интересно»');
           return _context.a(2);
         case 2:
-          if (agreePolicy) {
+          if (agreePolicy && agreeConsentChecked) {
             _context.n = 3;
             break;
           }
