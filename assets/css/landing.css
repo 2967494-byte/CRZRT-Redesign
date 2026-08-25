@@ -1588,7 +1588,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   font-size: 18px;
   font-weight: 500;
   font-style: normal;
-  line-height: 100%;
+  line-height: 120%;
   letter-spacing: 0;
   color: #354557;
   cursor: pointer;
@@ -1602,6 +1602,36 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   accent-color: var(--green);
   cursor: pointer;
 }
+
+.form-check a {
+  color: var(--green, #0faa4b);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.form-check a:hover {
+  color: #0b8038;
+  opacity: 0.85;
+}
+
+.course-cta .form-check a,
+.form-check--light a,
+.form-check[style*="color: #fff"] a,
+.form-check[style*="color:#fff"] a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.course-cta .form-check a:hover,
+.form-check--light a:hover,
+.form-check[style*="color: #fff"] a:hover,
+.form-check[style*="color:#fff"] a:hover {
+  opacity: 0.85;
+}
+
 
 /* ===========================
    FOOTER
