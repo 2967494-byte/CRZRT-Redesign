@@ -304,7 +304,7 @@ course_content = """
             <button type="button" class="btn btn--green btn--large" style="width: 100%; margin-top: 10px;">Записаться</button>
             <label class="form-check" style="color: #fff; margin-top: 15px; font-size: 13px;">
               <input type="checkbox" required checked>
-              <span>Я соглашаюсь с <a href="https://zakupki.tatar/privacy.html" target="_blank" rel="noopener">политикой в отношении обработки персональных данных</a></span>
+              <span>Я даю своё согласие акционерному обществу «Центр развития закупок Республики Татарстан» на обработку моих персональных данных в соответствии с Федеральным законом от 27.07.2006 г. №152-ФЗ «О персональных данных» на условиях и для целей, определенных <a href="https://zakupki.tatar/privacy.html" target="_blank" rel="noopener">Политикой акционерного общества «Центр развития закупок Республики Татарстан» в отношении обработки персональных данных</a>.</span>
             </label>
           </form>
         </div>
