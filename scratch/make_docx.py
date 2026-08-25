@@ -59,9 +59,18 @@ p.add_run('1141690026217\n')
 p.add_run('• Юридический / почтовый адрес: ').bold = True
 p.add_run('420107, Российская Федерация, Республика Татарстан, г. Казань, ул. Петербургская, д. 86.\n')
 p.add_run('• Сетевой адрес (URL) ИС: ').bold = True
-p.add_run('https://test.zakupki.tatar (основной портал: https://zakupki.tatar)\n')
+run_url1 = p.add_run('https://test.zakupki.tatar')
+run_url1.font.color.rgb = RGBColor(0x1A, 0x73, 0xE8)
+run_url1.underline = True
+p.add_run(' (основной портал: ')
+run_url2 = p.add_run('https://zakupki.tatar')
+run_url2.font.color.rgb = RGBColor(0x1A, 0x73, 0xE8)
+run_url2.underline = True
+p.add_run(')\n')
 p.add_run('• Электронная почта поддержки: ').bold = True
-p.add_run('crz.rt@tatar.ru')
+run_mail = p.add_run('crz.rt@tatar.ru')
+run_mail.font.color.rgb = RGBColor(0x1A, 0x73, 0xE8)
+run_mail.underline = True
 
 # 2. Назначение и правовые основания
 add_heading('2. Назначение и правовые основания функционирования ИС')

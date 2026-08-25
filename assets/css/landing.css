@@ -1604,7 +1604,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .form-check a {
-  color: var(--green, #0faa4b);
+  color: #1a73e8;
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
@@ -1612,15 +1612,19 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .form-check a:hover {
-  color: #0b8038;
-  opacity: 0.85;
+  color: #0b57d0;
+  text-decoration: underline;
+}
+
+.form-check a:active {
+  color: #004085;
 }
 
 .course-cta .form-check a,
 .form-check--light a,
 .form-check[style*="color: #fff"] a,
 .form-check[style*="color:#fff"] a {
-  color: #ffffff;
+  color: #93c5fd;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -1629,8 +1633,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .form-check--light a:hover,
 .form-check[style*="color: #fff"] a:hover,
 .form-check[style*="color:#fff"] a:hover {
-  opacity: 0.85;
+  color: #ffffff;
+  text-decoration: underline;
 }
+
 
 
 /* ===========================
