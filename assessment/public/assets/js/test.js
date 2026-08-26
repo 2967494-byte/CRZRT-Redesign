@@ -209,7 +209,7 @@
       btn.className = 'nav-grid__btn';
       btn.textContent = String(i + 1);
       if (i === index) btn.classList.add('nav-grid__btn--current');
-      if (answers[q.id]) btn.classList.add('nav-grid__btn--answered');
+      if (answers[(q.id || q.questionId) || q.questionId]) btn.classList.add('nav-grid__btn--answered');
       btn.addEventListener('click', () => {
         index = i;
         renderQuestion();
@@ -227,7 +227,7 @@
     if (els.btnPrev) els.btnPrev.disabled = index === 0;
     if (els.btnNext) els.btnNext.textContent = index === questions.length - 1 ? 'К списку вопросов' : 'Далее →';
 
-    const chosen = answers[q.id] || null;
+    const chosen = answers[(q.id || q.questionId) || q.questionId] || null;
     const cyrMap = ['А', 'Б', 'В', 'Г', 'Д', 'Е'];
 
     if (els.options) {
@@ -239,11 +239,11 @@
         
         const radio = document.createElement('input');
         radio.type = 'radio';
-        radio.name = `q_${q.id}`;
+        radio.name = `q_${(q.id || q.questionId)}`;
         radio.value = opt.letter;
         radio.checked = (chosen === opt.letter);
         radio.addEventListener('change', () => {
-          answers[q.id] = opt.letter;
+          answers[(q.id || q.questionId) || q.questionId] = opt.letter;
           saveBuffer();
           renderQuestion();
           renderNav();

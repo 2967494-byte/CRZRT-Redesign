@@ -278,25 +278,46 @@ function loadAttemptQuestions(PDO $pdo, int $attemptId): array
     );
     $stmt->execute([$attemptId]);
     $rows = $stmt->fetchAll();
+    if (empty($rows)) {
+        return [];
+    }
+
+    $qids = array_map(static fn($r) => (int)$r['question_id'], $rows);
+    $inClause = implode(',', array_fill(0, count($qids), '?'));
+
+    $optStmt = $pdo->prepare(
+        "SELECT question_id, letter, text 
+         FROM asmt_question_options 
+         WHERE question_id IN ({$inClause})
+         ORDER BY question_id, sort_order, id"
+    );
+    $optStmt->execute($qids);
+    $allOpts = $optStmt->fetchAll();
+
+    $byQid = [];
+    foreach ($allOpts as $o) {
+        $byQid[(int)$o['question_id']][$o['letter']] = $o['text'];
+    }
+
     $out = [];
     foreach ($rows as $row) {
+        $qid = (int)$row['question_id'];
         $order = json_decode((string)$row['options_order_json'], true) ?: [];
-        $optStmt = $pdo->prepare(
-            'SELECT letter, text FROM asmt_question_options WHERE question_id = ?'
-        );
-        $optStmt->execute([(int)$row['question_id']]);
-        $byLetter = [];
-        foreach ($optStmt->fetchAll() as $opt) {
-            $byLetter[$opt['letter']] = $opt['text'];
-        }
+        $byLetter = $byQid[$qid] ?? [];
         $options = [];
         foreach ($order as $letter) {
             if (isset($byLetter[$letter])) {
                 $options[] = ['letter' => $letter, 'text' => $byLetter[$letter]];
             }
         }
+        if (empty($options)) {
+            foreach ($byLetter as $letter => $text) {
+                $options[] = ['letter' => $letter, 'text' => $text];
+            }
+        }
         $out[] = [
-            'questionId' => (int)$row['question_id'],
+            'id' => $qid,
+            'questionId' => $qid,
             'externalId' => (int)$row['external_id'],
             'formulationId' => $row['formulation_id'] ? (int)$row['formulation_id'] : null,
             'text' => $row['text'],
