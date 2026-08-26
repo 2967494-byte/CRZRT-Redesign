@@ -42,9 +42,9 @@
 
   function userStatusBadge(status) {
     if (status === 'blocked') {
-      return '<span class="badge" style="background:#fee2e2; color:#dc2626; font-weight:800;">⛔ Заблокирован</span>';
+      return '<span class="badge" style="background:#fee2e2; color:#dc2626; font-weight:800;">Заблокирован</span>';
     }
-    return '<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">✓ Активен</span>';
+    return '<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">Активен</span>';
   }
 
   function formatDt(dt) {
@@ -96,7 +96,7 @@
       els.tbody.innerHTML = `
         <tr>
           <td colspan="7" style="text-align:center; padding:40px 20px; color:var(--muted);">
-            <div style="font-size:1.5rem; margin-bottom:8px;">🔍</div>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.8" style="margin-bottom:8px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <strong>Пользователи не найдены</strong>
             <div style="font-size:0.85rem; margin-top:4px;">Попробуйте изменить параметры поиска или фильтры</div>
           </td>
@@ -127,7 +127,7 @@
             <div style="display:flex; flex-direction:column; gap:2px;">
               <div><strong>${esc(u.email)}</strong></div>
               <div style="color:var(--muted); font-size:0.8rem;">${esc(u.phone || '—')}</div>
-              <div style="color:var(--muted); font-size:0.75rem; margin-top:2px;">📍 ${esc(u.regionName || '—')} ${u.districtName ? '· ' + esc(u.districtName) : ''}</div>
+              <div style="color:var(--muted); font-size:0.75rem; margin-top:2px;">${esc(u.regionName || '—')} ${u.districtName ? '· ' + esc(u.districtName) : ''}</div>
             </div>
           </td>
           <td>
@@ -142,7 +142,7 @@
           </td>
           <td style="text-align:center;">
             <div style="font-weight:700; color:${u.passedCount > 0 ? 'var(--green)' : 'var(--text)'}; font-size:0.92rem;">
-              ${u.passedCount > 0 ? '🏆 Сдал' : (u.attemptsCount > 0 ? 'В процессе' : 'Не сдавал')}
+              ${u.passedCount > 0 ? 'Сдал' : (u.attemptsCount > 0 ? 'В процессе' : 'Не сдавал')}
             </div>
             <div style="font-size:0.75rem; color:var(--muted);">Попыток: ${u.attemptsCount}</div>
           </td>
@@ -197,12 +197,12 @@ ${userName}?`)) {
           if (res.success && res.redirect) {
             location.href = res.redirect;
           } else {
-            alert('⚠️ ' + (res.error || 'Ошибка входа под пользователем'));
+            alert( (res.error || 'Ошибка входа под пользователем'));
             btn.disabled = false;
             btn.innerHTML = 'Войти';
           }
         } catch (err) {
-          alert('⚠️ ' + (err.message || 'Ошибка соединения с сервером'));
+          alert( (err.message || 'Ошибка соединения с сервером'));
           btn.disabled = false;
           btn.innerHTML = 'Войти';
         }
@@ -231,11 +231,11 @@ ${userName}?`)) {
           if (res.success) {
             loadUsers();
           } else {
-            alert('⚠️ ' + (res.error || 'Не удалось изменить статус пользователя'));
+            alert( (res.error || 'Не удалось изменить статус пользователя'));
             btn.disabled = false;
           }
         } catch (err) {
-          alert('⚠️ ' + (err.message || 'Ошибка соединения с сервером'));
+          alert( (err.message || 'Ошибка соединения с сервером'));
           btn.disabled = false;
         }
       });

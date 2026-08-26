@@ -219,7 +219,7 @@
           </div>
           <div class="user-hero-card__detail-item">
             <span class="user-hero-card__detail-label">Регион</span>
-            <span class="user-hero-card__detail-val">📍 ${esc(u.regionName || (currentRegionObj ? currentRegionObj.name : 'Республика Татарстан'))}</span>
+            <span class="user-hero-card__detail-val">${esc(u.regionName || (currentRegionObj ? currentRegionObj.name : 'Республика Татарстан'))}</span>
           </div>
         </div>
       </div>
@@ -239,7 +239,7 @@
           <div><strong>Email:</strong> ${esc(u.email)}</div>
           <div><strong>Телефон:</strong> ${esc(u.phone || 'Не указан')}</div>
           <div><strong>Должность:</strong> ${esc(u.position || '—')}</div>
-          <div><strong>Регион:</strong> 📍 ${esc(u.regionName || (currentRegionObj ? currentRegionObj.name : 'Республика Татарстан'))}</div>
+          <div><strong>Регион:</strong> ${esc(u.regionName || (currentRegionObj ? currentRegionObj.name : 'Республика Татарстан'))}</div>
           <div><strong>Статус пользователя:</strong> <span class="badge badge--approved">Активен</span></div>
         </div>
         <hr style="border:none; border-top:1px solid var(--border-light); margin:20px 0;">
@@ -485,7 +485,7 @@
       bannerHtml = `
         <div class="impersonate-bar">
           <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:1.2rem;">⚠️</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
             <span>Вы вошли в личный кабинет в режиме просмотра от имени: <strong>${esc(cleanName(state.data.user.lastName))} ${esc(cleanName(state.data.user.firstName))}</strong></span>
           </div>
           <button type="button" id="btnStopImpersonation" class="btn-stop">
