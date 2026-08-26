@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
   <title>Регистрация | Assessment</title>
-  <link rel="stylesheet" href="assets/css/assessment.css">
+  <link rel="stylesheet" href="assets/css/assessment.css?v=4">
 </head>
 <body>
   <header class="asmt-header">
@@ -173,7 +173,7 @@
 
         <div class="law-notice-bar">
           <svg class="asmt-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-          <span>Перед завершением регистрации потребуется принять индивидуальные правовые согласия (152-ФЗ) в модальном окне.</span>
+          <span>Перед завершением регистрации потребуется подтвердить согласие на обработку персональных данных.</span>
         </div>
 
         <div id="formStatus" class="status"></div>
@@ -182,7 +182,7 @@
         <div class="form-actions">
           <button class="btn btn--primary btn--hero" type="submit" id="btnSubmitForm">
             <svg class="asmt-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            <span>Перейти к правовым согласиям</span>
+            <span>Перейти к согласию</span>
           </button>
           <a class="btn btn--ghost" href="login.html">Уже есть аккаунт? Войти</a>
         </div>
@@ -190,65 +190,25 @@
     </div>
   </main>
 
-  <!-- МОДАЛЬНОЕ ОКНО ПРАВОВЫХ СОГЛАСИЙ (152-ФЗ) -->
+  <!-- МОДАЛЬНОЕ ОКНО СОГЛАСИЯ НА ОБРАБОТКУ ПДн -->
   <div class="asmt-modal-overlay hidden" id="consentModal" role="dialog" aria-modal="true" aria-labelledby="consentModalTitle">
     <div class="asmt-modal">
       <div class="asmt-modal__header">
         <div class="asmt-modal__title-wrap">
           <svg class="asmt-ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0faa4b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-          <h2 class="asmt-modal__title" id="consentModalTitle">Подтверждение правовых согласий</h2>
+          <h2 class="asmt-modal__title" id="consentModalTitle">Согласие на обработку персональных данных</h2>
         </div>
         <button type="button" class="asmt-modal__close" id="btnCloseModal" title="Закрыть окно">&times;</button>
       </div>
 
       <div class="asmt-modal__body">
-        <p class="asmt-modal__desc">Для выполнения требований Федерального закона № 152-ФЗ «О персональных данных» необходимо подтвердить каждое правовое условие отдельно.</p>
-
-        <!-- Блок 1: Согласие на обработку ПДн -->
-        <div class="consent-card" id="consentCardPd">
-          <div class="consent-card__header">
-            <div class="consent-card__icon">
-              <svg class="asmt-ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            </div>
-            <div>
-              <h4 class="consent-card__title">1. Согласие на обработку персональных данных</h4>
-              <span class="consent-card__law">Федеральный закон № 152-ФЗ «О персональных данных»</span>
-            </div>
-          </div>
-          <div class="consent-card__text">
-            Настоящим я даю свое согласие Акционерному обществу «Центр развития закупок Республики Татарстан» на обработку моих персональных данных (ФИО, должность, телефон, email, данные об образовании и опыте работы) в соответствии с <a href="../../consent.html" target="_blank" rel="noopener" style="color: #0faa4b; text-decoration: underline;">Согласием на обработку персональных данных</a> для целей проведения профессиональной аттестации, учета результатов и формирования ведомственной отчетности.
-          </div>
-          <div class="consent-card__action">
-            <button type="button" class="btn btn--consent" id="btnAgreePd">
-              <span class="consent-check-ic">&check;</span>
-              <span class="consent-btn-label">Нажимая кнопку, я подтверждаю согласие</span>
-            </button>
-            <span class="consent-timestamp hidden" id="tsPd"></span>
-          </div>
-        </div>
-
-        <!-- Блок 2: Политика конфиденциальности -->
-        <div class="consent-card" id="consentCardPrivacy">
-          <div class="consent-card__header">
-            <div class="consent-card__icon">
-              <svg class="asmt-ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <div>
-              <h4 class="consent-card__title">2. Политика конфиденциальности</h4>
-              <span class="consent-card__law">Правила использования сервиса и защиты сведений</span>
-            </div>
-          </div>
-          <div class="consent-card__text">
-            Подтверждаю ознакомление с <a href="../../privacy.html" target="_blank" rel="noopener" style="color: #0faa4b; text-decoration: underline;">Политикой конфиденциальности</a>. Обязуюсь использовать личный кабинет в соответствии с регламентом аттестации и соблюдать условия защиты учетных данных.
-          </div>
-          <div class="consent-card__action">
-            <button type="button" class="btn btn--consent" id="btnAgreePrivacy">
-              <span class="consent-check-ic">&check;</span>
-              <span class="consent-btn-label">Ознакомлен и принимаю политику</span>
-            </button>
-            <span class="consent-timestamp hidden" id="tsPrivacy"></span>
-          </div>
-        </div>
+        <label class="consent-single" id="consentCard">
+          <input type="checkbox" id="consentCheckbox" />
+          <span class="consent-single__text">
+            Я даю своё согласие акционерному обществу «Центр развития закупок Республики Татарстан» на обработку моих персональных данных в соответствии с Федеральным законом от 27.07.2006 г. №152-ФЗ «О персональных данных» на условиях и для целей, определенных
+            <a href="https://zakupki.tatar/privacy.html" target="_blank" rel="noopener">Политикой акционерного общества «Центр развития закупок Республики Татарстан» в отношении обработки персональных данных</a>.
+          </span>
+        </label>
       </div>
 
       <div class="asmt-modal__footer">
@@ -262,7 +222,7 @@
   </div>
 
   <script src="assets/js/asmt-api.js"></script>
-  <script src="assets/js/register.js?v=3"></script>
+  <script src="assets/js/register.js?v=4"></script>
   <script src="assets/js/esia-stub.js"></script>
 </body>
 </html>

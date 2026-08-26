@@ -13,22 +13,14 @@
   const modal = document.getElementById('consentModal');
   const btnCloseModal = document.getElementById('btnCloseModal');
   const btnCancelConsent = document.getElementById('btnCancelConsent');
-  const btnAgreePd = document.getElementById('btnAgreePd');
-  const btnAgreePrivacy = document.getElementById('btnAgreePrivacy');
+  const consentCheckbox = document.getElementById('consentCheckbox');
   const btnFinalRegister = document.getElementById('btnFinalRegister');
-  const cardPd = document.getElementById('consentCardPd');
-  const cardPrivacy = document.getElementById('consentCardPrivacy');
-  const tsPd = document.getElementById('tsPd');
-  const tsPrivacy = document.getElementById('tsPrivacy');
 
   const phoneInput = document.getElementById('phoneInput') || form.querySelector('input[name="phone"]');
 
   let lookupTimer = null;
   let fromDirectory = false;
-  let consentPdState = false;
-  let consentPrivacyState = false;
-  let consentPdTime = null;
-  let consentPrivacyTime = null;
+  let consentTime = null;
 
   function showStatus(msg, type) {
     status.textContent = msg;
@@ -218,42 +210,13 @@
   }
 
   function updateModalState() {
-    if (consentPdState) {
-      cardPd.classList.add('is-agreed');
-      btnAgreePd.querySelector('.consent-btn-label').textContent = 'Согласие подтверждено';
-      tsPd.textContent = `Зафиксировано: ${consentPdTime}`;
-      tsPd.classList.remove('hidden');
-    } else {
-      cardPd.classList.remove('is-agreed');
-      btnAgreePd.querySelector('.consent-btn-label').textContent = 'Нажимая кнопку, я подтверждаю согласие';
-      tsPd.classList.add('hidden');
-    }
-
-    if (consentPrivacyState) {
-      cardPrivacy.classList.add('is-agreed');
-      btnAgreePrivacy.querySelector('.consent-btn-label').textContent = 'Политика принята';
-      tsPrivacy.textContent = `Зафиксировано: ${consentPrivacyTime}`;
-      tsPrivacy.classList.remove('hidden');
-    } else {
-      cardPrivacy.classList.remove('is-agreed');
-      btnAgreePrivacy.querySelector('.consent-btn-label').textContent = 'Ознакомлен и принимаю политику';
-      tsPrivacy.classList.add('hidden');
-    }
-
-    btnFinalRegister.disabled = !(consentPdState && consentPrivacyState);
+    const agreed = !!consentCheckbox.checked;
+    if (agreed && !consentTime) consentTime = formatTimeNow();
+    if (!agreed) consentTime = null;
+    btnFinalRegister.disabled = !agreed;
   }
 
-  btnAgreePd.addEventListener('click', () => {
-    consentPdState = !consentPdState;
-    if (consentPdState) consentPdTime = formatTimeNow();
-    updateModalState();
-  });
-
-  btnAgreePrivacy.addEventListener('click', () => {
-    consentPrivacyState = !consentPrivacyState;
-    if (consentPrivacyState) consentPrivacyTime = formatTimeNow();
-    updateModalState();
-  });
+  consentCheckbox.addEventListener('change', updateModalState);
 
   btnCloseModal.addEventListener('click', closeModal);
   btnCancelConsent.addEventListener('click', closeModal);
@@ -268,16 +231,17 @@
   });
 
   btnFinalRegister.addEventListener('click', async () => {
+    if (!consentCheckbox.checked) return;
     closeModal();
     showStatus('Регистрация участника…', 'info');
     credsBox.classList.add('hidden');
 
     const fd = new FormData(form);
     const body = Object.fromEntries(fd.entries());
-    body.consentPd = consentPdState;
-    body.consentPrivacy = consentPrivacyState;
-    body.consentPdAt = consentPdTime;
-    body.consentPrivacyAt = consentPrivacyTime;
+    body.consentPd = true;
+    body.consentPrivacy = true;
+    body.consentPdAt = consentTime;
+    body.consentPrivacyAt = consentTime;
     body.fromDirectory = fromDirectory;
 
     try {

@@ -870,129 +870,47 @@ a:hover { text-decoration: underline; }
   gap: 12px;
 }
 
-/* CONSENT CARDS IN MODAL */
-.consent-card {
+/* CONSENT IN MODAL */
+.consent-single {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
   background: #ffffff;
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 18px;
-  transition: all 0.2s ease;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
-.consent-card.is-agreed {
+.consent-single:has(input:checked) {
   border-color: #a7f3d0;
   background: #f0fdf4;
 }
 
-.consent-card__header {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.consent-card__icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--bg);
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.consent-card.is-agreed .consent-card__icon {
-  background: var(--green-light);
-  color: var(--green);
-}
-
-.consent-card__title {
-  margin: 0;
-  font-size: 0.98rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.consent-card__law {
-  font-size: 0.78rem;
-  color: var(--muted);
-  display: block;
-  margin-top: 2px;
-}
-
-.consent-card__text {
-  font-size: 0.85rem;
-  color: var(--muted);
-  line-height: 1.5;
-  background: #f8fafc;
-  padding: 10px 14px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  border: 1px solid var(--border-light);
-}
-
-.consent-card.is-agreed .consent-card__text {
-  background: #ffffff;
-}
-
-.consent-card__action {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.btn--consent {
-  background: #ffffff;
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.85rem;
-  padding: 8px 14px;
-  min-height: 38px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  transition: all 0.15s ease;
-}
-
-.btn--consent:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-}
-
-.consent-check-ic {
-  display: none;
+.consent-single input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  border-radius: 50%;
-  background: var(--green);
-  color: #ffffff;
-  font-weight: bold;
-  font-size: 11px;
-  text-align: center;
-  line-height: 18px;
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: var(--green);
+  cursor: pointer;
 }
 
-.consent-card.is-agreed .btn--consent {
-  background: var(--green-light);
-  border-color: #a7f3d0;
-  color: #0c6b34;
+.consent-single__text {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text);
 }
 
-.consent-card.is-agreed .consent-check-ic {
-  display: inline-block;
+.consent-single__text a {
+  color: #0faa4b;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-.consent-timestamp {
-  font-size: 0.78rem;
-  color: #059669;
-  font-weight: 500;
+.consent-single__text a:hover {
+  color: #0c8a3c;
 }
 
 /* LOGIN FORM STYLES */

@@ -32,7 +32,7 @@ foreach ($required as $field) {
 }
 
 if (empty($payload['consentPd']) || empty($payload['consentPrivacy'])) {
-    Http::json(['success' => false, 'error' => 'Необходимо принять согласия 152-ФЗ и политику конфиденциальности'], 400);
+    Http::json(['success' => false, 'error' => 'Необходимо дать согласие на обработку персональных данных'], 400);
 }
 
 $email = Auth::normalizeEmail((string)$payload['email']);
