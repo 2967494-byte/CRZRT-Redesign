@@ -56,13 +56,13 @@ final class AttemptService
         $answered = 0;
         $correct = 0;
         $mark = $pdo->prepare(
-            'UPDATE asmt_attempt_answers SET is_correct = ? WHERE attempt_id = ? AND question_id = ?'
+            'UPDATE asmt_attempt_answers SET is_correct = (?::int)::boolean WHERE attempt_id = ? AND question_id = ?'
         );
         foreach ($all as $row) {
             $chosenRaw = trim((string)($row['option_letter_chosen'] ?? ''));
             $expectedRaw = trim((string)($row['correct_letter'] ?? ''));
             if ($chosenRaw === '') {
-                $mark->execute([false, $attemptId, (int)$row['question_id']]);
+                $mark->execute([0, $attemptId, (int)$row['question_id']]);
                 continue;
             }
             $answered++;
@@ -72,7 +72,7 @@ final class AttemptService
             if ($isCorrect) {
                 $correct++;
             }
-            $mark->execute([$isCorrect, $attemptId, (int)$row['question_id']]);
+            $mark->execute([$isCorrect ? 1 : 0, $attemptId, (int)$row['question_id']]);
         }
         $incorrect = max(0, $total - $correct);
         $percent = $total > 0 ? round(($correct / $total) * 100, 2) : 0.0;
@@ -115,18 +115,7 @@ final class AttemptService
         $startedTs = self::parseTs((string)$attempt['started_at']) ?? time();
         $duration = max(0, time() - $startedTs);
 
-        $pdo->prepare(
-            'UPDATE asmt_attempts SET
-                status = ?,
-                finished_at = NOW(),
-                duration_seconds = ?,
-                answered_count = ?,
-                correct_count = ?,
-                incorrect_count = ?,
-                score = ?,
-                percent_correct = ?
-             WHERE id = ?'
-        )->execute([
+        $params = [
             $status,
             $duration,
             $stats['answered'],
@@ -135,7 +124,40 @@ final class AttemptService
             $stats['correct'],
             $stats['percent'],
             $attemptId,
-        ]);
+        ];
+        try {
+            $pdo->prepare(
+                'UPDATE asmt_attempts SET
+                    status = ?,
+                    finished_at = NOW(),
+                    duration_seconds = ?,
+                    answered_count = ?,
+                    correct_count = ?,
+                    incorrect_count = ?,
+                    score = ?,
+                    percent_correct = ?
+                 WHERE id = ?'
+            )->execute($params);
+        } catch (\PDOException $e) {
+            // Unique partial index: one finished per user+campaign
+            if ($status === 'finished' && self::isUniqueViolation($e)) {
+                $params[0] = 'abandoned';
+                $pdo->prepare(
+                    'UPDATE asmt_attempts SET
+                        status = ?,
+                        finished_at = NOW(),
+                        duration_seconds = ?,
+                        answered_count = ?,
+                        correct_count = ?,
+                        incorrect_count = ?,
+                        score = ?,
+                        percent_correct = ?
+                     WHERE id = ?'
+                )->execute($params);
+            } else {
+                throw $e;
+            }
+        }
 
         $fresh = $pdo->prepare('SELECT * FROM asmt_attempts WHERE id = ?');
         $fresh->execute([$attemptId]);
@@ -184,5 +206,17 @@ final class AttemptService
              WHERE user_id = ? AND campaign_id = ?
                AND status IN ('finished', 'abandoned', 'expired')"
         )->execute([$userId, $campaignId]);
+    }
+
+    private static function isUniqueViolation(\PDOException $e): bool
+    {
+        $info = $e->errorInfo ?? [];
+        if (($info[0] ?? '') === '23505') {
+            return true;
+        }
+        $msg = $e->getMessage();
+        return str_contains($msg, '23505')
+            || str_contains($msg, 'asmt_attempts_one_finished_per_campaign')
+            || str_contains(strtolower($msg), 'unique');
     }
 }

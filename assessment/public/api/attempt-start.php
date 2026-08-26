@@ -17,11 +17,18 @@ $pdo = Db::pdo();
 $userId = (int)$user['id'];
 $regionId = !empty($user['region_id']) ? (int)$user['region_id'] : null;
 
-// Any open attempt is closed (no resume / Continue)
-AttemptService::finalizeOpenAttemptsForUser($pdo, $userId);
-
 $payload = Http::readJson();
 $requestedCampaignId = isset($payload['campaignId']) ? (int)$payload['campaignId'] : 0;
+
+try {
+    // Any open attempt is closed (no resume / Continue)
+    AttemptService::finalizeOpenAttemptsForUser($pdo, $userId);
+} catch (Throwable $e) {
+    Http::json([
+        'success' => false,
+        'error' => 'Не удалось закрыть предыдущую попытку: ' . $e->getMessage(),
+    ], 500);
+}
 
 if ($requestedCampaignId > 0) {
     if ($regionId) {
@@ -133,7 +140,7 @@ try {
             ip_address, user_agent, device_type
          ) VALUES (
             ?, ?, ?, ?, \'in_progress\', NOW(), NOW() + (? || \' minutes\')::interval, ?, ?::jsonb,
-            ?::inet, ?, ?
+            CAST(? AS inet), ?, ?
          ) RETURNING id, expires_at, started_at'
     );
     $ins->execute([
@@ -144,7 +151,7 @@ try {
         (string)$minutes,
         $limit,
         json_encode($order, JSON_UNESCAPED_UNICODE),
-        $ip,
+        $ip, // null is fine for CAST(? AS inet)
         $ua,
         $device,
     ]);
@@ -192,8 +199,20 @@ try {
 
     $pdo->commit();
 } catch (Throwable $e) {
-    $pdo->rollBack();
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     Http::json(['success' => false, 'error' => 'Не удалось начать попытку: ' . $e->getMessage()], 500);
+}
+
+try {
+    $questions = loadAttemptQuestions($pdo, $attemptId);
+} catch (Throwable $e) {
+    Http::json([
+        'success' => false,
+        'error' => 'Попытка создана, но не удалось загрузить вопросы: ' . $e->getMessage(),
+        'attemptId' => $attemptId,
+    ], 500);
 }
 
 Http::json([
@@ -204,7 +223,7 @@ Http::json([
     'startedAt' => $attempt['started_at'],
     'serverNow' => gmdate('c'),
     'timeLimitMinutes' => $minutes,
-    'questions' => loadAttemptQuestions($pdo, $attemptId),
+    'questions' => $questions,
 ]);
 
 function loadAttemptQuestions(PDO $pdo, int $attemptId): array

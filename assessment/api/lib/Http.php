@@ -26,8 +26,22 @@ final class Http
 
     public static function clientIp(): ?string
     {
-        $ip = $_SERVER['REMOTE_ADDR'] ?? null;
-        return is_string($ip) && $ip !== '' ? $ip : null;
+        $candidates = [
+            $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null,
+            $_SERVER['HTTP_X_REAL_IP'] ?? null,
+            $_SERVER['REMOTE_ADDR'] ?? null,
+        ];
+        foreach ($candidates as $raw) {
+            if (!is_string($raw) || $raw === '') {
+                continue;
+            }
+            // X-Forwarded-For may be a list: client, proxy1, proxy2
+            $first = trim(explode(',', $raw)[0]);
+            if (filter_var($first, FILTER_VALIDATE_IP)) {
+                return $first;
+            }
+        }
+        return null;
     }
 
     public static function userAgent(): string
