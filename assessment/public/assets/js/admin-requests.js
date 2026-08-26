@@ -54,7 +54,7 @@
       return `
         <div style="display:flex; flex-direction:column; gap:2px;">
           <span class="badge" style="background:#fee2e2; color:#b91c1c; font-weight:700; font-size:0.72rem;">
-            🔴 ${drops} обрыв(а) (${formatSec(offSec)})
+             ${drops} обрыв(а) (${formatSec(offSec)})
           </span>
           ${hideSec > 5 ? `<span style="font-size:0.7rem; color:var(--muted);">Вне вкладки: ${formatSec(hideSec)}</span>` : ''}
         </div>
@@ -65,7 +65,7 @@
       return `
         <div style="display:flex; flex-direction:column; gap:2px;">
           <span class="badge" style="background:#fffbeb; color:#b45309; font-weight:700; font-size:0.72rem;">
-            🟡 Без обрывов сети
+             Без обрывов сети
           </span>
           <span style="font-size:0.7rem; color:#b45309; font-weight:600;">Вне вкладки: ${formatSec(hideSec)}</span>
         </div>
@@ -74,7 +74,7 @@
 
     return `
       <span class="badge" style="background:#ecfdf5; color:#047857; font-weight:700; font-size:0.72rem;">
-        🟢 Стабильно (0 сбоев)
+         Стабильно (0 сбоев)
       </span>
     `;
   }
