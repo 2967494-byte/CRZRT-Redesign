@@ -21,6 +21,8 @@
   const tsPd = document.getElementById('tsPd');
   const tsPrivacy = document.getElementById('tsPrivacy');
 
+  const phoneInput = document.getElementById('phoneInput') || form.querySelector('input[name="phone"]');
+
   let lookupTimer = null;
   let fromDirectory = false;
   let consentPdState = false;
@@ -32,6 +34,67 @@
     status.textContent = msg;
     status.className = 'status status--' + (type || 'info');
   }
+
+  /** Маска +7 (___) ___-__-__ ; в API уходит как есть, сервер нормализует цифры. */
+  function formatPhoneMask(raw) {
+    let digits = String(raw || '').replace(/\D+/g, '');
+    if (digits.startsWith('8')) digits = '7' + digits.slice(1);
+    if (digits.startsWith('7')) digits = digits.slice(1);
+    digits = digits.slice(0, 10);
+
+    let out = '+7 (';
+    if (digits.length === 0) return out;
+    out += digits.slice(0, 3);
+    if (digits.length < 3) return out;
+    out += ') ' + digits.slice(3, 6);
+    if (digits.length < 6) return out;
+    out += '-' + digits.slice(6, 8);
+    if (digits.length < 8) return out;
+    out += '-' + digits.slice(8, 10);
+    return out;
+  }
+
+  function bindPhoneMask(input) {
+    if (!input) return;
+    input.value = formatPhoneMask(input.value || '7');
+
+    input.addEventListener('focus', () => {
+      if (!input.value || input.value === '+7 (') {
+        input.value = '+7 (';
+      }
+    });
+
+    input.addEventListener('input', () => {
+      const prev = input.value;
+      const next = formatPhoneMask(prev);
+      input.value = next;
+      // Курсор в конец — проще и предсказуемее при маске
+      try {
+        const pos = next.length;
+        input.setSelectionRange(pos, pos);
+      } catch (_e) { /* ignore */ }
+    });
+
+    input.addEventListener('keydown', (e) => {
+      // Не даём стереть префикс +7 (
+      if ((e.key === 'Backspace' || e.key === 'Delete') && input.selectionStart <= 4 && input.selectionEnd <= 4) {
+        e.preventDefault();
+      }
+    });
+
+    input.addEventListener('blur', () => {
+      const digits = (input.value || '').replace(/\D+/g, '');
+      if (digits.length <= 1) {
+        input.value = '';
+      } else if (digits.length !== 11) {
+        input.setCustomValidity('Введите номер полностью: +7 (___) ___-__-__');
+      } else {
+        input.setCustomValidity('');
+      }
+    });
+  }
+
+  bindPhoneMask(phoneInput);
 
   function renderHierarchy(org) {
     if (!org || !org.hierarchy) {
