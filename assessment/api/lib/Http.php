@@ -85,7 +85,7 @@ final class Http
         return 'desktop';
     }
 
-    public static function verifyCsrf(): void
+        public static function verifyCsrf(): void
     {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         if (in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
@@ -103,16 +103,20 @@ final class Http
             return;
         }
 
-        $headerToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
-        if (!$headerToken) {
+        // Check header, payload, or cookie
+        $receivedToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        if (!$receivedToken) {
             $payload = self::readJson();
-            $headerToken = $payload['csrf_token'] ?? null;
+            $receivedToken = $payload['csrf_token'] ?? null;
+        }
+        if (!$receivedToken) {
+            $receivedToken = $_COOKIE['asmt_csrf_token'] ?? null;
         }
 
-        if (!$headerToken || !hash_equals((string)$sessionToken, (string)$headerToken)) {
+        if (!$receivedToken || !hash_equals((string)$sessionToken, (string)$receivedToken)) {
             self::json([
                 'success' => false,
-                'error' => 'CSRF token mismatch',
+                'error' => 'CSRF token mismatch. Пожалуйста, обновите страницу.',
                 'csrf_error' => true,
             ], 419);
         }

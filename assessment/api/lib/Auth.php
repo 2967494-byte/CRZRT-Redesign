@@ -22,6 +22,15 @@ final class Auth
         if (empty($_SESSION['asmt_csrf_token'])) {
             $_SESSION['asmt_csrf_token'] = bin2hex(random_bytes(32));
         }
+        if (!headers_sent()) {
+            setcookie('asmt_csrf_token', (string)$_SESSION['asmt_csrf_token'], [
+                'expires' => 0,
+                'path' => '/',
+                'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+                'httponly' => false, // readable by JavaScript AsmtApi
+                'samesite' => 'Lax',
+            ]);
+        }
     }
 
     public static function csrfToken(): string
