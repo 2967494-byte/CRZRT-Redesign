@@ -131,6 +131,11 @@ Http::json([
             'deviceType' => $r['device_type'],
             'ipAddress' => $showIp ? $r['ip_address'] : null,
             'moderationStatus' => $r['user_org_status_at_attempt'],
+            'userAgent' => $r['user_agent'],
+            'disconnectCount' => (int)($r['disconnect_count'] ?? 0),
+            'totalOfflineSeconds' => (int)($r['total_offline_seconds'] ?? 0),
+            'tabHiddenSeconds' => (int)($r['tab_hidden_seconds'] ?? 0),
+            'telemetryLog' => json_decode((string)($r['telemetry_json'] ?? '[]'), true) ?: [],
             'user' => [
                 'id' => (int)$r['user_id'],
                 'lastName' => $r['last_name'],
