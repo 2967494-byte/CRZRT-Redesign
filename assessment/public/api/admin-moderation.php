@@ -45,14 +45,22 @@ if ($method === 'GET') {
 
     $stmt = $pdo->prepare(
         "SELECT uo.id, uo.status, uo.requested_at, uo.moderated_at, uo.moderator_comment,
-                u.id AS user_id, u.last_name, u.first_name, u.middle_name, u.email_normalized, u.phone_normalized, u.position,
+                u.id AS user_id, u.last_name, u.first_name, u.middle_name,
+                u.email_normalized, u.phone_normalized, u.position,
+                u.experience_level, u.education, u.specialty, u.customer_level,
+                u.district_other_text, u.consent_pd_at, u.consent_privacy_at, u.created_at,
+                d.name AS district_name,
+                reg.name AS region_name,
                 o.id AS org_id, o.name AS org_name, o.inn AS org_inn, o.level AS org_level,
+                o.customer_level AS org_customer_level, o.status AS org_status,
                 p2.name AS level2_name, p1.name AS level1_name
          FROM asmt_user_organizations uo
          JOIN asmt_users u ON u.id = uo.user_id
          JOIN asmt_organizations o ON o.id = uo.organization_id
          LEFT JOIN asmt_organizations p2 ON p2.id = o.parent_id
          LEFT JOIN asmt_organizations p1 ON p1.id = p2.parent_id
+         LEFT JOIN asmt_districts d ON d.id = u.district_id
+         LEFT JOIN asmt_regions reg ON reg.id = u.region_id
          WHERE {$sqlWhere}
          ORDER BY
             CASE uo.status WHEN 'pending' THEN 0 WHEN 'needs_info' THEN 1 ELSE 2 END,
@@ -83,11 +91,23 @@ if ($method === 'GET') {
                     'email' => $r['email_normalized'],
                     'phone' => $r['phone_normalized'],
                     'position' => $r['position'],
+                    'experienceLevel' => $r['experience_level'],
+                    'education' => $r['education'],
+                    'specialty' => $r['specialty'],
+                    'customerLevel' => $r['customer_level'],
+                    'district' => $r['district_name'],
+                    'districtOther' => $r['district_other_text'],
+                    'region' => $r['region_name'],
+                    'consentPdAt' => $r['consent_pd_at'],
+                    'consentPrivacyAt' => $r['consent_privacy_at'],
+                    'createdAt' => $r['created_at'],
                 ],
                 'organization' => [
                     'id' => (int)$r['org_id'],
                     'name' => $r['org_name'],
                     'inn' => $r['org_inn'],
+                    'customerLevel' => $r['org_customer_level'],
+                    'status' => $r['org_status'],
                     'level1' => $r['level1_name'],
                     'level2' => $r['level2_name'],
                 ],
@@ -137,7 +157,6 @@ if ($method === 'POST') {
          WHERE id = ?'
     )->execute([$newStatus, (int)$user['id'], $comment, $id]);
 
-    // If org itself was pending (manual entry), approve it together with link
     if ($newStatus === 'approved') {
         $pdo->prepare(
             "UPDATE asmt_organizations SET status = 'approved'
@@ -145,7 +164,6 @@ if ($method === 'POST') {
         )->execute([(int)$row['organization_id']]);
     }
 
-    // Keep attempt snapshots in sync so org reports / approvedOnly export match current moderation
     $pdo->prepare(
         'UPDATE asmt_attempts
          SET user_org_status_at_attempt = ?
