@@ -66,15 +66,18 @@ if ($method === 'GET') {
     $cntStmt->execute($params);
     $total = (int)$cntStmt->fetchColumn();
 
-    // Fetch items with stats
+    // Fetch items with full registration details
     $itemsStmt = $pdo->prepare(
         "SELECT u.id, u.email_normalized, u.phone_normalized, u.last_name, u.first_name, u.middle_name,
-                u.position, u.role, u.status, u.created_at, u.last_login_at,
+                u.position, u.experience_level, u.education, u.specialty, u.customer_level AS user_customer_level,
+                u.district_other_text, u.consent_pd_at, u.consent_privacy_at,
+                u.role, u.status, u.created_at, u.last_login_at,
                 reg.name AS region_name,
                 d.name AS district_name,
-                uo.status AS user_org_status,
-                uo.requested_at AS org_requested_at,
-                o.id AS org_id, o.name AS org_name, o.inn AS org_inn,
+                uo.id AS uo_id, uo.status AS user_org_status,
+                uo.requested_at AS org_requested_at, uo.moderated_at, uo.moderator_comment,
+                o.id AS org_id, o.name AS org_name, o.inn AS org_inn, o.customer_level AS org_customer_level,
+                p2.name AS level2_name, p1.name AS level1_name,
                 (SELECT COUNT(*) FROM asmt_attempts a WHERE a.user_id = u.id) AS attempts_count,
                 (SELECT COUNT(*) FROM asmt_attempts a WHERE a.user_id = u.id AND a.percent_correct >= 70.0 AND a.status IN ('finished','abandoned','expired')) AS passed_count
          FROM asmt_users u
@@ -82,6 +85,8 @@ if ($method === 'GET') {
              SELECT id FROM asmt_user_organizations sub WHERE sub.user_id = u.id ORDER BY requested_at DESC LIMIT 1
          )
          LEFT JOIN asmt_organizations o ON o.id = uo.organization_id
+         LEFT JOIN asmt_organizations p2 ON p2.id = o.parent_id
+         LEFT JOIN asmt_organizations p1 ON p1.id = p2.parent_id
          LEFT JOIN asmt_regions reg ON reg.id = u.region_id
          LEFT JOIN asmt_districts d ON d.id = u.district_id
          WHERE {$sqlWhere}
@@ -106,6 +111,13 @@ if ($method === 'GET') {
                 'firstName' => $r['first_name'],
                 'middleName' => $r['middle_name'],
                 'position' => $r['position'],
+                'experienceLevel' => $r['experience_level'],
+                'education' => $r['education'],
+                'specialty' => $r['specialty'],
+                'customerLevel' => $r['user_customer_level'],
+                'districtOther' => $r['district_other_text'],
+                'consentPdAt' => $r['consent_pd_at'],
+                'consentPrivacyAt' => $r['consent_privacy_at'],
                 'role' => $r['role'],
                 'status' => $r['status'],
                 'createdAt' => $r['created_at'],
@@ -117,6 +129,12 @@ if ($method === 'GET') {
                     'name' => $r['org_name'],
                     'inn' => $r['org_inn'],
                     'status' => $r['user_org_status'],
+                    'customerLevel' => $r['org_customer_level'],
+                    'level1' => $r['level1_name'],
+                    'level2' => $r['level2_name'],
+                    'requestedAt' => $r['org_requested_at'],
+                    'moderatedAt' => $r['moderated_at'],
+                    'comment' => $r['moderator_comment'],
                 ] : null,
                 'attemptsCount' => (int)$r['attempts_count'],
                 'passedCount' => (int)$r['passed_count'],
@@ -153,7 +171,6 @@ if ($method === 'POST') {
             Http::json(['success' => false, 'error' => 'Недостаточно прав для блокировки пользователей'], 403);
         }
 
-        // Prevent self-block
         if ((int)$admin['id'] === $userId) {
             Http::json(['success' => false, 'error' => 'Нельзя заблокировать свою учётную запись'], 400);
         }
@@ -192,7 +209,6 @@ if ($method === 'POST') {
 
         Auth::login($targetUser);
 
-        // Keep impersonator tracking in session
         $_SESSION['asmt_impersonator_admin_id'] = $adminId;
         $_SESSION['asmt_impersonator_admin_name'] = $adminName;
 
