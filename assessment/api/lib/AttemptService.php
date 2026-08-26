@@ -227,4 +227,18 @@ final class AttemptService
         }
         return $n;
     }
+
+    /**
+     * Mark existing finished/abandoned/expired attempts as superseded for retake.
+     */
+    public static function supersedeFinished(PDO $pdo, int $userId, int $campaignId): void
+    {
+        $stmt = $pdo->prepare(
+            "UPDATE asmt_attempts
+             SET status = 'superseded'
+             WHERE user_id = ? AND campaign_id = ? AND status IN ('finished', 'abandoned', 'expired')"
+        );
+        $stmt->execute([$userId, $campaignId]);
+    }
+
 }
