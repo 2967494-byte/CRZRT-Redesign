@@ -186,7 +186,13 @@
         return;
       }
       showStatus('Подготовка билета…', 'info');
-      const data = await AsmtApi.post('api/attempt-start.php', {});
+      const urlParams = new URLSearchParams(window.location.search);
+      const attemptIdParam = urlParams.get('attemptId');
+      const campaignIdParam = urlParams.get('campaignId');
+      const payload = {};
+      if (attemptIdParam) payload.attemptId = Number(attemptIdParam);
+      if (campaignIdParam) payload.campaignId = Number(campaignIdParam);
+      const data = await AsmtApi.post('api/attempt-start.php', payload);
       attemptId = data.attemptId;
       expiresAt = data.expiresAt;
       questions = data.questions || [];

@@ -19,17 +19,52 @@ $regionId = !empty($user['region_id']) ? (int)$user['region_id'] : null;
 
 $payload = Http::readJson();
 $requestedCampaignId = isset($payload['campaignId']) ? (int)$payload['campaignId'] : 0;
+$requestedAttemptId = isset($payload['attemptId']) ? (int)$payload['attemptId'] : 0;
 
-try {
-    // Any open attempt is closed (no resume / Continue)
-    AttemptService::finalizeOpenAttemptsForUser($pdo, $userId);
-} catch (Throwable $e) {
+// 1. First, check if there is an active, unexpired in_progress attempt for this user
+$activeSql = "SELECT a.*, c.time_limit_minutes
+              FROM asmt_attempts a
+              JOIN asmt_campaigns c ON c.id = a.campaign_id
+              WHERE a.user_id = ? AND a.status = 'in_progress' AND a.expires_at > NOW()";
+$activeParams = [$userId];
+
+if ($requestedAttemptId > 0) {
+    $activeSql .= " AND a.id = ?";
+    $activeParams[] = $requestedAttemptId;
+} elseif ($requestedCampaignId > 0) {
+    $activeSql .= " AND a.campaign_id = ?";
+    $activeParams[] = $requestedCampaignId;
+}
+$activeSql .= " ORDER BY a.id DESC LIMIT 1";
+
+$activeStmt = $pdo->prepare($activeSql);
+$activeStmt->execute($activeParams);
+$activeAttempt = $activeStmt->fetch();
+
+if ($activeAttempt) {
+    $attemptId = (int)$activeAttempt['id'];
+    $questions = loadAttemptQuestions($pdo, $attemptId);
     Http::json([
-        'success' => false,
-        'error' => 'Не удалось закрыть предыдущую попытку: ' . $e->getMessage(),
-    ], 500);
+        'success' => true,
+        'resumed' => true,
+        'attemptId' => $attemptId,
+        'campaignId' => (int)$activeAttempt['campaign_id'],
+        'expiresAt' => $activeAttempt['expires_at'],
+        'startedAt' => $activeAttempt['started_at'],
+        'serverNow' => gmdate('c'),
+        'timeLimitMinutes' => (int)$activeAttempt['time_limit_minutes'],
+        'questions' => $questions,
+    ]);
 }
 
+// 2. Finalize any expired/abandoned open attempts
+try {
+    AttemptService::finalizeOpenAttemptsForUser($pdo, $userId);
+} catch (Throwable $e) {
+    // ignore
+}
+
+// 3. Find active campaign
 if ($requestedCampaignId > 0) {
     if ($regionId) {
         $campStmt = $pdo->prepare(
@@ -76,6 +111,7 @@ if (!$campaign) {
 
 $campaignId = (int)$campaign['id'];
 
+// 4. Check if user already finished this campaign
 $done = $pdo->prepare(
     "SELECT id FROM asmt_attempts
      WHERE user_id = ? AND campaign_id = ?
@@ -85,6 +121,7 @@ $done = $pdo->prepare(
 $done->execute([$userId, $campaignId]);
 $finished = $done->fetch();
 
+// Check if retake was approved
 $retake = $pdo->prepare(
     "SELECT id FROM asmt_retake_requests
      WHERE user_id = ? AND campaign_id = ? AND status = 'approved'
@@ -97,7 +134,7 @@ if ($finished && !$approvedRetake) {
     Http::json(['success' => false, 'error' => 'Тест в этой кампании уже пройден. Можно отправить запрос на повторное прохождение.'], 409);
 }
 
-if ($finished && $approvedRetake) {
+if ($approvedRetake) {
     AttemptService::supersedeFinished($pdo, $userId, $campaignId);
     $pdo->prepare(
         "UPDATE asmt_retake_requests SET status = 'used', reviewed_at = COALESCE(reviewed_at, NOW()) WHERE id = ?"
@@ -151,7 +188,7 @@ try {
         (string)$minutes,
         $limit,
         json_encode($order, JSON_UNESCAPED_UNICODE),
-        $ip, // null is fine for CAST(? AS inet)
+        $ip,
         $ua,
         $device,
     ]);
@@ -202,7 +239,7 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    Http::json(['success' => false, 'error' => 'Не удалось начать попытку: ' . $e->getMessage()], 500);
+    Http::json(['success' => false, 'error' => 'Не удалось сформировать билет: ' . $e->getMessage()], 500);
 }
 
 try {
@@ -210,7 +247,7 @@ try {
 } catch (Throwable $e) {
     Http::json([
         'success' => false,
-        'error' => 'Попытка создана, но не удалось загрузить вопросы: ' . $e->getMessage(),
+        'error' => 'Билет создан, но не удалось загрузить вопросы: ' . $e->getMessage(),
         'attemptId' => $attemptId,
     ], 500);
 }
