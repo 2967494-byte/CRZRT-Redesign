@@ -73,7 +73,41 @@ server {
 php scripts/patch_login_modal.php
 ```
 
-## 6. Smoke после выката (30 мин)
+## 6. Почта (чтобы не попадало в спам)
+
+На боевом сервере **не используйте** локальный `mail()` / IP VPS без репутации.
+Рекомендуется бесплатный SMTP-релей **Brevo** (до ~300 писем/сутки): https://app.brevo.com/
+
+1. Зарегистрируйте аккаунт Brevo → **SMTP & API** → создайте SMTP-ключ.
+2. **Senders / Domains** → добавьте домен `zakupki.tatar` (или хотя бы отправителя `noreply@zakupki.tatar`).
+3. В DNS у регистратора (reg.ru) добавьте записи, которые покажет Brevo:
+   - **SPF** (TXT): обычно `v=spf1 include:spf.brevo.com ~all`  
+     (если SPF уже есть — допишите `include:spf.brevo.com` в существующую запись, не создавайте вторую)
+   - **DKIM** (TXT) — как в кабинете Brevo
+   - желательно **DMARC** (TXT `_dmarc`): `v=DMARC1; p=none; rua=mailto:postmaster@zakupki.tatar`
+4. В `assessment/.env` на сервере:
+
+```bash
+ASMT_MAIL_MODE=smtp
+ASMT_MAIL_FROM=noreply@zakupki.tatar
+ASMT_MAIL_FROM_NAME=ЦРЗ РТ — модуль тестирования
+ASMT_SMTP_HOST=smtp-relay.brevo.com
+ASMT_SMTP_PORT=587
+ASMT_SMTP_ENCRYPTION=tls
+ASMT_SMTP_USER=ваш_login_из_brevo
+ASMT_SMTP_PASS=ваш_smtp_ключ
+```
+
+5. Проверка:
+
+```bash
+cd /var/www/CRZRT-Redesign/assessment
+php scripts/mail_test.php your@mail.ru
+```
+
+Письмо должно прийти во «Входящие». Если в спаме — дождитесь верификации DKIM (до нескольких часов) и проверьте https://www.mail-tester.com/
+
+## 7. Smoke после выката (30 мин)
 
 - [ ] HTTPS `test.zakupki.tatar` открывается  
 - [ ] С портала: кнопка «Войти как участник» ведёт на Assessment  
@@ -85,7 +119,7 @@ php scripts/patch_login_modal.php
 - [ ] Админка: результаты, модерация, CSV, аналитика вопросов  
 - [ ] ЕСИА: кнопка disabled (пока нет ключей) — см. `docs/ESIA_DEFERRED.md`  
 
-## 7. Нагрузка
+## 8. Нагрузка
 
 ```bash
 k6 run -e BASE_URL=https://test.zakupki.tatar -e VUS=100 -e DURATION=1m load/k6-smoke.js
@@ -93,7 +127,7 @@ k6 run -e BASE_URL=https://test.zakupki.tatar -e VUS=100 -e DURATION=1m load/k6-
 
 Цели ТЗ: p95 ≤ 1.5 с (моб. 4G) / ≤ 0.5 с (провод). Факт на железе Заказчика фиксируется в протоколе ПСИ.
 
-## 8. Документы
+## 9. Документы
 
 - `docs/ESIA_DEFERRED.md` — отложение ЕСИА  
 - `docs/ACCEPTANCE_CHECKLIST.md` — критерии §7.2  
