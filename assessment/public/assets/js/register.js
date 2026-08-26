@@ -122,20 +122,34 @@
     try {
       const data = await AsmtApi.get('api/org-lookup.php?inn=' + encodeURIComponent(inn));
       if (data.found && data.organization) {
-        fromDirectory = true;
+        const src = data.source || 'directory';
+        fromDirectory = src === 'directory';
         orgName.value = data.organization.name;
-        orgName.readOnly = true;
+        orgName.readOnly = fromDirectory;
         if (data.organization.customerLevel) {
           customerLevel.value = data.organization.customerLevel;
           syncDistrictUi();
         }
-        renderHierarchy(data.organization);
+        if (fromDirectory) {
+          renderHierarchy(data.organization);
+        } else {
+          orgHierarchy.classList.remove('hidden');
+          const extra = [];
+          if (data.organization.inn) extra.push('ИНН ' + data.organization.inn);
+          if (data.organization.ogrn) extra.push('ОГРН ' + data.organization.ogrn);
+          if (data.organization.address) extra.push(data.organization.address);
+          orgHierarchy.innerHTML =
+            '<strong>Найдено в ЕГРЮЛ / ЕГРИП</strong>' +
+            '<div>' + (data.organization.name || '') + '</div>' +
+            (extra.length ? '<div style="margin-top:4px;color:var(--muted);font-size:0.85rem;">' + extra.join(' · ') + '</div>' : '') +
+            '<div style="margin-top:6px;font-size:0.85rem;color:var(--muted);">Организации нет в ведомственном справочнике — заявка уйдёт на модерацию.</div>';
+        }
       } else {
         fromDirectory = false;
         orgName.readOnly = false;
         renderHierarchy(null);
         orgHierarchy.classList.remove('hidden');
-        orgHierarchy.innerHTML = '<strong>ИНН не найден в справочнике</strong><div>Укажите наименование организации вручную. Заявка уйдёт на модерацию.</div>';
+        orgHierarchy.innerHTML = '<strong>ИНН не найден</strong><div>Укажите наименование организации вручную. Заявка уйдёт на модерацию.</div>';
       }
     } catch (e) {
       /* ignore transient lookup errors */

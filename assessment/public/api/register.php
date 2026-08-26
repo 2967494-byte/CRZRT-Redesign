@@ -92,6 +92,8 @@ try {
             $customerLevel,
         ]);
         $orgId = (int)$insOrg->fetchColumn();
+    }
+
     $regionId = !empty($payload['regionId']) && (int)$payload['regionId'] > 0
         ? (int)$payload['regionId']
         : (int)($pdo->query("SELECT id FROM asmt_regions WHERE code = '16' LIMIT 1")->fetchColumn() ?: 16);
