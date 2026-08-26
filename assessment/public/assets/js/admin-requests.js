@@ -98,12 +98,23 @@
         : it.status === 'approved' ? 'var(--green)'
         : 'inherit';
       
-      const actions = (canModerate && it.status === 'pending')
-        ? `<div class="req-actions" style="display:flex; gap:6px;">
-             <button type="button" class="btn btn--primary btn--sm" data-act="approve" data-id="${it.id}">Одобрить</button>
-             <button type="button" class="btn btn--ghost btn--sm" style="color:var(--danger);" data-act="reject" data-id="${it.id}">Отклонить</button>
-           </div>`
-        : (it.adminComment ? esc(it.adminComment) : '—');
+      let actionsHtml = '';
+      if (canModerate && it.status === 'pending') {
+        actionsHtml = `
+          <div class="req-actions-group">
+            <button type="button" class="btn-icon-action btn-icon-success" data-act="approve" data-id="${it.id}" title="Одобрить запрос на пересдачу" aria-label="Одобрить">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+            <button type="button" class="btn-icon-action btn-icon-danger" data-act="reject" data-id="${it.id}" title="Отклонить запрос" aria-label="Отклонить">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+        `;
+      } else if (it.adminComment) {
+        actionsHtml = `<span style="font-size:0.8rem; color:var(--muted);">${esc(it.adminComment)}</span>`;
+      } else {
+        actionsHtml = '<span style="color:var(--muted);">—</span>';
+      }
 
       return `<tr>
         <td><strong>#${it.id}</strong></td>
@@ -114,7 +125,7 @@
         <td class="req-reason" style="max-width:220px; font-size:0.84rem;">${esc(it.reason)}</td>
         <td>${formatDt(it.createdAt)}</td>
         <td><span class="badge" style="background:${badgeBg}; color:${badgeColor}; font-weight:700;">${esc(statusLabel[it.status] || it.status)}</span></td>
-        <td>${actions}</td>
+        <td>${actionsHtml}</td>
       </tr>`;
     }).join('');
 

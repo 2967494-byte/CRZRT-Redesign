@@ -1751,3 +1751,70 @@ textarea:focus, .field textarea:focus {
 .admin-dropdown-item.is-active svg {
   color: var(--green);
 }
+
+
+/* =========================================================================
+   UNIVERSAL TABLE ICON ACTION BUTTONS
+   ========================================================================= */
+.btn-icon-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+.btn-icon-info {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+.btn-icon-info:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+.btn-icon-login {
+  background: #eff6ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+.btn-icon-login:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+.btn-icon-success {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+.btn-icon-success:hover {
+  background: #16a34a;
+  color: #ffffff;
+  border-color: #15803d;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+}
+.btn-icon-danger {
+  background: #fff1f2;
+  color: #e11d48;
+  border-color: #fecdd3;
+}
+.btn-icon-danger:hover {
+  background: #e11d48;
+  color: #ffffff;
+  border-color: #be123c;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25);
+}
+.req-actions-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
