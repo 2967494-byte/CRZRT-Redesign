@@ -41,7 +41,8 @@ if ($method === 'GET') {
                 r.campaign_id, r.attempt_id,
                 c.name AS campaign_name,
                 u.id AS user_id, u.last_name, u.first_name, u.middle_name, u.email_normalized, u.phone_normalized,
-                a.score, a.percent_correct, a.total_questions, a.finished_at AS attempt_finished_at
+                a.score, a.percent_correct, a.total_questions, a.finished_at AS attempt_finished_at,
+                a.disconnect_count, a.total_offline_seconds, a.tab_hidden_seconds, a.telemetry_json
          FROM asmt_retake_requests r
          JOIN asmt_users u ON u.id = r.user_id
          JOIN asmt_campaigns c ON c.id = r.campaign_id
@@ -59,6 +60,7 @@ if ($method === 'GET') {
         'total' => $total,
         'canModerate' => in_array($user['role'], ['superadmin', 'region_admin', 'moderator'], true),
         'items' => array_map(static function ($r) {
+            $telemetryLog = json_decode((string)($r['telemetry_json'] ?? '[]'), true) ?: [];
             return [
                 'id' => (int)$r['id'],
                 'status' => $r['status'],
@@ -73,6 +75,10 @@ if ($method === 'GET') {
                 'attemptPercent' => $r['percent_correct'] !== null ? (float)$r['percent_correct'] : null,
                 'attemptTotal' => $r['total_questions'] !== null ? (int)$r['total_questions'] : null,
                 'attemptFinishedAt' => $r['attempt_finished_at'],
+                'disconnectCount' => (int)($r['disconnect_count'] ?? 0),
+                'totalOfflineSeconds' => (int)($r['total_offline_seconds'] ?? 0),
+                'tabHiddenSeconds' => (int)($r['tab_hidden_seconds'] ?? 0),
+                'telemetryLog' => $telemetryLog,
                 'user' => [
                     'id' => (int)$r['user_id'],
                     'lastName' => $r['last_name'],

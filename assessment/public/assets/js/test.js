@@ -17,9 +17,12 @@
     btnPrev: document.getElementById('btnPrev'),
     btnNext: document.getElementById('btnNext'),
     btnFinish: document.getElementById('btnFinish'),
+    netPill: document.getElementById('netStatusPill'),
+    netText: document.getElementById('netStatusText'),
   };
 
   function showStatus(msg, type) {
+    if (!els.status) return;
     els.status.textContent = msg || '';
     els.status.className = msg ? ('status status--' + (type || 'info')) : 'status';
   }
@@ -36,236 +39,341 @@
       if (!raw) return;
       const data = JSON.parse(raw);
       if (data && data.attemptId === id && data.answers) {
-        answers = Object.assign({}, data.answers, answers);
+        answers = { ...data.answers, ...answers };
       }
     } catch (_e) { /* ignore */ }
   }
 
   function clearBuffer() {
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (_e) { /* ignore */ }
   }
 
-  function remainingSeconds() {
-    if (!expiresAt) return 0;
-    return Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
-  }
+  // =========================================================================
+  // CONNECTION & TELEMETRY MONITOR
+  // =========================================================================
+  const ConnectionMonitor = {
+    pingIntervalMs: 20000,
+    pingTimer: null,
+    isOffline: false,
+    offlineStart: null,
+    hiddenStart: null,
+    bufferedEvents: [],
 
-  function formatTime(sec) {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-  }
+    setNetUI(state, text) {
+      if (!els.netPill || !els.netText) return;
+      els.netPill.className = 'net-pill net-pill--' + state;
+      els.netText.textContent = text;
+    },
 
-  function tick() {
-    const left = remainingSeconds();
-    els.timer.textContent = formatTime(left);
-    els.timer.classList.toggle('is-warn', left <= 600 && left > 120);
-    els.timer.classList.toggle('is-danger', left <= 120);
-    if (left <= 0) {
-      clearInterval(timerId);
-      finish(true);
+    start() {
+      if (!attemptId) return;
+
+      // Online / Offline events
+      window.addEventListener('online', () => this.handleNetworkRestored('online_event'));
+      window.addEventListener('offline', () => this.handleNetworkLost('offline_event'));
+
+      // Visibility & Mobile lifecycle
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          this.hiddenStart = Date.now();
+        } else if (document.visibilityState === 'visible') {
+          if (this.hiddenStart) {
+            const diffSec = Math.round((Date.now() - this.hiddenStart) / 1000);
+            if (diffSec >= 3) {
+              this.bufferedEvents.push({
+                type: 'tab_hidden',
+                duration_seconds: diffSec,
+                timestamp: new Date().toISOString(),
+                detail: `Вкладка свернута / переключение приложения (${diffSec} сек)`,
+              });
+            }
+            this.hiddenStart = null;
+          }
+          // Immediate ping upon return
+          this.ping();
+        }
+      });
+
+      // Periodic ping
+      this.pingTimer = setInterval(() => this.ping(), this.pingIntervalMs);
+      this.ping();
+    },
+
+    handleNetworkLost(detail) {
+      if (!this.isOffline) {
+        this.isOffline = true;
+        this.offlineStart = Date.now();
+        this.setNetUI('offline', 'Связь прервана (ответы в памяти)');
+      }
+    },
+
+    handleNetworkRestored(detail) {
+      if (this.isOffline) {
+        const diffSec = this.offlineStart ? Math.max(1, Math.round((Date.now() - this.offlineStart) / 1000)) : 1;
+        this.bufferedEvents.push({
+          type: 'network_drop',
+          duration_seconds: diffSec,
+          timestamp: new Date().toISOString(),
+          detail: `Обрыв связи: ${diffSec} сек (${detail})`,
+        });
+        this.isOffline = false;
+        this.offlineStart = null;
+        this.setNetUI('sync', 'Синхронизация…');
+      }
+      this.ping();
+    },
+
+    async ping() {
+      if (!attemptId) return;
+      const eventsToSend = [...this.bufferedEvents];
+
+      try {
+        const res = await AsmtApi.post('api/attempt-ping.php', {
+          attemptId,
+          events: eventsToSend,
+        });
+
+        if (res && res.success) {
+          // Clear sent events
+          this.bufferedEvents = this.bufferedEvents.filter((ev) => !eventsToSend.includes(ev));
+          
+          if (this.isOffline) {
+            this.handleNetworkRestored('ping_recovery');
+          } else {
+            this.setNetUI('online', 'Связь стабильна');
+          }
+
+          if (res.isFinished) {
+            // Server marked attempt as finished
+            clearInterval(this.pingTimer);
+            location.href = `complete.html?attemptId=${attemptId}`;
+          }
+        }
+      } catch (err) {
+        this.handleNetworkLost('ping_failed');
+      }
+    },
+
+    getBufferedEvents() {
+      // If currently offline, close the interval
+      if (this.isOffline && this.offlineStart) {
+        const diffSec = Math.max(1, Math.round((Date.now() - this.offlineStart) / 1000));
+        this.bufferedEvents.push({
+          type: 'network_drop',
+          duration_seconds: diffSec,
+          timestamp: new Date().toISOString(),
+          detail: `Обрыв связи при завершении: ${diffSec} сек`,
+        });
+      }
+      return this.bufferedEvents;
+    },
+
+    stop() {
+      if (this.pingTimer) clearInterval(this.pingTimer);
     }
+  };
+
+  // =========================================================================
+  // CORE TEST LOGIC
+  // =========================================================================
+  function formatTime(totalSec) {
+    const s = Math.max(0, Math.floor(totalSec));
+    const m = Math.floor(s / 60);
+    const r = s % 60;
+    return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
+  }
+
+  function startTimer() {
+    if (!expiresAt) return;
+    function tick() {
+      const remaining = Math.max(0, Math.floor((expiresAt.getTime() - Date.now()) / 1000));
+      if (els.timer) els.timer.textContent = formatTime(remaining);
+      if (remaining <= 0) {
+        clearInterval(timerId);
+        showStatus('Время вышло! Сохраняем результаты…', 'warning');
+        finishAttempt(true);
+      }
+    }
+    tick();
+    timerId = setInterval(tick, 1000);
   }
 
   function renderNav() {
-    els.nav.innerHTML = questions.map((q, i) => {
-      const answered = answers[q.questionId];
-      const cls = ['nav-dot'];
-      if (i === index) cls.push('is-current');
-      if (answered) cls.push('is-answered');
-      return `<button type="button" class="${cls.join(' ')}" data-i="${i}">${i + 1}</button>`;
-    }).join('');
+    if (!els.nav) return;
+    els.nav.innerHTML = '';
+    questions.forEach((q, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'nav-grid__btn';
+      btn.textContent = String(i + 1);
+      if (i === index) btn.classList.add('nav-grid__btn--current');
+      if (answers[q.id]) btn.classList.add('nav-grid__btn--answered');
+      btn.addEventListener('click', () => {
+        index = i;
+        renderQuestion();
+      });
+      els.nav.appendChild(btn);
+    });
   }
 
   function renderQuestion() {
     const q = questions[index];
     if (!q) return;
-    els.progress.textContent = `Вопрос ${index + 1} из ${questions.length}`;
-    els.text.textContent = q.text;
-    const chosen = answers[q.questionId] || q.chosen || '';
 
-    const cyrLetters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З'];
-    const letterWeights = { 'А': 1, 'Б': 2, 'В': 3, 'Г': 4, 'Д': 5, 'Е': 6, 'Ж': 7, 'З': 8, 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
+    if (els.progress) els.progress.textContent = `Вопрос ${index + 1} из ${questions.length}`;
+    if (els.text) els.text.textContent = q.text || '';
+    if (els.btnPrev) els.btnPrev.disabled = index === 0;
+    if (els.btnNext) els.btnNext.textContent = index === questions.length - 1 ? 'К списку вопросов' : 'Далее →';
 
-    const sortedOpts = (q.options || []).slice().sort((a, b) => {
-      const wa = letterWeights[a.letter] || 99;
-      const wb = letterWeights[b.letter] || 99;
-      return wa - wb;
-    });
+    const chosen = answers[q.id] || null;
+    const cyrMap = ['А', 'Б', 'В', 'Г', 'Д', 'Е'];
 
-    els.options.innerHTML = sortedOpts.map((opt, i) => {
-      const displayLetter = cyrLetters[i] || opt.letter;
-      const selected = chosen === opt.letter ? ' is-selected' : '';
-      return `<button type="button" class="option-card${selected}" data-letter="${opt.letter}">
-        <span class="option-card__letter">${displayLetter}</span>
-        <span>${opt.text}</span>
-      </button>`;
-    }).join('');
+    if (els.options) {
+      els.options.innerHTML = '';
+      (q.options || []).forEach((opt, optIdx) => {
+        const displayLetter = cyrMap[optIdx] || opt.letter;
+        const row = document.createElement('label');
+        row.className = 'quiz-option' + (chosen === opt.letter ? ' quiz-option--selected' : '');
+        
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = `q_${q.id}`;
+        radio.value = opt.letter;
+        radio.checked = (chosen === opt.letter);
+        radio.addEventListener('change', () => {
+          answers[q.id] = opt.letter;
+          saveBuffer();
+          renderQuestion();
+          renderNav();
+        });
 
-    els.options.querySelectorAll('[data-letter]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        choose(btn.dataset.letter);
+        const letterBadge = document.createElement('span');
+        letterBadge.className = 'quiz-option__letter';
+        letterBadge.textContent = displayLetter;
+
+        const textSpan = document.createElement('span');
+        textSpan.className = 'quiz-option__text';
+        textSpan.textContent = opt.text;
+
+        row.appendChild(radio);
+        row.appendChild(letterBadge);
+        row.appendChild(textSpan);
+        els.options.appendChild(row);
       });
-    });
+    }
 
-    els.btnPrev.disabled = index === 0;
-    els.btnNext.textContent = index === questions.length - 1 ? 'К итогам' : 'Далее';
     renderNav();
   }
 
-  async function choose(letter) {
-    const q = questions[index];
-    answers[q.questionId] = letter;
-    q.chosen = letter;
-    saveBuffer();
-    renderQuestion();
-    try {
-      await AsmtApi.post('api/attempt-answer.php', {
-        attemptId,
-        questionId: q.questionId,
-        letter,
-      });
-    } catch (err) {
-      if (err.payload && err.payload.expired) {
-        finish(true);
-        return;
+  async function finishAttempt(isAuto = false) {
+    if (!isAuto) {
+      const answeredCount = Object.keys(answers).length;
+      const total = questions.length;
+      const unans = total - answeredCount;
+      let msg = 'Вы уверены, что хотите завершить тест?';
+      if (unans > 0) {
+        msg = `У вас осталось ${unans} неотвеченных вопросов из ${total}. Завершить тестирование?`;
       }
-      showStatus('Ответ сохранён локально. Сеть: ' + err.message, 'info');
+      if (!confirm(msg)) return;
     }
-  }
 
-  async function finish(auto) {
-    if (finish.busy) return;
-    finish.busy = true;
     clearInterval(timerId);
-    showStatus(auto ? 'Время истекло, завершаем тест…' : 'Завершение теста…', 'info');
+    ConnectionMonitor.stop();
+    showStatus('Сохранение результатов…', 'info');
+    if (els.btnFinish) els.btnFinish.disabled = true;
+
+    const finalTelemetry = ConnectionMonitor.getBufferedEvents();
+
     try {
-      const data = await AsmtApi.post('api/attempt-finish.php', { attemptId, answers });
+      const res = await AsmtApi.post('api/attempt-finish.php', {
+        attemptId,
+        answers,
+        telemetryEvents: finalTelemetry,
+      });
+
       clearBuffer();
       try {
         sessionStorage.setItem('asmt_last_result', JSON.stringify({
           attemptId,
-          result: data.result || {},
-          at: Date.now(),
+          result: res.result || res,
+          savedAt: Date.now(),
         }));
-      } catch (_e) { /* ignore */ }
-      window.location.href = 'complete.html?attemptId=' + attemptId;
+      } catch (_e) {}
+
+      location.href = `complete.html?attemptId=${attemptId}`;
     } catch (err) {
-      finish.busy = false;
-      showStatus(err.message, 'error');
+      showStatus('Ошибка завершения: ' + (err.message || 'Сбой сети') + '. Повторяем отправку…', 'error');
+      if (els.btnFinish) els.btnFinish.disabled = false;
+      setTimeout(() => finishAttempt(true), 3000);
     }
   }
 
-  function finishBeacon() {
-    if (!attemptId || finish.busy) return;
-    finish.busy = true;
-    clearInterval(timerId);
-    try {
-      const body = JSON.stringify({ attemptId, answers });
-      if (navigator.sendBeacon) {
-        const blob = new Blob([body], { type: 'application/json' });
-        navigator.sendBeacon('api/attempt-finish.php', blob);
-      } else {
-        fetch('api/attempt-finish.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body,
-          credentials: 'same-origin',
-          keepalive: true,
-        });
-      }
-      clearBuffer();
-    } catch (_e) { /* ignore */ }
-  }
-
+  // =========================================================================
+  // INIT
+  // =========================================================================
   async function init() {
     try {
       const me = await AsmtApi.get('api/auth.php?action=me');
       if (!me.authenticated) {
-        window.location.href = 'login.html';
+        location.href = 'login.html';
         return;
       }
-      showStatus('Подготовка билета…', 'info');
-      const urlParams = new URLSearchParams(window.location.search);
-      const attemptIdParam = urlParams.get('attemptId');
-      const campaignIdParam = urlParams.get('campaignId');
-      const payload = {};
-      if (attemptIdParam) payload.attemptId = Number(attemptIdParam);
-      if (campaignIdParam) payload.campaignId = Number(campaignIdParam);
-      const data = await AsmtApi.post('api/attempt-start.php', payload);
-      attemptId = data.attemptId;
-      expiresAt = data.expiresAt;
-      questions = data.questions || [];
-      questions.forEach((q) => {
-        if (q.chosen) answers[q.questionId] = q.chosen;
-      });
+
+      const qParams = new URLSearchParams(location.search);
+      const startBody = {};
+      if (qParams.get('attemptId')) startBody.attemptId = Number(qParams.get('attemptId'));
+      if (qParams.get('campaignId')) startBody.campaignId = Number(qParams.get('campaignId'));
+
+      const res = await AsmtApi.post('api/attempt-start.php', startBody);
+      if (!res.success) {
+        showStatus(res.error || 'Не удалось запустить тест', 'error');
+        return;
+      }
+
+      attemptId = res.attempt.id;
+      expiresAt = new Date(res.attempt.expiresAt);
+      questions = res.questions || [];
+
+      if (!questions.length) {
+        showStatus('В билете нет вопросов. Обратитесь к администратору.', 'error');
+        return;
+      }
+
       loadBuffer(attemptId);
-      showStatus('');
+      startTimer();
       renderQuestion();
-      tick();
-      timerId = setInterval(tick, 1000);
+
+      // Start Connection & Heartbeat telemetry
+      ConnectionMonitor.start();
+
+      if (els.btnPrev) {
+        els.btnPrev.addEventListener('click', () => {
+          if (index > 0) {
+            index--;
+            renderQuestion();
+          }
+        });
+      }
+
+      if (els.btnNext) {
+        els.btnNext.addEventListener('click', () => {
+          if (index < questions.length - 1) {
+            index++;
+            renderQuestion();
+          }
+        });
+      }
+
+      if (els.btnFinish) {
+        els.btnFinish.addEventListener('click', () => finishAttempt(false));
+      }
+
     } catch (err) {
-      if (err.status === 401) {
-        window.location.href = 'login.html';
-        return;
-      }
-      // Clear loading state & useless controls on error
-      if (els.text) els.text.textContent = 'Тестирование недоступно';
-      if (els.progress) els.progress.textContent = '';
-      if (els.timer && els.timer.parentElement) els.timer.parentElement.style.display = 'none';
-      if (els.options) els.options.innerHTML = '';
-      const navCard = els.nav ? els.nav.closest('.asmt-card') : null;
-      if (navCard) navCard.style.display = 'none';
-      const actionsEl = document.querySelector('.actions');
-      if (actionsEl) {
-        actionsEl.style.justifyContent = 'flex-start';
-        actionsEl.innerHTML = '<a href="cabinet.html" class="btn btn--primary" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">← Вернуться в личный кабинет</a>';
-      }
-      showStatus(err.message, 'error');
+      showStatus(err.message || 'Ошибка загрузки теста', 'error');
     }
   }
-
-  els.options.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-letter]');
-    if (!btn) return;
-    choose(btn.getAttribute('data-letter'));
-  });
-  els.nav.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-i]');
-    if (!btn) return;
-    index = Number(btn.getAttribute('data-i'));
-    renderQuestion();
-  });
-  els.btnPrev.addEventListener('click', () => {
-    if (index > 0) { index -= 1; renderQuestion(); }
-  });
-  els.btnNext.addEventListener('click', () => {
-    if (index < questions.length - 1) { index += 1; renderQuestion(); }
-    else finish(false);
-  });
-  els.btnFinish.addEventListener('click', () => {
-    const unanswered = questions.filter((q) => !answers[q.questionId]).length;
-    const msg = unanswered
-      ? `Не отвечено: ${unanswered}. Завершить тест?`
-      : 'Завершить тестирование?';
-    if (window.confirm(msg)) finish(false);
-  });
-
-  window.addEventListener('online', () => {
-    // retry flush current answers
-    Object.keys(answers).forEach(async (qid) => {
-      try {
-        await AsmtApi.post('api/attempt-answer.php', {
-          attemptId,
-          questionId: Number(qid),
-          letter: answers[qid],
-        });
-      } catch (_e) { /* ignore */ }
-    });
-  });
-
-  window.addEventListener('pagehide', finishBeacon);
-  window.addEventListener('beforeunload', finishBeacon);
 
   init();
 })();

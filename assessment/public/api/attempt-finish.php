@@ -16,7 +16,7 @@ $user = Auth::requireUser();
 $payload = Http::readJson();
 $attemptId = (int)($payload['attemptId'] ?? 0);
 if ($attemptId <= 0) {
-    Http::json(['success' => false, 'error' => 'Не указана попытка'], 400);
+    Http::json(['success' => false, 'error' => 'Не указан attemptId'], 400);
 }
 
 $pdo = Db::pdo();
@@ -30,6 +30,53 @@ if (!$attempt) {
 $answers = $payload['answers'] ?? null;
 if (!is_array($answers)) {
     $answers = null;
+}
+
+// Process final telemetry events if provided
+$events = (array)($payload['telemetryEvents'] ?? []);
+if (!empty($events)) {
+    $disconnectCount = (int)$attempt['disconnect_count'];
+    $totalOfflineSec = (int)$attempt['total_offline_seconds'];
+    $tabHiddenSec = (int)$attempt['tab_hidden_seconds'];
+    $telemetryLog = json_decode((string)$attempt['telemetry_json'], true) ?: [];
+
+    foreach ($events as $ev) {
+        if (!is_array($ev)) continue;
+        $type = (string)($ev['type'] ?? 'unknown');
+        $duration = max(0, (int)($ev['duration_seconds'] ?? $ev['durationSec'] ?? 0));
+        $timestamp = (string)($ev['timestamp'] ?? date('c'));
+        $detail = (string)($ev['detail'] ?? '');
+
+        if ($type === 'network_drop') {
+            $disconnectCount++;
+            $totalOfflineSec += $duration;
+        } elseif ($type === 'tab_hidden') {
+            $tabHiddenSec += $duration;
+        }
+
+        $telemetryLog[] = [
+            'type' => $type,
+            'duration' => $duration,
+            'ts' => $timestamp,
+            'detail' => $detail,
+        ];
+    }
+
+    $pdo->prepare(
+        "UPDATE asmt_attempts
+         SET last_ping_at = NOW(),
+             disconnect_count = ?,
+             total_offline_seconds = ?,
+             tab_hidden_seconds = ?,
+             telemetry_json = ?::jsonb
+         WHERE id = ?"
+    )->execute([
+        $disconnectCount,
+        $totalOfflineSec,
+        $tabHiddenSec,
+        json_encode($telemetryLog, JSON_UNESCAPED_UNICODE),
+        $attemptId,
+    ]);
 }
 
 if ($attempt['status'] === 'finished' || $attempt['status'] === 'superseded') {
@@ -87,5 +134,8 @@ function summarize(array $attempt): array
         'score' => (int)$attempt['score'],
         'percentCorrect' => (float)$attempt['percent_correct'],
         'campaignName' => $attempt['campaign_name'] ?? null,
+        'disconnectCount' => (int)($attempt['disconnect_count'] ?? 0),
+        'totalOfflineSeconds' => (int)($attempt['total_offline_seconds'] ?? 0),
+        'tabHiddenSeconds' => (int)($attempt['tab_hidden_seconds'] ?? 0),
     ];
 }

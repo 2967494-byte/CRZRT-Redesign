@@ -17,6 +17,7 @@
   };
 
   function showStatus(msg, type) {
+    if (!els.statusMsg) return;
     els.statusMsg.textContent = msg || '';
     els.statusMsg.className = msg ? ('status status--' + (type || 'info')) : 'status';
   }
@@ -31,19 +32,64 @@
 
   function formatDt(v) {
     if (!v) return '—';
-    return String(v).replace('T', ' ').slice(0, 19);
+    return String(v).replace('T', ' ').slice(0, 16);
+  }
+
+  function formatSec(sec) {
+    const s = Number(sec) || 0;
+    if (s < 60) return `${s} сек`;
+    const m = Math.floor(s / 60);
+    const rem = s % 60;
+    return `${m} мин ${rem} сек`;
+  }
+
+  function telemetryBadge(it) {
+    if (!it.attemptId) return '<span style="color:var(--muted); font-size:0.75rem;">—</span>';
+    
+    const drops = it.disconnectCount || 0;
+    const offSec = it.totalOfflineSeconds || 0;
+    const hideSec = it.tabHiddenSeconds || 0;
+
+    if (drops > 0) {
+      return `
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <span class="badge" style="background:#fee2e2; color:#b91c1c; font-weight:700; font-size:0.72rem;">
+            🔴 ${drops} обрыв(а) (${formatSec(offSec)})
+          </span>
+          ${hideSec > 5 ? `<span style="font-size:0.7rem; color:var(--muted);">Вне вкладки: ${formatSec(hideSec)}</span>` : ''}
+        </div>
+      `;
+    }
+
+    if (hideSec > 30) {
+      return `
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <span class="badge" style="background:#fffbeb; color:#b45309; font-weight:700; font-size:0.72rem;">
+            🟡 Без обрывов сети
+          </span>
+          <span style="font-size:0.7rem; color:#b45309; font-weight:600;">Вне вкладки: ${formatSec(hideSec)}</span>
+        </div>
+      `;
+    }
+
+    return `
+      <span class="badge" style="background:#ecfdf5; color:#047857; font-weight:700; font-size:0.72rem;">
+        🟢 Стабильно (0 сбоев)
+      </span>
+    `;
   }
 
   function render(items) {
     if (!items.length) {
-      els.body.innerHTML = '<tr><td colspan="8">Запросов нет</td></tr>';
+      els.body.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--muted);">Запросов нет</td></tr>';
       return;
     }
+
     els.body.innerHTML = items.map((it) => {
       const u = it.user || {};
       const fio = [u.lastName, u.firstName, u.middleName].filter(Boolean).join(' ');
       const score = it.attemptId != null
-        ? `#${it.attemptId} · ${it.attemptScore ?? 0}/${it.attemptTotal ?? '—'} (${Math.round(it.attemptPercent || 0)}%)`
+        ? `<a href="complete.html?attemptId=${it.attemptId}" target="_blank" style="font-weight:700; color:#2563eb; text-decoration:underline;" title="Открыть билет и разбор ответов">#${it.attemptId} · ${it.attemptScore ?? 0}/${it.attemptTotal ?? '—'} (${Math.round(it.attemptPercent || 0)}%)</a>`
         : '—';
       const badgeBg = it.status === 'pending' ? 'var(--amber-light)'
         : it.status === 'approved' ? 'var(--green-light)'
@@ -51,83 +97,87 @@
       const badgeColor = it.status === 'pending' ? 'var(--amber)'
         : it.status === 'approved' ? 'var(--green)'
         : 'inherit';
+      
       const actions = (canModerate && it.status === 'pending')
-        ? `<div class="req-actions">
+        ? `<div class="req-actions" style="display:flex; gap:6px;">
              <button type="button" class="btn btn--primary btn--sm" data-act="approve" data-id="${it.id}">Одобрить</button>
              <button type="button" class="btn btn--ghost btn--sm" style="color:var(--danger);" data-act="reject" data-id="${it.id}">Отклонить</button>
            </div>`
         : (it.adminComment ? esc(it.adminComment) : '—');
+
       return `<tr>
-        <td>#${it.id}</td>
+        <td><strong>#${it.id}</strong></td>
         <td><strong>${esc(fio)}</strong><br><small style="color:var(--muted);">${esc(u.email || '')}</small></td>
         <td>${esc(it.campaignName)}</td>
-        <td>${esc(score)}</td>
-        <td class="req-reason">${esc(it.reason)}</td>
+        <td>${score}</td>
+        <td>${telemetryBadge(it)}</td>
+        <td class="req-reason" style="max-width:220px; font-size:0.84rem;">${esc(it.reason)}</td>
         <td>${formatDt(it.createdAt)}</td>
-        <td><span class="badge" style="background:${badgeBg}; color:${badgeColor};">${esc(statusLabel[it.status] || it.status)}</span></td>
+        <td><span class="badge" style="background:${badgeBg}; color:${badgeColor}; font-weight:700;">${esc(statusLabel[it.status] || it.status)}</span></td>
         <td>${actions}</td>
       </tr>`;
     }).join('');
+
+    els.body.querySelectorAll('[data-act]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = Number(btn.getAttribute('data-id'));
+        const act = btn.getAttribute('data-act');
+        const actName = act === 'approve' ? 'одобрить' : 'отклонить';
+
+        const comment = prompt(`Укажите комментарий администратора (необязательно) перед тем как ${actName} запрос:`, '') ?? null;
+        if (comment === null) return;
+
+        btn.disabled = true;
+        try {
+          const res = await AsmtApi.post('api/admin-retake-requests.php', {
+            id,
+            action: act,
+            comment: comment.trim(),
+          });
+          if (res.success) {
+            showStatus(res.message || 'Запрос обработан', 'success');
+            load();
+            if (window.refreshAdminBadges) window.refreshAdminBadges();
+          } else {
+            showStatus(res.error || 'Ошибка', 'error');
+            btn.disabled = false;
+          }
+        } catch (e) {
+          showStatus(e.message || 'Ошибка сети', 'error');
+          btn.disabled = false;
+        }
+      });
+    });
   }
 
   async function load() {
-    showStatus('Загрузка…', 'info');
+    const st = els.status ? els.status.value : 'pending';
     try {
-      const status = els.status.value || 'pending';
-      const data = await AsmtApi.get('api/admin-retake-requests.php?status=' + encodeURIComponent(status));
-      canModerate = !!data.canModerate;
-      render(data.items || []);
-      showStatus('Всего: ' + (data.total || 0), 'info');
-    } catch (err) {
-      if (err.status === 401 || err.status === 403) {
+      const res = await AsmtApi.get('api/admin-retake-requests.php?status=' + encodeURIComponent(st));
+      if (!res.success) {
+        showStatus(res.error || 'Ошибка загрузки', 'error');
+        return;
+      }
+      canModerate = !!res.canModerate;
+      render(res.items || []);
+    } catch (e) {
+      if (e.status === 401 || e.status === 403) {
         location.href = 'login.html';
         return;
       }
-      showStatus(err.message || 'Ошибка загрузки', 'error');
-      els.body.innerHTML = '<tr><td colspan="8">Ошибка загрузки</td></tr>';
+      showStatus(e.message || 'Ошибка сети', 'error');
     }
   }
 
-  async function decide(id, action) {
-    let comment = '';
-    if (action === 'reject') {
-      const entered = window.prompt('Причина отклонения (будет показана участнику). Можно оставить пустым:');
-      if (entered === null) return;
-      comment = String(entered).trim();
-    }
-    try {
-      await AsmtApi.post('api/admin-retake-requests.php', { id, action, comment });
-      showStatus(action === 'approve' ? 'Запрос одобрен' : 'Запрос отклонён', 'info');
-      await load();
-    } catch (err) {
-      showStatus(err.message || 'Ошибка', 'error');
-    }
-  }
+  if (els.status) els.status.addEventListener('change', load);
+  if (els.btnReload) els.btnReload.addEventListener('click', load);
 
-  els.body.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-act]');
-    if (!btn) return;
-    decide(Number(btn.getAttribute('data-id')), btn.getAttribute('data-act'));
-  });
-
-  els.status.addEventListener('change', load);
-  els.btnReload.addEventListener('click', load);
-  els.btnLogout.addEventListener('click', async () => {
-    await AsmtApi.get('api/auth.php?action=logout');
-    location.href = 'login.html';
-  });
-
-  (async function boot() {
-    try {
-      const me = await AsmtApi.get('api/auth.php?action=me');
-      if (!me.authenticated || !['superadmin', 'region_admin', 'moderator', 'analyst'].includes(me.user.role)) {
-        location.href = 'login.html';
-        return;
-      }
-    } catch (_e) {
+  if (els.btnLogout) {
+    els.btnLogout.addEventListener('click', async () => {
+      await AsmtApi.get('api/auth.php?action=logout');
       location.href = 'login.html';
-      return;
-    }
-    load();
-  })();
+    });
+  }
+
+  load();
 })();
