@@ -139,7 +139,8 @@ try {
     $pdo->commit();
 } catch (Throwable $e) {
     $pdo->rollBack();
-    Http::json(['success' => false, 'error' => 'Ошибка регистрации: ' . $e->getMessage()], 500);
+    Http::logError("register_failed", $e);
+    Http::json(["success" => false, "error" => "Ошибка при сохранении данных. Пожалуйста, проверьте введённые данные."], 500);
 }
 
 $loginUrl = \Asmt\Config::appUrl() . '/login.html';

@@ -5,6 +5,8 @@ namespace Asmt;
 
 final class Auth
 {
+    private static ?array $cachedUser = null;
+
     public static function startSession(): void
     {
         Config::load();
@@ -17,6 +19,18 @@ final class Auth
                 'use_strict_mode' => true,
             ]);
         }
+        if (empty($_SESSION['asmt_csrf_token'])) {
+            $_SESSION['asmt_csrf_token'] = bin2hex(random_bytes(32));
+        }
+    }
+
+    public static function csrfToken(): string
+    {
+        self::startSession();
+        if (empty($_SESSION['asmt_csrf_token'])) {
+            $_SESSION['asmt_csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return (string)$_SESSION['asmt_csrf_token'];
     }
 
     public static function userId(): ?int
@@ -28,10 +42,15 @@ final class Auth
 
     public static function requireUser(): array
     {
+        if (self::$cachedUser !== null) {
+            return self::$cachedUser;
+        }
+
         $id = self::userId();
         if (!$id) {
             Http::json(['success' => false, 'error' => 'Требуется авторизация'], 401);
         }
+
         $stmt = Db::pdo()->prepare('SELECT * FROM asmt_users WHERE id = ? AND status = \'active\'');
         $stmt->execute([$id]);
         $user = $stmt->fetch();
@@ -39,7 +58,9 @@ final class Auth
             self::logout();
             Http::json(['success' => false, 'error' => 'Сессия недействительна'], 401);
         }
-        return $user;
+
+        self::$cachedUser = $user;
+        return self::$cachedUser;
     }
 
     /** @param string[] $roles */
@@ -90,6 +111,9 @@ final class Auth
         session_regenerate_id(true);
         $_SESSION['asmt_user_id'] = (int)$user['id'];
         $_SESSION['asmt_user_role'] = $user['role'];
+        $_SESSION['asmt_csrf_token'] = bin2hex(random_bytes(32));
+        self::$cachedUser = $user;
+
         $stmt = Db::pdo()->prepare('UPDATE asmt_users SET last_login_at = NOW() WHERE id = ?');
         $stmt->execute([(int)$user['id']]);
     }
@@ -97,6 +121,7 @@ final class Auth
     public static function logout(): void
     {
         self::startSession();
+        self::$cachedUser = null;
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {
             $p = session_get_cookie_params();

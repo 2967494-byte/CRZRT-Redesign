@@ -96,8 +96,10 @@ if ($method === 'GET') {
          FROM asmt_questions q
          WHERE {$sqlWhere}
          ORDER BY q.external_id NULLS LAST, q.id
-         LIMIT {$limit} OFFSET {$offset}"
+         LIMIT ? OFFSET ?"
     );
+    $params[] = $limit;
+    $params[] = $offset;
     $stmt->execute($params);
 
     Http::json([

@@ -194,58 +194,7 @@ if (!empty($user['district_id'])) {
     $districtName = $dStmt->fetchColumn() ?: null;
 }
 
-$rawHistory = $history->fetchAll();
-$recalculatedHistory = [];
-$updAttempt = $pdo->prepare(
-    'UPDATE asmt_attempts SET score = ?, percent_correct = ?, correct_count = ?, incorrect_count = ?, answered_count = ? WHERE id = ?'
-);
-$ansQuery = $pdo->prepare(
-    'SELECT aa.question_id, aa.option_letter_chosen, q.correct_letter 
-     FROM asmt_attempt_answers aa 
-     JOIN asmt_questions q ON q.id = aa.question_id 
-     WHERE aa.attempt_id = ?'
-);
-
-function fixNormalizeLetter(string $str): string
-{
-    $str = mb_strtoupper(trim($str), 'UTF-8');
-    if ($str === '') return '';
-    $map = ['A' => 'A', 'А' => 'A', '1' => 'A', 'B' => 'B', 'Б' => 'B', '2' => 'B', 'C' => 'C', 'В' => 'C', '3' => 'C', 'D' => 'D', 'Г' => 'D', '4' => 'D'];
-    return $map[$str] ?? $str;
-}
-
-foreach ($rawHistory as $h) {
-    $attId = (int)$h['id'];
-    $ansQuery->execute([$attId]);
-    $answers = $ansQuery->fetchAll();
-    $tot = (int)($h['total_questions'] ?: count($answers));
-    if ($tot > 0 && !empty($answers)) {
-        $cor = 0;
-        $ansCount = 0;
-        foreach ($answers as $aRow) {
-            $ch = fixNormalizeLetter((string)($aRow['option_letter_chosen'] ?? ''));
-            $ex = fixNormalizeLetter((string)($aRow['correct_letter'] ?? ''));
-            if ($ch !== '') {
-                $ansCount++;
-                if ($ch === $ex) {
-                    $cor++;
-                }
-            }
-        }
-        $inc = max(0, $tot - $cor);
-        $pct = round(($cor / $tot) * 100, 2);
-        
-        if ((int)$h['score'] !== $cor || (float)$h['percent_correct'] !== $pct) {
-            $updAttempt->execute([$cor, $pct, $cor, $inc, $ansCount, $attId]);
-            $h['score'] = $cor;
-            $h['percent_correct'] = $pct;
-            $h['correct_count'] = $cor;
-            $h['incorrect_count'] = $inc;
-            $h['answered_count'] = $ansCount;
-        }
-    }
-    $recalculatedHistory[] = $h;
-}
+$recalculatedHistory = $history->fetchAll();
 
 $mappedBanners = array_map(static function ($b) {
     return [

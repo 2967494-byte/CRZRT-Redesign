@@ -91,7 +91,7 @@ if ($method === 'GET') {
          LEFT JOIN asmt_districts d ON d.id = u.district_id
          WHERE {$sqlWhere}
          ORDER BY u.id DESC
-         LIMIT {$limit} OFFSET {$offset}"
+         LIMIT ? OFFSET ?"
     );
     $itemsStmt->execute($params);
     $rows = $itemsStmt->fetchAll();

@@ -7,11 +7,26 @@ final class Config
 {
     /** @var array<string,string> */
     private static array $env = [];
+    private static bool $loaded = false;
 
     public static function load(?string $root = null): void
     {
-        $root = $root ?: dirname(__DIR__);
-        $file = $root . '/.env';
+        if (self::$loaded && $root === null) {
+            return;
+        }
+        $possibleFiles = [
+            $root ? $root . '/.env' : null,
+            dirname(__DIR__) . '/.env',
+            dirname(dirname(__DIR__)) . '/.env',
+            dirname(dirname(dirname(__DIR__))) . '/.env',
+        ];
+        $file = null;
+        foreach ($possibleFiles as $pf) {
+            if ($pf && is_file($pf)) {
+                $file = $pf;
+                break;
+            }
+        }
         if (is_file($file)) {
             foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
                 $line = trim($line);
@@ -32,6 +47,7 @@ final class Config
                 self::$env[$k] = $v;
             }
         }
+        self::$loaded = true;
     }
 
     public static function get(string $key, ?string $default = null): ?string

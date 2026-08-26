@@ -80,10 +80,12 @@ $sql = "SELECT
         LEFT JOIN asmt_organizations o ON o.id = a.organization_id_at_attempt
         WHERE {$sqlWhere}
         ORDER BY a.started_at DESC
-        LIMIT {$limit} OFFSET {$offset}";
+        LIMIT ? OFFSET ?";
 
 $stmt = $pdo->prepare($sql);
-$stmt->execute($params);
+$params[] = $limit;
+    $params[] = $offset;
+    $stmt->execute($params);
 $rows = $stmt->fetchAll();
 
 $showIp = in_array($user['role'], ['superadmin', 'region_admin'], true);

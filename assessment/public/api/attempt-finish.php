@@ -35,10 +35,10 @@ if (!is_array($answers)) {
 // Process final telemetry events if provided
 $events = (array)($payload['telemetryEvents'] ?? []);
 if (!empty($events)) {
-    $disconnectCount = (int)$attempt['disconnect_count'];
-    $totalOfflineSec = (int)$attempt['total_offline_seconds'];
-    $tabHiddenSec = (int)$attempt['tab_hidden_seconds'];
-    $telemetryLog = json_decode((string)$attempt['telemetry_json'], true) ?: [];
+    $addDisconnects = 0;
+    $addOfflineSec = 0;
+    $addTabHiddenSec = 0;
+    $telemetryEvents = [];
 
     foreach ($events as $ev) {
         if (!is_array($ev)) continue;
@@ -48,13 +48,13 @@ if (!empty($events)) {
         $detail = (string)($ev['detail'] ?? '');
 
         if ($type === 'network_drop') {
-            $disconnectCount++;
-            $totalOfflineSec += $duration;
+            $addDisconnects++;
+            $addOfflineSec += $duration;
         } elseif ($type === 'tab_hidden') {
-            $tabHiddenSec += $duration;
+            $addTabHiddenSec += $duration;
         }
 
-        $telemetryLog[] = [
+        $telemetryEvents[] = [
             'type' => $type,
             'duration' => $duration,
             'ts' => $timestamp,
@@ -62,21 +62,24 @@ if (!empty($events)) {
         ];
     }
 
-    $pdo->prepare(
-        "UPDATE asmt_attempts
-         SET last_ping_at = NOW(),
-             disconnect_count = ?,
-             total_offline_seconds = ?,
-             tab_hidden_seconds = ?,
-             telemetry_json = ?::jsonb
-         WHERE id = ?"
-    )->execute([
-        $disconnectCount,
-        $totalOfflineSec,
-        $tabHiddenSec,
-        json_encode($telemetryLog, JSON_UNESCAPED_UNICODE),
-        $attemptId,
-    ]);
+    if (!empty($telemetryEvents)) {
+        $eventsJson = json_encode($telemetryEvents, JSON_UNESCAPED_UNICODE);
+        $pdo->prepare(
+            "UPDATE asmt_attempts
+             SET last_ping_at = NOW(),
+                 disconnect_count = disconnect_count + ?,
+                 total_offline_seconds = total_offline_seconds + ?,
+                 tab_hidden_seconds = tab_hidden_seconds + ?,
+                 telemetry_json = telemetry_json || ?::jsonb
+             WHERE id = ?"
+        )->execute([
+            $addDisconnects,
+            $addOfflineSec,
+            $addTabHiddenSec,
+            $eventsJson,
+            $attemptId,
+        ]);
+    }
 }
 
 if ($attempt['status'] === 'finished' || $attempt['status'] === 'superseded') {

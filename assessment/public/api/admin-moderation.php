@@ -65,8 +65,10 @@ if ($method === 'GET') {
          ORDER BY
             CASE uo.status WHEN 'pending' THEN 0 WHEN 'needs_info' THEN 1 ELSE 2 END,
             uo.requested_at ASC
-         LIMIT {$limit} OFFSET {$offset}"
+         LIMIT ? OFFSET ?"
     );
+    $params[] = $limit;
+    $params[] = $offset;
     $stmt->execute($params);
     $rows = $stmt->fetchAll();
 

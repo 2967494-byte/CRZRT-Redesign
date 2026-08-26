@@ -25,22 +25,17 @@ if ($attemptId <= 0) {
 
 // Fetch active attempt
 $stmt = $pdo->prepare(
-    "SELECT id, user_id, status, expires_at, disconnect_count, total_offline_seconds, tab_hidden_seconds, telemetry_json
+    "SELECT id, status, expires_at
      FROM asmt_attempts
-     WHERE id = ?"
+     WHERE id = ? AND user_id = ?"
 );
-$stmt->execute([$attemptId]);
+$stmt->execute([$attemptId, $userId]);
 $attempt = $stmt->fetch();
 
 if (!$attempt) {
     Http::json(['success' => false, 'error' => 'Попытка не найдена'], 404);
 }
 
-if ((int)$attempt['user_id'] !== $userId) {
-    Http::json(['success' => false, 'error' => 'Доступ запрещён'], 403);
-}
-
-// If attempt is already finished/superseded, return its status
 if ($attempt['status'] !== 'in_progress') {
     Http::json([
         'success' => true,
@@ -49,12 +44,11 @@ if ($attempt['status'] !== 'in_progress') {
     ]);
 }
 
-$disconnectCount = (int)$attempt['disconnect_count'];
-$totalOfflineSec = (int)$attempt['total_offline_seconds'];
-$tabHiddenSec = (int)$attempt['tab_hidden_seconds'];
-$telemetryLog = json_decode((string)$attempt['telemetry_json'], true) ?: [];
+$addDisconnects = 0;
+$addOfflineSec = 0;
+$addTabHiddenSec = 0;
+$telemetryEvents = [];
 
-// Process new events if sent
 if (!empty($events)) {
     foreach ($events as $ev) {
         if (!is_array($ev)) continue;
@@ -64,13 +58,13 @@ if (!empty($events)) {
         $detail = (string)($ev['detail'] ?? '');
 
         if ($type === 'network_drop') {
-            $disconnectCount++;
-            $totalOfflineSec += $duration;
+            $addDisconnects++;
+            $addOfflineSec += $duration;
         } elseif ($type === 'tab_hidden') {
-            $tabHiddenSec += $duration;
+            $addTabHiddenSec += $duration;
         }
 
-        $telemetryLog[] = [
+        $telemetryEvents[] = [
             'type' => $type,
             'duration' => $duration,
             'ts' => $timestamp,
@@ -79,23 +73,28 @@ if (!empty($events)) {
     }
 }
 
-// Update attempt heartbeat & telemetry
-$upd = $pdo->prepare(
-    "UPDATE asmt_attempts
-     SET last_ping_at = NOW(),
-         disconnect_count = ?,
-         total_offline_seconds = ?,
-         tab_hidden_seconds = ?,
-         telemetry_json = ?::jsonb
-     WHERE id = ?"
-);
-$upd->execute([
-    $disconnectCount,
-    $totalOfflineSec,
-    $tabHiddenSec,
-    json_encode($telemetryLog, JSON_UNESCAPED_UNICODE),
-    $attemptId,
-]);
+// Atomic update with native PostgreSQL JSONB concatenation
+if (!empty($telemetryEvents)) {
+    $eventsJson = json_encode($telemetryEvents, JSON_UNESCAPED_UNICODE);
+    $upd = $pdo->prepare(
+        "UPDATE asmt_attempts
+         SET last_ping_at = NOW(),
+             disconnect_count = disconnect_count + ?,
+             total_offline_seconds = total_offline_seconds + ?,
+             tab_hidden_seconds = tab_hidden_seconds + ?,
+             telemetry_json = telemetry_json || ?::jsonb
+         WHERE id = ?"
+    );
+    $upd->execute([
+        $addDisconnects,
+        $addOfflineSec,
+        $addTabHiddenSec,
+        $eventsJson,
+        $attemptId,
+    ]);
+} else {
+    $pdo->prepare("UPDATE asmt_attempts SET last_ping_at = NOW() WHERE id = ?")->execute([$attemptId]);
+}
 
 $expiresAtTs = !empty($attempt['expires_at']) ? strtotime((string)$attempt['expires_at']) : 0;
 $remainingSec = max(0, $expiresAtTs - time());

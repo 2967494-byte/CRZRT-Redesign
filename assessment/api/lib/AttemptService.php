@@ -41,7 +41,7 @@ final class AttemptService
         }
     }
 
-    /** Score answers for attempt; returns stats array. */
+    /** Score answers for attempt with bulk single UPDATE; returns stats array. */
     public static function scoreAttempt(PDO $pdo, int $attemptId): array
     {
         $rows = $pdo->prepare(
@@ -55,14 +55,14 @@ final class AttemptService
         $total = count($all);
         $answered = 0;
         $correct = 0;
-        $mark = $pdo->prepare(
-            'UPDATE asmt_attempt_answers SET is_correct = (?::int)::boolean WHERE attempt_id = ? AND question_id = ?'
-        );
+        $updates = [];
+
         foreach ($all as $row) {
+            $qid = (int)$row['question_id'];
             $chosenRaw = trim((string)($row['option_letter_chosen'] ?? ''));
             $expectedRaw = trim((string)($row['correct_letter'] ?? ''));
             if ($chosenRaw === '') {
-                $mark->execute([0, $attemptId, (int)$row['question_id']]);
+                $updates[] = [$qid, 0];
                 continue;
             }
             $answered++;
@@ -72,8 +72,25 @@ final class AttemptService
             if ($isCorrect) {
                 $correct++;
             }
-            $mark->execute([$isCorrect ? 1 : 0, $attemptId, (int)$row['question_id']]);
+            $updates[] = [$qid, $isCorrect ? 1 : 0];
         }
+
+        if (!empty($updates)) {
+            $valuesParts = [];
+            $params = [];
+            foreach ($updates as $u) {
+                $valuesParts[] = '(?::bigint, ?::int)';
+                $params[] = $u[0];
+                $params[] = $u[1];
+            }
+            $params[] = $attemptId;
+            $sql = 'UPDATE asmt_attempt_answers aa
+                    SET is_correct = v.is_correct::boolean
+                    FROM (VALUES ' . implode(',', $valuesParts) . ') AS v(question_id, is_correct)
+                    WHERE aa.attempt_id = ? AND aa.question_id = v.question_id';
+            $pdo->prepare($sql)->execute($params);
+        }
+
         $incorrect = max(0, $total - $correct);
         $percent = $total > 0 ? round(($correct / $total) * 100, 2) : 0.0;
         return [
@@ -96,18 +113,25 @@ final class AttemptService
             return $attempt;
         }
 
-        if (is_array($batchAnswers)) {
-            $upd = $pdo->prepare(
-                'UPDATE asmt_attempt_answers
-                 SET option_letter_chosen = ?, answered_at = COALESCE(answered_at, NOW())
-                 WHERE attempt_id = ? AND question_id = ?'
-            );
+        if (is_array($batchAnswers) && !empty($batchAnswers)) {
+            $updValues = [];
+            $updParams = [];
             foreach ($batchAnswers as $qid => $letter) {
                 $qid = (int)$qid;
                 $letter = trim((string)$letter);
                 if ($qid > 0 && $letter !== '') {
-                    $upd->execute([$letter, $attemptId, $qid]);
+                    $updValues[] = '(?::bigint, ?::varchar)';
+                    $updParams[] = $qid;
+                    $updParams[] = $letter;
                 }
+            }
+            if (!empty($updValues)) {
+                $updParams[] = $attemptId;
+                $sql = 'UPDATE asmt_attempt_answers aa
+                        SET option_letter_chosen = v.letter, answered_at = COALESCE(aa.answered_at, NOW())
+                        FROM (VALUES ' . implode(',', $updValues) . ') AS v(question_id, letter)
+                        WHERE aa.attempt_id = ? AND aa.question_id = v.question_id';
+                $pdo->prepare($sql)->execute($updParams);
             }
         }
 
@@ -140,7 +164,7 @@ final class AttemptService
             )->execute($params);
         } catch (\PDOException $e) {
             // Unique partial index: one finished per user+campaign
-            if ($status === 'finished' && self::isUniqueViolation($e)) {
+            if ($status === 'finished') {
                 $params[0] = 'abandoned';
                 $pdo->prepare(
                     'UPDATE asmt_attempts SET
@@ -165,8 +189,7 @@ final class AttemptService
     }
 
     /**
-     * Close all in_progress attempts for user.
-     * Latest per campaign → finished; older open ones → abandoned.
+     * Close all in_progress attempts for user without N+1 queries.
      */
     public static function finalizeOpenAttemptsForUser(PDO $pdo, int $userId): int
     {
@@ -177,16 +200,22 @@ final class AttemptService
         );
         $stmt->execute([$userId]);
         $rows = $stmt->fetchAll();
+        if (empty($rows)) {
+            return 0;
+        }
+
+        // Fetch campaigns that already have finished attempts
+        $finStmt = $pdo->prepare(
+            "SELECT DISTINCT campaign_id FROM asmt_attempts WHERE user_id = ? AND status = 'finished'"
+        );
+        $finStmt->execute([$userId]);
+        $finishedCampaigns = array_flip($finStmt->fetchAll(PDO::FETCH_COLUMN));
+
         $seenCampaign = [];
         $n = 0;
         foreach ($rows as $attempt) {
             $cid = (int)$attempt['campaign_id'];
-            $hasFinished = $pdo->prepare(
-                "SELECT 1 FROM asmt_attempts
-                 WHERE user_id = ? AND campaign_id = ? AND status = 'finished' LIMIT 1"
-            );
-            $hasFinished->execute([$userId, $cid]);
-            if ($hasFinished->fetch()) {
+            if (isset($finishedCampaigns[$cid])) {
                 self::finalizeAttempt($pdo, $attempt, 'abandoned');
             } elseif (!isset($seenCampaign[$cid])) {
                 $seenCampaign[$cid] = true;
@@ -197,26 +226,5 @@ final class AttemptService
             $n++;
         }
         return $n;
-    }
-
-    public static function supersedeFinished(PDO $pdo, int $userId, int $campaignId): void
-    {
-        $pdo->prepare(
-            "UPDATE asmt_attempts SET status = 'superseded'
-             WHERE user_id = ? AND campaign_id = ?
-               AND status IN ('finished', 'abandoned', 'expired')"
-        )->execute([$userId, $campaignId]);
-    }
-
-    private static function isUniqueViolation(\PDOException $e): bool
-    {
-        $info = $e->errorInfo ?? [];
-        if (($info[0] ?? '') === '23505') {
-            return true;
-        }
-        $msg = $e->getMessage();
-        return str_contains($msg, '23505')
-            || str_contains($msg, 'asmt_attempts_one_finished_per_campaign')
-            || str_contains(strtolower($msg), 'unique');
     }
 }

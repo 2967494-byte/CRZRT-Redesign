@@ -8,9 +8,11 @@ services:
     volumes:
       - ./:/var/www/html
     environment:
-      ASMT_DB_DSN: "pgsql:host=postgres;port=5432;dbname=asmt"
+      ASMT_DB_DSN: "pgsql:host=pgbouncer;port=6432;dbname=asmt"
       ASMT_DB_USER: asmt
       ASMT_DB_PASS: asmt_secret
+      ASMT_REDIS_HOST: redis
+      ASMT_REDIS_PORT: 6379
       ASMT_APP_URL: "http://localhost:8080"
       ASMT_SESSION_NAME: ASMTSESSID
       ASMT_MAIL_MODE: mailhog
@@ -19,10 +21,38 @@ services:
       ASMT_ADMIN_EMAIL: admin@assessment.local
       ASMT_ADMIN_PASSWORD: Admin123!
     depends_on:
-      postgres:
-        condition: service_healthy
+      pgbouncer:
+        condition: service_started
+      redis:
+        condition: service_started
       mailhog:
         condition: service_started
+
+  pgbouncer:
+    image: edoburu/pgbouncer:v1.22.1
+    ports:
+      - "6432:6432"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: asmt
+      DB_PASSWORD: asmt_secret
+      DB_NAME: asmt
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 4096
+      DEFAULT_POOL_SIZE: 50
+      SERVER_RESET_QUERY: "DISCARD ALL"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - asmt_redis_data:/data
 
   postgres:
     image: postgres:16-alpine
@@ -49,3 +79,4 @@ services:
 
 volumes:
   asmt_pgdata:
+  asmt_redis_data:

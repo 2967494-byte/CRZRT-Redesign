@@ -51,8 +51,10 @@ if ($method === 'GET') {
          ORDER BY
             CASE r.status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 ELSE 2 END,
             r.created_at ASC
-         LIMIT {$limit} OFFSET {$offset}"
+         LIMIT ? OFFSET ?"
     );
+    $params[] = $limit;
+    $params[] = $offset;
     $stmt->execute($params);
 
     Http::json([

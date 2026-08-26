@@ -239,7 +239,8 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    Http::json(['success' => false, 'error' => 'Не удалось сформировать билет: ' . $e->getMessage()], 500);
+    Http::logError("attempt_start_failed", $e, (int)$user["id"]);
+    Http::json(["success" => false, "error" => "Не удалось сформировать билет. Пожалуйста, попробуйте позже."], 500);
 }
 
 try {

@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace Asmt;
 
 /**
- * Lookup organization by INN via DaData (ЕГРЮЛ/ЕГРИП).
- * Free tier: https://dadata.ru/api/find-party/ — up to 10k req/day.
+ * Lookup organization by INN via DaData with local PostgreSQL 24h caching.
  */
 final class DaDataParty
 {
@@ -14,12 +13,38 @@ final class DaDataParty
      */
     public static function findByInn(string $inn): ?array
     {
+        $innClean = preg_replace('/\D+/', '', $inn) ?? $inn;
+        if ($innClean === '') {
+            return null;
+        }
+
+        // 1. Check local DB cache (24h TTL)
+        try {
+            $pdo = Db::pdo();
+            $stmt = $pdo->prepare(
+                "SELECT data_json FROM asmt_dadata_cache 
+                 WHERE inn = ? AND fetched_at > NOW() - INTERVAL '24 hours'
+                 LIMIT 1"
+            );
+            $stmt->execute([$innClean]);
+            $cached = $stmt->fetchColumn();
+            if ($cached) {
+                $decoded = json_decode((string)$cached, true);
+                if (is_array($decoded)) {
+                    return $decoded;
+                }
+            }
+        } catch (\Throwable $_e) {
+            // Ignore DB cache errors and proceed to API
+        }
+
+        // 2. Fetch from DaData API
         $token = Config::get('ASMT_DADATA_TOKEN', '');
         if ($token === null || $token === '') {
             return null;
         }
 
-        $payload = json_encode(['query' => $inn], JSON_UNESCAPED_UNICODE);
+        $payload = json_encode(['query' => $innClean], JSON_UNESCAPED_UNICODE);
         if ($payload === false) {
             return null;
         }
@@ -45,7 +70,7 @@ final class DaDataParty
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CONNECTTIMEOUT => 3,
-            CURLOPT_TIMEOUT => 6,
+            CURLOPT_TIMEOUT => 5,
         ]);
 
         $raw = curl_exec($ch);
@@ -69,14 +94,14 @@ final class DaDataParty
             ?? $item['value']
             ?? ''
         ));
-        $foundInn = preg_replace('/\D+/', '', (string)($d['inn'] ?? $inn)) ?? $inn;
+        $foundInn = preg_replace('/\D+/', '', (string)($d['inn'] ?? $innClean)) ?? $innClean;
         if ($name === '' || $foundInn === '') {
             return null;
         }
 
         $addr = $d['address']['unrestricted_value'] ?? $d['address']['value'] ?? null;
 
-        return [
+        $result = [
             'name' => $name,
             'inn' => $foundInn,
             'kpp' => isset($d['kpp']) ? (string)$d['kpp'] : null,
@@ -85,5 +110,20 @@ final class DaDataParty
             'status' => isset($d['state']['status']) ? (string)$d['state']['status'] : null,
             'address' => is_string($addr) ? $addr : null,
         ];
+
+        // 3. Save into cache (UPSERT)
+        try {
+            $pdo = Db::pdo();
+            $ins = $pdo->prepare(
+                "INSERT INTO asmt_dadata_cache (inn, data_json, fetched_at)
+                 VALUES (?, ?::jsonb, NOW())
+                 ON CONFLICT (inn) DO UPDATE SET data_json = EXCLUDED.data_json, fetched_at = NOW()"
+            );
+            $ins->execute([$foundInn, json_encode($result, JSON_UNESCAPED_UNICODE)]);
+        } catch (\Throwable $_e) {
+            // silent
+        }
+
+        return $result;
     }
 }
