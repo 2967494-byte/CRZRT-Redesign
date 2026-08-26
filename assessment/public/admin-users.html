@@ -4,40 +4,142 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
-  <title>Пользователи | Администрирование</title>
-  <link rel="stylesheet" href="assets/css/assessment.css">
+  <title>Пользователи | Панель администрирования</title>
+  <link rel="stylesheet" href="assets/css/assessment.css?v=6">
   <style>
-    .admin-filters {
+    /* Professional Admin Users Interface */
+    .users-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .users-count-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid var(--border-light);
+    }
+    .users-count-pill strong {
+      color: var(--green);
+    }
+
+    /* Filter Bar */
+    .users-filter-panel {
+      background: #f8fafc;
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 20px;
       display: grid;
       gap: 12px;
       grid-template-columns: 1fr;
-      margin-bottom: 18px;
     }
-    @media (min-width: 900px) {
-      .admin-filters {
-        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    @media (min-width: 768px) {
+      .users-filter-panel {
+        grid-template-columns: 2fr 1fr 1.2fr 1fr auto;
         align-items: end;
       }
     }
+
+    .filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .filter-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+    .filter-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .filter-input-icon {
+      position: absolute;
+      left: 12px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .filter-input {
+      width: 100%;
+      height: 40px;
+      padding: 8px 12px 8px 36px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      font-size: 0.88rem;
+      color: var(--text);
+      transition: all 0.18s ease;
+      box-sizing: border-box;
+    }
+    .filter-input:focus {
+      border-color: var(--green);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(15, 170, 75, 0.12);
+    }
+    .filter-select {
+      width: 100%;
+      height: 40px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      font-size: 0.88rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      box-sizing: border-box;
+    }
+    .filter-select:focus {
+      border-color: var(--green);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(15, 170, 75, 0.12);
+    }
+    .btn-filter-reload {
+      height: 40px;
+      width: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      border-radius: 10px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .btn-filter-reload:hover {
+      color: var(--green);
+      border-color: rgba(15, 170, 75, 0.4);
+      background: #f0fdf4;
+    }
+
+    /* Modern Table Layout */
     .admin-table-wrap--full {
       border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #fff;
-      overflow-x: auto;
-      max-width: 100%;
+      border-radius: 14px;
+      background: #ffffff;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
     .admin-table {
       width: 100%;
-      min-width: 960px;
       border-collapse: collapse;
       font-size: 0.85rem;
-    }
-    .admin-table th,
-    .admin-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border-light);
-      text-align: left;
-      vertical-align: middle;
+      table-layout: fixed;
     }
     .admin-table th {
       background: #f8fafc;
@@ -46,35 +148,127 @@
       text-transform: uppercase;
       font-size: 0.72rem;
       letter-spacing: 0.04em;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-light);
+      text-align: left;
       white-space: nowrap;
     }
-    .user-name-cell {
+    .admin-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .admin-table tbody tr:hover {
+      background: #fbfcfe;
+    }
+    .admin-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Column Widths (Sum = 100%) */
+    .col-id { width: 55px; }
+    .col-user { width: 28%; }
+    .col-contacts { width: 22%; }
+    .col-org { width: 25%; }
+    .col-status { width: 11%; }
+    .col-actions { width: 14%; text-align: right; }
+
+    /* Cells Styling */
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 800;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      letter-spacing: 0.02em;
+    }
+    .user-info {
       display: flex;
       flex-direction: column;
       gap: 2px;
+      min-width: 0;
     }
     .user-fullname {
       font-weight: 700;
       color: var(--text);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .user-subinfo {
-      font-size: 0.78rem;
+    .user-meta {
+      font-size: 0.75rem;
       color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .user-actions {
+
+    .contacts-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .contacts-email {
+      font-weight: 600;
+      font-size: 0.84rem;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .contacts-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .org-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+    .org-name {
+      font-weight: 600;
+      font-size: 0.84rem;
+      color: var(--text);
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .action-group {
       display: flex;
       align-items: center;
-      gap: 6px;
       justify-content: flex-end;
+      gap: 6px;
     }
     .btn-action-impersonate {
       background: #eff6ff;
       color: #2563eb;
       border: 1px solid #bfdbfe;
-      padding: 5px 10px;
+      padding: 6px 10px;
       border-radius: 8px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
@@ -87,41 +281,41 @@
       background: #2563eb;
       color: #ffffff;
       border-color: #1d4ed8;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
     }
     .btn-action-block {
-      background: #fef2f2;
-      color: #ef4444;
-      border: 1px solid #fecaca;
-      padding: 5px 10px;
+      background: #fff1f2;
+      color: #e11d48;
+      border: 1px solid #fecdd3;
+      padding: 6px 9px;
       border-radius: 8px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       transition: all 0.15s ease;
       white-space: nowrap;
     }
     .btn-action-block:hover {
-      background: #ef4444;
+      background: #e11d48;
       color: #ffffff;
-      border-color: #dc2626;
-      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+      border-color: #be123c;
+      box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25);
     }
     .btn-action-unblock {
       background: #f0fdf4;
       color: #16a34a;
       border: 1px solid #bbf7d0;
-      padding: 5px 10px;
+      padding: 6px 9px;
       border-radius: 8px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       transition: all 0.15s ease;
       white-space: nowrap;
     }
@@ -129,7 +323,7 @@
       background: #16a34a;
       color: #ffffff;
       border-color: #15803d;
-      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
     }
   </style>
 </head>
@@ -197,36 +391,40 @@
     <div class="asmt-container">
       
       <div class="asmt-card">
-        <div class="asmt-card__header">
+        <!-- Header -->
+        <div class="users-header-row">
           <div>
-            <h1 class="asmt-card__title" style="font-size:1.5rem;">Реестр пользователей</h1>
-            <p class="asmt-card__sub">Управление учетными записями, проверка статусов модерации, блокировка и вход под пользователем</p>
+            <h1 class="asmt-card__title" style="font-size:1.45rem; font-weight:800; margin:0 0 4px;">Реестр пользователей</h1>
+            <p class="asmt-card__sub" style="margin:0; color:var(--muted); font-size:0.88rem;">Управление учетными записями, проверка статусов привязки организаций и вход под пользователем</p>
           </div>
-          <div style="font-size:0.9rem; color:var(--muted); font-weight:700;" id="userCountLabel">
-            Загрузка…
+          <div class="users-count-pill" id="userCountLabel">
+            Всего пользователей: <strong id="totalCountVal">0</strong>
           </div>
         </div>
 
-        <!-- Filters -->
-        <div class="admin-filters">
-          <div class="form-group" style="margin:0;">
-            <label class="form-label" for="searchQ">Поиск (ФИО, Email, Телефон, Организация, ИНН)</label>
-            <input type="text" class="input" id="searchQ" placeholder="Начните вводить для поиска…">
+        <!-- Filter Toolbar -->
+        <div class="users-filter-panel">
+          <div class="filter-field">
+            <label class="filter-label" for="searchQ">Поиск</label>
+            <div class="filter-input-wrap">
+              <svg class="filter-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="search" class="filter-input" id="searchQ" placeholder="ФИО, Email, телефон, ИНН…">
+            </div>
           </div>
 
-          <div class="form-group" style="margin:0;">
-            <label class="form-label" for="filterStatus">Статус аккаунта</label>
-            <select class="input" id="filterStatus">
+          <div class="filter-field">
+            <label class="filter-label" for="filterStatus">Статус аккаунта</label>
+            <select class="filter-select" id="filterStatus">
               <option value="all">Все статусы</option>
               <option value="active">Активные</option>
               <option value="blocked">Заблокированные</option>
             </select>
           </div>
 
-          <div class="form-group" style="margin:0;">
-            <label class="form-label" for="filterOrgStatus">Модерация организации</label>
-            <select class="input" id="filterOrgStatus">
-              <option value="all">Все</option>
+          <div class="filter-field">
+            <label class="filter-label" for="filterOrgStatus">Модерация организации</label>
+            <select class="filter-select" id="filterOrgStatus">
+              <option value="all">Все заявки</option>
               <option value="approved">Подтверждена</option>
               <option value="pending">Ожидает проверки</option>
               <option value="rejected">Отклонена</option>
@@ -234,9 +432,9 @@
             </select>
           </div>
 
-          <div class="form-group" style="margin:0;">
-            <label class="form-label" for="filterRole">Роль</label>
-            <select class="input" id="filterRole">
+          <div class="filter-field">
+            <label class="filter-label" for="filterRole">Роль</label>
+            <select class="filter-select" id="filterRole">
               <option value="all">Все роли</option>
               <option value="participant">Участник</option>
               <option value="moderator">Модератор</option>
@@ -247,8 +445,8 @@
           </div>
 
           <div>
-            <button type="button" class="btn btn--primary" id="btnApply" style="height:42px; width:100%;">
-              Применить
+            <button type="button" class="btn-filter-reload" id="btnReload" title="Сбросить и обновить список">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
             </button>
           </div>
         </div>
@@ -260,19 +458,18 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th style="width:50px;">ID</th>
-                <th>Пользователь</th>
-                <th>Контакты / Локация</th>
-                <th>Организация / Модерация</th>
-                <th>Статус аккаунта</th>
-                <th style="text-align:center;">Тестирование</th>
-                <th style="text-align:right; width:220px;">Действия</th>
+                <th class="col-id">ID</th>
+                <th class="col-user">Пользователь</th>
+                <th class="col-contacts">Контакты</th>
+                <th class="col-org">Организация / Модерация</th>
+                <th class="col-status">Статус</th>
+                <th class="col-actions">Действия</th>
               </tr>
             </thead>
             <tbody id="usersTableBody">
               <tr>
-                <td colspan="7" style="text-align:center; padding:30px; color:var(--muted);">
-                  Загрузка пользователей…
+                <td colspan="6" style="text-align:center; padding:40px; color:var(--muted);">
+                  Загрузка списка пользователей…
                 </td>
               </tr>
             </tbody>
@@ -286,6 +483,6 @@
 
   <script src="assets/js/asmt-api.js"></script>
   <script src="assets/js/admin-badges.js"></script>
-  <script src="assets/js/admin-users.js"></script>
+  <script src="assets/js/admin-users.js?v=2"></script>
 </body>
 </html>
