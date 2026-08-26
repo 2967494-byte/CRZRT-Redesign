@@ -108,7 +108,7 @@ final class Auth
     public static function login(array $user): void
     {
         self::startSession();
-        session_regenerate_id(true);
+        if (!headers_sent() && session_status() === PHP_SESSION_ACTIVE) { @session_regenerate_id(true); }
         $_SESSION['asmt_user_id'] = (int)$user['id'];
         $_SESSION['asmt_user_role'] = $user['role'];
         $_SESSION['asmt_csrf_token'] = bin2hex(random_bytes(32));

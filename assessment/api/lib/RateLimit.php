@@ -5,15 +5,20 @@ namespace Asmt;
 
 final class RateLimit
 {
-    private static ?\Redis $redisClient = null;
+    /** @var object|null */
+    private static ?object $redisClient = null;
     private static bool $redisAttempted = false;
 
-    private static function getRedis(): ?\Redis
+    private static function getRedis(): ?object
     {
         if (self::$redisAttempted) {
             return self::$redisClient;
         }
         self::$redisAttempted = true;
+
+        if (!class_exists('\Redis')) {
+            return null;
+        }
 
         $host = Config::get('ASMT_REDIS_HOST', Config::get('REDIS_HOST', ''));
         if (!$host) {
@@ -37,6 +42,17 @@ final class RateLimit
         return self::$redisClient;
     }
 
+    public static function hit(string $bucket, int $maxRequests = 20, int $windowSeconds = 300): void
+    {
+        $ip = Http::clientIp() ?? '127.0.0.1';
+        if (!self::check($bucket, $ip, $maxRequests, $windowSeconds)) {
+            Http::json([
+                'success' => false,
+                'error' => 'Слишком много запросов. Пожалуйста, подождите несколько минут.',
+            ], 429);
+        }
+    }
+
     public static function check(string $bucket, string $key, int $maxRequests, int $windowSeconds): bool
     {
         $redis = self::getRedis();
@@ -46,7 +62,7 @@ final class RateLimit
         return self::checkFile($bucket, $key, $maxRequests, $windowSeconds);
     }
 
-    private static function checkRedis(\Redis $redis, string $bucket, string $key, int $maxRequests, int $windowSeconds): bool
+    private static function checkRedis(object $redis, string $bucket, string $key, int $maxRequests, int $windowSeconds): bool
     {
         $redisKey = "asmt:ratelimit:{$bucket}:" . md5($key);
         // Atomic Lua script: increment and set TTL on first hit
@@ -58,6 +74,7 @@ final class RateLimit
             return current
         ";
         try {
+            /** @var mixed $redis */
             $count = (int)$redis->eval($lua, [$redisKey, $windowSeconds], 1);
             return $count <= $maxRequests;
         } catch (\Throwable $_e) {
