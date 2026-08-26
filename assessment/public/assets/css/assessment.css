@@ -1658,3 +1658,96 @@ textarea:focus, .field textarea:focus {
   background: #fef3c7;
   transform: translateY(-1px);
 }
+
+/* Header Burger / Dropdown Navigation */
+.admin-nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.admin-burger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--text);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.admin-burger-btn:hover,
+.admin-nav-dropdown.is-open .admin-burger-btn {
+  background: #f8fafc;
+  border-color: rgba(15, 170, 75, 0.4);
+  color: var(--green);
+}
+
+.admin-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 230px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06);
+  padding: 8px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-nav-dropdown.is-open .admin-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.admin-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.admin-dropdown-item svg {
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.admin-dropdown-item:hover {
+  background: #f1f5f9;
+  color: var(--green);
+}
+
+.admin-dropdown-item:hover svg {
+  color: var(--green);
+}
+
+.admin-dropdown-item.is-active {
+  background: rgba(15, 170, 75, 0.08);
+  color: var(--green);
+  font-weight: 700;
+}
+
+.admin-dropdown-item.is-active svg {
+  color: var(--green);
+}
