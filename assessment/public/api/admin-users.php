@@ -93,7 +93,10 @@ if ($method === 'GET') {
          ORDER BY u.id DESC
          LIMIT ? OFFSET ?"
     );
-    $itemsStmt->execute($params);
+    $itemsParams = $params;
+    $itemsParams[] = $limit;
+    $itemsParams[] = $offset;
+    $itemsStmt->execute($itemsParams);
     $rows = $itemsStmt->fetchAll();
 
     $canManage = in_array($admin['role'], ['superadmin', 'region_admin'], true);
