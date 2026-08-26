@@ -28,34 +28,44 @@ if ($method === 'GET') {
     }
     $sqlWhere = implode(' AND ', $where);
 
-    $count = $pdo->prepare(
-        "SELECT COUNT(*) FROM asmt_retake_requests r
-         JOIN asmt_users u ON u.id = r.user_id
-         WHERE {$sqlWhere}"
-    );
-    $count->execute($params);
-    $total = (int)$count->fetchColumn();
+    try {
+        $count = $pdo->prepare(
+            "SELECT COUNT(*) FROM asmt_retake_requests r
+             JOIN asmt_users u ON u.id = r.user_id
+             WHERE {$sqlWhere}"
+        );
+        $count->execute($params);
+        $total = (int)$count->fetchColumn();
 
-    $stmt = $pdo->prepare(
-        "SELECT r.id, r.status, r.reason, r.admin_comment, r.created_at, r.reviewed_at,
-                r.campaign_id, r.attempt_id,
-                c.name AS campaign_name,
-                u.id AS user_id, u.last_name, u.first_name, u.middle_name, u.email_normalized, u.phone_normalized,
-                a.score, a.percent_correct, a.total_questions, a.finished_at AS attempt_finished_at,
-                a.disconnect_count, a.total_offline_seconds, a.tab_hidden_seconds, a.telemetry_json
-         FROM asmt_retake_requests r
-         JOIN asmt_users u ON u.id = r.user_id
-         JOIN asmt_campaigns c ON c.id = r.campaign_id
-         LEFT JOIN asmt_attempts a ON a.id = r.attempt_id
-         WHERE {$sqlWhere}
-         ORDER BY
-            CASE r.status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 ELSE 2 END,
-            r.created_at ASC
-         LIMIT ? OFFSET ?"
-    );
-    $params[] = $limit;
-    $params[] = $offset;
-    $stmt->execute($params);
+        $stmt = $pdo->prepare(
+            "SELECT r.id, r.status, r.reason, r.admin_comment, r.created_at, r.reviewed_at,
+                    r.campaign_id, r.attempt_id,
+                    c.name AS campaign_name,
+                    u.id AS user_id, u.last_name, u.first_name, u.middle_name, u.email_normalized, u.phone_normalized,
+                    a.score, a.percent_correct, a.total_questions, a.finished_at AS attempt_finished_at,
+                    COALESCE(a.disconnect_count, 0) AS disconnect_count,
+                    COALESCE(a.total_offline_seconds, 0) AS total_offline_seconds,
+                    COALESCE(a.tab_hidden_seconds, 0) AS tab_hidden_seconds,
+                    COALESCE(a.telemetry_json, '[]'::jsonb) AS telemetry_json
+             FROM asmt_retake_requests r
+             JOIN asmt_users u ON u.id = r.user_id
+             JOIN asmt_campaigns c ON c.id = r.campaign_id
+             LEFT JOIN asmt_attempts a ON a.id = r.attempt_id
+             WHERE {$sqlWhere}
+             ORDER BY
+                CASE r.status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 ELSE 2 END,
+                r.created_at ASC
+             LIMIT ? OFFSET ?"
+        );
+        $stmtParams = $params;
+        $stmtParams[] = $limit;
+        $stmtParams[] = $offset;
+        $stmt->execute($stmtParams);
+        $rows = $stmt->fetchAll();
+    } catch (\Throwable $e) {
+        Http::logError('admin_retake_requests_get_failed', $e, (int)$user['id']);
+        Http::json(['success' => false, 'error' => 'Ошибка загрузки запросов на пересдачу: ' . $e->getMessage()], 500);
+    }
 
     Http::json([
         'success' => true,
@@ -90,7 +100,7 @@ if ($method === 'GET') {
                     'phone' => $r['phone_normalized'],
                 ],
             ];
-        }, $stmt->fetchAll()),
+        }, $rows),
     ]);
 }
 
@@ -108,27 +118,32 @@ if ($id <= 0 || !in_array($action, ['approve', 'reject'], true)) {
     Http::json(['success' => false, 'error' => 'Некорректные параметры'], 400);
 }
 
-$row = $pdo->prepare('SELECT * FROM asmt_retake_requests WHERE id = ?');
-$row->execute([$id]);
-$req = $row->fetch();
-if (!$req) {
-    Http::json(['success' => false, 'error' => 'Запрос не найден'], 404);
-}
-if ($req['status'] !== 'pending') {
-    Http::json(['success' => false, 'error' => 'Запрос уже обработан'], 400);
-}
+try {
+    $row = $pdo->prepare('SELECT * FROM asmt_retake_requests WHERE id = ?');
+    $row->execute([$id]);
+    $req = $row->fetch();
+    if (!$req) {
+        Http::json(['success' => false, 'error' => 'Запрос не найден'], 404);
+    }
+    if ($req['status'] !== 'pending') {
+        Http::json(['success' => false, 'error' => 'Запрос уже обработан'], 400);
+    }
 
-$newStatus = $action === 'approve' ? 'approved' : 'rejected';
-$pdo->prepare(
-    'UPDATE asmt_retake_requests
-     SET status = ?, admin_comment = ?, reviewed_by = ?, reviewed_at = NOW()
-     WHERE id = ?'
-)->execute([
-    $newStatus,
-    $comment !== '' ? $comment : null,
-    (int)$user['id'],
-    $id,
-]);
+    $newStatus = $action === 'approve' ? 'approved' : 'rejected';
+    $pdo->prepare(
+        'UPDATE asmt_retake_requests
+         SET status = ?, admin_comment = ?, reviewed_by = ?, reviewed_at = NOW()
+         WHERE id = ?'
+    )->execute([
+        $newStatus,
+        $comment !== '' ? $comment : null,
+        (int)$user['id'],
+        $id,
+    ]);
+} catch (\Throwable $e) {
+    Http::logError('admin_retake_requests_post_failed', $e, (int)$user['id']);
+    Http::json(['success' => false, 'error' => 'Ошибка при обновлении статуса запроса'], 500);
+}
 
 Http::json([
     'success' => true,
