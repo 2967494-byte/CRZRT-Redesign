@@ -1579,3 +1579,82 @@ textarea:focus, .field textarea:focus {
 }
 
 
+
+/* Admin Badges & User Management Styles */
+.nav-badge {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 2px 5px rgba(239, 68, 68, 0.4);
+  vertical-align: middle;
+  transition: all 0.2s ease;
+  margin-left: 4px;
+}
+.nav-badge.hidden, .nav-badge:empty, .nav-badge[data-count="0"] {
+  display: none !important;
+}
+
+.tile-badge {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-left: 8px;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
+  vertical-align: middle;
+}
+.tile-badge.hidden, .tile-badge:empty, .tile-badge[data-count="0"] {
+  display: none !important;
+}
+
+.impersonate-bar {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  padding: 10px 24px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(217, 119, 6, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}
+.impersonate-bar strong {
+  color: #ffffff;
+  font-weight: 800;
+}
+.impersonate-bar .btn-stop {
+  background: #ffffff;
+  color: #b45309;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+.impersonate-bar .btn-stop:hover {
+  background: #fef3c7;
+  transform: translateY(-1px);
+}

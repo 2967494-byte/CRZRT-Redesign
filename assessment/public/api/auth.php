@@ -10,6 +10,30 @@ use Asmt\Http;
 $action = $_GET['action'] ?? 'login';
 $pdo = Db::pdo();
 
+if ($action === 'stop-impersonation') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        Http::json(['success' => false, 'error' => 'Метод не поддерживается'], 405);
+    }
+    $adminId = $_SESSION['asmt_impersonator_admin_id'] ?? null;
+    if (!$adminId) {
+        Http::json(['success' => false, 'error' => 'Режим просмотра не активен'], 400);
+    }
+    $stmt = $pdo->prepare('SELECT * FROM asmt_users WHERE id = ?');
+    $stmt->execute([(int)$adminId]);
+    $adminUser = $stmt->fetch();
+    if (!$adminUser || $adminUser['status'] !== 'active') {
+        Auth::logout();
+        Http::json(['success' => false, 'error' => 'Администратор не найден'], 401);
+    }
+    unset($_SESSION['asmt_impersonator_admin_id'], $_SESSION['asmt_impersonator_admin_name']);
+    Auth::login($adminUser);
+    Http::json([
+        'success' => true,
+        'redirect' => 'admin-users.html',
+        'message' => 'Возврат в панель администратора выполнен',
+    ]);
+}
+
 if ($action === 'logout') {
     Auth::logout();
     Http::json(['success' => true]);
@@ -21,10 +45,14 @@ if ($action === 'me') {
         Http::json(['success' => false, 'authenticated' => false], 200);
     }
     $user = Auth::requireUser();
+    $isImpersonating = !empty($_SESSION['asmt_impersonator_admin_id']);
+    $impersonatorName = $_SESSION['asmt_impersonator_admin_name'] ?? null;
     Http::json([
         'success' => true,
         'authenticated' => true,
         'user' => publicUser($user),
+        'isImpersonating' => $isImpersonating,
+        'impersonatorName' => $impersonatorName,
     ]);
 }
 

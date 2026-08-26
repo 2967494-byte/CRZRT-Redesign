@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <title>Пользователи | Администрирование</title>
+  <link rel="stylesheet" href="assets/css/assessment.css">
+  <style>
+    .admin-filters {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+      margin-bottom: 18px;
+    }
+    @media (min-width: 900px) {
+      .admin-filters {
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        align-items: end;
+      }
+    }
+    .admin-table-wrap--full {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      overflow-x: auto;
+      max-width: 100%;
+    }
+    .admin-table {
+      width: 100%;
+      min-width: 960px;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .admin-table th,
+    .admin-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-light);
+      text-align: left;
+      vertical-align: middle;
+    }
+    .admin-table th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .user-name-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .user-fullname {
+      font-weight: 700;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .user-subinfo {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+    .btn-action-impersonate {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-action-impersonate:hover {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #1d4ed8;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+    .btn-action-block {
+      background: #fef2f2;
+      color: #ef4444;
+      border: 1px solid #fecaca;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-action-block:hover {
+      background: #ef4444;
+      color: #ffffff;
+      border-color: #dc2626;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    }
+    .btn-action-unblock {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-action-unblock:hover {
+      background: #16a34a;
+      color: #ffffff;
+      border-color: #15803d;
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <header class="asmt-header">
+    <div class="asmt-header__inner">
+      <a href="admin.html" class="asmt-logo" title="Центр развития закупок">
+        <img src="assets/img/logo.svg" alt="Центр развития закупок" style="height:38px; width:auto; display:block;">
+      </a>
+      <div class="actions" style="margin:0; gap:10px;">
+        <a class="btn btn--ghost" href="admin.html">Дашборд</a>
+        <button type="button" class="btn btn--ghost" id="btnLogout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="asmt-main">
+    <div class="asmt-container">
+      
+      <!-- NAV BAR -->
+      <div class="admin-nav-bar">
+        <a href="admin.html" class="admin-nav-btn">← Дашборд</a>
+        <a href="admin-campaigns.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+          Кампании
+        </a>
+        <a href="admin-questions.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          Вопросы
+        </a>
+        <a href="admin-moderation.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Модерация
+          <span class="nav-badge" data-badge="moderation"></span>
+        </a>
+        <a href="admin-requests.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          Запросы
+          <span class="nav-badge" data-badge="requests"></span>
+        </a>
+        <a href="admin-users.html" class="admin-nav-btn is-active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Пользователи
+        </a>
+        <a href="admin-stats.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Статистика
+        </a>
+        <a href="admin-dicts.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          Справочники
+        </a>
+      </div>
+
+      <div class="asmt-card">
+        <div class="asmt-card__header">
+          <div>
+            <h1 class="asmt-card__title" style="font-size:1.5rem;">Реестр пользователей</h1>
+            <p class="asmt-card__sub">Управление учетными записями, проверка статусов модерации, блокировка и вход под пользователем</p>
+          </div>
+          <div style="font-size:0.9rem; color:var(--muted); font-weight:700;" id="userCountLabel">
+            Загрузка…
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="admin-filters">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="searchQ">Поиск (ФИО, Email, Телефон, Организация, ИНН)</label>
+            <input type="text" class="input" id="searchQ" placeholder="Начните вводить для поиска…">
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="filterStatus">Статус аккаунта</label>
+            <select class="input" id="filterStatus">
+              <option value="all">Все статусы</option>
+              <option value="active">Активные</option>
+              <option value="blocked">Заблокированные</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="filterOrgStatus">Модерация организации</label>
+            <select class="input" id="filterOrgStatus">
+              <option value="all">Все</option>
+              <option value="approved">Подтверждена</option>
+              <option value="pending">Ожидает проверки</option>
+              <option value="rejected">Отклонена</option>
+              <option value="none">Без организации</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="filterRole">Роль</label>
+            <select class="input" id="filterRole">
+              <option value="all">Все роли</option>
+              <option value="participant">Участник</option>
+              <option value="moderator">Модератор</option>
+              <option value="region_admin">Регион. админ</option>
+              <option value="superadmin">Суперадмин</option>
+              <option value="analyst">Аналитик</option>
+            </select>
+          </div>
+
+          <div>
+            <button type="button" class="btn btn--primary" id="btnApply" style="height:42px; width:100%;">
+              Применить
+            </button>
+          </div>
+        </div>
+
+        <div id="usersStatusMsg" class="status"></div>
+
+        <!-- Table -->
+        <div class="admin-table-wrap--full">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width:50px;">ID</th>
+                <th>Пользователь</th>
+                <th>Контакты / Локация</th>
+                <th>Организация / Модерация</th>
+                <th>Статус аккаунта</th>
+                <th style="text-align:center;">Тестирование</th>
+                <th style="text-align:right; width:220px;">Действия</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr>
+                <td colspan="7" style="text-align:center; padding:30px; color:var(--muted);">
+                  Загрузка пользователей…
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script src="assets/js/asmt-api.js"></script>
+  <script src="assets/js/admin-badges.js"></script>
+  <script src="assets/js/admin-users.js"></script>
+</body>
+</html>

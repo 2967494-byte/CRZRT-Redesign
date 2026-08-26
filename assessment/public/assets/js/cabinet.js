@@ -479,7 +479,40 @@
     if (state.activeTab === 'profile') {
       root.innerHTML = renderProfileTab(state.data);
     } else {
-      root.innerHTML = renderMainTab(state.data);
+      
+    let bannerHtml = '';
+    if (state.data && state.data.isImpersonating) {
+      bannerHtml = `
+        <div class="impersonate-bar">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:1.2rem;">⚠️</span>
+            <span>Вы вошли в личный кабинет в режиме просмотра от имени: <strong>${esc(cleanName(state.data.user.lastName))} ${esc(cleanName(state.data.user.firstName))}</strong></span>
+          </div>
+          <button type="button" id="btnStopImpersonation" class="btn-stop">
+            ← Вернуться в админку
+          </button>
+        </div>
+      `;
+    }
+    root.innerHTML = bannerHtml + renderMainTab(state.data);
+    const stopBtn = document.getElementById('btnStopImpersonation');
+    if (stopBtn) {
+      stopBtn.addEventListener('click', async () => {
+        stopBtn.disabled = true;
+        stopBtn.textContent = 'Возврат…';
+        try {
+          const res = await AsmtApi.post('api/auth.php?action=stop-impersonation', {});
+          if (res.success && res.redirect) {
+            location.href = res.redirect;
+          } else {
+            location.href = 'admin-users.html';
+          }
+        } catch (err) {
+          location.href = 'admin-users.html';
+        }
+      });
+    }
+
 
       root.querySelectorAll('[data-start-campaign]').forEach((btn) => {
         btn.addEventListener('click', () => {

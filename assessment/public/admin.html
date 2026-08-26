@@ -88,7 +88,7 @@
               <div class="admin-tile__icon admin-tile__icon--amber">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
               </div>
-              <h3 class="admin-tile__title">Модерация</h3>
+              <h3 class="admin-tile__title" style="display:flex;align-items:center;">Модерация <span class="tile-badge" data-badge="moderation"></span></h3>
             </div>
             <p class="admin-tile__desc">Модерация организаций, подтверждение физических лиц и проверка допусков участников.</p>
           </div>
@@ -113,6 +113,23 @@
           </div>
         </div>
 
+        
+        <!-- BLOCK 7: USERS -->
+        <div class="admin-tile">
+          <div>
+            <div class="admin-tile__header">
+              <div class="admin-tile__icon admin-tile__icon--blue">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+              <h3 class="admin-tile__title">Пользователи</h3>
+            </div>
+            <p class="admin-tile__desc">Реестр участников и сотрудников, статусы модерации, блокировка и вход под выбранным пользователем.</p>
+          </div>
+          <div class="admin-tile__footer" style="justify-content:center; margin-top:16px;">
+            <a href="admin-users.html" class="btn btn--ghost" style="width:100%; text-align:center; justify-content:center;">Перейти →</a>
+          </div>
+        </div>
+
         <!-- BLOCK 6: RETAKE REQUESTS -->
         <div class="admin-tile">
           <div>
@@ -120,7 +137,7 @@
               <div class="admin-tile__icon admin-tile__icon--amber">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
               </div>
-              <h3 class="admin-tile__title">Запросы</h3>
+              <h3 class="admin-tile__title" style="display:flex;align-items:center;">Запросы <span class="tile-badge" data-badge="requests"></span></h3>
             </div>
             <p class="admin-tile__desc">Запросы участников на повторное прохождение аттестации после завершения или выхода из теста.</p>
           </div>
@@ -134,6 +151,7 @@
   </main>
 
   <script src="assets/js/asmt-api.js"></script>
+  <script src="assets/js/admin-badges.js"></script>
   <script>
     (async function() {
       try {

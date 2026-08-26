@@ -203,6 +203,18 @@
         window.location.href = 'login.html';
         return;
       }
+      // Clear loading state & useless controls on error
+      if (els.text) els.text.textContent = 'Тестирование недоступно';
+      if (els.progress) els.progress.textContent = '';
+      if (els.timer && els.timer.parentElement) els.timer.parentElement.style.display = 'none';
+      if (els.options) els.options.innerHTML = '';
+      const navCard = els.nav ? els.nav.closest('.asmt-card') : null;
+      if (navCard) navCard.style.display = 'none';
+      const actionsEl = document.querySelector('.actions');
+      if (actionsEl) {
+        actionsEl.style.justifyContent = 'flex-start';
+        actionsEl.innerHTML = '<a href="cabinet.html" class="btn btn--primary" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">← Вернуться в личный кабинет</a>';
+      }
       showStatus(err.message, 'error');
     }
   }

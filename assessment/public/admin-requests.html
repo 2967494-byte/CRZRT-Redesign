@@ -37,8 +37,12 @@
         <a href="admin.html" class="admin-nav-btn">← Дашборд</a>
         <a href="admin-campaigns.html" class="admin-nav-btn">Кампании</a>
         <a href="admin-questions.html" class="admin-nav-btn">Вопросы</a>
-        <a href="admin-moderation.html" class="admin-nav-btn">Модерация</a>
-        <a href="admin-requests.html" class="admin-nav-btn is-active">Запросы</a>
+        <a href="admin-moderation.html" class="admin-nav-btn">Модерация <span class="nav-badge" data-badge="moderation"></span></a>
+        <a href="admin-requests.html" class="admin-nav-btn is-active">Запросы <span class="nav-badge" data-badge="requests"></span></a>
+        <a href="admin-users.html" class="admin-nav-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Пользователи
+        </a>
         <a href="admin-stats.html" class="admin-nav-btn">Статистика</a>
         <a href="admin-dicts.html" class="admin-nav-btn">Справочники</a>
       </div>
@@ -92,6 +96,7 @@
   </main>
 
   <script src="assets/js/asmt-api.js"></script>
+  <script src="assets/js/admin-badges.js"></script>
   <script src="assets/js/admin-requests.js"></script>
 </body>
 </html>
