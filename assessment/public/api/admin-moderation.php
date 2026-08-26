@@ -69,10 +69,7 @@ if ($method === 'GET') {
     );
     $params[] = $limit;
     $params[] = $offset;
-    $stmtParams = $params;
-    $stmtParams[] = $limit;
-    $stmtParams[] = $offset;
-    $stmt->execute($stmtParams);
+    $stmt->execute($params);
     $rows = $stmt->fetchAll();
 
     $canModerate = in_array($user['role'], ['superadmin', 'region_admin', 'moderator'], true);
