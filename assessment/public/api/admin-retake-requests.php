@@ -64,7 +64,7 @@ if ($method === 'GET') {
         $rows = $stmt->fetchAll();
     } catch (\Throwable $e) {
         Http::logError('admin_retake_requests_get_failed', $e, (int)$user['id']);
-        Http::json(['success' => false, 'error' => 'Ошибка загрузки запросов на пересдачу: ' . $e->getMessage()], 500);
+        Http::json(['success' => false, 'error' => 'Server error. Please try again later.'], 500);
     }
 
     Http::json([

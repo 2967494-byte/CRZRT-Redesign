@@ -34,9 +34,13 @@ $backoff = [1 => 30, 2 => 120, 3 => 600, 4 => 3600];
 foreach ($items as $row) {
     $id = (int)$row['id'];
     $attempts = (int)$row['attempts_count'] + 1;
-    $err = null;
 
-    $success = Mailer::sendSync($row['to_email'], $row['subject'], $row['body_html']);
+    try {
+        $success = Mailer::sendSync($row['to_email'], $row['subject'], $row['body_html']);
+    } catch (\Throwable $e) {
+        Http::logError('mail_queue_send_exception', $e);
+        $success = false;
+    }
 
     if ($success) {
         $pdo->prepare(

@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+// Suppress PHP error output in production to prevent information leaks
+ini_set('display_errors', '0');
+ini_set('display_startup_errors', '0');
+error_reporting(E_ALL);  // still log all errors, just don't output them
+
 require_once __DIR__ . '/../../api/lib/Config.php';
 require_once __DIR__ . '/../../api/lib/Db.php';
 require_once __DIR__ . '/../../api/lib/Auth.php';
