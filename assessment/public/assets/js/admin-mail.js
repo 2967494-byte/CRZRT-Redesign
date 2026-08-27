@@ -120,7 +120,11 @@
         showMsg(data.error || 'Не удалось загрузить журнал писем', 'error');
         return;
       }
-      showMsg('');
+      if (data.typeSupported === false) {
+        showMsg('Тип письма не определяется: выполните php scripts/auto_migrate.php на сервере', 'warning');
+      } else {
+        showMsg('');
+      }
       page = data.page || 1;
 
       els.statSent.textContent = data.stats.sent;
@@ -163,7 +167,8 @@
         location.href = 'login.html';
         return;
       }
-      showMsg('Ошибка загрузки журнала писем', 'error');
+      showMsg((e && e.message) ? ('Ошибка загрузки журнала писем: ' + e.message) : 'Ошибка загрузки журнала писем', 'error');
+      els.tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--muted);">Данные не загружены</td></tr>';
     }
   }
 

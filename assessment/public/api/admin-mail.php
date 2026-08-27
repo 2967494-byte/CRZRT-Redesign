@@ -21,6 +21,19 @@ try {
     // Cleanup is best-effort; listing must still work
 }
 
+// mail_type appears only after auto_migrate; keep the journal readable without it
+$hasMailType = false;
+try {
+    $chk = $pdo->query(
+        "SELECT 1 FROM information_schema.columns
+         WHERE table_name = 'asmt_mail_queue' AND column_name = 'mail_type' LIMIT 1"
+    );
+    $hasMailType = (bool)$chk->fetchColumn();
+} catch (\Throwable $e) {
+    $hasMailType = false;
+}
+$typeExpr = $hasMailType ? 'mail_type' : "'other'::varchar";
+
 $q = trim((string)($_GET['q'] ?? ''));
 $type = trim((string)($_GET['type'] ?? 'all'));
 $status = trim((string)($_GET['status'] ?? 'all'));
@@ -30,7 +43,7 @@ $page = max(1, (int)($_GET['page'] ?? 1));
 $where = ['1=1'];
 $params = [];
 
-if ($type !== '' && $type !== 'all') {
+if ($type !== '' && $type !== 'all' && $hasMailType) {
     $where[] = 'mail_type = ?';
     $params[] = $type;
 }
@@ -46,9 +59,17 @@ if ($q !== '') {
 
 $sqlWhere = implode(' AND ', $where);
 
-$cnt = $pdo->prepare("SELECT COUNT(*) FROM asmt_mail_queue WHERE {$sqlWhere}");
-$cnt->execute($params);
-$total = (int)$cnt->fetchColumn();
+try {
+    $cnt = $pdo->prepare("SELECT COUNT(*) FROM asmt_mail_queue WHERE {$sqlWhere}");
+    $cnt->execute($params);
+    $total = (int)$cnt->fetchColumn();
+} catch (\Throwable $e) {
+    Http::logError('admin_mail_list_failed', $e);
+    Http::json([
+        'success' => false,
+        'error' => 'Журнал писем недоступен: ' . $e->getMessage(),
+    ], 500);
+}
 
 $totalPages = $total > 0 ? (int)ceil($total / $perPage) : 1;
 if ($page > $totalPages) {
@@ -57,7 +78,7 @@ if ($page > $totalPages) {
 $offset = ($page - 1) * $perPage;
 
 $stmt = $pdo->prepare(
-    "SELECT id, to_email, subject, mail_type, status, attempts_count, last_error, created_at, sent_at
+    "SELECT id, to_email, subject, {$typeExpr} AS mail_type, status, attempts_count, last_error, created_at, sent_at
      FROM asmt_mail_queue
      WHERE {$sqlWhere}
      ORDER BY COALESCE(sent_at, created_at) DESC, id DESC
@@ -86,6 +107,7 @@ Http::json([
     'perPage' => $perPage,
     'totalPages' => $totalPages,
     'retentionDays' => 30,
+    'typeSupported' => $hasMailType,
     'stats' => [
         'total' => (int)($stats['total'] ?? 0),
         'sent' => (int)($stats['sent'] ?? 0),
