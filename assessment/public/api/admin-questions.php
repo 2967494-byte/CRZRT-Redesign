@@ -184,7 +184,7 @@ if ($method === 'POST') {
     if ($action === 'save-question') {
         $questionId = (int)($payload['questionId'] ?? 0);
         $text = trim((string)($payload['text'] ?? ''));
-        $correct = strtoupper(trim((string)($payload['correctLetter'] ?? '')));
+        $correct = mb_strtoupper(trim((string)($payload['correctLetter'] ?? '')));
         $difficulty = (isset($payload['difficulty']) && $payload['difficulty'] !== '' && $payload['difficulty'] !== null)
             ? (int)$payload['difficulty']
             : null;
@@ -193,6 +193,25 @@ if ($method === 'POST') {
 
         if ($text === '' || $correct === '') {
             Http::json(['success' => false, 'error' => 'Заполните вопрос и выберите правильный вариант ответа'], 400);
+        }
+
+        // Normalise options first: the question must never be saved with a correct
+        // letter that has no filled answer text.
+        $normalizedOptions = [];
+        if (is_array($options)) {
+            foreach ($options as $opt) {
+                $letter = mb_strtoupper(trim((string)($opt['letter'] ?? '')));
+                $optText = trim((string)($opt['text'] ?? ''));
+                if ($letter !== '' && $optText !== '') {
+                    $normalizedOptions[$letter] = $optText;
+                }
+            }
+            if ($normalizedOptions && !isset($normalizedOptions[$correct])) {
+                Http::json([
+                    'success' => false,
+                    'error' => 'Правильный вариант «' . $correct . '» не заполнен. Введите текст этого варианта ответа.',
+                ], 400);
+            }
         }
 
         if ($questionId > 0) {
@@ -219,22 +238,27 @@ if ($method === 'POST') {
             ')->execute([$questionId, $text]);
         }
 
-        if (is_array($options)) {
+        if ($normalizedOptions) {
             $updOpt = $pdo->prepare('
                 INSERT INTO asmt_question_options (question_id, letter, text, sort_order)
                 VALUES (?, ?, ?, ?)
                 ON CONFLICT (question_id, letter) 
-                DO UPDATE SET text = EXCLUDED.text
+                DO UPDATE SET text = EXCLUDED.text, sort_order = EXCLUDED.sort_order
             ');
             $sort = 0;
-            foreach ($options as $opt) {
-                $letter = strtoupper(trim((string)($opt['letter'] ?? '')));
-                $optText = trim((string)($opt['text'] ?? ''));
-                if ($letter !== '' && $optText !== '') {
-                    $updOpt->execute([$questionId, $letter, $optText, $sort]);
-                    $sort++;
-                }
+            foreach ($normalizedOptions as $letter => $optText) {
+                $updOpt->execute([$questionId, $letter, $optText, $sort]);
+                $sort++;
             }
+
+            // Drop options the editor no longer contains (e.g. stale latin duplicates
+            // of the cyrillic А/Б/В/Г letters used across the question bank).
+            $keptLetters = array_keys($normalizedOptions);
+            $placeholders = implode(',', array_fill(0, count($keptLetters), '?'));
+            $pdo->prepare(
+                "DELETE FROM asmt_question_options
+                 WHERE question_id = ? AND letter NOT IN ({$placeholders})"
+            )->execute(array_merge([$questionId], $keptLetters));
         }
 
         Http::json(['success' => true, 'questionId' => $questionId]);

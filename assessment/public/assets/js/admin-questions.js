@@ -99,11 +99,16 @@
     }
   }
 
-  function renderOptionsEditor(optionMap, correctLetter, readOnly) {
-    const defaultLetters = ['A', 'B', 'C', 'D'];
-    return defaultLetters.map((letter) => {
+  // Банк вопросов размечен кириллическими буквами (А, Б, В, Г) — латиница ломает
+  // сопоставление с correct_letter и ответами участников.
+  const DEFAULT_LETTERS = ['А', 'Б', 'В', 'Г'];
+
+  function renderOptionsEditor(optionMap, correctLetter, readOnly, letters) {
+    const list = (letters && letters.length) ? letters : DEFAULT_LETTERS;
+    const correct = (correctLetter || list[0] || '').toUpperCase();
+    return list.map((letter) => {
       const text = optionMap[letter] || '';
-      const isCorrect = (correctLetter || 'A').toUpperCase() === letter;
+      const isCorrect = correct === letter.toUpperCase();
       return `
         <div style="border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:10px; background:${isCorrect ? 'var(--green-light)' : '#fff'};">
           <div style="display:flex; align-items:center; margin-bottom:6px;">
@@ -137,7 +142,7 @@
     els.qModalDifficulty.value = '';
     els.qModalDifficulty.disabled = !canEditQuestions;
 
-    const optionsHtml = renderOptionsEditor({}, 'A', !canEditQuestions);
+    const optionsHtml = renderOptionsEditor({}, DEFAULT_LETTERS[0], !canEditQuestions, DEFAULT_LETTERS);
 
     els.qDetail.innerHTML = `
       <div style="margin-bottom:16px;">
@@ -164,7 +169,7 @@
     if (canEditQuestions) {
       document.getElementById('btnSaveQuestion').addEventListener('click', async () => {
         const selectedRadio = els.qDetail.querySelector('input[name="correctLetterRadio"]:checked');
-        const correctLetter = selectedRadio ? selectedRadio.value : 'A';
+        const correctLetter = selectedRadio ? selectedRadio.value : DEFAULT_LETTERS[0];
         const text = document.getElementById('qBaseText').value.trim();
         const difficulty = els.qModalDifficulty.value !== '' ? els.qModalDifficulty.value : null;
 
@@ -205,13 +210,20 @@
       els.qModalDifficulty.value = q.difficulty != null ? String(q.difficulty) : '';
       els.qModalDifficulty.disabled = !canEditQuestions;
 
-      const rawOptions = q.options || [];
+      const rawOptions = (q.options || []).slice().sort((a, b) => a.sortOrder - b.sortOrder);
       const optionMap = {};
+      const letters = [];
       rawOptions.forEach(o => {
-        optionMap[o.letter.toUpperCase()] = o.text;
+        const letter = String(o.letter || '').toUpperCase();
+        if (!letter) return;
+        optionMap[letter] = o.text;
+        if (!letters.includes(letter)) letters.push(letter);
+      });
+      DEFAULT_LETTERS.forEach((letter) => {
+        if (letters.length < DEFAULT_LETTERS.length && !letters.includes(letter)) letters.push(letter);
       });
 
-      const optionsHtml = renderOptionsEditor(optionMap, q.correctLetter, !canEditQuestions);
+      const optionsHtml = renderOptionsEditor(optionMap, q.correctLetter, !canEditQuestions, letters);
 
       // Альтернативные формулировки
       const forms = (q.formulations || []).map((f, idx) => `
@@ -273,7 +285,7 @@
       if (canEditQuestions) {
         document.getElementById('btnSaveQuestion').addEventListener('click', async () => {
           const selectedRadio = els.qDetail.querySelector('input[name="correctLetterRadio"]:checked');
-          const correctLetter = selectedRadio ? selectedRadio.value : 'A';
+          const correctLetter = selectedRadio ? selectedRadio.value : (q.correctLetter || letters[0]);
           const text = document.getElementById('qBaseText').value.trim();
           const difficulty = els.qModalDifficulty.value !== '' ? els.qModalDifficulty.value : null;
 
