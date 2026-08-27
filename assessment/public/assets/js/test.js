@@ -327,13 +327,15 @@
       if (qParams.get('campaignId')) startBody.campaignId = Number(qParams.get('campaignId'));
 
       const res = await AsmtApi.post('api/attempt-start.php', startBody);
-      if (!res.success) {
-        showStatus(res.error || 'Не удалось запустить тест', 'error');
+      if (!res || !res.success) {
+        const errMsg = (res && res.error) ? res.error : 'Не удалось запустить тест';
+        showStatus(errMsg, 'error');
         return;
       }
 
-      attemptId = res.attempt.id;
-      expiresAt = new Date(res.attempt.expiresAt);
+      attemptId = res.attemptId || (res.attempt && res.attempt.id);
+      const rawExp = res.expiresAt || (res.attempt && res.attempt.expiresAt);
+      expiresAt = rawExp ? new Date(rawExp) : null;
       questions = res.questions || [];
 
       if (!questions.length) {
