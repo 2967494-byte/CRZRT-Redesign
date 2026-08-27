@@ -5,18 +5,29 @@ namespace Asmt;
 
 final class Mailer
 {
+    /** Mail types shown in the admin mail journal. */
+    public const TYPE_REGISTRATION = 'registration';
+    public const TYPE_PASSWORD_RESET = 'password_reset';
+    public const TYPE_TEST = 'test';
+    public const TYPE_OTHER = 'other';
+
     /**
      * Instantly put email into PostgreSQL queue (asynchronous).
      */
-    public static function queue(string $to, string $subject, string $bodyHtml, int $priority = 10): bool
-    {
+    public static function queue(
+        string $to,
+        string $subject,
+        string $bodyHtml,
+        int $priority = 10,
+        string $mailType = self::TYPE_OTHER
+    ): bool {
         try {
             $pdo = Db::pdo();
             $stmt = $pdo->prepare(
-                "INSERT INTO asmt_mail_queue (to_email, subject, body_html, priority, status, created_at, next_retry_at)
-                 VALUES (?, ?, ?, ?, 'new', NOW(), NOW())"
+                "INSERT INTO asmt_mail_queue (to_email, subject, body_html, priority, mail_type, status, created_at, next_retry_at)
+                 VALUES (?, ?, ?, ?, ?, 'new', NOW(), NOW())"
             );
-            return $stmt->execute([$to, $subject, $bodyHtml, $priority]);
+            return $stmt->execute([$to, $subject, $bodyHtml, $priority, $mailType]);
         } catch (\Throwable $e) {
             Http::logError("mail_queue_insert_failed", $e);
             // Fallback to sync send if queue insert fails
@@ -27,10 +38,14 @@ final class Mailer
     /**
      * Send email synchronously via configured transport (SMTP or mail()).
      */
-    public static function send(string $to, string $subject, string $bodyHtml): bool
-    {
+    public static function send(
+        string $to,
+        string $subject,
+        string $bodyHtml,
+        string $mailType = self::TYPE_OTHER
+    ): bool {
         // Default to asynchronous queue for ultra-fast API performance
-        return self::queue($to, $subject, $bodyHtml, 10);
+        return self::queue($to, $subject, $bodyHtml, 10, $mailType);
     }
 
     public static function sendSync(string $to, string $subject, string $bodyHtml): bool

@@ -48,6 +48,9 @@ $queries = [
         sent_at TIMESTAMPTZ NULL
     );",
     "CREATE INDEX IF NOT EXISTS asmt_mail_queue_status_prio_idx ON asmt_mail_queue (status, priority ASC, next_retry_at ASC);",
+    "ALTER TABLE asmt_mail_queue ADD COLUMN IF NOT EXISTS mail_type VARCHAR(32) NOT NULL DEFAULT 'other';",
+    "CREATE INDEX IF NOT EXISTS asmt_mail_queue_created_idx ON asmt_mail_queue (created_at DESC);",
+    "CREATE INDEX IF NOT EXISTS asmt_mail_queue_type_idx ON asmt_mail_queue (mail_type);",
 
     // 5. Composite Performance Indexes
     "CREATE INDEX IF NOT EXISTS asmt_attempts_user_status_exp_idx ON asmt_attempts (user_id, status, expires_at);",

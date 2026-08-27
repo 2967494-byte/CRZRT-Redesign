@@ -9,6 +9,13 @@ use Asmt\Http;
 
 $pdo = Db::pdo();
 
+// Mail journal is kept for 30 days only (152-ФЗ data minimisation)
+try {
+    $pdo->exec("DELETE FROM asmt_mail_queue WHERE created_at < NOW() - INTERVAL '30 days'");
+} catch (\Throwable $e) {
+    Http::logError('mail_queue_cleanup_failed', $e);
+}
+
 // Fetch up to 50 pending emails ordered by priority (10=urgent, 90=low) and retry time
 $stmt = $pdo->prepare(
     "SELECT id, to_email, subject, body_html, attempts_count

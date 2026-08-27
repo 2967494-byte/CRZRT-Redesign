@@ -32,7 +32,8 @@ $ok = Mailer::send(
     'Тест почты — модуль тестирования ЦРЗ РТ',
     "Здравствуйте!\n\nЭто тестовое письмо с сервера test.zakupki.tatar.\n"
     . "Если вы его видите во «Входящих», SMTP и DNS настроены корректно.\n\n"
-    . 'Время: ' . date('c') . "\n"
+    . 'Время: ' . date('c') . "\n",
+    Mailer::TYPE_TEST
 );
 
 echo $ok ? "OK: письмо принято SMTP/логом\n" : "FAIL: смотрите error_log / journalctl php-fpm\n";

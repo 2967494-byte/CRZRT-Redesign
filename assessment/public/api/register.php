@@ -147,7 +147,8 @@ $loginUrl = \Asmt\Config::appUrl() . '/login.html';
 Mailer::send(
     $email,
     'Регистрация в модуле тестирования ЦРЗ РТ',
-    "Здравствуйте!\n\nВаш логин: {$email}\nПароль: {$passwordPlain}\n\nВход: {$loginUrl}\n\nСохраните пароль. При утере используйте восстановление на странице входа.\n"
+    "Здравствуйте!\n\nВаш логин: {$email}\nПароль: {$passwordPlain}\n\nВход: {$loginUrl}\n\nСохраните пароль. При утере используйте восстановление на странице входа.\n",
+    Mailer::TYPE_REGISTRATION
 );
 
 $userStmt = $pdo->prepare('SELECT * FROM asmt_users WHERE id = ?');

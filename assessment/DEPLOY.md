@@ -107,6 +107,24 @@ php scripts/mail_test.php your@mail.ru
 
 Письмо должно прийти во «Входящие». Если в спаме — дождитесь верификации DKIM (до нескольких часов) и проверьте https://www.mail-tester.com/
 
+### 6.1 Очередь писем и журнал в админке
+
+Письма пишутся в таблицу `asmt_mail_queue` и отправляются воркером по cron:
+
+```bash
+crontab -e
+* * * * * /usr/bin/php /var/www/CRZRT-Redesign/assessment/scripts/process_mail_queue.php >> /var/log/asmt-mail-queue.log 2>&1
+```
+
+Раздел «Почта» в админке (`admin-mail.html`) показывает получателя, время, тип письма
+(`registration`, `password_reset`, `test`, `other`) и статус отправки, с пагинацией и фильтрами.
+Записи старше 30 дней удаляются автоматически — воркером очереди и при открытии раздела.
+После обновления кода один раз выполните миграцию (добавляет колонку `mail_type`):
+
+```bash
+cd /var/www/CRZRT-Redesign/assessment && php scripts/auto_migrate.php
+```
+
 ## 7. Smoke после выката (30 мин)
 
 - [ ] HTTPS `test.zakupki.tatar` открывается  
