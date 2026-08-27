@@ -240,6 +240,68 @@ if ($method === 'POST') {
         Http::json(['success' => true, 'questionId' => $questionId]);
     }
 
+    if ($action === 'toggle-question-visibility') {
+        $questionId = (int)($payload['questionId'] ?? 0);
+        if ($questionId <= 0) {
+            Http::json(['success' => false, 'error' => 'Укажите questionId'], 400);
+        }
+
+        $qStmt = $pdo->prepare('SELECT id, external_id, is_active FROM asmt_questions WHERE id = ?');
+        $qStmt->execute([$questionId]);
+        $question = $qStmt->fetch();
+        if (!$question) {
+            Http::json(['success' => false, 'error' => 'Вопрос не найден'], 404);
+        }
+
+        $hidden = array_key_exists('hidden', $payload)
+            ? (bool)$payload['hidden']
+            : (bool)$question['is_active'];
+        $newActive = !$hidden;
+
+        // Attempt selection uses is_active = TRUE, so a hidden question stops
+        // appearing in new tests while past results stay untouched.
+        if ($newActive === false) {
+            $activeStmt = $pdo->query('SELECT COUNT(*) FROM asmt_questions WHERE is_active = TRUE');
+            $activeLeft = (int)$activeStmt->fetchColumn() - 1;
+
+            $maxStmt = $pdo->query('SELECT COALESCE(MAX(questions_per_attempt), 0) FROM asmt_campaigns WHERE is_active = TRUE');
+            $needed = (int)$maxStmt->fetchColumn();
+
+            if ($needed > 0 && $activeLeft < $needed) {
+                Http::json([
+                    'success' => false,
+                    'error' => "Нельзя скрыть вопрос: в банке останется {$activeLeft} активных вопросов, "
+                        . "а для теста требуется {$needed}.",
+                ], 400);
+            }
+        }
+
+        $pdo->prepare('UPDATE asmt_questions SET is_active = ?, updated_at = NOW() WHERE id = ?')
+            ->execute([$newActive ? 'true' : 'false', $questionId]);
+
+        try {
+            $pdo->prepare(
+                "INSERT INTO asmt_admin_audit (admin_user_id, action, entity, entity_id, meta_json)
+                 VALUES (?, ?, 'question', ?, ?::jsonb)"
+            )->execute([
+                (int)$user['id'],
+                $newActive ? 'question_shown' : 'question_hidden',
+                $questionId,
+                json_encode(['externalId' => (int)$question['external_id']], JSON_UNESCAPED_UNICODE),
+            ]);
+        } catch (\Throwable $e) {
+            // Audit trail is best-effort
+        }
+
+        Http::json([
+            'success' => true,
+            'isActive' => $newActive,
+            'message' => $newActive
+                ? "Вопрос №{$question['external_id']} снова участвует в тестах"
+                : "Вопрос №{$question['external_id']} скрыт и больше не попадает в новые тесты",
+        ]);
+    }
+
     Http::json(['success' => false, 'error' => 'Неизвестное действие'], 400);
 }
 

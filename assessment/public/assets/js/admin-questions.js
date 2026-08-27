@@ -51,19 +51,49 @@
         els.qBankBody.innerHTML = '<tr><td colspan="6">Вопросы не найдены</td></tr>';
       } else {
         els.qBankBody.innerHTML = items.map((it) => `<tr>
-          <td><strong>№${it.externalId}</strong></td>
+          <td><strong>№${it.externalId}</strong>${it.isActive ? '' : '<br><span class="badge" style="background:#f1f5f9; color:#64748b; font-weight:700; font-size:0.7rem;">Скрыт</span>'}</td>
           <td class="wrap">${esc(it.text)}</td>
           <td>${it.difficulty != null ? `<span class="badge" style="background:#eef6ff; color:#2563eb; font-weight:700;">${it.difficulty}/10</span>` : '<span style="color:var(--muted);">—</span>'}</td>
           <td><span class="badge" style="background:var(--green-light); color:var(--green); font-weight:700;">${esc(it.correctLetter)}</span></td>
           <td>${it.formulationsCount}</td>
-          <td><button type="button" class="btn btn--ghost btn--sm" data-qid="${it.id}">Открыть</button></td>
+          <td>
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+              <button type="button" class="btn btn--ghost btn--sm" data-qid="${it.id}">Открыть</button>
+              ${canEditQuestions ? (it.isActive
+                ? `<button type="button" class="btn btn--ghost btn--sm" style="color:var(--danger);" data-hide-q="${it.id}" title="Скрыть вопрос: он перестанет попадать в новые тесты">Скрыть</button>`
+                : `<button type="button" class="btn btn--ghost btn--sm" data-show-q="${it.id}" title="Вернуть вопрос в тесты">Показать</button>`) : ''}
+            </div>
+          </td>
         </tr>`).join('');
 
         els.qBankBody.querySelectorAll('button[data-qid]').forEach((btn) => {
           btn.addEventListener('click', () => openQuestion(Number(btn.dataset.qid)));
         });
+
+        els.qBankBody.querySelectorAll('button[data-hide-q]').forEach((btn) => {
+          btn.addEventListener('click', () => setQuestionHidden(Number(btn.dataset.hideQ), true));
+        });
+
+        els.qBankBody.querySelectorAll('button[data-show-q]').forEach((btn) => {
+          btn.addEventListener('click', () => setQuestionHidden(Number(btn.dataset.showQ), false));
+        });
       }
       showStatus(`Всего вопросов: ${data.total}`, 'ok');
+    } catch (err) {
+      showStatus(err.message, 'error');
+    }
+  }
+
+  async function setQuestionHidden(id, hidden) {
+    try {
+      const res = await AsmtApi.post('api/admin-questions.php', {
+        action: 'toggle-question-visibility',
+        questionId: id,
+        hidden,
+      });
+      closeModal();
+      await loadQuestionBank();
+      showStatus(res.message || (hidden ? 'Вопрос скрыт' : 'Вопрос показан'), hidden ? 'warning' : 'ok');
     } catch (err) {
       showStatus(err.message, 'error');
     }
@@ -171,7 +201,7 @@
       const q = data.question;
       canEditQuestions = Boolean(data.canEdit);
 
-      els.qModalTitle.textContent = `Вопрос №${q.externalId}`;
+      els.qModalTitle.textContent = `Вопрос №${q.externalId}` + (q.isActive ? '' : ' — скрыт');
       els.qModalDifficulty.value = q.difficulty != null ? String(q.difficulty) : '';
       els.qModalDifficulty.disabled = !canEditQuestions;
 
@@ -211,9 +241,13 @@
         </div>
 
         ${canEditQuestions ? `
-          <div class="actions" style="margin-bottom:24px;">
+          <div class="actions" style="margin-bottom:24px; display:flex; gap:8px; flex-wrap:wrap;">
             <button type="button" class="btn btn--primary" id="btnSaveQuestion">Сохранить вопрос и ответы</button>
+            ${q.isActive
+              ? '<button type="button" class="btn btn--ghost" style="color:var(--danger);" id="btnToggleVisibility">Скрыть вопрос</button>'
+              : '<button type="button" class="btn btn--ghost" id="btnToggleVisibility">Показать вопрос</button>'}
           </div>
+          ${q.isActive ? '' : '<p class="lead" style="margin:-12px 0 20px; color:var(--muted);">Вопрос скрыт и не попадает в новые тесты. Ранее выданные попытки и результаты сохранены.</p>'}
         ` : ''}
 
         <hr style="border:none; border-top:1px solid var(--border-light); margin:24px 0;">
@@ -266,6 +300,10 @@
           } catch (err) {
             showStatus(err.message, 'error');
           }
+        });
+
+        document.getElementById('btnToggleVisibility').addEventListener('click', () => {
+          setQuestionHidden(q.id, q.isActive);
         });
 
         els.qDetail.querySelectorAll('[data-save-f]').forEach((btn) => {
