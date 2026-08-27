@@ -206,10 +206,15 @@
     questions.forEach((q, i) => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'nav-grid__btn';
+      const qid = q.id || q.questionId;
+      const isCur = (i === index);
+      const isAns = Boolean(answers[qid]);
+
+      btn.className = 'nav-dot nav-grid__btn' +
+        (isCur ? ' is-current nav-grid__btn--current' : '') +
+        (isAns ? ' is-answered nav-grid__btn--answered' : '');
+
       btn.textContent = String(i + 1);
-      if (i === index) btn.classList.add('nav-grid__btn--current');
-      if (answers[(q.id || q.questionId) || q.questionId]) btn.classList.add('nav-grid__btn--answered');
       btn.addEventListener('click', () => {
         index = i;
         renderQuestion();
@@ -225,41 +230,65 @@
     if (els.progress) els.progress.textContent = `Вопрос ${index + 1} из ${questions.length}`;
     if (els.text) els.text.textContent = q.text || '';
     if (els.btnPrev) els.btnPrev.disabled = index === 0;
-    if (els.btnNext) els.btnNext.textContent = index === questions.length - 1 ? 'К списку вопросов' : 'Далее →';
+    if (els.btnNext) els.btnNext.textContent = index === questions.length - 1 ? 'Завершить тест' : 'Далее →';
 
-    const chosen = answers[(q.id || q.questionId) || q.questionId] || null;
+    const qid = q.id || q.questionId;
+    const chosen = answers[qid] || null;
     const cyrMap = ['А', 'Б', 'В', 'Г', 'Д', 'Е'];
 
     if (els.options) {
       els.options.innerHTML = '';
       (q.options || []).forEach((opt, optIdx) => {
         const displayLetter = cyrMap[optIdx] || opt.letter;
+        const isSelected = (chosen === opt.letter);
+
         const row = document.createElement('label');
-        row.className = 'quiz-option' + (chosen === opt.letter ? ' quiz-option--selected' : '');
+        row.className = 'option-card quiz-option' + (isSelected ? ' is-selected quiz-option--selected' : '');
         
         const radio = document.createElement('input');
         radio.type = 'radio';
-        radio.name = `q_${(q.id || q.questionId)}`;
+        radio.name = `q_${qid}`;
         radio.value = opt.letter;
-        radio.checked = (chosen === opt.letter);
-        radio.addEventListener('change', () => {
-          answers[(q.id || q.questionId) || q.questionId] = opt.letter;
+        radio.checked = isSelected;
+        radio.style.position = 'absolute';
+        radio.style.opacity = '0';
+        radio.style.pointerEvents = 'none';
+
+        const onSelect = () => {
+          answers[qid] = opt.letter;
           saveBuffer();
+          if (attemptId && qid) {
+            AsmtApi.post('api/attempt-answer.php', {
+              attemptId,
+              questionId: qid,
+              letter: opt.letter,
+            }).catch(() => {});
+          }
           renderQuestion();
           renderNav();
-        });
+        };
+
+        radio.addEventListener('change', onSelect);
 
         const letterBadge = document.createElement('span');
-        letterBadge.className = 'quiz-option__letter';
+        letterBadge.className = 'option-card__letter quiz-option__letter';
         letterBadge.textContent = displayLetter;
 
         const textSpan = document.createElement('span');
-        textSpan.className = 'quiz-option__text';
+        textSpan.className = 'option-card__text quiz-option__text';
         textSpan.textContent = opt.text;
 
         row.appendChild(radio);
         row.appendChild(letterBadge);
         row.appendChild(textSpan);
+
+        row.addEventListener('click', (e) => {
+          if (!radio.checked) {
+            radio.checked = true;
+            onSelect();
+          }
+        });
+
         els.options.appendChild(row);
       });
     }
@@ -343,6 +372,14 @@
         return;
       }
 
+      // Pre-fill answers from server if resuming or if existing answers were saved
+      questions.forEach((q) => {
+        const qid = q.id || q.questionId;
+        if (q.chosen) {
+          answers[qid] = q.chosen;
+        }
+      });
+
       loadBuffer(attemptId);
       startTimer();
       renderQuestion();
@@ -364,6 +401,8 @@
           if (index < questions.length - 1) {
             index++;
             renderQuestion();
+          } else {
+            finishAttempt(false);
           }
         });
       }

@@ -1476,9 +1476,10 @@ textarea:focus, .field textarea:focus {
 .test-topbar__timer.is-warn { color: var(--amber); }
 .test-topbar__timer.is-danger { color: var(--danger); animation: pulse 1s infinite; }
 
-.option-card {
+.option-card,
+.quiz-option {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
   width: 100%;
   padding: 16px 20px;
@@ -1494,22 +1495,27 @@ textarea:focus, .field textarea:focus {
   box-shadow: 0 2px 6px rgba(30, 51, 76, 0.02);
   margin-bottom: 10px;
   user-select: none;
+  position: relative;
 }
 
-.option-card:hover {
+.option-card:hover,
+.quiz-option:hover {
   border-color: rgba(15, 170, 75, 0.4);
   background: #f8fafc;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(30, 51, 76, 0.05);
 }
 
-.option-card.is-selected {
+.option-card.is-selected,
+.quiz-option.quiz-option--selected,
+.quiz-option.is-selected {
   border-color: var(--green);
   background: rgba(15, 170, 75, 0.05);
   box-shadow: 0 0 0 1px var(--green), 0 6px 16px rgba(15, 170, 75, 0.12);
 }
 
-.option-card__letter {
+.option-card__letter,
+.quiz-option__letter {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1524,15 +1530,26 @@ textarea:focus, .field textarea:focus {
   transition: all 0.18s ease;
 }
 
-.option-card:hover .option-card__letter {
+.option-card:hover .option-card__letter,
+.quiz-option:hover .quiz-option__letter {
   background: var(--green-light);
   color: var(--green);
 }
 
-.option-card.is-selected .option-card__letter {
+.option-card.is-selected .option-card__letter,
+.quiz-option.quiz-option--selected .quiz-option__letter,
+.quiz-option.is-selected .quiz-option__letter {
   background: var(--green);
   color: #ffffff;
   box-shadow: 0 2px 8px rgba(15, 170, 75, 0.3);
+}
+
+.option-card__text,
+.quiz-option__text {
+  flex: 1;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.45;
 }
 
 /* NAV GRID & DOTS */
@@ -1542,7 +1559,8 @@ textarea:focus, .field textarea:focus {
   gap: 8px;
 }
 
-.nav-dot {
+.nav-dot,
+.nav-grid__btn {
   width: 38px;
   height: 38px;
   border-radius: 10px;
@@ -1556,26 +1574,54 @@ textarea:focus, .field textarea:focus {
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
+  padding: 0;
+  outline: none;
+  font-family: inherit;
 }
 
-.nav-dot:hover {
+.nav-dot:hover,
+.nav-grid__btn:hover {
   border-color: var(--green);
   color: var(--text);
   background: #f8fafc;
 }
 
-.nav-dot.is-answered {
-  background: var(--green-light);
-  color: var(--green-dark);
-  border-color: rgba(15, 170, 75, 0.3);
+.nav-dot.is-answered,
+.nav-dot.nav-grid__btn--answered,
+.nav-grid__btn.is-answered,
+.nav-grid__btn.nav-grid__btn--answered {
+  background: var(--green);
+  color: #ffffff;
+  border-color: var(--green);
+  box-shadow: 0 2px 6px rgba(15, 170, 75, 0.25);
 }
 
-.nav-dot.is-current {
+.nav-dot.is-answered:hover,
+.nav-grid__btn.nav-grid__btn--answered:hover {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: #ffffff;
+}
+
+.nav-dot.is-current,
+.nav-dot.nav-grid__btn--current,
+.nav-grid__btn.is-current,
+.nav-grid__btn.nav-grid__btn--current {
   border: 2px solid var(--green);
   color: var(--green-dark);
   font-weight: 800;
-  box-shadow: 0 0 0 3px rgba(15, 170, 75, 0.18);
+  box-shadow: 0 0 0 3px rgba(15, 170, 75, 0.2);
   background: #ffffff;
+}
+
+.nav-dot.is-current.is-answered,
+.nav-dot.nav-grid__btn--current.nav-grid__btn--answered,
+.nav-grid__btn.is-current.is-answered,
+.nav-grid__btn.nav-grid__btn--current.nav-grid__btn--answered {
+  background: var(--green-dark);
+  color: #ffffff;
+  border-color: var(--green-dark);
+  box-shadow: 0 0 0 3px rgba(15, 170, 75, 0.3);
 }
 
 
