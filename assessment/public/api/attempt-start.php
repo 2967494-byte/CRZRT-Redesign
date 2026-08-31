@@ -229,9 +229,7 @@ try {
         );
         $opts->execute([$qid]);
         $letters = array_column($opts->fetchAll(), 'letter');
-        if (!empty($campaign['shuffle_options'])) {
-            shuffle($letters);
-        }
+        // Do not shuffle option choices, because questions often contain references like "верны варианты А и Г"
         $ansIns->execute([
             $attemptId,
             $qid,
@@ -313,18 +311,10 @@ function loadAttemptQuestions(PDO $pdo, int $attemptId): array
     $out = [];
     foreach ($rows as $row) {
         $qid = (int)$row['question_id'];
-        $order = json_decode((string)$row['options_order_json'], true) ?: [];
         $byLetter = $byQid[$qid] ?? [];
         $options = [];
-        foreach ($order as $letter) {
-            if (isset($byLetter[$letter])) {
-                $options[] = ['letter' => $letter, 'text' => $byLetter[$letter]];
-            }
-        }
-        if (empty($options)) {
-            foreach ($byLetter as $letter => $text) {
-                $options[] = ['letter' => $letter, 'text' => $text];
-            }
+        foreach ($byLetter as $letter => $text) {
+            $options[] = ['letter' => $letter, 'text' => $text];
         }
         $out[] = [
             'id' => $qid,

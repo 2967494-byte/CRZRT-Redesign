@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS asmt_campaigns (
     pool_size               INT NOT NULL DEFAULT 100,
     error_threshold_percent INT NOT NULL DEFAULT 60,
     shuffle_questions       BOOLEAN NOT NULL DEFAULT TRUE,
-    shuffle_options         BOOLEAN NOT NULL DEFAULT TRUE,
+    shuffle_options         BOOLEAN NOT NULL DEFAULT FALSE,
     is_active               BOOLEAN NOT NULL DEFAULT FALSE,
     created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
