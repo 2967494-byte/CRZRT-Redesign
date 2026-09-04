@@ -406,7 +406,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
           case 0:
             _context.p = 0;
             _context.n = 1;
-            return fetch("api/settings.php?key=".concat(STORAGE_KEY, "&_=").concat(Date.now()), {
+            var apiPath = (window.location.pathname.indexOf('/courses/') !== -1 ? '../api/' : 'api/') + "settings.php?key=".concat(STORAGE_KEY, "&_=").concat(Date.now());
+            return fetch(apiPath, {
               cache: 'no-store'
             });
           case 1:

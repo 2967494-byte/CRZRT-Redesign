@@ -1,7 +1,9 @@
+var courseEnrollMetaCache = null;
+
 function initCoursePage() {
-  wireCourseProgramPdfLinks();
-  initCourseEnrollModal();
-  initCourseEnrollSubmit();
+  try { wireCourseProgramPdfLinks(); } catch (e) { console.warn('wireCourseProgramPdfLinks error', e); }
+  try { initCourseEnrollModal(); } catch (e) { console.warn('initCourseEnrollModal error', e); }
+  try { initCourseEnrollSubmit(); } catch (e) { console.warn('initCourseEnrollSubmit error', e); }
 
   /* ========================================================================
      COURSE ACCORDION LOGIC
@@ -348,8 +350,6 @@ function initCourseEnrollModal() {
     content.addEventListener('click', (event) => event.stopPropagation());
   }
 }
-
-let courseEnrollMetaCache = null;
 
 function parseDurationDaysFromWidget() {
   const widgetItems = document.querySelectorAll('.course-widget-item');

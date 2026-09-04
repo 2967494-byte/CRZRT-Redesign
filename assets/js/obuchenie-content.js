@@ -19,6 +19,10 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
  */
 (function () {
   var STORAGE_KEY = 'crzrt_obuchenie_page_data';
+  function getApiPath(endpoint) {
+    var prefix = window.location.pathname.indexOf('/courses/') !== -1 ? '../api/' : 'api/';
+    return prefix + endpoint;
+  }
   var CONTENT_PENDING_CLASS = 'obuchenie-content-pending';
   var CONTENT_READY_CLASS = 'obuchenie-content-ready';
   var MORE_ARROW_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#0FAA4B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -439,7 +443,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
           case 1:
             _context3.p = 1;
             _context3.n = 2;
-            return fetch("api/bitrix-form-meta.php?id=".concat(id));
+            return fetch(getApiPath("bitrix-form-meta.php?id=".concat(id)));
           case 2:
             response = _context3.v;
             _context3.n = 3;
@@ -1013,7 +1017,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
             }
           case 1:
             _context7.n = 2;
-            return fetch('api/bitrix-lead-enroll.php', {
+            return fetch(getApiPath('bitrix-lead-enroll.php'), {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -1285,7 +1289,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
           case 0:
             _context9.p = 0;
             _context9.n = 1;
-            return fetch("api/settings.php?key=".concat(STORAGE_KEY));
+            return fetch(getApiPath("settings.php?key=".concat(STORAGE_KEY)));
           case 1:
             resp = _context9.v;
             if (!resp.ok) {
