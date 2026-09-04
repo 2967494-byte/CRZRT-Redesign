@@ -225,7 +225,8 @@ function bitrix_build_enroll_lead_fields(array $input): array
     $lastName = trim((string)($input['lastName'] ?? ''));
     $phone = trim((string)($input['phone'] ?? ''));
     $email = trim((string)($input['email'] ?? ''));
-    $company = trim((string)($input['company'] ?? ''));
+    $company = trim((string)($input['organization'] ?? $input['company'] ?? ''));
+    $position = trim((string)($input['position'] ?? $input['post'] ?? ''));
     $courseTitle = trim((string)($input['courseTitle'] ?? $input['title'] ?? ''));
     $sourceId = trim((string)($input['sourceId'] ?? $input['source'] ?? ''));
     $audienceType = trim((string)($input['audienceType'] ?? 'individual'));
@@ -282,6 +283,9 @@ function bitrix_build_enroll_lead_fields(array $input): array
     if ($company !== '') {
         $fields['COMPANY_TITLE'] = $company;
     }
+    if ($position !== '') {
+        $fields['POST'] = $position;
+    }
     if ($sourceId !== '') {
         $fields[BITRIX_UF_SOURCE] = $sourceId;
     }
@@ -321,6 +325,12 @@ function bitrix_build_enroll_lead_fields(array $input): array
     $baseComments = trim((string)($input['comments'] ?? ''));
     if ($baseComments !== '') {
         $commentParts[] = $baseComments;
+    }
+    if ($company !== '' && strpos($baseComments, 'Организация:') === false && strpos($baseComments, 'Компания:') === false) {
+        $commentParts[] = 'Организация: ' . $company;
+    }
+    if ($position !== '' && strpos($baseComments, 'Должность:') === false) {
+        $commentParts[] = 'Должность: ' . $position;
     }
     if ($startDmY !== '') {
         $commentParts[] = 'Дата начала: ' . $startDmY;

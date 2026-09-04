@@ -105,7 +105,7 @@
           <p class="course-hero__desc">Тестовый</p>
           
           <div class="course-hero__actions">
-            <button class="btn btn--green btn--large btn-enroll">Записаться на курс</button>
+            <button class="btn btn--green btn--large btn-enroll" data-enroll-btn>Записаться на курс</button>
             <a href="#" class="btn btn--white-outline btn--large course-hero__download">Скачать программу (PDF)</a>
           </div>
         </div>
@@ -459,16 +459,16 @@
       <p class="enroll-modal__date" id="enroll-modal-date">Даты</p>
     </div>
     <div class="enroll-modal__audience" id="enroll-audience-switch" hidden>
-      <span class="enroll-modal__audience-label enroll-modal__audience-label--active" data-audience-label="individual">Физическое лицо</span>
+      <span class="enroll-modal__audience-label" data-audience-label="individual">Физическое лицо</span>
       <label class="enroll-audience-toggle" aria-label="Переключить тип лица">
-        <input type="checkbox" id="enroll-audience-toggle" class="enroll-audience-toggle__input">
+        <input type="checkbox" id="enroll-audience-toggle" class="enroll-audience-toggle__input" checked>
         <span class="enroll-audience-toggle__track" aria-hidden="true">
           <span class="enroll-audience-toggle__thumb"></span>
         </span>
       </label>
-      <span class="enroll-modal__audience-label" data-audience-label="legal">Юридическое лицо</span>
+      <span class="enroll-modal__audience-label enroll-modal__audience-label--active" data-audience-label="legal">Юридическое лицо</span>
     </div>
-    <input type="hidden" id="enroll-audience-type" name="audienceType" value="individual">
+    <input type="hidden" id="enroll-audience-type" name="audienceType" value="legal">
     <form class="enroll-modal__form" id="enroll-form">
       <div class="enroll-modal__field">
         <input type="text" id="enroll-name" class="enroll-modal__input" placeholder="Имя *" required>
@@ -479,8 +479,11 @@
       <div class="enroll-modal__field">
         <input type="email" id="enroll-email" class="enroll-modal__input" placeholder="E-mail *" required>
       </div>
-      <div class="enroll-modal__field" id="enroll-company-field" hidden>
-        <input type="text" id="enroll-company" class="enroll-modal__input" placeholder="Название компании *">
+      <div class="enroll-modal__field" id="enroll-company-field">
+        <input type="text" id="enroll-company" class="enroll-modal__input" placeholder="Организация *">
+      </div>
+      <div class="enroll-modal__field" id="enroll-position-field">
+        <input type="text" id="enroll-position" class="enroll-modal__input" placeholder="Должность *">
       </div>
       <div class="enroll-modal__field">
         <select id="enroll-source" class="enroll-modal__select" required>

@@ -203,6 +203,15 @@ function generate_static_courses($courseRegistry) {
         $desc = nl2br($descOutcomes ?: ($course['description'] ?? ''));
         $html = preg_replace('/<p class="course-hero__desc">.*?<\/p>/s', '<p class="course-hero__desc">' . $desc . '</p>', $html);
 
+        // 4.1. Кнопка записи (свободная формулировка)
+        $btnText = !empty($course['btnText']) ? htmlspecialchars(trim((string)$course['btnText']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : 'Записаться на курс';
+        $html = preg_replace(
+            '/<button\b([^>]*?(?:data-enroll-btn|\bbtn-enroll\b)[^>]*)>.*?<\/button>/si',
+            '<button$1>' . $btnText . '</button>',
+            $html,
+            1
+        );
+
         // 5. Виджеты (Длительность, Дата, Цена)
         $duration = '';
         if (!empty($course['duration'])) {

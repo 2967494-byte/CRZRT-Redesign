@@ -105,7 +105,7 @@
           <p class="course-hero__desc"><p style="outline: none; margin-bottom: 10px; font-family: &quot;Open Sans&quot;, sans-serif; text-align: center; font-size: 30px; font-weight: bold;"><span style="outline: none; font-weight: bolder;"><font color="#0b6015">На курсе будут рассмотрены следующие вопросы:</font></span></p><div class="container" style="outline: none; width: 655px; padding-right: 15px; padding-left: 15px; max-width: 1140px; font-family: &quot;Open Sans&quot;, sans-serif; font-size: 14px; margin-bottom: 40px;"><div class="row" style="outline: none; display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px;"><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 327.5px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%;"><ul type="disc" style="outline: none; margin-top: 15px; margin-left: 15px;"><li style="outline: none;"><p style="outline: none; margin-top: 19.7656px; margin-bottom: 22.5938px; font-weight: bold; font-size: 16px;"><font color="#0b6015">последние изменения в законодательстве о контрактной системе</font></p></li></ul></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 327.5px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%;"><ul type="disc" style="outline: none; margin-top: 15px; margin-left: 15px;"><li style="outline: none;"><p style="outline: none; margin-top: 19.7656px; margin-bottom: 22.5938px; font-weight: bold; font-size: 16px;"><font color="#0b6015">правила планирования и обоснования закупок</font></p></li></ul></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 327.5px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%;"><ul type="disc" style="outline: none; margin-top: 15px; margin-left: 15px;"><li style="outline: none;"><p style="outline: none; margin-top: 19.7656px; margin-bottom: 22.5938px; font-weight: bold; font-size: 16px;"><font color="#0b6015">особенности проведения конкурентных процедур (аукцион, конкурс, запрос котировок)</font></p></li></ul></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 327.5px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%;"><ul type="disc" style="outline: none; margin-top: 15px; margin-left: 15px;"><li style="outline: none;"><p style="outline: none; margin-top: 19.7656px; margin-bottom: 22.5938px; font-weight: bold; font-size: 16px;"><font color="#0b6015">особенности закупок у СМП и СОНКО</font></p></li></ul></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 327.5px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%;"><ul type="disc" style="outline: none; margin-top: 15px; margin-left: 15px;"><li style="outline: none;"><p style="outline: none; margin-top: 19.7656px; margin-bottom: 22.5938px; font-weight: bold; font-size: 16px;"><font color="#0b6015">правила заключения контракта у единственного поставщика</font></p></li></ul></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 327.5px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%;"><ul type="disc" style="outline: none; margin-top: 15px; margin-left: 15px;"><li style="outline: none;"><p style="outline: none; margin-top: 19.7656px; margin-bottom: 22.5938px; font-weight: bold; font-size: 16px;"><font color="#0b6015">особенности заключения, исполнения и расторжения контракта</font></p></li></ul></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 327.5px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%;"><ul type="disc" style="outline: none; margin-top: 15px; margin-left: 15px;"><li style="outline: none;"><p style="outline: none; margin-top: 19.7656px; margin-bottom: 22.5938px; font-weight: bold; font-size: 16px;"><font color="#0b6015">узнаете об ошибках, нарушениях заказчиков и поставщиков</font></p></li></ul></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 327.5px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%;"><ul type="disc" style="outline: none; margin-top: 15px; margin-left: 15px;"><li style="outline: none;"><p style="outline: none; margin-top: 19.7656px; margin-bottom: 22.5938px; font-weight: bold; font-size: 16px;"><font color="#0b6015">административная и судебная практики в сфере закупок и др.</font></p></li></ul></div></div></div></p>
           
           <div class="course-hero__actions">
-            <button class="btn btn--green btn--large btn-enroll">Записаться на курс</button>
+            <button class="btn btn--green btn--large btn-enroll" data-enroll-btn>Записаться на курс</button>
             <a href="#" class="btn btn--white-outline btn--large course-hero__download">Скачать программу (PDF)</a>
           </div>
         </div>
@@ -459,16 +459,16 @@
       <p class="enroll-modal__date" id="enroll-modal-date">Даты</p>
     </div>
     <div class="enroll-modal__audience" id="enroll-audience-switch" hidden>
-      <span class="enroll-modal__audience-label enroll-modal__audience-label--active" data-audience-label="individual">Физическое лицо</span>
+      <span class="enroll-modal__audience-label" data-audience-label="individual">Физическое лицо</span>
       <label class="enroll-audience-toggle" aria-label="Переключить тип лица">
-        <input type="checkbox" id="enroll-audience-toggle" class="enroll-audience-toggle__input">
+        <input type="checkbox" id="enroll-audience-toggle" class="enroll-audience-toggle__input" checked>
         <span class="enroll-audience-toggle__track" aria-hidden="true">
           <span class="enroll-audience-toggle__thumb"></span>
         </span>
       </label>
-      <span class="enroll-modal__audience-label" data-audience-label="legal">Юридическое лицо</span>
+      <span class="enroll-modal__audience-label enroll-modal__audience-label--active" data-audience-label="legal">Юридическое лицо</span>
     </div>
-    <input type="hidden" id="enroll-audience-type" name="audienceType" value="individual">
+    <input type="hidden" id="enroll-audience-type" name="audienceType" value="legal">
     <form class="enroll-modal__form" id="enroll-form">
       <div class="enroll-modal__field">
         <input type="text" id="enroll-name" class="enroll-modal__input" placeholder="Имя *" required>
@@ -479,8 +479,11 @@
       <div class="enroll-modal__field">
         <input type="email" id="enroll-email" class="enroll-modal__input" placeholder="E-mail *" required>
       </div>
-      <div class="enroll-modal__field" id="enroll-company-field" hidden>
-        <input type="text" id="enroll-company" class="enroll-modal__input" placeholder="Название компании *">
+      <div class="enroll-modal__field" id="enroll-company-field">
+        <input type="text" id="enroll-company" class="enroll-modal__input" placeholder="Организация *">
+      </div>
+      <div class="enroll-modal__field" id="enroll-position-field">
+        <input type="text" id="enroll-position" class="enroll-modal__input" placeholder="Должность *">
       </div>
       <div class="enroll-modal__field">
         <select id="enroll-source" class="enroll-modal__select" required>

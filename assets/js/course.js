@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (enrollModal) {
     enrollBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         // Find course title
         const titleEl = document.querySelector('.course-hero__title');
         if (titleEl && enrollTitle) {
@@ -117,6 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (enrollForm) {
           enrollForm.dataset.courseId = resolveCourseIdFromPath();
         }
+
+        // Configure audience settings according to course metadata
+        try {
+          const course = await loadCourseEnrollMeta();
+          configureCourseEnrollModalAudience(course);
+        } catch (_e) {
+          configureCourseEnrollModalAudience(null);
+        }
         
         // Show modal
         enrollModal.style.display = 'flex';
@@ -126,6 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   updateCourseStartDate();
+  // Preload course metadata early so custom btnText and audience are applied immediately
+  loadCourseEnrollMeta().catch(() => {});
 });
 
 function updateCourseStartDate() {
@@ -216,10 +226,16 @@ function getCourseStartDateLabel() {
 }
 
 function applyCourseEnrollAudienceMode(mode) {
-  const normalizedMode = mode === 'legal' ? 'legal' : 'individual';
+  if (window.ObuchenieContent && typeof window.ObuchenieContent.setEnrollAudienceMode === 'function') {
+    window.ObuchenieContent.setEnrollAudienceMode(mode);
+    return;
+  }
+  const normalizedMode = mode === 'individual' ? 'individual' : 'legal';
   const audienceInput = document.getElementById('enroll-audience-type');
   const companyField = document.getElementById('enroll-company-field');
   const companyInput = document.getElementById('enroll-company');
+  const positionField = document.getElementById('enroll-position-field');
+  const positionInput = document.getElementById('enroll-position');
   const labels = document.querySelectorAll('[data-audience-label]');
 
   if (audienceInput) audienceInput.value = normalizedMode;
@@ -227,12 +243,42 @@ function applyCourseEnrollAudienceMode(mode) {
     label.classList.toggle('enroll-modal__audience-label--active', label.dataset.audienceLabel === normalizedMode);
   });
 
+  const isLegal = normalizedMode === 'legal';
   if (companyField && companyInput) {
-    const isLegal = normalizedMode === 'legal';
     companyField.hidden = !isLegal;
     companyInput.required = isLegal;
     if (!isLegal) companyInput.value = '';
   }
+  if (positionField && positionInput) {
+    positionField.hidden = !isLegal;
+    positionInput.required = isLegal;
+    if (!isLegal) positionInput.value = '';
+  }
+}
+
+function configureCourseEnrollModalAudience(course) {
+  if (window.ObuchenieContent && typeof window.ObuchenieContent.configureEnrollModalAudience === 'function') {
+    window.ObuchenieContent.configureEnrollModalAudience({
+      forIndividuals: course?.forIndividuals,
+      forLegalEntities: course?.forLegalEntities
+    });
+    return;
+  }
+  const forIndividuals = course?.forIndividuals !== false;
+  const forLegalEntities = course?.forLegalEntities !== false;
+  const switchWrap = document.getElementById('enroll-audience-switch');
+  const toggle = document.getElementById('enroll-audience-toggle');
+  if (switchWrap) {
+    switchWrap.hidden = !(forIndividuals && forLegalEntities);
+  }
+  let mode = 'legal';
+  if (!forLegalEntities && forIndividuals) {
+    mode = 'individual';
+  } else if (toggle) {
+    mode = toggle.checked ? 'legal' : 'individual';
+  }
+  if (toggle) toggle.checked = mode === 'legal';
+  applyCourseEnrollAudienceMode(mode);
 }
 
 function initCourseEnrollModal() {
@@ -245,10 +291,8 @@ function initCourseEnrollModal() {
   const content = modal.querySelector('.enroll-modal__content');
   const form = document.getElementById('enroll-form');
   const audienceToggle = document.getElementById('enroll-audience-toggle');
-  const audienceSwitch = document.getElementById('enroll-audience-switch');
 
-  if (audienceSwitch) audienceSwitch.hidden = false;
-  applyCourseEnrollAudienceMode('individual');
+  configureCourseEnrollModalAudience(courseEnrollMetaCache);
 
   const closeEnrollModal = () => {
     modal.classList.remove('calendar-modal--visible');
@@ -257,8 +301,7 @@ function initCourseEnrollModal() {
       form.reset();
       delete form.dataset.courseId;
     }
-    if (audienceToggle) audienceToggle.checked = false;
-    applyCourseEnrollAudienceMode('individual');
+    configureCourseEnrollModalAudience(courseEnrollMetaCache);
     const status = document.getElementById('enroll-form-status');
     if (status) {
       status.hidden = true;
@@ -282,11 +325,7 @@ function initCourseEnrollModal() {
 
   if (audienceToggle) {
     audienceToggle.addEventListener('change', () => {
-      const mode = audienceToggle.checked ? 'legal' : 'individual';
-      applyCourseEnrollAudienceMode(mode);
-      if (window.ObuchenieContent && typeof window.ObuchenieContent.setEnrollAudienceMode === 'function') {
-        window.ObuchenieContent.setEnrollAudienceMode(mode);
-      }
+      applyCourseEnrollAudienceMode(audienceToggle.checked ? 'legal' : 'individual');
     });
   }
 
@@ -353,6 +392,11 @@ async function loadCourseEnrollMeta() {
       ? findCourseByPathKey(data.courseRegistry, courseId)
       : null;
     courseEnrollMetaCache = course ? { ...fallback, ...course, id: course.id || courseId } : fallback;
+    if (course && course.btnText) {
+      document.querySelectorAll('.btn-enroll').forEach((btn) => {
+        btn.textContent = course.btnText;
+      });
+    }
     return courseEnrollMetaCache;
   } catch (_error) {
     courseEnrollMetaCache = fallback;
@@ -395,7 +439,8 @@ function initCourseEnrollSubmit() {
       const phone = (document.getElementById('enroll-phone')?.value || '').trim();
       const email = (document.getElementById('enroll-email')?.value || '').trim();
       const company = (document.getElementById('enroll-company')?.value || '').trim();
-      const audienceType = (document.getElementById('enroll-audience-type')?.value || '') === 'legal' ? 'legal' : 'individual';
+      const position = (document.getElementById('enroll-position')?.value || '').trim();
+      const audienceType = (document.getElementById('enroll-audience-type')?.value || '') === 'individual' ? 'individual' : 'legal';
       const sourceSelect = document.getElementById('enroll-source');
       const sourceValue = sourceSelect?.value || '';
       const sourceLabel = sourceSelect?.selectedOptions?.[0]?.textContent?.trim() || '';
@@ -403,8 +448,13 @@ function initCourseEnrollSubmit() {
       if (!name || !phone) {
         throw new Error('Укажите имя и телефон');
       }
-      if (audienceType === 'legal' && !company) {
-        throw new Error('Укажите название компании');
+      if (audienceType === 'legal') {
+        if (!company) {
+          throw new Error('Укажите организацию');
+        }
+        if (!position) {
+          throw new Error('Укажите должность');
+        }
       }
 
       const course = await loadCourseEnrollMeta();
@@ -417,6 +467,8 @@ function initCourseEnrollSubmit() {
           phone,
           email,
           company,
+          organization: company,
+          position,
           audienceType,
           source: sourceValue,
           sourceLabel,

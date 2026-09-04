@@ -105,7 +105,7 @@
           <p class="course-hero__desc"><div class="col-md-12" style="outline: none; position: relative; width: 684.98px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 100%; max-width: 100%; font-family: &quot;Open Sans&quot;, sans-serif; font-size: 14px;"><p style="outline: none; margin-bottom: 25px; text-align: center; font-size: 24px; font-weight: 600; font-family: montserrat, Arial, sans-serif;"><span style="outline: none; font-weight: bolder;"><font color="#336303">На вебинаре будут рассмотрены следующие вопросы:</font></span></p></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 342.48px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%; font-family: &quot;Open Sans&quot;, sans-serif; font-size: 14px; margin-bottom: 20px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 0px;"><p style="outline: none; margin-top: 21.8555px; margin-bottom: 24.9805px; text-align: center; font-weight: bold; font-size: 16px; font-family: montserrat, Arial, sans-serif;"><font color="#529211">• какие контракты можно заключить по ч.1 ст. 93 с единственным поставщиком</font></p></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 342.48px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%; font-family: &quot;Open Sans&quot;, sans-serif; font-size: 14px; margin-bottom: 20px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 0px;"><p style="outline: none; margin-top: 21.8555px; margin-bottom: 24.9805px; text-align: center; font-weight: bold; font-size: 16px; font-family: montserrat, Arial, sans-serif;"><font color="#529211">• какие контракты необходимо включить в реестр контрактов</font></p></div><div class="col-md-6 col-xs-6" style="outline: none; position: relative; width: 342.48px; min-height: 1px; padding-right: 15px; padding-left: 15px; flex: 0 0 50%; max-width: 50%; font-family: &quot;Open Sans&quot;, sans-serif; font-size: 14px; margin-bottom: 20px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px 0px;"><p style="outline: none; margin-top: 21.8555px; margin-bottom: 24.9805px; text-align: center; font-weight: bold; font-size: 16px; font-family: montserrat, Arial, sans-serif;"><font color="#529211">• какая информация включается в реестр контрактов</font></p><p style="outline: none; margin-bottom: 30px; text-align: center; font-size: 30px; font-weight: bold; font-family: montserrat, Arial, sans-serif;"><font color="#529211">Время эфира 15:00-16:00</font></p><p style="outline: none; margin-bottom: 30px; text-align: center; font-size: 30px; font-weight: bold; font-family: montserrat, Arial, sans-serif;"><font color="#529211">Спикер<img src="https://zakupki.tatar/wp-content/uploads/2023/01/dima-foto-3.webp" style="font-family: &quot;Open Sans&quot;, sans-serif; font-size: 14px; outline: none; vertical-align: middle; border-style: none; max-width: 90%; border-radius: 50%;"><span style="font-size: 18px;">Чернов Дмитрий&nbsp;</span><span style="font-size: 18px;">Андреевич</span></font></p><p style="outline: none; margin-bottom: 30px; text-align: center; font-size: 30px; font-weight: bold; font-family: montserrat, Arial, sans-serif;"><span style="font-family: &quot;Open Sans&quot;, sans-serif; font-size: 14px;"><font color="#529211">Ведущий юрисконсульт АО «Центр развития закупок РТ»</font></span></p></div></p>
           
           <div class="course-hero__actions">
-            <button class="btn btn--green btn--large btn-enroll">Записаться на курс</button>
+            <button class="btn btn--green btn--large btn-enroll" data-enroll-btn>Записаться на курс</button>
             <a href="#" class="btn btn--white-outline btn--large course-hero__download">Скачать программу (PDF)</a>
           </div>
         </div>
@@ -459,16 +459,16 @@
       <p class="enroll-modal__date" id="enroll-modal-date">Даты</p>
     </div>
     <div class="enroll-modal__audience" id="enroll-audience-switch" hidden>
-      <span class="enroll-modal__audience-label enroll-modal__audience-label--active" data-audience-label="individual">Физическое лицо</span>
+      <span class="enroll-modal__audience-label" data-audience-label="individual">Физическое лицо</span>
       <label class="enroll-audience-toggle" aria-label="Переключить тип лица">
-        <input type="checkbox" id="enroll-audience-toggle" class="enroll-audience-toggle__input">
+        <input type="checkbox" id="enroll-audience-toggle" class="enroll-audience-toggle__input" checked>
         <span class="enroll-audience-toggle__track" aria-hidden="true">
           <span class="enroll-audience-toggle__thumb"></span>
         </span>
       </label>
-      <span class="enroll-modal__audience-label" data-audience-label="legal">Юридическое лицо</span>
+      <span class="enroll-modal__audience-label enroll-modal__audience-label--active" data-audience-label="legal">Юридическое лицо</span>
     </div>
-    <input type="hidden" id="enroll-audience-type" name="audienceType" value="individual">
+    <input type="hidden" id="enroll-audience-type" name="audienceType" value="legal">
     <form class="enroll-modal__form" id="enroll-form">
       <div class="enroll-modal__field">
         <input type="text" id="enroll-name" class="enroll-modal__input" placeholder="Имя *" required>
@@ -479,8 +479,11 @@
       <div class="enroll-modal__field">
         <input type="email" id="enroll-email" class="enroll-modal__input" placeholder="E-mail *" required>
       </div>
-      <div class="enroll-modal__field" id="enroll-company-field" hidden>
-        <input type="text" id="enroll-company" class="enroll-modal__input" placeholder="Название компании *">
+      <div class="enroll-modal__field" id="enroll-company-field">
+        <input type="text" id="enroll-company" class="enroll-modal__input" placeholder="Организация *">
+      </div>
+      <div class="enroll-modal__field" id="enroll-position-field">
+        <input type="text" id="enroll-position" class="enroll-modal__input" placeholder="Должность *">
       </div>
       <div class="enroll-modal__field">
         <select id="enroll-source" class="enroll-modal__select" required>

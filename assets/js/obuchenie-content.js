@@ -740,6 +740,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       id: String((raw === null || raw === void 0 ? void 0 : raw.id) || createCourseId() || "course_".concat(index)),
       slug: slugifyCourseText((raw === null || raw === void 0 ? void 0 : raw.slug) || '') || '',
       title: String((raw === null || raw === void 0 ? void 0 : raw.title) || '').trim(),
+      btnText: String((raw === null || raw === void 0 ? void 0 : raw.btnText) || '').trim(),
       format: format,
       dateFrom: dateFrom,
       dateTo: lastRange ? formatIsoDate(lastRange.to) : parseIsoDate(raw === null || raw === void 0 ? void 0 : raw.dateTo) ? String(raw.dateTo).trim() : dateFrom,
@@ -990,7 +991,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
             course = activeCourseRegistry.find(function (item) {
               return item.id === courseId;
             });
-            audienceType = ((_document$getElementB7 = document.getElementById('enroll-audience-type')) === null || _document$getElementB7 === void 0 ? void 0 : _document$getElementB7.value) === 'legal' ? 'legal' : 'individual';
+            audienceType = ((_document$getElementB7 = document.getElementById('enroll-audience-type')) === null || _document$getElementB7 === void 0 ? void 0 : _document$getElementB7.value) === 'individual' ? 'individual' : 'legal';
             sourceSelect = document.getElementById('enroll-source');
             sourceValue = (sourceSelect === null || sourceSelect === void 0 ? void 0 : sourceSelect.value) || '';
             sourceLabel = (sourceSelect === null || sourceSelect === void 0 || (_sourceSelect$selecte = sourceSelect.selectedOptions) === null || _sourceSelect$selecte === void 0 || (_sourceSelect$selecte = _sourceSelect$selecte[0]) === null || _sourceSelect$selecte === void 0 || (_sourceSelect$selecte = _sourceSelect$selecte.text) === null || _sourceSelect$selecte === void 0 ? void 0 : _sourceSelect$selecte.trim()) || '';
@@ -998,11 +999,18 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
             phone = ((_document$getElementB9 = document.getElementById('enroll-phone')) === null || _document$getElementB9 === void 0 ? void 0 : _document$getElementB9.value.trim()) || '';
             email = ((_document$getElementB0 = document.getElementById('enroll-email')) === null || _document$getElementB0 === void 0 ? void 0 : _document$getElementB0.value.trim()) || '';
             company = ((_document$getElementB1 = document.getElementById('enroll-company')) === null || _document$getElementB1 === void 0 ? void 0 : _document$getElementB1.value.trim()) || '';
-            if (!(!name || !phone)) {
-              _context7.n = 1;
-              break;
+            var position = (document.getElementById('enroll-position') ? document.getElementById('enroll-position').value.trim() : '');
+            if (!name || !phone) {
+              throw new Error('Заполните имя и телефон');
             }
-            throw new Error('Заполните имя и телефон');
+            if (audienceType === 'legal') {
+              if (!company) {
+                throw new Error('Укажите организацию');
+              }
+              if (!position) {
+                throw new Error('Укажите должность');
+              }
+            }
           case 1:
             _context7.n = 2;
             return fetch('api/bitrix-lead-enroll.php', {
@@ -1015,6 +1023,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
                 phone: phone,
                 email: email,
                 company: company,
+                organization: company,
+                position: position,
                 audienceType: audienceType,
                 source: sourceValue,
                 sourceLabel: sourceLabel,
@@ -1056,17 +1066,24 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     var audienceInput = document.getElementById('enroll-audience-type');
     var companyField = document.getElementById('enroll-company-field');
     var companyInput = document.getElementById('enroll-company');
+    var positionField = document.getElementById('enroll-position-field');
+    var positionInput = document.getElementById('enroll-position');
     var labels = document.querySelectorAll('[data-audience-label]');
-    var normalizedMode = mode === 'legal' ? 'legal' : 'individual';
+    var normalizedMode = mode === 'individual' ? 'individual' : 'legal';
     if (audienceInput) audienceInput.value = normalizedMode;
     labels.forEach(function (label) {
       label.classList.toggle('enroll-modal__audience-label--active', label.dataset.audienceLabel === normalizedMode);
     });
+    var isLegal = normalizedMode === 'legal';
     if (companyField && companyInput) {
-      var isLegal = normalizedMode === 'legal';
       companyField.hidden = !isLegal;
       companyInput.required = isLegal;
       if (!isLegal) companyInput.value = '';
+    }
+    if (positionField && positionInput) {
+      positionField.hidden = !isLegal;
+      positionInput.required = isLegal;
+      if (!isLegal) positionInput.value = '';
     }
   }
   function configureEnrollModalAudience(options) {
@@ -1077,10 +1094,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     if (switchWrap) {
       switchWrap.hidden = !(forIndividuals && forLegalEntities);
     }
-    var mode = 'individual';
-    if (!forIndividuals && forLegalEntities) {
-      mode = 'legal';
-    } else if (forIndividuals && !forLegalEntities) {
+    var mode = 'legal';
+    if (!forLegalEntities && forIndividuals) {
       mode = 'individual';
     } else if (toggle) {
       mode = toggle.checked ? 'legal' : 'individual';

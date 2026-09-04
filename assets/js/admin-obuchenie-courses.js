@@ -351,6 +351,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       els.formDateFrom.value = (course === null || course === void 0 ? void 0 : course.dateFrom) || '';
     }
     els.formTitle.value = (course === null || course === void 0 ? void 0 : course.title) || '';
+    if (els.formBtnText) {
+      els.formBtnText.value = (course === null || course === void 0 ? void 0 : course.btnText) || '';
+    }
     if (els.formSlug) {
       els.formSlug.value = (course === null || course === void 0 ? void 0 : course.slug) || '';
       els.formSlug.dataset.manual = isEdit && course && course.slug ? '1' : '0';
@@ -448,6 +451,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       datePickerInstance.clear();
     }
     els.formId.value = '';
+    if (els.formBtnText) {
+      els.formBtnText.value = '';
+    }
     if (els.formSlug) {
       els.formSlug.value = '';
       els.formSlug.dataset.manual = '0';
@@ -541,6 +547,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               id: els.formId.value || (api.createCourseId ? api.createCourseId() : "course_".concat(Date.now())),
               slug: els.formSlug && els.formSlug.value ? els.formSlug.value.trim() : '',
               title: els.formTitle.value.trim(),
+              btnText: els.formBtnText ? els.formBtnText.value.trim().slice(0, 60) : '',
               format: els.formFormat.value === 'dist' ? 'dist' : 'och',
               dateFrom: els.formDateFrom.value,
               durationDays: Math.max(1, parseInt(els.formDurationDays.value, 10) || 1),
@@ -1340,6 +1347,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.formId = $('courseFormId');
     els.formDateFrom = $('courseFormDateFrom');
     els.formTitle = $('courseFormTitle');
+    els.formBtnText = $('courseFormBtnText');
     els.formSlug = $('courseFormSlug');
     els.formSlugGenerate = $('courseFormSlugGenerate');
     els.formFormat = $('courseFormFormat');
