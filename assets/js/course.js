@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initCoursePage() {
   wireCourseProgramPdfLinks();
   initCourseEnrollModal();
   initCourseEnrollSubmit();
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ========================================================================
      ENROLL BUTTONS
      ======================================================================== */
-  const enrollBtns = document.querySelectorAll('.btn-enroll');
+  const enrollBtns = document.querySelectorAll('.btn-enroll, [data-enroll-btn]');
   const enrollModal = document.getElementById('enroll-modal');
   const enrollTitle = document.getElementById('enroll-modal-title');
   const enrollDate = document.getElementById('enroll-modal-date');
@@ -136,7 +136,13 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCourseStartDate();
   // Preload course metadata early so custom btnText and audience are applied immediately
   loadCourseEnrollMeta().catch(() => {});
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initCoursePage);
+} else {
+  initCoursePage();
+}
 
 function updateCourseStartDate() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -204,12 +210,20 @@ function resolveCourseEnrollPrice(course) {
 
 function findCourseByPathKey(registry, pathKey) {
   if (!pathKey || !Array.isArray(registry)) return null;
-  const key = String(pathKey).trim().toLowerCase();
+  const rawKey = String(pathKey).trim().toLowerCase();
+  let decodedKey = rawKey;
+  try {
+    decodedKey = decodeURIComponent(rawKey);
+  } catch (_e) {}
   return registry.find((item) => {
     if (!item) return false;
-    if (item.id === pathKey || item.id === key) return true;
+    const itemId = String(item.id || '').trim().toLowerCase();
+    if (itemId === rawKey || itemId === decodedKey) return true;
     const slug = String(item.slug || '').trim().toLowerCase();
-    return slug && slug === key;
+    if (slug && (slug === rawKey || slug === decodedKey)) return true;
+    const link = String(item.link || item.url || '').trim().toLowerCase();
+    if (link && (link.includes(rawKey) || link.includes(decodedKey))) return true;
+    return false;
   }) || null;
 }
 
@@ -393,7 +407,7 @@ async function loadCourseEnrollMeta() {
       : null;
     courseEnrollMetaCache = course ? { ...fallback, ...course, id: course.id || courseId } : fallback;
     if (course && course.btnText) {
-      document.querySelectorAll('.btn-enroll').forEach((btn) => {
+      document.querySelectorAll('.btn-enroll, [data-enroll-btn]').forEach((btn) => {
         btn.textContent = course.btnText;
       });
     }

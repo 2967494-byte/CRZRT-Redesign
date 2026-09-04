@@ -587,7 +587,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               courses.push(normalized);
             }
             courses = normalizeCourses(courses);
-            needsBitrixLead = isNew || !normalized.bitrixLeadId;
+            needsBitrixLead = isNew;
             if (!needsBitrixLead) {
               _context4.n = 11;
               break;
