@@ -1094,18 +1094,35 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   function configureEnrollModalAudience(options) {
     var forIndividuals = (options === null || options === void 0 ? void 0 : options.forIndividuals) !== false;
     var forLegalEntities = (options === null || options === void 0 ? void 0 : options.forLegalEntities) !== false;
+    if (!forIndividuals && !forLegalEntities) {
+      forIndividuals = true;
+      forLegalEntities = true;
+    }
     var switchWrap = document.getElementById('enroll-audience-switch');
     var toggle = document.getElementById('enroll-audience-toggle');
     if (switchWrap) {
-      switchWrap.hidden = !(forIndividuals && forLegalEntities);
+      switchWrap.hidden = false;
     }
+    var isSingleAudience = forIndividuals !== forLegalEntities;
     var mode = 'legal';
     if (!forLegalEntities && forIndividuals) {
       mode = 'individual';
+    } else if (!forIndividuals && forLegalEntities) {
+      mode = 'legal';
     } else if (toggle) {
       mode = toggle.checked ? 'legal' : 'individual';
     }
-    if (toggle) toggle.checked = mode === 'legal';
+    if (toggle) {
+      toggle.checked = mode === 'legal';
+      toggle.disabled = isSingleAudience;
+    }
+    if (switchWrap) {
+      if (isSingleAudience) {
+        switchWrap.classList.add('enroll-modal__audience--locked');
+      } else {
+        switchWrap.classList.remove('enroll-modal__audience--locked');
+      }
+    }
     setEnrollAudienceMode(mode);
   }
   function openEnrollModal(_x6) {
@@ -1180,6 +1197,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         return _regenerator().w(function (_context) {
           while (1) switch (_context.n) {
             case 0:
+              if (audienceToggle.disabled) return _context.a(2);
               setEnrollAudienceMode(audienceToggle.checked ? 'legal' : 'individual');
               _context.n = 1;
               return refreshEnrollBitrixView();
@@ -1189,6 +1207,19 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         }, _callee);
       })));
     }
+    var audienceLabels = modal.querySelectorAll('[data-audience-label]');
+    audienceLabels.forEach(function (lbl) {
+      lbl.addEventListener('click', function () {
+        if (audienceToggle && audienceToggle.disabled) return;
+        var targetMode = lbl.dataset.audienceLabel;
+        if (!targetMode) return;
+        if (audienceToggle) {
+          audienceToggle.checked = targetMode === 'legal';
+        }
+        setEnrollAudienceMode(targetMode);
+        refreshEnrollBitrixView();
+      });
+    });
     document.addEventListener('click', function (e) {
       var detailBtn = e.target.closest('[data-action="course-detail"]');
       if (detailBtn) {

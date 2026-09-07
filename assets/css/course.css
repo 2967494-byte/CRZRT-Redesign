@@ -779,3 +779,30 @@ body[data-page="course"] .footer {
     min-width: 0;
   }
 }
+
+/* Audience switch lock state */
+.enroll-modal__audience:not(.enroll-modal__audience--locked) .enroll-modal__audience-label {
+  cursor: pointer;
+}
+
+.enroll-modal__audience--locked,
+.enroll-modal__audience--locked * {
+  cursor: not-allowed !important;
+}
+
+.enroll-modal__audience--locked .enroll-audience-toggle {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.enroll-modal__audience--locked .enroll-audience-toggle__track {
+  background: #edf1f5;
+}
+
+.enroll-modal__audience--locked .enroll-modal__audience-label {
+  pointer-events: none;
+}
+
+.enroll-modal__audience--locked .enroll-modal__audience-label:not(.enroll-modal__audience-label--active) {
+  opacity: 0.4;
+}

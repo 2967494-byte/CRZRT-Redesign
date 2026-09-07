@@ -280,20 +280,33 @@ function configureCourseEnrollModalAudience(course) {
     });
     return;
   }
-  const forIndividuals = course?.forIndividuals !== false;
-  const forLegalEntities = course?.forLegalEntities !== false;
+  let forIndividuals = course ? course.forIndividuals !== false : true;
+  let forLegalEntities = course ? course.forLegalEntities !== false : true;
+  if (!forIndividuals && !forLegalEntities) {
+    forIndividuals = true;
+    forLegalEntities = true;
+  }
   const switchWrap = document.getElementById('enroll-audience-switch');
   const toggle = document.getElementById('enroll-audience-toggle');
   if (switchWrap) {
-    switchWrap.hidden = !(forIndividuals && forLegalEntities);
+    switchWrap.hidden = false;
   }
+  const isSingleAudience = forIndividuals !== forLegalEntities;
   let mode = 'legal';
   if (!forLegalEntities && forIndividuals) {
     mode = 'individual';
+  } else if (!forIndividuals && forLegalEntities) {
+    mode = 'legal';
   } else if (toggle) {
     mode = toggle.checked ? 'legal' : 'individual';
   }
-  if (toggle) toggle.checked = mode === 'legal';
+  if (toggle) {
+    toggle.checked = mode === 'legal';
+    toggle.disabled = isSingleAudience;
+  }
+  if (switchWrap) {
+    switchWrap.classList.toggle('enroll-modal__audience--locked', isSingleAudience);
+  }
   applyCourseEnrollAudienceMode(mode);
 }
 
@@ -341,9 +354,23 @@ function initCourseEnrollModal() {
 
   if (audienceToggle) {
     audienceToggle.addEventListener('change', () => {
+      if (audienceToggle.disabled) return;
       applyCourseEnrollAudienceMode(audienceToggle.checked ? 'legal' : 'individual');
     });
   }
+
+  const audienceLabels = modal.querySelectorAll('[data-audience-label]');
+  audienceLabels.forEach((lbl) => {
+    lbl.addEventListener('click', () => {
+      if (audienceToggle && audienceToggle.disabled) return;
+      const targetMode = lbl.dataset.audienceLabel;
+      if (!targetMode) return;
+      if (audienceToggle) {
+        audienceToggle.checked = targetMode === 'legal';
+      }
+      applyCourseEnrollAudienceMode(targetMode);
+    });
+  });
 
   // Prevent accidental close from clicks inside dialog body.
   if (content) {
@@ -401,6 +428,9 @@ function syncCourseEventTexts(isEvent) {
 async function loadCourseEnrollMeta() {
   if (courseEnrollMetaCache) return courseEnrollMetaCache;
   const courseId = resolveCourseIdFromPath();
+  const switchWrap = document.getElementById('enroll-audience-switch');
+  const staticForIndividuals = switchWrap ? switchWrap.dataset.forIndividuals !== 'false' : true;
+  const staticForLegalEntities = switchWrap ? switchWrap.dataset.forLegalEntities !== 'false' : true;
   const fallback = {
     id: courseId,
     title: (document.querySelector('.course-hero__title')?.textContent || '').trim(),
@@ -413,6 +443,8 @@ async function loadCourseEnrollMeta() {
     bitrixCourseElementId: null,
     forCustomers: false,
     forSuppliers: false,
+    forIndividuals: staticForIndividuals,
+    forLegalEntities: staticForLegalEntities,
     is44fz: false,
     is223fz: false,
     options: []
@@ -435,6 +467,7 @@ async function loadCourseEnrollMeta() {
       : null;
     courseEnrollMetaCache = course ? { ...fallback, ...course, id: course.id || courseId } : fallback;
     syncCourseEventTexts(courseEnrollMetaCache.eventType === 'event');
+    configureCourseEnrollModalAudience(courseEnrollMetaCache);
     if (course && course.btnText) {
       document.querySelectorAll('.btn-enroll, [data-enroll-btn]').forEach((btn) => {
         btn.textContent = course.btnText;

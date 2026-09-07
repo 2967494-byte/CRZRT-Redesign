@@ -430,6 +430,48 @@ function generate_static_courses($courseRegistry) {
             }
         }
 
+        // 8.5 Аудитория модального окна записи
+        $forIndividuals = isset($course['forIndividuals']) ? (bool)$course['forIndividuals'] : true;
+        $forLegalEntities = isset($course['forLegalEntities']) ? (bool)$course['forLegalEntities'] : true;
+        if (!$forIndividuals && !$forLegalEntities) {
+            $forIndividuals = true;
+            $forLegalEntities = true;
+        }
+        $isSingleAudience = ($forIndividuals !== $forLegalEntities);
+        $audienceMode = (!$forLegalEntities && $forIndividuals) ? 'individual' : 'legal';
+
+        $switchClasses = 'enroll-modal__audience' . ($isSingleAudience ? ' enroll-modal__audience--locked' : '');
+        $indLabelClass = 'enroll-modal__audience-label' . ($audienceMode === 'individual' ? ' enroll-modal__audience-label--active' : '');
+        $legLabelClass = 'enroll-modal__audience-label' . ($audienceMode === 'legal' ? ' enroll-modal__audience-label--active' : '');
+        $toggleChecked = ($audienceMode === 'legal') ? ' checked' : '';
+        $toggleDisabled = $isSingleAudience ? ' disabled' : '';
+
+        $audienceSwitchHtml = '<div class="' . $switchClasses . '" id="enroll-audience-switch" data-for-individuals="' . ($forIndividuals ? 'true' : 'false') . '" data-for-legal-entities="' . ($forLegalEntities ? 'true' : 'false') . '">' . "\n"
+            . '      <span class="' . $indLabelClass . '" data-audience-label="individual">Физическое лицо</span>' . "\n"
+            . '      <label class="enroll-audience-toggle" aria-label="Переключить тип лица">' . "\n"
+            . '        <input type="checkbox" id="enroll-audience-toggle" class="enroll-audience-toggle__input"' . $toggleChecked . $toggleDisabled . '>' . "\n"
+            . '        <span class="enroll-audience-toggle__track" aria-hidden="true">' . "\n"
+            . '          <span class="enroll-audience-toggle__thumb"></span>' . "\n"
+            . '        </span>' . "\n"
+            . '      </label>' . "\n"
+            . '      <span class="' . $legLabelClass . '" data-audience-label="legal">Юридическое лицо</span>' . "\n"
+            . '    </div>';
+
+        $html = preg_replace('/<div class="enroll-modal__audience"[^>]*>.*?<\/div>/s', $audienceSwitchHtml, $html, 1);
+        $html = preg_replace(
+            '/<input type="hidden" id="enroll-audience-type" name="audienceType" value="[^"]*">/',
+            '<input type="hidden" id="enroll-audience-type" name="audienceType" value="' . $audienceMode . '">',
+            $html,
+            1
+        );
+
+        if ($audienceMode === 'individual') {
+            $html = preg_replace('/<div class="enroll-modal__field" id="enroll-company-field"[^>]*>/', '<div class="enroll-modal__field" id="enroll-company-field" hidden>', $html, 1);
+            $html = preg_replace('/<div class="enroll-modal__field" id="enroll-position-field"[^>]*>/', '<div class="enroll-modal__field" id="enroll-position-field" hidden>', $html, 1);
+            $html = preg_replace('/(<input\b[^>]*\bid="enroll-company"[^>]*?)\srequired\b([^>]*>)/us', '$1$2', $html, 1);
+            $html = preg_replace('/(<input\b[^>]*\bid="enroll-position"[^>]*?)\srequired\b([^>]*>)/us', '$1$2', $html, 1);
+        }
+
         // 9. Относительные пути (так как мы теперь в папке courses/)
         $html = preg_replace('/href="assets\//', 'href="../assets/', $html);
         $html = preg_replace('/src="assets\//', 'src="../assets/', $html);

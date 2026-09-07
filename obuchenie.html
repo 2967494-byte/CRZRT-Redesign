@@ -14,9 +14,9 @@
   <link rel="preload" href="https://fonts.gstatic.com/s/googlesans/v69/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrw2IJllpyk.woff2" as="font" type="font/woff2" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500&family=Inter:wght@400;500;600;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
   <link rel="preload" href="assets/css/landing.css?v=27" as="style">
-  <link rel="preload" href="assets/css/obuchenie.css?v=59" as="style">
+  <link rel="preload" href="assets/css/obuchenie.css?v=60" as="style">
   <link rel="stylesheet" href="assets/css/landing.css?v=27">
-  <link rel="stylesheet" href="assets/css/obuchenie.css?v=59">
+  <link rel="stylesheet" href="assets/css/obuchenie.css?v=60">
   <script>document.documentElement.classList.add('landing-content-pending', 'obuchenie-content-pending');</script>
 </head>
 <body class="theme-purple" data-page="obuchenie">
@@ -590,7 +590,7 @@
       <h3 class="enroll-modal__title" id="enroll-modal-title">Курс</h3>
       <p class="enroll-modal__date" id="enroll-modal-date">Даты</p>
     </div>
-    <div class="enroll-modal__audience" id="enroll-audience-switch" hidden>
+    <div class="enroll-modal__audience" id="enroll-audience-switch" data-for-individuals="true" data-for-legal-entities="true">
       <span class="enroll-modal__audience-label" data-audience-label="individual">Физическое лицо</span>
       <label class="enroll-audience-toggle" aria-label="Переключить тип лица">
         <input type="checkbox" id="enroll-audience-toggle" class="enroll-audience-toggle__input" checked>
