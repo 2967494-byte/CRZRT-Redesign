@@ -729,20 +729,109 @@ a:hover { text-decoration: underline; }
 }
 
 .creds-box {
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-top: 16px;
-  font-size: 0.95rem;
-  color: #065f46;
+  background: #f0fdf4;
+  border: 2px solid #86efac;
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 20px;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.12);
+  color: #1e293b;
 }
 
-.creds-box div {
-  margin-bottom: 6px;
+.creds-box__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #15803d;
+  margin-bottom: 14px;
 }
-.creds-box div:last-child {
-  margin-bottom: 0;
+
+.creds-box__email-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: #166534;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.creds-box__grid {
+  display: grid;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+
+.creds-box__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.creds-box__row-val {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.creds-box__code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.08rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+  user-select: all;
+  border: 1px solid #e2e8f0;
+}
+
+.creds-box__copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.creds-box__copy-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.creds-box__copy-btn--copied {
+  background: #dcfce7 !important;
+  border-color: #86efac !important;
+  color: #15803d !important;
+  font-weight: 600;
+}
+
+.creds-box__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
 }
 
 /* LAW NOTICE BAR */

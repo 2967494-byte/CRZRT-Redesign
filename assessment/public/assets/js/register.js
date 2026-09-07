@@ -246,15 +246,87 @@
 
     try {
       const data = await AsmtApi.post('api/register.php', body);
-      showStatus('Регистрация успешно завершена! Сохраните логин и пароль.', 'ok');
+      showStatus('', 'ok');
+      const statusEl = document.getElementById('formStatus');
+      if (statusEl) statusEl.classList.add('hidden');
+
+      // Отключаем поля формы, чтобы исключить повторную отправку
+      Array.from(form.elements).forEach((el) => { el.disabled = true; });
+      const submitActions = form.querySelector('.form-actions');
+      if (submitActions) submitActions.style.display = 'none';
+
       credsBox.classList.remove('hidden');
       credsBox.innerHTML = `
-        <div style="font-size:1.05rem; font-weight:700; margin-bottom:8px;">Ваши реквизиты доступа:</div>
-        <div><strong>Логин (Email):</strong> ${data.login}</div>
-        <div><strong>Пароль:</strong> ${data.password}</div>
-        <div style="font-size:0.85rem; color:#047857; margin-top:8px;">Пароль также продублирован на ваш электронный адрес. Переход в личный кабинет...</div>
+        <div class="creds-box__header">
+          <svg class="asmt-ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Регистрация успешно завершена!</span>
+        </div>
+
+        <div class="creds-box__email-notice">
+          <svg class="asmt-ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <div>
+            <strong>Пароль направлен на вашу электронную почту:</strong><br>
+            Письмо с паролем отправлено на адрес <u style="font-weight:600;">${data.login}</u>. Не переживайте — реквизиты доступа останутся в вашей почте.
+          </div>
+        </div>
+
+        <div class="creds-box__grid">
+          <div class="creds-box__row">
+            <span style="color:#64748b; font-size:0.9rem;">Логин (Email):</span>
+            <span style="font-weight:600; color:#0f172a;">${data.login}</span>
+          </div>
+          <div class="creds-box__row">
+            <span style="color:#64748b; font-size:0.9rem;">Пароль для входа:</span>
+            <div class="creds-box__row-val">
+              <code class="creds-box__code" id="credPassword">${data.password}</code>
+              <button type="button" class="creds-box__copy-btn" id="btnCopyPassword" title="Скопировать пароль">
+                <svg class="asmt-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span id="copyBtnText">Скопировать</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:0.85rem; color:#64748b; line-height:1.45; margin-bottom:14px;">
+          💡 Если письмо не пришло во «Входящие», проверьте папку «Спам» или «Рассылки».
+        </div>
+
+        <div class="creds-box__actions">
+          <a href="${data.redirect || 'cabinet.html'}" class="btn btn--primary btn--hero" id="btnGoToCabinet" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+            <span>Перейти в личный кабинет</span>
+            <svg class="asmt-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
       `;
-      setTimeout(() => { window.location.href = data.redirect || 'cabinet.html'; }, 3000);
+
+      // Привязка копирования пароля
+      const copyBtn = document.getElementById('btnCopyPassword');
+      const copyText = document.getElementById('copyBtnText');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(data.password);
+            copyBtn.classList.add('creds-box__copy-btn--copied');
+            if (copyText) copyText.textContent = 'Скопировано!';
+            setTimeout(() => {
+              copyBtn.classList.remove('creds-box__copy-btn--copied');
+              if (copyText) copyText.textContent = 'Скопировать';
+            }, 2500);
+          } catch (_e) {
+            const el = document.getElementById('credPassword');
+            if (el) {
+              const range = document.createRange();
+              range.selectNodeContents(el);
+              const sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          }
+        });
+      }
+
+      // Плавная прокрутка к блоку реквизитов
+      credsBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } catch (err) {
       showStatus(err.message, 'error');
     }
