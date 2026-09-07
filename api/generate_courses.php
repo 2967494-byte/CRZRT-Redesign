@@ -267,7 +267,38 @@ function generate_static_courses($courseRegistry) {
         // Цена
         $html = preg_replace('/<span class="course-widget-item__label">Стоимость<\/span>.*?<span class="course-widget-item__val course-widget-item__price">.*?<\/span>/s', '<span class="course-widget-item__label">Стоимость</span><span class="course-widget-item__val course-widget-item__price">' . $price . '</span>', $html);
 
-        // 6. О курсе
+        // 6. О курсе / О мероприятии
+        $isEvent = (($course['eventType'] ?? '') === 'event');
+        $aboutTitleText = $isEvent ? 'О мероприятии' : 'О курсе';
+        $audienceTitleText = $isEvent ? 'Кому подойдет мероприятие' : 'Кому подойдет курс';
+        $audienceNavText = $isEvent ? 'Кому подойдет' : 'Для кого';
+
+        // Навигация и заголовки секций (data-маркеры в course-template.html)
+        $html = preg_replace(
+            '/(<a\b[^>]*\bdata-course-about-nav\b[^>]*>).*?(<\/a>)/us',
+            '$1' . $aboutTitleText . '$2',
+            $html,
+            1
+        );
+        $html = preg_replace(
+            '/(<a\b[^>]*\bdata-course-audience-nav\b[^>]*>).*?(<\/a>)/us',
+            '$1' . $audienceNavText . '$2',
+            $html,
+            1
+        );
+        $html = preg_replace(
+            '/(<h2\b[^>]*\bdata-course-about-title\b[^>]*>).*?(<\/h2>)/us',
+            '$1' . $aboutTitleText . '$2',
+            $html,
+            1
+        );
+        $html = preg_replace(
+            '/(<h2\b[^>]*\bdata-course-audience-title\b[^>]*>).*?(<\/h2>)/us',
+            '$1' . $audienceTitleText . '$2',
+            $html,
+            1
+        );
+
         $aboutText = nl2br($course['description'] ?? '');
         $html = preg_replace('/<div class="course-about__text">.*?<\/div>/s', '<div class="course-about__text">' . $aboutText . '</div>', $html);
 

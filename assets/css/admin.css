@@ -1761,6 +1761,40 @@ body {
             min-width: 130px;
         }
 
+        .admin-courses-modal__row-5 {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .admin-courses-modal__row-5 .form-group {
+            margin-bottom: 0;
+            min-width: 0;
+        }
+
+        .admin-courses-modal__row-5 input[type="date"].form-control {
+            min-width: 130px;
+        }
+
+        @media (max-width: 1200px) {
+            .admin-courses-modal__row-5 {
+                grid-template-columns: auto 1fr 1fr;
+            }
+        }
+
+        .courses-table__event-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            margin-left: 6px;
+            font-size: 0.75rem;
+            line-height: 1.2;
+            vertical-align: middle;
+            color: #0369a1;
+            background: #e0f2fe;
+            border-radius: 4px;
+        }
+
         .admin-courses-modal__row .form-group {
             flex: 1;
             min-width: 0;
@@ -2444,7 +2478,8 @@ body {
             }
 
             .admin-courses-modal__row,
-            .admin-courses-modal__row-4 {
+            .admin-courses-modal__row-4,
+            .admin-courses-modal__row-5 {
                 grid-template-columns: 1fr;
             }
             

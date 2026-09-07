@@ -316,7 +316,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.tableEmpty.hidden = true;
     els.tableBody.innerHTML = sorted.map(function (course) {
       var _course$description, _course$description2;
-      return "\n        <tr data-course-id=\"".concat(escapeHtml(course.id), "\">\n          <td>").concat(escapeHtml(formatDateLabel(course.dateFrom)), "</td>\n          <td><strong>").concat(escapeHtml(course.title || 'Без названия'), "</strong></td>\n          <td>").concat(escapeHtml(formatCourseFormat(course.format)), "</td>\n          <td>").concat(escapeHtml(String(course.durationDays || 1)), "</td>\n          <td class=\"courses-table__description\" title=\"").concat(escapeHtml(stripHtml(typeof course.description === 'string' ? course.description : ((_course$description = course.description) === null || _course$description === void 0 || (_course$description = _course$description[0]) === null || _course$description === void 0 ? void 0 : _course$description.text) || '')), "\">").concat(escapeHtml(truncateText(typeof course.description === 'string' ? course.description : ((_course$description2 = course.description) === null || _course$description2 === void 0 || (_course$description2 = _course$description2[0]) === null || _course$description2 === void 0 ? void 0 : _course$description2.text) || '')) || '—', "</td>\n          <td>").concat(escapeHtml(course.price || '—'), "</td>\n          <td>").concat(escapeHtml(formatCourseAudience(course)), "</td>\n          <td class=\"courses-table__actions\">\n            <button type=\"button\" class=\"btn-edit\" data-action=\"edit\" data-id=\"").concat(escapeHtml(course.id), "\">\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C</button>\n            <button type=\"button\" class=\"btn-delete\" data-action=\"delete\" data-id=\"").concat(escapeHtml(course.id), "\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</button>\n          </td>\n        </tr>");
+      return "\n        <tr data-course-id=\"".concat(escapeHtml(course.id), "\">\n          <td>").concat(escapeHtml(formatDateLabel(course.dateFrom)), "</td>\n          <td><strong>").concat(escapeHtml(course.title || 'Без названия'), "</strong>").concat(course.eventType === 'event' ? ' <span class="courses-table__event-badge">Мероприятие</span>' : '', "</td>\n          <td>").concat(escapeHtml(formatCourseFormat(course.format)), "</td>\n          <td>").concat(escapeHtml(String(course.durationDays || 1)), "</td>\n          <td class=\"courses-table__description\" title=\"").concat(escapeHtml(stripHtml(typeof course.description === 'string' ? course.description : ((_course$description = course.description) === null || _course$description === void 0 || (_course$description = _course$description[0]) === null || _course$description === void 0 ? void 0 : _course$description.text) || '')), "\">").concat(escapeHtml(truncateText(typeof course.description === 'string' ? course.description : ((_course$description2 = course.description) === null || _course$description2 === void 0 || (_course$description2 = _course$description2[0]) === null || _course$description2 === void 0 ? void 0 : _course$description2.text) || '')) || '—', "</td>\n          <td>").concat(escapeHtml(course.price || '—'), "</td>\n          <td>").concat(escapeHtml(formatCourseAudience(course)), "</td>\n          <td class=\"courses-table__actions\">\n            <button type=\"button\" class=\"btn-edit\" data-action=\"edit\" data-id=\"").concat(escapeHtml(course.id), "\">\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C</button>\n            <button type=\"button\" class=\"btn-delete\" data-action=\"delete\" data-id=\"").concat(escapeHtml(course.id), "\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</button>\n          </td>\n        </tr>");
     }).join('');
   }
   function refreshCourseSlugSuggestion(force) {
@@ -360,6 +360,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       if (!isEdit || !(course && course.slug)) {
         refreshCourseSlugSuggestion(true);
       }
+    }
+    if (els.formEventType) {
+      els.formEventType.value = (course === null || course === void 0 ? void 0 : course.eventType) === 'event' ? 'event' : 'course';
     }
     els.formFormat.value = (course === null || course === void 0 ? void 0 : course.format) === 'dist' ? 'dist' : 'och';
     els.formDurationDays.value = String((course === null || course === void 0 ? void 0 : course.durationDays) || 1);
@@ -458,6 +461,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       els.formSlug.value = '';
       els.formSlug.dataset.manual = '0';
     }
+    if (els.formEventType) {
+      els.formEventType.value = 'course';
+    }
     if (els.formForIndividuals) els.formForIndividuals.checked = true;
     if (els.formForLegalEntities) els.formForLegalEntities.checked = true;
     var dynamicContainer = document.getElementById('courseFormDynamicOptions');
@@ -548,6 +554,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               slug: els.formSlug && els.formSlug.value ? els.formSlug.value.trim() : '',
               title: els.formTitle.value.trim(),
               btnText: els.formBtnText ? els.formBtnText.value.trim().slice(0, 60) : '',
+              eventType: els.formEventType && els.formEventType.value === 'event' ? 'event' : 'course',
               format: els.formFormat.value === 'dist' ? 'dist' : 'och',
               dateFrom: els.formDateFrom.value,
               durationDays: Math.max(1, parseInt(els.formDurationDays.value, 10) || 1),
@@ -1350,6 +1357,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.formBtnText = $('courseFormBtnText');
     els.formSlug = $('courseFormSlug');
     els.formSlugGenerate = $('courseFormSlugGenerate');
+    els.formEventType = $('courseFormEventType');
     els.formFormat = $('courseFormFormat');
     els.formDurationDays = $('courseFormDurationDays');
     els.formDescription = $('courseFormDescription');

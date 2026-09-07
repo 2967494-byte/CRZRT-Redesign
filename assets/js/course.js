@@ -371,6 +371,33 @@ function parseFormatFromTags() {
   return tags.some((t) => t.includes('дистан')) ? 'dist' : 'och';
 }
 
+function syncCourseEventTexts(isEvent) {
+  const aboutNavText = isEvent ? 'О мероприятии' : 'О курсе';
+  const audienceNavText = isEvent ? 'Кому подойдет' : 'Для кого';
+  const aboutTitleText = aboutNavText;
+  const audienceTitleText = isEvent ? 'Кому подойдет мероприятие' : 'Кому подойдет курс';
+
+  const aboutNav =
+    document.querySelector('[data-course-about-nav]') ||
+    document.querySelector('#courseNav a[href="#about"]');
+  if (aboutNav) aboutNav.textContent = aboutNavText;
+
+  const audienceNav =
+    document.querySelector('[data-course-audience-nav]') ||
+    document.querySelector('#courseNav a[href="#audience"]');
+  if (audienceNav) audienceNav.textContent = audienceNavText;
+
+  const aboutTitle =
+    document.querySelector('[data-course-about-title]') ||
+    document.querySelector('#about .course-section__title');
+  if (aboutTitle) aboutTitle.textContent = aboutTitleText;
+
+  const audienceTitle =
+    document.querySelector('[data-course-audience-title]') ||
+    document.querySelector('#audience .course-section__title');
+  if (audienceTitle) audienceTitle.textContent = audienceTitleText;
+}
+
 async function loadCourseEnrollMeta() {
   if (courseEnrollMetaCache) return courseEnrollMetaCache;
   const courseId = resolveCourseIdFromPath();
@@ -381,6 +408,7 @@ async function loadCourseEnrollMeta() {
     dateTo: '',
     durationDays: parseDurationDaysFromWidget(),
     format: parseFormatFromTags(),
+    eventType: 'course',
     price: (document.querySelector('.course-widget-item__price')?.textContent || '').trim(),
     bitrixCourseElementId: null,
     forCustomers: false,
@@ -406,6 +434,7 @@ async function loadCourseEnrollMeta() {
       ? findCourseByPathKey(data.courseRegistry, courseId)
       : null;
     courseEnrollMetaCache = course ? { ...fallback, ...course, id: course.id || courseId } : fallback;
+    syncCourseEventTexts(courseEnrollMetaCache.eventType === 'event');
     if (course && course.btnText) {
       document.querySelectorAll('.btn-enroll, [data-enroll-btn]').forEach((btn) => {
         btn.textContent = course.btnText;

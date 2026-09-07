@@ -97,13 +97,20 @@
                     <p class="form-hint" style="margin:4px 0 0;font-size:0.8rem;color:var(--text-secondary);">Человекочитаемый адрес. Не меняется при смене дат курса. Латиница, цифры и дефисы.</p>
                 </div>
                 
-                <div class="admin-courses-modal__row-4">
+                <div class="admin-courses-modal__row-5">
                     <div class="form-group">
                         <label for="courseFormDateFrom">Дата начала</label>
                         <input type="date" class="form-control" id="courseFormDateFrom" required>
                     </div>
                     <div class="form-group">
-                        <label for="courseFormFormat">Формат</label>
+                        <label for="courseFormEventType">Тип</label>
+                        <select class="form-control" id="courseFormEventType">
+                            <option value="course">Курс</option>
+                            <option value="event">Мероприятие</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="courseFormFormat">Формат обучения</label>
                         <select class="form-control" id="courseFormFormat">
                             <option value="och">Очный</option>
                             <option value="dist">Заочный</option>

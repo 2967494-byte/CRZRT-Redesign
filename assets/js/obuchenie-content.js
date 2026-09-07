@@ -745,6 +745,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       slug: slugifyCourseText((raw === null || raw === void 0 ? void 0 : raw.slug) || '') || '',
       title: String((raw === null || raw === void 0 ? void 0 : raw.title) || '').trim(),
       btnText: String((raw === null || raw === void 0 ? void 0 : raw.btnText) || '').trim(),
+      eventType: (raw && raw.eventType === 'event') ? 'event' : 'course',
       format: format,
       dateFrom: dateFrom,
       dateTo: lastRange ? formatIsoDate(lastRange.to) : parseIsoDate(raw === null || raw === void 0 ? void 0 : raw.dateTo) ? String(raw.dateTo).trim() : dateFrom,
