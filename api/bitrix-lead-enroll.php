@@ -31,6 +31,7 @@ $phone = trim((string)($payload['phone'] ?? ''));
 $email = trim((string)($payload['email'] ?? ''));
 $company = trim((string)($payload['organization'] ?? $payload['company'] ?? ''));
 $position = trim((string)($payload['position'] ?? $payload['post'] ?? ''));
+$district = trim((string)($payload['district'] ?? ''));
 $courseTitle = trim((string)($payload['courseTitle'] ?? ''));
 $sourceId = trim((string)($payload['source'] ?? ''));
 $audienceType = ($payload['audienceType'] ?? '') === 'individual' ? 'individual' : 'legal';
@@ -63,6 +64,7 @@ $fields = bitrix_build_enroll_lead_fields([
     'company' => $company,
     'organization' => $company,
     'position' => $position,
+    'district' => $district,
     'courseTitle' => $courseTitle,
     'sourceId' => $sourceId,
     'audienceType' => $audienceType,

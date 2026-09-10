@@ -310,6 +310,22 @@ function configureCourseEnrollModalAudience(course) {
   applyCourseEnrollAudienceMode(mode);
 }
 
+function configureCourseEnrollModalDistrict(requireDistrict) {
+  if (window.ObuchenieContent && typeof window.ObuchenieContent.configureEnrollModalDistrict === 'function') {
+    window.ObuchenieContent.configureEnrollModalDistrict(requireDistrict);
+    return;
+  }
+  const districtField = document.getElementById('enroll-district-field');
+  const districtSelect = document.getElementById('enroll-district');
+  if (districtField && districtSelect) {
+    districtField.hidden = !requireDistrict;
+    districtSelect.required = Boolean(requireDistrict);
+    if (!requireDistrict) {
+      districtSelect.value = '';
+    }
+  }
+}
+
 function initCourseEnrollModal() {
   const modal = document.getElementById('enroll-modal');
   if (!modal || modal.dataset.courseEnrollBound === 'true') return;
@@ -322,6 +338,7 @@ function initCourseEnrollModal() {
   const audienceToggle = document.getElementById('enroll-audience-toggle');
 
   configureCourseEnrollModalAudience(courseEnrollMetaCache);
+  configureCourseEnrollModalDistrict(Boolean(courseEnrollMetaCache?.requireDistrict));
 
   const closeEnrollModal = () => {
     modal.classList.remove('calendar-modal--visible');
@@ -331,6 +348,7 @@ function initCourseEnrollModal() {
       delete form.dataset.courseId;
     }
     configureCourseEnrollModalAudience(courseEnrollMetaCache);
+    configureCourseEnrollModalDistrict(Boolean(courseEnrollMetaCache?.requireDistrict));
     const status = document.getElementById('enroll-form-status');
     if (status) {
       status.hidden = true;
@@ -431,6 +449,8 @@ async function loadCourseEnrollMeta() {
   const switchWrap = document.getElementById('enroll-audience-switch');
   const staticForIndividuals = switchWrap ? switchWrap.dataset.forIndividuals !== 'false' : true;
   const staticForLegalEntities = switchWrap ? switchWrap.dataset.forLegalEntities !== 'false' : true;
+  const districtField = document.getElementById('enroll-district-field');
+  const staticRequireDistrict = districtField ? !districtField.hidden : false;
   const fallback = {
     id: courseId,
     title: (document.querySelector('.course-hero__title')?.textContent || '').trim(),
@@ -447,6 +467,7 @@ async function loadCourseEnrollMeta() {
     forLegalEntities: staticForLegalEntities,
     is44fz: false,
     is223fz: false,
+    requireDistrict: staticRequireDistrict,
     options: []
   };
 
@@ -468,6 +489,7 @@ async function loadCourseEnrollMeta() {
     courseEnrollMetaCache = course ? { ...fallback, ...course, id: course.id || courseId } : fallback;
     syncCourseEventTexts(courseEnrollMetaCache.eventType === 'event');
     configureCourseEnrollModalAudience(courseEnrollMetaCache);
+    configureCourseEnrollModalDistrict(Boolean(courseEnrollMetaCache.requireDistrict));
     if (course && course.btnText) {
       document.querySelectorAll('.btn-enroll, [data-enroll-btn]').forEach((btn) => {
         btn.textContent = course.btnText;
@@ -517,12 +539,18 @@ function initCourseEnrollSubmit() {
       const company = (document.getElementById('enroll-company')?.value || '').trim();
       const position = (document.getElementById('enroll-position')?.value || '').trim();
       const audienceType = (document.getElementById('enroll-audience-type')?.value || '') === 'individual' ? 'individual' : 'legal';
+      const districtSelect = document.getElementById('enroll-district');
+      const districtValue = districtSelect ? districtSelect.value.trim() : '';
+      const isDistrictRequired = districtSelect && districtSelect.required;
       const sourceSelect = document.getElementById('enroll-source');
       const sourceValue = sourceSelect?.value || '';
       const sourceLabel = sourceSelect?.selectedOptions?.[0]?.textContent?.trim() || '';
 
       if (!name || !phone) {
         throw new Error('Укажите имя и телефон');
+      }
+      if (isDistrictRequired && !districtValue) {
+        throw new Error('Выберите район');
       }
       if (audienceType === 'legal') {
         if (!company) {
@@ -560,6 +588,7 @@ function initCourseEnrollSubmit() {
           forSuppliers: Boolean(course?.forSuppliers),
           is44fz: Boolean(course?.is44fz),
           is223fz: Boolean(course?.is223fz),
+          district: districtValue,
           options: Array.isArray(course?.options) ? course.options : []
         })
       });

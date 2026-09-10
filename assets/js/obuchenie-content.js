@@ -771,7 +771,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       issueDocument: (raw === null || raw === void 0 ? void 0 : raw.issueDocument) !== false,
       documentImage: String((raw === null || raw === void 0 ? void 0 : raw.documentImage) || '').trim(),
       programPdf: String((raw === null || raw === void 0 ? void 0 : raw.programPdf) || '').trim(),
-      program: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.program) ? raw.program : []
+      program: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.program) ? raw.program : [],
+      requireDistrict: Boolean(raw === null || raw === void 0 ? void 0 : raw.requireDistrict)
     };
   }
   function normalizeCourseRegistry(raw) {
@@ -1005,8 +1006,14 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
             email = ((_document$getElementB0 = document.getElementById('enroll-email')) === null || _document$getElementB0 === void 0 ? void 0 : _document$getElementB0.value.trim()) || '';
             company = ((_document$getElementB1 = document.getElementById('enroll-company')) === null || _document$getElementB1 === void 0 ? void 0 : _document$getElementB1.value.trim()) || '';
             var position = (document.getElementById('enroll-position') ? document.getElementById('enroll-position').value.trim() : '');
+            var districtSelect = document.getElementById('enroll-district');
+            var districtValue = districtSelect ? districtSelect.value.trim() : '';
+            var isDistrictRequired = districtSelect && districtSelect.required;
             if (!name || !phone) {
               throw new Error('Заполните имя и телефон');
+            }
+            if (isDistrictRequired && !districtValue) {
+              throw new Error('Выберите район');
             }
             if (audienceType === 'legal') {
               if (!company) {
@@ -1044,6 +1051,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
                 forSuppliers: Boolean(course === null || course === void 0 ? void 0 : course.forSuppliers),
                 is44fz: Boolean(course === null || course === void 0 ? void 0 : course.is44fz),
                 is223fz: Boolean(course === null || course === void 0 ? void 0 : course.is223fz),
+                district: districtValue,
                 options: Array.isArray(course === null || course === void 0 ? void 0 : course.options) ? course.options : []
               })
             });
@@ -1125,6 +1133,17 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     }
     setEnrollAudienceMode(mode);
   }
+  function configureEnrollModalDistrict(requireDistrict) {
+    var field = document.getElementById('enroll-district-field');
+    var select = document.getElementById('enroll-district');
+    if (field && select) {
+      field.hidden = !requireDistrict;
+      select.required = Boolean(requireDistrict);
+      if (!requireDistrict) {
+        select.value = '';
+      }
+    }
+  }
   function openEnrollModal(_x6) {
     return _openEnrollModal.apply(this, arguments);
   }
@@ -1154,6 +1173,15 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
               forIndividuals: options === null || options === void 0 ? void 0 : options.forIndividuals,
               forLegalEntities: options === null || options === void 0 ? void 0 : options.forLegalEntities
             });
+            var courseForDist = activeCourseRegistry.find(function (item) {
+              return item.id === (options === null || options === void 0 ? void 0 : options.courseId);
+            });
+            var reqDistrict = Boolean(
+              (options === null || options === void 0 ? void 0 : options.requireDistrict) !== undefined
+                ? options.requireDistrict
+                : (courseForDist === null || courseForDist === void 0 ? void 0 : courseForDist.requireDistrict)
+            );
+            configureEnrollModalDistrict(reqDistrict);
             calendarModal = document.getElementById('calendar-course-modal');
             if (calendarModal && calendarModal.style.display !== 'none') {
               calendarModal.style.display = 'none';
@@ -1189,6 +1217,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         forIndividuals: true,
         forLegalEntities: true
       });
+      configureEnrollModalDistrict(false);
     }
     if (closeBtn) closeBtn.addEventListener('click', closeEnrollModal);
     if (overlay) overlay.addEventListener('click', closeEnrollModal);
@@ -1857,6 +1886,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     enrichBitrixFormRef: enrichBitrixFormRef,
     getBitrixFieldMap: getBitrixFieldMap,
     configureEnrollModalAudience: configureEnrollModalAudience,
+    configureEnrollModalDistrict: configureEnrollModalDistrict,
     openEnrollModal: openEnrollModal,
     setEnrollAudienceMode: setEnrollAudienceMode,
     loadObuchenieDataFromApi: loadObuchenieDataFromApi,

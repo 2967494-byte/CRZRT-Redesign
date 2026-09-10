@@ -51,6 +51,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (Array.isArray(course === null || course === void 0 ? void 0 : course.options) && course.options.length) {
       label += " (".concat(course.options.join(', '), ")");
     }
+    if (course !== null && course !== void 0 && course.requireDistrict) {
+      label += ' [Район]';
+    }
     return label;
   }
   function readAudienceFromForm() {
@@ -382,6 +385,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     els.formForIndividuals.checked = course ? course.forIndividuals !== false : true;
     els.formForLegalEntities.checked = course ? course.forLegalEntities !== false : true;
+    if (els.formRequireDistrict) {
+      els.formRequireDistrict.checked = Boolean(course && course.requireDistrict);
+    }
 
     // Render dynamic checkboxes
     var dynamicContainer = document.getElementById('courseFormDynamicOptions');
@@ -466,6 +472,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     if (els.formForIndividuals) els.formForIndividuals.checked = true;
     if (els.formForLegalEntities) els.formForLegalEntities.checked = true;
+    if (els.formRequireDistrict) els.formRequireDistrict.checked = false;
     var dynamicContainer = document.getElementById('courseFormDynamicOptions');
     if (dynamicContainer) dynamicContainer.innerHTML = '';
     if (els.formBitrixFl) {
@@ -580,6 +587,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               programPdf: els.formProgramPdf ? els.formProgramPdf.value.trim() : '',
               speakers: extractSpeakersData(),
               program: extractProgramData(),
+              requireDistrict: Boolean(els.formRequireDistrict && els.formRequireDistrict.checked),
               active: true
             };
             normalized = api.normalizeCourseRegistryItem ? api.normalizeCourseRegistryItem(payload, courses.length) : payload;
@@ -1384,6 +1392,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.formBitrixCatalogId = $('courseFormBitrixCatalogId');
     els.formForIndividuals = $('courseFormForIndividuals');
     els.formForLegalEntities = $('courseFormForLegalEntities');
+    els.formRequireDistrict = $('courseFormRequireDistrict');
     els.formAudienceGroup = $('courseFormAudienceGroup');
     els.formAudienceError = $('courseFormAudienceError');
     els.formBitrixFl = $('courseFormBitrixFl');

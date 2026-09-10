@@ -472,6 +472,12 @@ function generate_static_courses($courseRegistry) {
             $html = preg_replace('/(<input\b[^>]*\bid="enroll-position"[^>]*?)\srequired\b([^>]*>)/us', '$1$2', $html, 1);
         }
 
+        // 8.6 Запрос района при регистрации
+        if (!empty($course['requireDistrict'])) {
+            $html = preg_replace('/<div class="enroll-modal__field" id="enroll-district-field"\s*hidden>/', '<div class="enroll-modal__field" id="enroll-district-field">', $html, 1);
+            $html = preg_replace('/<select id="enroll-district" class="enroll-modal__select">/', '<select id="enroll-district" class="enroll-modal__select" required>', $html, 1);
+        }
+
         // 9. Относительные пути (так как мы теперь в папке courses/)
         $html = preg_replace('/href="assets\//', 'href="../assets/', $html);
         $html = preg_replace('/src="assets\//', 'src="../assets/', $html);
