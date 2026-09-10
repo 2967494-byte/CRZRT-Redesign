@@ -51,7 +51,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (Array.isArray(course === null || course === void 0 ? void 0 : course.options) && course.options.length) {
       label += " (".concat(course.options.join(', '), ")");
     }
-    if (course !== null && course !== void 0 && course.requireDistrict) {
+    if (course !== null && course !== void 0 && (course.requireDistrict === true || course.requireDistrict === 'true' || course.requireDistrict === 1 || course.requireDistrict === '1')) {
       label += ' [Район]';
     }
     return label;
@@ -385,8 +385,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     els.formForIndividuals.checked = course ? course.forIndividuals !== false : true;
     els.formForLegalEntities.checked = course ? course.forLegalEntities !== false : true;
-    if (els.formRequireDistrict) {
-      els.formRequireDistrict.checked = Boolean(course && course.requireDistrict);
+    var reqDistrictEl = els.formRequireDistrict || $('courseFormRequireDistrict');
+    if (reqDistrictEl) {
+      reqDistrictEl.checked = Boolean(course && (course.requireDistrict === true || course.requireDistrict === 'true' || course.requireDistrict === 1 || course.requireDistrict === '1'));
+      console.log('[Courses Admin] openModal: set requireDistrict checked =', reqDistrictEl.checked, 'from course:', course ? course.requireDistrict : null);
     }
 
     // Render dynamic checkboxes
@@ -472,7 +474,8 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     if (els.formForIndividuals) els.formForIndividuals.checked = true;
     if (els.formForLegalEntities) els.formForLegalEntities.checked = true;
-    if (els.formRequireDistrict) els.formRequireDistrict.checked = false;
+    var reqDistrictElClose = els.formRequireDistrict || $('courseFormRequireDistrict');
+    if (reqDistrictElClose) reqDistrictElClose.checked = false;
     var dynamicContainer = document.getElementById('courseFormDynamicOptions');
     if (dynamicContainer) dynamicContainer.innerHTML = '';
     if (els.formBitrixFl) {
@@ -587,10 +590,12 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               programPdf: els.formProgramPdf ? els.formProgramPdf.value.trim() : '',
               speakers: extractSpeakersData(),
               program: extractProgramData(),
-              requireDistrict: Boolean(els.formRequireDistrict && els.formRequireDistrict.checked),
+              requireDistrict: Boolean((els.formRequireDistrict || $('courseFormRequireDistrict')) && (els.formRequireDistrict || $('courseFormRequireDistrict')).checked),
               active: true
             };
+            console.log('[Courses Admin] handleFormSubmit: course ID =', payload.id, 'requireDistrict =', payload.requireDistrict);
             normalized = api.normalizeCourseRegistryItem ? api.normalizeCourseRegistryItem(payload, courses.length) : payload;
+            console.log('[Courses Admin] normalized requireDistrict =', normalized.requireDistrict);
             if (api.ensureUniqueCourseSlug) {
               normalized.slug = api.ensureUniqueCourseSlug(normalized.slug || api.buildCourseSlugBase(normalized), courses, normalized.id);
             }
@@ -1393,6 +1398,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.formForIndividuals = $('courseFormForIndividuals');
     els.formForLegalEntities = $('courseFormForLegalEntities');
     els.formRequireDistrict = $('courseFormRequireDistrict');
+    console.log('[Courses Admin v20] Initialized, formRequireDistrict element:', els.formRequireDistrict);
     els.formAudienceGroup = $('courseFormAudienceGroup');
     els.formAudienceError = $('courseFormAudienceError');
     els.formBitrixFl = $('courseFormBitrixFl');

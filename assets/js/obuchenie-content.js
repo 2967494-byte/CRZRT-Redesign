@@ -772,7 +772,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       documentImage: String((raw === null || raw === void 0 ? void 0 : raw.documentImage) || '').trim(),
       programPdf: String((raw === null || raw === void 0 ? void 0 : raw.programPdf) || '').trim(),
       program: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.program) ? raw.program : [],
-      requireDistrict: Boolean(raw === null || raw === void 0 ? void 0 : raw.requireDistrict)
+      requireDistrict: Boolean(raw && (raw.requireDistrict === true || raw.requireDistrict === 'true' || raw.requireDistrict === 1 || raw.requireDistrict === '1'))
     };
   }
   function normalizeCourseRegistry(raw) {
