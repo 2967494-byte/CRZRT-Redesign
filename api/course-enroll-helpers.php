@@ -18,6 +18,34 @@ function crzrt_is_enroll_open($enrollUntil) {
     return $today <= $until;
 }
 
+/** Список дат старта курса из dateFrom (YYYY-MM-DD). */
+function crzrt_course_start_dates($dateFrom) {
+    $out = [];
+    foreach (explode(',', (string)$dateFrom) as $part) {
+        $iso = trim($part);
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $iso)) {
+            $out[] = $iso;
+        }
+    }
+    return $out;
+}
+
+/** selectedDate допустим, если пуст или совпадает с одной из дат старта. */
+function crzrt_is_valid_course_start_date($dateFrom, $selectedDate) {
+    $selected = trim((string)$selectedDate);
+    if ($selected === '') {
+        return true;
+    }
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $selected)) {
+        return false;
+    }
+    $starts = crzrt_course_start_dates($dateFrom);
+    if (!$starts) {
+        return true;
+    }
+    return in_array($selected, $starts, true);
+}
+
 /** Нормализация заголовка для мягкого сравнения. */
 function crzrt_normalize_course_title($title) {
     $t = html_entity_decode((string)$title, ENT_QUOTES | ENT_HTML5, 'UTF-8');

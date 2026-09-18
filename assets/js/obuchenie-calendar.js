@@ -153,24 +153,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var modal = document.getElementById('calendar-course-modal');
     if (!modal) return;
     var targetIso = formatIsoDate(year, monthIndex, day);
-    var targetDate = new Date(year, monthIndex, day);
     var dateLabel = day + ' ' + MONTH_NAMES_GENITIVE[monthIndex] + ' ' + year;
+    // Только даты старта из dateFrom (не весь период durationDays —
+    // иначе 22-дневный поток с 07.09 «захватывал» бы чужой день 25.09).
     var coursesOnDate = COURSE_REGISTRY.filter(function (course) {
       if (!course || course.active === false) return false;
       if (!course.dateFrom) return false;
-
-      if (window.ObuchenieContent && window.ObuchenieContent.getCourseDateRanges) {
-        var ranges = window.ObuchenieContent.getCourseDateRanges(course);
-        if (ranges && ranges.length) {
-          return ranges.some(function (r) {
-            if (!r || !r.from) return false;
-            var rFromDate = new Date(r.from.getFullYear(), r.from.getMonth(), r.from.getDate());
-            var rToDate = r.to ? new Date(r.to.getFullYear(), r.to.getMonth(), r.to.getDate()) : rFromDate;
-            return targetDate >= rFromDate && targetDate <= rToDate;
-          });
-        }
-      }
-
       var dates = String(course.dateFrom).split(',').map(function (s) { return s.trim(); });
       return dates.indexOf(targetIso) !== -1;
     });

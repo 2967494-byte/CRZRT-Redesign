@@ -165,7 +165,7 @@ function updateCourseStartDate() {
     const m = parseInt(p[1], 10) - 1;
     const d = parseInt(p[2], 10);
     if (!y || m < 0 || m > 11 || !d) return isoStr;
-    return d + ' ' + MONTH_NAMES_GENITIVE[m] + ' ' + y;
+    return d + ' ' + MONTH_NAMES_GENITIVE[m] + (y ? ' ' + y : '');
   }
 
   const widgetItems = document.querySelectorAll('.course-widget-item');
@@ -179,8 +179,9 @@ function updateCourseStartDate() {
 
   if (!dateValEl) return;
 
-  if (dateParam) {
-    const formatted = formatIso(dateParam);
+  // ?date= применяем только если ещё нет мета курса; после meta — syncCourseStartDateDisplay
+  if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam.trim()) && !courseEnrollMetaCache) {
+    const formatted = formatIso(dateParam.trim());
     if (formatted) {
       dateValEl.textContent = formatted;
       return;
@@ -195,18 +196,65 @@ function updateCourseStartDate() {
   }
 }
 
+function getCourseStartDateList(course) {
+  const raw = String((course && course.dateFrom) || '');
+  return raw.split(',').map((s) => s.trim()).filter((s) => /^\d{4}-\d{2}-\d{2}$/.test(s));
+}
+
+function resolveSelectedCourseDate(course) {
+  const starts = getCourseStartDateList(course);
+  const urlDate = (new URLSearchParams(window.location.search).get('date') || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(urlDate) && (!starts.length || starts.includes(urlDate))) {
+    return urlDate;
+  }
+  if (!starts.length) {
+    return '';
+  }
+  const today = typeof moscowTodayIso === 'function' ? moscowTodayIso() : '';
+  const upcoming = today ? starts.find((d) => d >= today) : null;
+  return upcoming || starts[0];
+}
+
+/** После загрузки мета: виджет и ?date= только по реальным датам старта курса. */
+function syncCourseStartDateDisplay(course) {
+  const iso = resolveSelectedCourseDate(course);
+  const MONTH_NAMES_GENITIVE = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  const formatIso = (isoStr) => {
+    if (!isoStr) return '';
+    const p = String(isoStr).trim().split('-');
+    if (p.length !== 3) return isoStr;
+    const y = parseInt(p[0], 10);
+    const m = parseInt(p[1], 10) - 1;
+    const d = parseInt(p[2], 10);
+    if (!y || m < 0 || m > 11 || !d) return isoStr;
+    return d + ' ' + MONTH_NAMES_GENITIVE[m] + ' ' + y;
+  };
+
+  const widgetItems = document.querySelectorAll('.course-widget-item');
+  widgetItems.forEach((item) => {
+    const label = item.querySelector('.course-widget-item__label');
+    if (label && label.textContent.trim().toLowerCase().includes('старт')) {
+      const dateValEl = item.querySelector('.course-widget-item__val');
+      if (dateValEl && iso) dateValEl.textContent = formatIso(iso);
+    }
+  });
+
+  const urlDate = (new URLSearchParams(window.location.search).get('date') || '').trim();
+  const starts = getCourseStartDateList(course);
+  if (urlDate && starts.length && !starts.includes(urlDate)) {
+    try {
+      const url = new URL(window.location.href);
+      if (iso) url.searchParams.set('date', iso);
+      else url.searchParams.delete('date');
+      window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+    } catch (_e) {}
+  }
+}
+
 function resolveCourseIdFromPath() {
   const file = (window.location.pathname.split('/').pop() || '').trim();
   const key = file.replace(/\.html$/i, '');
   return key;
-}
-
-function resolveSelectedCourseDate(course) {
-  const urlDate = (new URLSearchParams(window.location.search).get('date') || '').trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(urlDate)) return urlDate;
-  const raw = String((course && course.dateFrom) || '');
-  const first = raw.split(',')[0].trim();
-  return /^\d{4}-\d{2}-\d{2}$/.test(first) ? first : first;
 }
 
 function resolveCourseEnrollPrice(course) {
@@ -569,6 +617,7 @@ async function loadCourseEnrollMeta() {
   if (!courseId) {
     courseEnrollMetaCache = fallback;
     applyCourseEnrollAvailability(fallback);
+    syncCourseStartDateDisplay(fallback);
     return fallback;
   }
 
@@ -585,12 +634,14 @@ async function loadCourseEnrollMeta() {
         courseEnrollMetaCache = fallback;
       }
       applyCourseEnrollAvailability(courseEnrollMetaCache);
+      syncCourseStartDateDisplay(courseEnrollMetaCache);
       return courseEnrollMetaCache;
     }
     const data = await resp.json();
     if (!data || !data.found || !data.course) {
       courseEnrollMetaCache = { ...fallback, enrollClosed: true, enrollUntil: domEnrollUntil || '1970-01-01' };
       applyCourseEnrollAvailability(courseEnrollMetaCache);
+      syncCourseStartDateDisplay(courseEnrollMetaCache);
       return courseEnrollMetaCache;
     }
     const course = data.course;
@@ -605,6 +656,7 @@ async function loadCourseEnrollMeta() {
     configureCourseEnrollModalAudience(courseEnrollMetaCache);
     configureCourseEnrollModalDistrict(Boolean(courseEnrollMetaCache.requireDistrict));
     applyCourseEnrollAvailability(courseEnrollMetaCache);
+    syncCourseStartDateDisplay(courseEnrollMetaCache);
     if (course.btnText) {
       document.querySelectorAll('.btn-enroll, [data-enroll-btn]').forEach((btn) => {
         btn.textContent = course.btnText;
@@ -618,6 +670,7 @@ async function loadCourseEnrollMeta() {
       courseEnrollMetaCache = fallback;
     }
     applyCourseEnrollAvailability(courseEnrollMetaCache);
+    syncCourseStartDateDisplay(courseEnrollMetaCache);
     return courseEnrollMetaCache;
   }
 }

@@ -120,6 +120,12 @@ try {
             echo json_encode(['success' => false, 'error' => 'Приём заявок на это мероприятие завершён'], JSON_UNESCAPED_UNICODE);
             exit;
         }
+        $selectedDate = trim((string)($payload['selectedDate'] ?? $payload['dateFrom'] ?? ''));
+        if (!crzrt_is_valid_course_start_date($matchedCourse['dateFrom'] ?? '', $selectedDate)) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'error' => 'Выбранная дата не относится к этому курсу'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
         if ($courseTitle === '' && !empty($matchedCourse['title'])) {
             $courseTitle = trim((string)$matchedCourse['title']);
         }
