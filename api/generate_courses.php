@@ -218,10 +218,13 @@ function generate_static_courses($courseRegistry) {
         $enrollUntilAttr = $enrollUntil !== '' ? ' data-enroll-until="' . htmlspecialchars($enrollUntil, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"' : '';
         $btnClassOpen = 'btn btn--green btn--large btn-enroll';
         $btnClassClosed = 'btn btn--large btn-enroll is-enroll-closed';
+        $closedContent = '<span class="btn-enroll__lock-badge"><svg class="btn-enroll__lock-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2.5" ry="2.5"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><span class="btn-enroll__text">Запись завершена</span>';
+        $content = $enrollClosed ? $closedContent : $btnText;
+        $titleAttr = $enrollClosed ? ' title="Приём заявок на это мероприятие завершён"' : '';
         $html = preg_replace('/\sdata-enroll-until="[^"]*"/i', '', $html);
         $html = preg_replace_callback(
             '/<button\b([^>]*?(?:data-enroll-btn|\bbtn-enroll\b)[^>]*)>.*?<\/button>/si',
-            function ($m) use ($btnText, $enrollUntilAttr, $enrollClosed, $btnClassOpen, $btnClassClosed) {
+            function ($m) use ($content, $btnText, $enrollUntilAttr, $enrollClosed, $btnClassOpen, $btnClassClosed, $titleAttr) {
                 $attrs = $m[1];
                 $typeAttr = (stripos($attrs, 'type=') !== false) ? ' type="button"' : '';
                 $styleAttr = '';
@@ -230,7 +233,7 @@ function generate_static_courses($courseRegistry) {
                 }
                 $class = $enrollClosed ? $btnClassClosed : $btnClassOpen;
                 $disabled = $enrollClosed ? ' disabled aria-disabled="true"' : '';
-                return '<button' . $typeAttr . ' class="' . $class . '" data-enroll-btn' . $enrollUntilAttr . $disabled . $styleAttr . '>' . $btnText . '</button>';
+                return '<button' . $typeAttr . ' class="' . $class . '" data-enroll-btn' . $enrollUntilAttr . ' data-original-text="' . $btnText . '"' . $disabled . $titleAttr . $styleAttr . '>' . $content . '</button>';
             },
             $html
         );

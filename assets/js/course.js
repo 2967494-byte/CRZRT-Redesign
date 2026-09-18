@@ -542,6 +542,10 @@ function isCourseEnrollOpen(courseOrUntil) {
   return moscowTodayIso() <= until;
 }
 
+function renderClosedButtonContent() {
+  return '<span class="btn-enroll__lock-badge"><svg class="btn-enroll__lock-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2.5" ry="2.5"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><span class="btn-enroll__text">Запись завершена</span>';
+}
+
 function setEnrollButtonClosedState(btn, closed) {
   if (!btn) return;
   btn.hidden = false;
@@ -551,8 +555,18 @@ function setEnrollButtonClosedState(btn, closed) {
   btn.classList.toggle('is-enroll-closed', closed);
   if (closed) {
     btn.classList.remove('btn--green');
-  } else if (!btn.classList.contains('btn--green')) {
-    btn.classList.add('btn--green');
+    if (!btn.dataset.originalText) {
+      btn.dataset.originalText = btn.textContent.trim() || 'Записаться на курс';
+    }
+    btn.innerHTML = renderClosedButtonContent();
+    btn.title = 'Приём заявок на это мероприятие завершён';
+  } else {
+    btn.classList.remove('is-enroll-closed');
+    if (!btn.classList.contains('btn--green')) btn.classList.add('btn--green');
+    btn.removeAttribute('title');
+    if (btn.dataset.originalText) {
+      btn.textContent = btn.dataset.originalText;
+    }
   }
 }
 
@@ -659,7 +673,10 @@ async function loadCourseEnrollMeta() {
     syncCourseStartDateDisplay(courseEnrollMetaCache);
     if (course.btnText) {
       document.querySelectorAll('.btn-enroll, [data-enroll-btn]').forEach((btn) => {
-        btn.textContent = course.btnText;
+        btn.dataset.originalText = course.btnText;
+        if (isCourseEnrollOpen(courseEnrollMetaCache)) {
+          btn.textContent = course.btnText;
+        }
       });
     }
     return courseEnrollMetaCache;
