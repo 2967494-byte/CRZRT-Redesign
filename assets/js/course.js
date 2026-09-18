@@ -139,7 +139,7 @@ function initCoursePage() {
   }
 
   updateCourseStartDate();
-  // Мгновенно скрыть кнопки по data-enroll-until (без сети) — убирает FOUC
+  // Мгновенно серая/зелёная кнопка по data-enroll-until (без сети)
   applyEnrollAvailabilityFromDom();
   // Лёгкая мета одного курса (не весь settings JSON)
   loadCourseEnrollMeta().catch(() => {});
@@ -494,21 +494,34 @@ function isCourseEnrollOpen(courseOrUntil) {
   return moscowTodayIso() <= until;
 }
 
+function setEnrollButtonClosedState(btn, closed) {
+  if (!btn) return;
+  btn.hidden = false;
+  if (btn.style.display === 'none') btn.style.display = '';
+  btn.disabled = closed;
+  btn.setAttribute('aria-disabled', closed ? 'true' : 'false');
+  btn.classList.toggle('is-enroll-closed', closed);
+  if (closed) {
+    btn.classList.remove('btn--green');
+  } else if (!btn.classList.contains('btn--green')) {
+    btn.classList.add('btn--green');
+  }
+}
+
 function applyCourseEnrollAvailability(course) {
   const open = isCourseEnrollOpen(course);
+  const closed = !open;
   const buttons = document.querySelectorAll('.btn-enroll, [data-enroll-btn]');
   buttons.forEach((btn) => {
-    btn.hidden = !open;
-    btn.style.display = open ? '' : 'none';
-    btn.disabled = !open;
+    setEnrollButtonClosedState(btn, closed);
     if (course && course.enrollUntil) {
       btn.setAttribute('data-enroll-until', course.enrollUntil);
     }
   });
   const cta = document.querySelector('.course-cta');
   if (cta) {
-    cta.hidden = !open;
-    cta.style.display = open ? '' : 'none';
+    cta.hidden = false;
+    if (cta.style.display === 'none') cta.style.display = '';
     if (course && course.enrollUntil) {
       cta.setAttribute('data-enroll-until', course.enrollUntil);
     }
@@ -592,7 +605,7 @@ async function loadCourseEnrollMeta() {
     configureCourseEnrollModalAudience(courseEnrollMetaCache);
     configureCourseEnrollModalDistrict(Boolean(courseEnrollMetaCache.requireDistrict));
     applyCourseEnrollAvailability(courseEnrollMetaCache);
-    if (course.btnText && isCourseEnrollOpen(courseEnrollMetaCache)) {
+    if (course.btnText) {
       document.querySelectorAll('.btn-enroll, [data-enroll-btn]').forEach((btn) => {
         btn.textContent = course.btnText;
       });

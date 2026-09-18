@@ -17,7 +17,7 @@
   <link rel="preload" href="assets/css/obuchenie.css?v=60" as="style">
   <link rel="stylesheet" href="assets/css/landing.css?v=27">
   <link rel="stylesheet" href="assets/css/obuchenie.css?v=60">
-  <link rel="stylesheet" href="assets/css/course.css?v=5">
+  <link rel="stylesheet" href="assets/css/course.css?v=6">
   <script>document.documentElement.classList.add('landing-content-pending', 'obuchenie-content-pending');</script>
 </head>
 <body data-page="course">
@@ -599,17 +599,34 @@
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
   }
+  function setClosed(btn, closed) {
+    if (!btn || btn.tagName !== 'BUTTON') return;
+    btn.hidden = false;
+    if (btn.style.display === 'none') btn.style.display = '';
+    btn.disabled = closed;
+    btn.setAttribute('aria-disabled', closed ? 'true' : 'false');
+    if (closed) {
+      btn.classList.add('is-enroll-closed');
+      btn.classList.remove('btn--green');
+    } else {
+      btn.classList.remove('is-enroll-closed');
+      if (!btn.classList.contains('btn--green')) btn.classList.add('btn--green');
+    }
+  }
   var today = moscowToday();
   document.querySelectorAll('[data-enroll-until]').forEach(function (el) {
     var until = (el.getAttribute('data-enroll-until') || '').trim();
-    if (/^\d{4}-\d{2}-\d{2}$/.test(until) && today > until) {
-      el.hidden = true;
-      el.style.display = 'none';
-      if (el.tagName === 'BUTTON') el.disabled = true;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(until) || today <= until) return;
+    if (el.tagName === 'BUTTON') {
+      setClosed(el, true);
+    } else {
+      el.querySelectorAll('.btn-enroll, [data-enroll-btn]').forEach(function (btn) {
+        setClosed(btn, true);
+      });
     }
   });
 })();
 </script>
-<script src="assets/js/course.js?v=30" defer></script>
+<script src="assets/js/course.js?v=31" defer></script>
 </body>
 </html>

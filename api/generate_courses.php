@@ -206,22 +206,37 @@ function generate_static_courses($courseRegistry) {
         $desc = nl2br($descOutcomes ?: ($course['description'] ?? ''));
         $html = preg_replace('/<p class="course-hero__desc">.*?<\/p>/s', '<p class="course-hero__desc">' . $desc . '</p>', $html);
 
-        // 4.1. Кнопка записи: всегда оставляем в HTML + data-enroll-until.
-        // Скрытие по сроку — на клиенте (синхронно по атрибуту) и на API.
+        // 4.1. Кнопка записи: всегда в HTML + data-enroll-until.
+        // Если срок уже прошёл (МСК) — сразу серая disabled в статике (без FOUC).
         $enrollUntil = trim((string)($course['enrollUntil'] ?? ''));
         if ($enrollUntil !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $enrollUntil)) {
             $enrollUntil = '';
         }
+        $moscowToday = (new DateTime('now', new DateTimeZone('Europe/Moscow')))->format('Y-m-d');
+        $enrollClosed = ($enrollUntil !== '' && $moscowToday > $enrollUntil);
         $btnText = !empty($course['btnText']) ? htmlspecialchars(trim((string)$course['btnText']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : 'Записаться на курс';
         $enrollUntilAttr = $enrollUntil !== '' ? ' data-enroll-until="' . htmlspecialchars($enrollUntil, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"' : '';
-        $html = preg_replace(
+        $btnClassOpen = 'btn btn--green btn--large btn-enroll';
+        $btnClassClosed = 'btn btn--large btn-enroll is-enroll-closed';
+        $html = preg_replace('/\sdata-enroll-until="[^"]*"/i', '', $html);
+        $html = preg_replace_callback(
             '/<button\b([^>]*?(?:data-enroll-btn|\bbtn-enroll\b)[^>]*)>.*?<\/button>/si',
-            '<button$1' . $enrollUntilAttr . '>' . $btnText . '</button>',
+            function ($m) use ($btnText, $enrollUntilAttr, $enrollClosed, $btnClassOpen, $btnClassClosed) {
+                $attrs = $m[1];
+                $typeAttr = (stripos($attrs, 'type=') !== false) ? ' type="button"' : '';
+                $styleAttr = '';
+                if (preg_match('/\sstyle=(["\'])(.*?)\1/si', $attrs, $sm)) {
+                    $styleAttr = ' style="' . htmlspecialchars($sm[2], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"';
+                }
+                $class = $enrollClosed ? $btnClassClosed : $btnClassOpen;
+                $disabled = $enrollClosed ? ' disabled aria-disabled="true"' : '';
+                return '<button' . $typeAttr . ' class="' . $class . '" data-enroll-btn' . $enrollUntilAttr . $disabled . $styleAttr . '>' . $btnText . '</button>';
+            },
             $html
         );
         if ($enrollUntil !== '') {
             $html = preg_replace(
-                '/(<section\b[^>]*\bcourse-cta\b[^>]*)(>)/si',
+                '/(<section\b[^>]*\bcourse-cta\b)([^>]*>)/si',
                 '$1 data-enroll-until="' . htmlspecialchars($enrollUntil, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"$2',
                 $html,
                 1

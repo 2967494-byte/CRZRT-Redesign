@@ -234,6 +234,40 @@
   transform: translateY(0);
 }
 
+/* Запись закрыта: сразу серая неактивная кнопка (текст из btnText) */
+.btn-enroll.is-enroll-closed,
+[data-enroll-btn].is-enroll-closed {
+  background: #9ca3af !important;
+  color: #fff !important;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none !important;
+  transform: none !important;
+  opacity: 1;
+}
+
+.btn-enroll.is-enroll-closed:hover,
+.btn-enroll.is-enroll-closed:active,
+[data-enroll-btn].is-enroll-closed:hover,
+[data-enroll-btn].is-enroll-closed:active {
+  background: #9ca3af !important;
+  color: #fff !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.course-cta .btn-enroll.is-enroll-closed,
+.course-cta [data-enroll-btn].is-enroll-closed {
+  background: rgba(255, 255, 255, 0.4) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.course-cta .btn-enroll.is-enroll-closed:hover,
+.course-cta [data-enroll-btn].is-enroll-closed:hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
 /* Fix rounded footer corner gaps on the course page */
 body[data-page="course"] {
   overflow-x: hidden;
