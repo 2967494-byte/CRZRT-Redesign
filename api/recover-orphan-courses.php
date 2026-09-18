@@ -288,11 +288,22 @@ function recover_parse_course_html($id, $html, $monthMap) {
 
 $candidates = [];
 $skippedKnown = 0;
-$files = glob($coursesDir . DIRECTORY_SEPARATOR . 'course_*.html') ?: [];
+$knownSlugs = [];
+foreach ($registry as $course) {
+    if (!empty($course['slug']) && is_string($course['slug'])) {
+        $knownSlugs[(string)$course['slug']] = true;
+    }
+}
+
+// Технические id + человекочитаемые slug-страницы
+$files = glob($coursesDir . DIRECTORY_SEPARATOR . '*.html') ?: [];
 
 foreach ($files as $filePath) {
     $base = basename($filePath, '.html');
-    if (isset($knownIds[$base])) {
+    if ($base === '' || strcasecmp($base, 'index') === 0) {
+        continue;
+    }
+    if (isset($knownIds[$base]) || isset($knownSlugs[$base])) {
         $skippedKnown++;
         continue;
     }
@@ -320,13 +331,52 @@ foreach ($files as $filePath) {
         continue;
     }
 
-    $course = recover_parse_course_html($base, $html, $monthMap);
+    // Пропускаем тонкие редиректы technical-id → slug
+    if (preg_match('/http-equiv=["\']refresh["\']/i', $html) && mb_stripos($html, 'Перенаправление') !== false) {
+        continue;
+    }
+    // Нужна хотя бы страница курса
+    if (strpos($html, 'course-hero__title') === false && strpos($html, 'course-widget-item') === false) {
+        continue;
+    }
+
+    $courseId = $base;
+    $slug = '';
+    if (preg_match('/^course_/i', $base)) {
+        // technical file
+        $courseId = $base;
+    } else {
+        $slug = $base;
+        // Попробуем вытащить technical id из HTML, если он там есть
+        if (preg_match('/\b(course_[0-9]{10,}[0-9a-zA-Z_]*)\b/', $html, $idMatch)) {
+            $courseId = $idMatch[1];
+            if (isset($knownIds[$courseId])) {
+                $skippedKnown++;
+                continue;
+            }
+        } else {
+            $courseId = 'course_' . str_replace('.', '', sprintf('%.0f', microtime(true) * 1000)) . '_' . substr(md5($base), 0, 6);
+        }
+    }
+
+    $course = recover_parse_course_html($courseId, $html, $monthMap);
+    if ($slug !== '') {
+        $course['slug'] = $slug;
+    }
+    // Мероприятие по смыслу заголовка
+    $titleLower = mb_strtolower((string)($course['title'] ?? ''), 'UTF-8');
+    if (preg_match('/семинар|мероприят|форум|совещани|вебинар/u', $titleLower)) {
+        $course['eventType'] = 'event';
+    }
+
     $candidates[] = [
-        'id' => $base,
+        'id' => $courseId,
         'title' => $course['title'],
         'dateFrom' => $course['dateFrom'],
         'price' => $course['price'],
         'format' => $course['format'],
+        'slug' => $course['slug'] ?? $slug,
+        'file' => $base . '.html',
         'file_mtime' => $mtime ? date('Y-m-d H:i:s', $mtime) : null,
         'id_created' => $idDate,
         'program_modules' => count($course['program']),
@@ -342,7 +392,10 @@ usort($candidates, function ($a, $b) {
 
 if ($onlyIds) {
     $candidates = array_values(array_filter($candidates, function ($item) use ($onlyIds) {
-        return isset($onlyIds[$item['id']]);
+        $id = (string)($item['id'] ?? '');
+        $slug = (string)($item['slug'] ?? '');
+        $file = preg_replace('/\.html$/i', '', (string)($item['file'] ?? ''));
+        return isset($onlyIds[$id]) || ($slug !== '' && isset($onlyIds[$slug])) || ($file !== '' && isset($onlyIds[$file]));
     }));
 }
 
