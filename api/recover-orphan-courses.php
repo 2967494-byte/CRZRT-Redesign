@@ -9,8 +9,10 @@
  * GET  ?date=2026-07-29&mode=mtime — фильтр по дате изменения файла (по умолчанию)
  * GET  ?date=2026-07-29&mode=id    — фильтр по дате в id (course_{timestamp}_…)
  * GET  ?all=1                      — все orphans без фильтра по дате
- * POST {"date":"2026-07-29","mode":"mtime","apply":true}
- *      — записать найденные курсы в БД и перегенерировать страницы
+ * POST {"all":true,"apply":true,"ids":["course_…"],"enrollUntil":"2026-09-17"}
+ *      — восстановить выбранные сироты в БД (БЕЗ regenerate, чтобы cleanup не снёс остальные HTML)
+ * POST {"all":true,"apply":true,"regenerate":true}
+ *      — восстановить и перегенерировать (cleanup удалит оставшиеся сироты — только после recover нужных!)
  */
 session_start();
 require_once __DIR__ . '/db.php';
@@ -398,7 +400,7 @@ if (!$apply) {
             unset($copy['course']);
             return $copy;
         }, $candidates),
-        'hint' => 'Запускайте из admin.html. URL обязательно: /api/recover-orphan-courses.php. Применить: POST {"date":"2026-07-29","mode":"mtime","apply":true,"skip_drafts":true}. Перегенерация HTML опционально: "regenerate":true',
+        'hint' => 'ВАЖНО: сначала recover нужных сирот (apply без regenerate), потом Save в админке. Иначе cleanup при генерации удалит HTML сирот. Пример: POST {"all":true,"apply":true,"ids":["course_xxx"],"enrollUntil":"2026-09-17","skip_drafts":true}. Перегенерация: "regenerate":true только после восстановления нужных курсов.',
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     exit;
 }
@@ -414,12 +416,21 @@ if (!$candidates) {
 }
 
 $added = [];
+$enrollUntilOpt = trim((string)($payload['enrollUntil'] ?? ''));
+if ($enrollUntilOpt !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $enrollUntilOpt)) {
+    $enrollUntilOpt = '';
+}
 foreach ($candidates as $item) {
-    $registry[] = $item['course'];
+    $course = $item['course'];
+    if ($enrollUntilOpt !== '') {
+        $course['enrollUntil'] = $enrollUntilOpt;
+    }
+    $registry[] = $course;
     $added[] = [
         'id' => $item['id'],
         'title' => $item['title'],
         'dateFrom' => $item['dateFrom'],
+        'enrollUntil' => $course['enrollUntil'] ?? '',
         'file_mtime' => $item['file_mtime'],
         'id_created' => $item['id_created'],
     ];
@@ -453,6 +464,6 @@ echo json_encode([
     'registry_total' => count($registry),
     'generated_pages' => $genResult,
     'next' => $doGenerate
-        ? 'Готово.'
-        : 'Курсы записаны в БД. HTML уже есть в /courses/. При необходимости пересохраните курс в админке или вызовите с "regenerate":true',
+        ? 'Готово. Cleanup при regenerate мог удалить HTML сирот, не попавших в recover.'
+        : 'Курсы в БД, HTML на диске сохранены. Дальше: откройте админку курсов, при необходимости поправьте enrollUntil, затем Save (тогда regenerate + cleanup). Не Save до recover нужных сирот!',
 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

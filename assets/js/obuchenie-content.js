@@ -748,6 +748,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       eventType: (raw && raw.eventType === 'event') ? 'event' : 'course',
       format: format,
       dateFrom: dateFrom,
+      enrollUntil: parseIsoDate(raw === null || raw === void 0 ? void 0 : raw.enrollUntil) ? String(raw.enrollUntil).trim() : '',
       dateTo: lastRange ? formatIsoDate(lastRange.to) : parseIsoDate(raw === null || raw === void 0 ? void 0 : raw.dateTo) ? String(raw.dateTo).trim() : dateFrom,
       durationDays: durationDays,
       description: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.description) ? raw.description : String((raw === null || raw === void 0 ? void 0 : raw.description) || '').trim(),
@@ -774,6 +775,35 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       program: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.program) ? raw.program : [],
       requireDistrict: Boolean(raw && (raw.requireDistrict === true || raw.requireDistrict === 'true' || raw.requireDistrict === 1 || raw.requireDistrict === '1'))
     };
+  }
+  function moscowTodayIso() {
+    try {
+      return new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Moscow',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(new Date());
+    } catch (_e) {
+      var d = new Date();
+      var y = d.getFullYear();
+      var m = String(d.getMonth() + 1).padStart(2, '0');
+      var day = String(d.getDate()).padStart(2, '0');
+      return "".concat(y, "-").concat(m, "-").concat(day);
+    }
+  }
+  function isCourseEnrollOpen(courseOrUntil) {
+    var until = '';
+    if (courseOrUntil && _typeof(courseOrUntil) === 'object') {
+      if (courseOrUntil.enrollClosed || courseOrUntil.active === false) {
+        return false;
+      }
+      until = String(courseOrUntil.enrollUntil || '').trim();
+    } else {
+      until = String(courseOrUntil || '').trim();
+    }
+    if (!until || !parseIsoDate(until)) return true;
+    return moscowTodayIso() <= until;
   }
   function normalizeCourseRegistry(raw) {
     if (!Array.isArray(raw)) return [];
@@ -1023,6 +1053,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
                 throw new Error('Укажите должность');
               }
             }
+            if (!isCourseEnrollOpen(course)) {
+              throw new Error('Приём заявок на это мероприятие завершён');
+            }
           case 1:
             _context7.n = 2;
             return fetch(getApiPath('bitrix-lead-enroll.php'), {
@@ -1040,6 +1073,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
                 audienceType: audienceType,
                 source: sourceValue,
                 sourceLabel: sourceLabel,
+                courseId: courseId || (course === null || course === void 0 ? void 0 : course.id) || '',
                 courseTitle: (course === null || course === void 0 ? void 0 : course.title) || '',
                 dateFrom: (course === null || course === void 0 ? void 0 : course.dateFrom) || '',
                 dateTo: (course === null || course === void 0 ? void 0 : course.dateTo) || '',
@@ -1160,6 +1194,12 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
             }
             return _context8.a(2);
           case 1:
+            var courseForOpen = activeCourseRegistry.find(function (item) {
+              return item.id === (options === null || options === void 0 ? void 0 : options.courseId);
+            });
+            if (courseForOpen && !isCourseEnrollOpen(courseForOpen)) {
+              return _context8.a(2);
+            }
             titleEl = document.getElementById('enroll-modal-title');
             dateEl = document.getElementById('enroll-modal-date');
             form = document.getElementById('enroll-form');
@@ -1173,7 +1213,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
               forIndividuals: options === null || options === void 0 ? void 0 : options.forIndividuals,
               forLegalEntities: options === null || options === void 0 ? void 0 : options.forLegalEntities
             });
-            var courseForDist = activeCourseRegistry.find(function (item) {
+            var courseForDist = courseForOpen || activeCourseRegistry.find(function (item) {
               return item.id === (options === null || options === void 0 ? void 0 : options.courseId);
             });
             var reqDistrict = Boolean(
@@ -1691,7 +1731,10 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       var startDay = start.getFullYear() === 2099 ? '—' : padZeroDay(start.getDate());
       var startMonth = start.getFullYear() === 2099 ? '' : MONTH_NAMES_GENITIVE_RU[start.getMonth()];
       var dateLabel = start.getFullYear() === 2099 ? '' : "".concat(startDay, " ").concat(startMonth, " ").concat(start.getFullYear());
-      var enrollAttrs = buildEnrollAttrs(c, dateLabel);
+      var enrollOpen = isCourseEnrollOpen(c);
+      var primaryBtn = enrollOpen
+        ? "<a href=\"".concat(escapeHtml(getCoursePagePath(c)), "\" class=\"occ-card__btn\">\u0417\u0430\u043F\u0438\u0441\u0430\u0442\u044C\u0441\u044F</a>")
+        : '';
       return `<article class="occ-card">
           <div class="occ-card__top" style="flex-grow: 1; margin-bottom: auto;">
             <h3 class="occ-card__title">${escapeHtml(c.title)}</h3>
@@ -1714,7 +1757,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
               </div>
             </div>
           </div>
-          <a href="${escapeHtml(getCoursePagePath(c))}" class="occ-card__btn">\u0417\u0430\u043F\u0438\u0441\u0430\u0442\u044C\u0441\u044F</a>
+          ${primaryBtn}
           <a href="${escapeHtml(getCoursePagePath(c))}" class="occ-card__more">\u043F\u043E\u0434\u0440\u043E\u0431\u043D\u0435\u0435 ${MORE_ARROW_SVG}</a>
         </article>`;
     }).join('');
@@ -1865,6 +1908,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     normalizeCourseRegistry: normalizeCourseRegistry,
     normalizeCourseRegistryItem: normalizeCourseRegistryItem,
     normalizeCourseAudience: normalizeCourseAudience,
+    isCourseEnrollOpen: isCourseEnrollOpen,
     deriveCourseDaysByMonth: deriveCourseDaysByMonth,
     resolveCalendarCourseDays: resolveCalendarCourseDays,
     getCourseDateRange: getCourseDateRange,

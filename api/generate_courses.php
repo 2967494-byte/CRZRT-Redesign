@@ -23,6 +23,8 @@ function normalize_course_asset_url($url) {
     return $url;
 }
 
+require_once __DIR__ . '/course-enroll-helpers.php';
+
 function build_course_program_pdf_link($url, $className, $label, $withDownloadAttr = false) {
     $normalized = normalize_course_asset_url($url);
     if ($normalized === '') {
@@ -162,6 +164,7 @@ function generate_static_courses($courseRegistry) {
 
     $template = file_get_contents($templatePath);
     $generatedFiles = [];
+    $coursesDir = __DIR__ . '/../courses';
 
     $usedSlugs = [];
     foreach ($courseRegistry as $idx => $course) {
@@ -203,14 +206,27 @@ function generate_static_courses($courseRegistry) {
         $desc = nl2br($descOutcomes ?: ($course['description'] ?? ''));
         $html = preg_replace('/<p class="course-hero__desc">.*?<\/p>/s', '<p class="course-hero__desc">' . $desc . '</p>', $html);
 
-        // 4.1. Кнопка записи (свободная формулировка)
+        // 4.1. Кнопка записи: всегда оставляем в HTML + data-enroll-until.
+        // Скрытие по сроку — на клиенте (синхронно по атрибуту) и на API.
+        $enrollUntil = trim((string)($course['enrollUntil'] ?? ''));
+        if ($enrollUntil !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $enrollUntil)) {
+            $enrollUntil = '';
+        }
         $btnText = !empty($course['btnText']) ? htmlspecialchars(trim((string)$course['btnText']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : 'Записаться на курс';
+        $enrollUntilAttr = $enrollUntil !== '' ? ' data-enroll-until="' . htmlspecialchars($enrollUntil, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"' : '';
         $html = preg_replace(
             '/<button\b([^>]*?(?:data-enroll-btn|\bbtn-enroll\b)[^>]*)>.*?<\/button>/si',
-            '<button$1>' . $btnText . '</button>',
-            $html,
-            1
+            '<button$1' . $enrollUntilAttr . '>' . $btnText . '</button>',
+            $html
         );
+        if ($enrollUntil !== '') {
+            $html = preg_replace(
+                '/(<section\b[^>]*\bcourse-cta\b[^>]*)(>)/si',
+                '$1 data-enroll-until="' . htmlspecialchars($enrollUntil, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"$2',
+                $html,
+                1
+            );
+        }
 
         // 5. Виджеты (Длительность, Дата, Цена)
         $duration = '';
@@ -525,7 +541,68 @@ function generate_static_courses($courseRegistry) {
         }
     }
 
-    return ['success' => true, 'generated' => $generatedFiles, 'courseRegistry' => $courseRegistry];
+    // Удаляем HTML страниц, которых больше нет в реестре (сироты после удаления курса)
+    $deletedFiles = crzrt_cleanup_orphan_course_pages($courseRegistry, $coursesDir);
+
+    return [
+        'success' => true,
+        'generated' => $generatedFiles,
+        'deleted' => $deletedFiles,
+        'courseRegistry' => $courseRegistry,
+    ];
+}
+
+/**
+ * Удаляет HTML в courses/, чей stem не совпадает с id/slug ни одного курса реестра.
+ */
+function crzrt_cleanup_orphan_course_pages(array $courseRegistry, $coursesDir) {
+    $deleted = [];
+    $dir = realpath($coursesDir);
+    if ($dir === false || !is_dir($dir)) {
+        return $deleted;
+    }
+
+    $allowed = [];
+    foreach ($courseRegistry as $course) {
+        if (!is_array($course)) {
+            continue;
+        }
+        $id = preg_replace('/[^a-zA-Z0-9_\-]/', '', (string)($course['id'] ?? ''));
+        $slug = preg_replace('/[^a-zA-Z0-9\-]/', '', (string)($course['slug'] ?? ''));
+        if ($id !== '') {
+            $allowed[$id . '.html'] = true;
+        }
+        if ($slug !== '') {
+            $allowed[$slug . '.html'] = true;
+        }
+    }
+
+    $files = glob($dir . DIRECTORY_SEPARATOR . '*.html') ?: [];
+    foreach ($files as $path) {
+        $base = basename($path);
+        if (isset($allowed[$base])) {
+            continue;
+        }
+        // Не трогаем служебные и внепаттернные файлы
+        if ($base === 'index.html' || strcasecmp($base, 'index.html') === 0) {
+            continue;
+        }
+        if (!preg_match('/^(course_[a-zA-Z0-9_]+|[a-z0-9]+(?:-[a-z0-9]+)*)\.html$/i', $base)) {
+            continue;
+        }
+        if (preg_match('/^index(?:-[a-z0-9]+)*\.html$/i', $base)) {
+            continue;
+        }
+        $real = realpath($path);
+        if ($real === false || strpos($real, $dir) !== 0) {
+            continue;
+        }
+        if (@unlink($real)) {
+            $deleted[] = 'courses/' . $base;
+        }
+    }
+
+    return $deleted;
 }
 
 // Прямой запуск только для авторизованного админа

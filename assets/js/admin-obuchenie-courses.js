@@ -24,6 +24,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   var courses = [];
   var saving = false;
   var datePickerInstance = null;
+  var enrollUntilPickerInstance = null;
   var els = {};
   function $(id) {
     return document.getElementById(id);
@@ -42,6 +43,13 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   }
   function formatCourseFormat(format) {
     return format === 'dist' ? 'Заочный' : 'Очный';
+  }
+  function formatEnrollUntilLabel(course) {
+    var until = String((course === null || course === void 0 ? void 0 : course.enrollUntil) || '').trim();
+    if (!until) return 'Без срока';
+    var label = formatDateLabel(until);
+    var open = api.isCourseEnrollOpen ? api.isCourseEnrollOpen(course) : true;
+    return open ? label : label + ' (закрыто)';
   }
   function formatCourseAudience(course) {
     var forIndividuals = (course === null || course === void 0 ? void 0 : course.forIndividuals) !== false;
@@ -88,6 +96,19 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     var valid = audience.forIndividuals || audience.forLegalEntities;
     setAudienceFormError(!valid);
     return valid;
+  }
+  function validateEnrollUntilForm() {
+    var errEl = $('courseFormEnrollUntilError');
+    var until = els.formEnrollUntil && els.formEnrollUntil.value ? els.formEnrollUntil.value.trim() : '';
+    if (errEl) errEl.hidden = true;
+    if (!until) return true;
+    var dateFrom = els.formDateFrom && els.formDateFrom.value ? els.formDateFrom.value.trim() : '';
+    var firstStart = dateFrom.split(',')[0].trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(until) && /^\d{4}-\d{2}-\d{2}$/.test(firstStart) && until > firstStart) {
+      if (errEl) errEl.hidden = false;
+      return window.confirm('Дата «Заявки принимаются до» позже ближайшей даты начала курса. Сохранить всё равно?');
+    }
+    return true;
   }
   function syncBitrixFieldsVisibility() {
     var audience = readAudienceFromForm();
@@ -288,6 +309,11 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
             }
             throw new Error((result === null || result === void 0 ? void 0 : result.error) || 'Не удалось сохранить данные');
           case 5:
+            if (result && result.generated_pages && Array.isArray(result.generated_pages.courseRegistry)) {
+              courses = normalizeCourses(result.generated_pages.courseRegistry);
+              pageData.courseRegistry = courses;
+              renderTable();
+            }
             localStorage.setItem(STORAGE_KEY, JSON.stringify(pageData));
             setStatus(message || 'Сохранено', 'success');
             _context3.n = 7;
@@ -319,7 +345,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.tableEmpty.hidden = true;
     els.tableBody.innerHTML = sorted.map(function (course) {
       var _course$description, _course$description2;
-      return "\n        <tr data-course-id=\"".concat(escapeHtml(course.id), "\">\n          <td>").concat(escapeHtml(formatDateLabel(course.dateFrom)), "</td>\n          <td><strong>").concat(escapeHtml(course.title || 'Без названия'), "</strong>").concat(course.eventType === 'event' ? ' <span class="courses-table__event-badge">Мероприятие</span>' : '', "</td>\n          <td>").concat(escapeHtml(formatCourseFormat(course.format)), "</td>\n          <td>").concat(escapeHtml(String(course.durationDays || 1)), "</td>\n          <td class=\"courses-table__description\" title=\"").concat(escapeHtml(stripHtml(typeof course.description === 'string' ? course.description : ((_course$description = course.description) === null || _course$description === void 0 || (_course$description = _course$description[0]) === null || _course$description === void 0 ? void 0 : _course$description.text) || '')), "\">").concat(escapeHtml(truncateText(typeof course.description === 'string' ? course.description : ((_course$description2 = course.description) === null || _course$description2 === void 0 || (_course$description2 = _course$description2[0]) === null || _course$description2 === void 0 ? void 0 : _course$description2.text) || '')) || '—', "</td>\n          <td>").concat(escapeHtml(course.price || '—'), "</td>\n          <td>").concat(escapeHtml(formatCourseAudience(course)), "</td>\n          <td class=\"courses-table__actions\">\n            <button type=\"button\" class=\"btn-edit\" data-action=\"edit\" data-id=\"").concat(escapeHtml(course.id), "\">\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C</button>\n            <button type=\"button\" class=\"btn-delete\" data-action=\"delete\" data-id=\"").concat(escapeHtml(course.id), "\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</button>\n          </td>\n        </tr>");
+      return "\n        <tr data-course-id=\"".concat(escapeHtml(course.id), "\">\n          <td>").concat(escapeHtml(formatDateLabel(course.dateFrom)), "</td>\n          <td><strong>").concat(escapeHtml(course.title || 'Без названия'), "</strong>").concat(course.eventType === 'event' ? ' <span class="courses-table__event-badge">Мероприятие</span>' : '', "</td>\n          <td>").concat(escapeHtml(formatCourseFormat(course.format)), "</td>\n          <td>").concat(escapeHtml(String(course.durationDays || 1)), "</td>\n          <td>").concat(escapeHtml(formatEnrollUntilLabel(course)), "</td>\n          <td class=\"courses-table__description\" title=\"").concat(escapeHtml(stripHtml(typeof course.description === 'string' ? course.description : ((_course$description = course.description) === null || _course$description === void 0 || (_course$description = _course$description[0]) === null || _course$description === void 0 ? void 0 : _course$description.text) || '')), "\">").concat(escapeHtml(truncateText(typeof course.description === 'string' ? course.description : ((_course$description2 = course.description) === null || _course$description2 === void 0 || (_course$description2 = _course$description2[0]) === null || _course$description2 === void 0 ? void 0 : _course$description2.text) || '')) || '—', "</td>\n          <td>").concat(escapeHtml(course.price || '—'), "</td>\n          <td>").concat(escapeHtml(formatCourseAudience(course)), "</td>\n          <td class=\"courses-table__actions\">\n            <button type=\"button\" class=\"btn-edit\" data-action=\"edit\" data-id=\"").concat(escapeHtml(course.id), "\">\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C</button>\n            <button type=\"button\" class=\"btn-delete\" data-action=\"delete\" data-id=\"").concat(escapeHtml(course.id), "\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</button>\n          </td>\n        </tr>");
     }).join('');
   }
   function refreshCourseSlugSuggestion(force) {
@@ -366,6 +392,11 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     if (els.formEventType) {
       els.formEventType.value = (course === null || course === void 0 ? void 0 : course.eventType) === 'event' ? 'event' : 'course';
+    }
+    if (enrollUntilPickerInstance) {
+      enrollUntilPickerInstance.setDate((course === null || course === void 0 ? void 0 : course.enrollUntil) || '', false);
+    } else if (els.formEnrollUntil) {
+      els.formEnrollUntil.value = (course === null || course === void 0 ? void 0 : course.enrollUntil) || '';
     }
     els.formFormat.value = (course === null || course === void 0 ? void 0 : course.format) === 'dist' ? 'dist' : 'och';
     els.formDurationDays.value = String((course === null || course === void 0 ? void 0 : course.durationDays) || 1);
@@ -461,6 +492,11 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (datePickerInstance) {
       datePickerInstance.clear();
     }
+    if (enrollUntilPickerInstance) {
+      enrollUntilPickerInstance.clear();
+    } else if (els.formEnrollUntil) {
+      els.formEnrollUntil.value = '';
+    }
     els.formId.value = '';
     if (els.formBtnText) {
       els.formBtnText.value = '';
@@ -516,6 +552,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
             }
             return _context4.a(2);
           case 1:
+            if (!validateEnrollUntilForm()) {
+              return _context4.a(2);
+            }
             audience = readAudienceFromForm();
             bitrixFormFl = api.normalizeBitrixForm ? api.normalizeBitrixForm((_els$formBitrixFl = els.formBitrixFl) === null || _els$formBitrixFl === void 0 ? void 0 : _els$formBitrixFl.value) : api.parseBitrixFormRef ? api.parseBitrixFormRef((_els$formBitrixFl2 = els.formBitrixFl) === null || _els$formBitrixFl2 === void 0 ? void 0 : _els$formBitrixFl2.value) : null;
             bitrixFormUr = api.normalizeBitrixForm ? api.normalizeBitrixForm((_els$formBitrixUr = els.formBitrixUr) === null || _els$formBitrixUr === void 0 ? void 0 : _els$formBitrixUr.value) : api.parseBitrixFormRef ? api.parseBitrixFormRef((_els$formBitrixUr2 = els.formBitrixUr) === null || _els$formBitrixUr2 === void 0 ? void 0 : _els$formBitrixUr2.value) : null;
@@ -567,6 +606,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               eventType: els.formEventType && els.formEventType.value === 'event' ? 'event' : 'course',
               format: els.formFormat.value === 'dist' ? 'dist' : 'och',
               dateFrom: els.formDateFrom.value,
+              enrollUntil: els.formEnrollUntil && els.formEnrollUntil.value ? els.formEnrollUntil.value.trim() : '',
               durationDays: Math.max(1, parseInt(els.formDurationDays.value, 10) || 1),
               description: els.formDescription.innerHTML,
               price: els.formPrice.value.trim(),
@@ -1366,6 +1406,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.form = $('courseForm');
     els.formId = $('courseFormId');
     els.formDateFrom = $('courseFormDateFrom');
+    els.formEnrollUntil = $('courseFormEnrollUntil');
     els.formTitle = $('courseFormTitle');
     els.formBtnText = $('courseFormBtnText');
     els.formSlug = $('courseFormSlug');
@@ -1412,6 +1453,17 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         locale: 'ru',
         mode: 'multiple',
         conjunction: ', ',
+        dateFormat: 'Y-m-d',
+        altInput: true,
+        altFormat: 'd.m.Y',
+        allowInput: true,
+        disableMobile: true
+      });
+    }
+    if (typeof flatpickr !== 'undefined' && els.formEnrollUntil) {
+      enrollUntilPickerInstance = flatpickr(els.formEnrollUntil, {
+        locale: 'ru',
+        mode: 'single',
         dateFormat: 'Y-m-d',
         altInput: true,
         altFormat: 'd.m.Y',

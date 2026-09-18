@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 require_once __DIR__ . '/bitrix-lead-lib.php';
+require_once __DIR__ . '/course-enroll-helpers.php';
 
 $payload = json_decode(file_get_contents('php://input'), true);
 if (!is_array($payload)) {
@@ -33,6 +34,7 @@ $company = trim((string)($payload['organization'] ?? $payload['company'] ?? ''))
 $position = trim((string)($payload['position'] ?? $payload['post'] ?? ''));
 $district = trim((string)($payload['district'] ?? ''));
 $courseTitle = trim((string)($payload['courseTitle'] ?? ''));
+$courseId = trim((string)($payload['courseId'] ?? ''));
 $sourceId = trim((string)($payload['source'] ?? ''));
 $audienceType = ($payload['audienceType'] ?? '') === 'individual' ? 'individual' : 'legal';
 
@@ -51,6 +53,83 @@ if ($audienceType === 'legal') {
     if ($position === '') {
         http_response_code(400);
         echo json_encode(['success' => false, 'error' => 'Укажите должность'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
+$matchedCourse = null;
+
+try {
+    require_once __DIR__ . '/db.php';
+    $stmt = $pdo->prepare('SELECT setting_value FROM settings WHERE setting_key = ?');
+    $stmt->execute(['crzrt_obuchenie_page_data']);
+    $row = $stmt->fetch();
+    $pageData = $row ? json_decode($row['setting_value'], true) : null;
+    $registry = (is_array($pageData) && isset($pageData['courseRegistry']) && is_array($pageData['courseRegistry']))
+        ? $pageData['courseRegistry']
+        : [];
+
+    if ($courseId !== '') {
+        $key = mb_strtolower($courseId, 'UTF-8');
+        foreach ($registry as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $id = mb_strtolower(trim((string)($item['id'] ?? '')), 'UTF-8');
+            $slug = mb_strtolower(trim((string)($item['slug'] ?? '')), 'UTF-8');
+            if ($id === $key || ($slug !== '' && $slug === $key)) {
+                $matchedCourse = $item;
+                break;
+            }
+        }
+    }
+
+    // Мягкий fallback по заголовку (только если id не нашли)
+    if (!$matchedCourse && $courseTitle !== '') {
+        $want = crzrt_normalize_course_title($courseTitle);
+        if ($want !== '') {
+            foreach ($registry as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+                $have = crzrt_normalize_course_title($item['title'] ?? '');
+                if ($have !== '' && $have === $want) {
+                    $matchedCourse = $item;
+                    break;
+                }
+            }
+        }
+    }
+
+    // Жёсткий отказ только когда известен courseId, но курса в реестре нет (сирота)
+    if ($courseId !== '' && !$matchedCourse) {
+        http_response_code(422);
+        echo json_encode(['success' => false, 'error' => 'Приём заявок на это мероприятие завершён'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    if ($matchedCourse) {
+        if (isset($matchedCourse['active']) && $matchedCourse['active'] === false) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'error' => 'Приём заявок на это мероприятие завершён'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        $enrollUntil = trim((string)($matchedCourse['enrollUntil'] ?? ''));
+        if (!crzrt_is_enroll_open($enrollUntil)) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'error' => 'Приём заявок на это мероприятие завершён'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        if ($courseTitle === '' && !empty($matchedCourse['title'])) {
+            $courseTitle = trim((string)$matchedCourse['title']);
+        }
+    }
+} catch (Throwable $e) {
+    error_log('bitrix-lead-enroll settings check failed: ' . $e->getMessage());
+    // Если передан courseId — без проверки реестра заявку не принимаем
+    if ($courseId !== '') {
+        http_response_code(503);
+        echo json_encode(['success' => false, 'error' => 'Временно невозможно проверить приём заявок. Попробуйте позже.'], JSON_UNESCAPED_UNICODE);
         exit;
     }
 }

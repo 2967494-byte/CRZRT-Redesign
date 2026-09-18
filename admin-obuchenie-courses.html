@@ -52,6 +52,7 @@
                                 <th>Название</th>
                                 <th>Очный / заочный</th>
                                 <th>Длительность (дней)</th>
+                                <th>Заявки до</th>
                                 <th>Описание</th>
                                 <th>Стоимость</th>
                                 <th>Аудитория</th>
@@ -124,6 +125,12 @@
                         <label for="courseFormPrice">Стоимость</label>
                         <input type="text" class="form-control" id="courseFormPrice" placeholder="23 700 ₽">
                     </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="courseFormEnrollUntil">Заявки принимаются до</label>
+                    <input type="date" class="form-control" id="courseFormEnrollUntil" style="max-width: 220px;">
+                    <p class="form-hint" style="margin:4px 0 0;font-size:0.8rem;color:var(--text-secondary);">После этой даты (по Москве) кнопка записи на странице курса скрывается, новые заявки не принимаются. Пусто — заявки без срока. Обычно не позже даты начала.</p>
+                    <p class="admin-courses-audience__error" id="courseFormEnrollUntilError" hidden>Дата приёма заявок не должна быть позже ближайшей даты начала курса</p>
                 </div>
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label for="courseFormBitrixCatalogId">ID курса в каталоге Bitrix24</label>
@@ -343,8 +350,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
-    <script src="assets/js/obuchenie-content.js?v=46"></script>
-    <script src="assets/js/admin-obuchenie-courses.js?v=20"></script>
+    <script src="assets/js/obuchenie-content.js?v=48"></script>
+    <script src="assets/js/admin-obuchenie-courses.js?v=22"></script>
 </body>
 
 </html>

@@ -108,6 +108,17 @@ function initCoursePage() {
   if (enrollModal) {
     enrollBtns.forEach(btn => {
       btn.addEventListener('click', async () => {
+        try {
+          const course = await loadCourseEnrollMeta();
+          if (!isCourseEnrollOpen(course)) {
+            applyCourseEnrollAvailability(course);
+            return;
+          }
+          configureCourseEnrollModalAudience(course);
+        } catch (_e) {
+          configureCourseEnrollModalAudience(null);
+        }
+
         // Find course title
         const titleEl = document.querySelector('.course-hero__title');
         if (titleEl && enrollTitle) {
@@ -119,14 +130,6 @@ function initCoursePage() {
         if (enrollForm) {
           enrollForm.dataset.courseId = resolveCourseIdFromPath();
         }
-
-        // Configure audience settings according to course metadata
-        try {
-          const course = await loadCourseEnrollMeta();
-          configureCourseEnrollModalAudience(course);
-        } catch (_e) {
-          configureCourseEnrollModalAudience(null);
-        }
         
         // Show modal
         enrollModal.style.display = 'flex';
@@ -136,7 +139,9 @@ function initCoursePage() {
   }
 
   updateCourseStartDate();
-  // Preload course metadata early so custom btnText and audience are applied immediately
+  // Мгновенно скрыть кнопки по data-enroll-until (без сети) — убирает FOUC
+  applyEnrollAvailabilityFromDom();
+  // Лёгкая мета одного курса (не весь settings JSON)
   loadCourseEnrollMeta().catch(() => {});
 }
 
@@ -443,6 +448,81 @@ function syncCourseEventTexts(isEvent) {
   if (audienceTitle) audienceTitle.textContent = audienceTitleText;
 }
 
+function moscowTodayIso() {
+  try {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Moscow',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(new Date());
+  } catch (_e) {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+}
+
+function readDomEnrollUntil() {
+  const el =
+    document.querySelector('[data-enroll-btn][data-enroll-until]') ||
+    document.querySelector('.btn-enroll[data-enroll-until]') ||
+    document.querySelector('.course-cta[data-enroll-until]');
+  const until = el ? String(el.getAttribute('data-enroll-until') || '').trim() : '';
+  return /^\d{4}-\d{2}-\d{2}$/.test(until) ? until : '';
+}
+
+function isCourseEnrollOpen(courseOrUntil) {
+  if (courseOrUntil && typeof courseOrUntil === 'object' && courseOrUntil.enrollClosed) {
+    return false;
+  }
+  if (courseOrUntil && typeof courseOrUntil === 'object' && courseOrUntil.active === false) {
+    return false;
+  }
+  if (window.ObuchenieContent && typeof window.ObuchenieContent.isCourseEnrollOpen === 'function') {
+    return window.ObuchenieContent.isCourseEnrollOpen(courseOrUntil);
+  }
+  let until = '';
+  if (courseOrUntil && typeof courseOrUntil === 'object') {
+    until = String(courseOrUntil.enrollUntil || '').trim();
+  } else {
+    until = String(courseOrUntil || '').trim();
+  }
+  if (!until || !/^\d{4}-\d{2}-\d{2}$/.test(until)) return true;
+  return moscowTodayIso() <= until;
+}
+
+function applyCourseEnrollAvailability(course) {
+  const open = isCourseEnrollOpen(course);
+  const buttons = document.querySelectorAll('.btn-enroll, [data-enroll-btn]');
+  buttons.forEach((btn) => {
+    btn.hidden = !open;
+    btn.style.display = open ? '' : 'none';
+    btn.disabled = !open;
+    if (course && course.enrollUntil) {
+      btn.setAttribute('data-enroll-until', course.enrollUntil);
+    }
+  });
+  const cta = document.querySelector('.course-cta');
+  if (cta) {
+    cta.hidden = !open;
+    cta.style.display = open ? '' : 'none';
+    if (course && course.enrollUntil) {
+      cta.setAttribute('data-enroll-until', course.enrollUntil);
+    }
+  }
+  return open;
+}
+
+/** Синхронно по атрибутам в HTML — до любого fetch. */
+function applyEnrollAvailabilityFromDom() {
+  const until = readDomEnrollUntil();
+  if (!until) return true;
+  return applyCourseEnrollAvailability({ enrollUntil: until });
+}
+
 async function loadCourseEnrollMeta() {
   if (courseEnrollMetaCache) return courseEnrollMetaCache;
   const courseId = resolveCourseIdFromPath();
@@ -451,6 +531,7 @@ async function loadCourseEnrollMeta() {
   const staticForLegalEntities = switchWrap ? switchWrap.dataset.forLegalEntities !== 'false' : true;
   const districtField = document.getElementById('enroll-district-field');
   const staticRequireDistrict = districtField ? !districtField.hidden : false;
+  const domEnrollUntil = readDomEnrollUntil();
   const fallback = {
     id: courseId,
     title: (document.querySelector('.course-hero__title')?.textContent || '').trim(),
@@ -459,6 +540,7 @@ async function loadCourseEnrollMeta() {
     durationDays: parseDurationDaysFromWidget(),
     format: parseFormatFromTags(),
     eventType: 'course',
+    enrollUntil: domEnrollUntil,
     price: (document.querySelector('.course-widget-item__price')?.textContent || '').trim(),
     bitrixCourseElementId: null,
     forCustomers: false,
@@ -473,32 +555,57 @@ async function loadCourseEnrollMeta() {
 
   if (!courseId) {
     courseEnrollMetaCache = fallback;
+    applyCourseEnrollAvailability(fallback);
     return fallback;
   }
 
   try {
-    const resp = await fetch('../api/settings.php?key=crzrt_obuchenie_page_data&_=' + Date.now(), { cache: 'no-store' });
+    const resp = await fetch(
+      '../api/course-enroll-meta.php?id=' + encodeURIComponent(courseId) + '&_=' + Date.now(),
+      { cache: 'no-store' }
+    );
     if (!resp.ok) {
-      courseEnrollMetaCache = fallback;
-      return fallback;
+      // Сеть/сервер: не открываем запись заново, если DOM уже говорит «закрыто»
+      if (domEnrollUntil && !isCourseEnrollOpen({ enrollUntil: domEnrollUntil })) {
+        courseEnrollMetaCache = { ...fallback, enrollClosed: true, enrollUntil: domEnrollUntil };
+      } else {
+        courseEnrollMetaCache = fallback;
+      }
+      applyCourseEnrollAvailability(courseEnrollMetaCache);
+      return courseEnrollMetaCache;
     }
     const data = await resp.json();
-    const course = Array.isArray(data.courseRegistry)
-      ? findCourseByPathKey(data.courseRegistry, courseId)
-      : null;
-    courseEnrollMetaCache = course ? { ...fallback, ...course, id: course.id || courseId } : fallback;
+    if (!data || !data.found || !data.course) {
+      courseEnrollMetaCache = { ...fallback, enrollClosed: true, enrollUntil: domEnrollUntil || '1970-01-01' };
+      applyCourseEnrollAvailability(courseEnrollMetaCache);
+      return courseEnrollMetaCache;
+    }
+    const course = data.course;
+    courseEnrollMetaCache = {
+      ...fallback,
+      ...course,
+      id: course.id || courseId,
+      enrollClosed: false,
+      enrollUntil: course.enrollUntil || domEnrollUntil || ''
+    };
     syncCourseEventTexts(courseEnrollMetaCache.eventType === 'event');
     configureCourseEnrollModalAudience(courseEnrollMetaCache);
     configureCourseEnrollModalDistrict(Boolean(courseEnrollMetaCache.requireDistrict));
-    if (course && course.btnText) {
+    applyCourseEnrollAvailability(courseEnrollMetaCache);
+    if (course.btnText && isCourseEnrollOpen(courseEnrollMetaCache)) {
       document.querySelectorAll('.btn-enroll, [data-enroll-btn]').forEach((btn) => {
         btn.textContent = course.btnText;
       });
     }
     return courseEnrollMetaCache;
   } catch (_error) {
-    courseEnrollMetaCache = fallback;
-    return fallback;
+    if (domEnrollUntil && !isCourseEnrollOpen({ enrollUntil: domEnrollUntil })) {
+      courseEnrollMetaCache = { ...fallback, enrollClosed: true, enrollUntil: domEnrollUntil };
+    } else {
+      courseEnrollMetaCache = fallback;
+    }
+    applyCourseEnrollAvailability(courseEnrollMetaCache);
+    return courseEnrollMetaCache;
   }
 }
 
@@ -562,6 +669,10 @@ function initCourseEnrollSubmit() {
       }
 
       const course = await loadCourseEnrollMeta();
+      if (!isCourseEnrollOpen(course)) {
+        applyCourseEnrollAvailability(course);
+        throw new Error('Приём заявок на это мероприятие завершён');
+      }
       const selectedDate = resolveSelectedCourseDate(course);
       const response = await fetch('../api/bitrix-lead-enroll.php', {
         method: 'POST',
@@ -576,6 +687,7 @@ function initCourseEnrollSubmit() {
           audienceType,
           source: sourceValue,
           sourceLabel,
+          courseId: course?.id || resolveCourseIdFromPath() || '',
           courseTitle: course?.title || '',
           selectedDate,
           dateFrom: selectedDate || course?.dateFrom || '',
