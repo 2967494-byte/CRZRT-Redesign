@@ -26,7 +26,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   var promoBound = false;
   document.documentElement.classList.add(CONTENT_PENDING_CLASS);
   var LANDING_DEFAULTS = {
-    heroSlides: [{"title": "Надежное тендерное\nсопровождение", "titleColor": "#ffffff", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "Поиск выгодных закупок\nи оценка целесообразности участия", "subtitleColor": "#ffffff", "subtitleTop": 310, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_0_20260708195254_098ee4.webp"}, {"title": "Профи в закупках быстро", "titleColor": "", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "", "subtitleColor": "", "subtitleTop": 213, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_1_20260714160657_1e59d8.webp"}, {"title": "Цифровые закупки легко", "titleColor": "", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "", "subtitleColor": "", "subtitleTop": 213, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_2_20260714160658_2c486c.webp"}, {"title": "Законно. Четко. Надежно", "titleColor": "", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "", "subtitleColor": "", "subtitleTop": 213, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_3_20260714162016_9855ae.webp"}],
+    heroSlides: [{"title": "Надежное тендерное\nсопровождение", "titleColor": "#ffffff", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "Поиск выгодных закупок\nи оценка целесообразности участия", "subtitleColor": "#ffffff", "subtitleTop": 310, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_0_20260708195254_098ee4.webp", "link": ""}, {"title": "Профи в закупках быстро", "titleColor": "", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "", "subtitleColor": "", "subtitleTop": 213, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_1_20260714160657_1e59d8.webp", "link": ""}, {"title": "Цифровые закупки легко", "titleColor": "", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "", "subtitleColor": "", "subtitleTop": 213, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_2_20260714160658_2c486c.webp", "link": ""}, {"title": "Законно. Четко. Надежно", "titleColor": "", "titleTop": 122, "titleLeft": 70, "titleFontSize": "", "titleFontWeight": "", "titleItalic": false, "titleUnderline": false, "subtitle": "", "subtitleColor": "", "subtitleTop": 213, "subtitleLeft": 70, "subtitleFontSize": "", "subtitleFontWeight": "", "subtitleItalic": false, "subtitleUnderline": false, "background": "uploads/landing/hero_3_20260714162016_9855ae.webp", "link": ""}],
     serviceCards: [{
       title: 'Обучение',
       desc: 'Как зарабатывать на госзакупках и тендерах',
@@ -279,7 +279,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         subtitleColor: (raw === null || raw === void 0 ? void 0 : raw.heroSubtitleColor) || LANDING_DEFAULTS.heroSlides[0].subtitleColor,
         subtitleTop: (raw === null || raw === void 0 ? void 0 : raw.heroSubtitleTop) !== undefined ? raw.heroSubtitleTop : LANDING_DEFAULTS.heroSlides[0].subtitleTop,
         subtitleLeft: (raw === null || raw === void 0 ? void 0 : raw.heroSubtitleLeft) !== undefined ? raw.heroSubtitleLeft : LANDING_DEFAULTS.heroSlides[0].subtitleLeft,
-        background: bg
+        background: bg,
+        link: (raw === null || raw === void 0 ? void 0 : raw.heroLink) || ''
       }];
     } else {
       data.heroSlides = data.heroSlides.map(function (s) {
@@ -291,7 +292,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
           subtitle: s.subtitle !== undefined ? s.subtitle : LANDING_DEFAULTS.heroSlides[0].subtitle,
           subtitleColor: s.subtitleColor || LANDING_DEFAULTS.heroSlides[0].subtitleColor,
           subtitleTop: s.subtitleTop !== undefined ? s.subtitleTop : LANDING_DEFAULTS.heroSlides[0].subtitleTop,
-          subtitleLeft: s.subtitleLeft !== undefined ? s.subtitleLeft : LANDING_DEFAULTS.heroSlides[0].subtitleLeft
+          subtitleLeft: s.subtitleLeft !== undefined ? s.subtitleLeft : LANDING_DEFAULTS.heroSlides[0].subtitleLeft,
+          link: (s && s.link) || ''
         });
       });
     }
@@ -464,6 +466,109 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     if (italic) el.style.fontStyle = 'italic';else el.style.removeProperty('font-style');
     if (underline) el.style.textDecoration = 'underline';else el.style.removeProperty('text-decoration');
   }
+
+  /**
+   * Валидация и санитизация ссылок для баннеров (защита от javascript:, data: и других XSS).
+   * Разрешены относительные пути (/path, path.html, #anchor, ?query) и безопасные протоколы (http:, https:).
+   */
+  function sanitizeBannerUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    var trimmed = url.trim();
+    if (!trimmed) return '';
+    // Protocol-relative (//evil.com) — open redirect на чужой хост
+    if (trimmed.indexOf('//') === 0) {
+      return '';
+    }
+    if (/^(?:javascript|data|vbscript|file):/i.test(trimmed)) {
+      return '';
+    }
+    if (/^https?:\/\//i.test(trimmed)) {
+      return trimmed;
+    }
+    // Если содержит протокол (с двоеточием в начале схемы, кроме http/https), отклоняем
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed)) {
+      return '';
+    }
+    // Относительный путь
+    return trimmed;
+  }
+
+  /**
+   * Обновление ссылки активного слайда hero-баннера главной страницы.
+   * Управление нативной ссылкой-оверлеем для доступности (A11y), middle-click и курсора через CSS.
+   */
+  function updateHeroLink(link) {
+    var slider = document.querySelector('.hero-slider');
+    if (!slider) return;
+    var overlay = slider.querySelector('.hero-slide__link-overlay');
+    var safeHref = sanitizeBannerUrl(link);
+    if (safeHref) {
+      slider.dataset.href = safeHref;
+      if (overlay) {
+        overlay.href = safeHref;
+        overlay.style.display = 'block';
+        overlay.setAttribute('aria-hidden', 'false');
+        overlay.removeAttribute('tabindex');
+      }
+    } else {
+      delete slider.dataset.href;
+      if (overlay) {
+        overlay.removeAttribute('href');
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.setAttribute('tabindex', '-1');
+      }
+    }
+  }
+
+  var heroBound = false;
+  /**
+   * Клик по слайду hero-баннера активен только на главной странице.
+   * Поддерживает обычный клик, Ctrl/Cmd+click и middle-click (открытие в новой вкладке).
+   */
+  function bindHeroClick() {
+    if (heroBound) return;
+    var slider = document.querySelector('.hero-slider');
+    if (!slider) return;
+    var navigate = function (e) {
+      // Игнорируем клики по стрелкам, точкам или интерактивным элементам внутри баннера
+      if (e && e.target && e.target.closest && e.target.closest('.hero-slide__arrows, .hero-slide__dots, button, input, select, textarea')) {
+        return;
+      }
+      var href = sanitizeBannerUrl(slider.dataset.href);
+      if (!href) return;
+      // Если клик пришёлся непосредственно на оверлейную ссылку <a>, браузер обработает переход нативно
+      if (e.target && e.target.classList && e.target.classList.contains('hero-slide__link-overlay')) {
+        return;
+      }
+      if (e.button === 1 || e.ctrlKey || e.metaKey) {
+        window.open(href, '_blank', 'noopener,noreferrer');
+      } else if (e.button === 0) {
+        window.location.href = href;
+      }
+    };
+    slider.addEventListener('click', navigate);
+    slider.addEventListener('auxclick', function (e) {
+      if (e.button === 1) navigate(e);
+    });
+    slider.addEventListener('keydown', function (e) {
+      if (e.target && e.target.closest && e.target.closest('.hero-slide__arrows, .hero-slide__dots, button, input, select, textarea')) {
+        return;
+      }
+      if (e.key === 'Enter' || e.key === ' ') {
+        var href = sanitizeBannerUrl(slider.dataset.href);
+        if (href) {
+          e.preventDefault();
+          if (e.ctrlKey || e.metaKey) {
+            window.open(href, '_blank', 'noopener,noreferrer');
+          } else {
+            window.location.href = href;
+          }
+        }
+      }
+    });
+    heroBound = true;
+  }
   function renderHero(data) {
     var slider = document.querySelector('.hero-slider');
     var slideEl = document.querySelector('.hero-slide');
@@ -514,8 +619,20 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     if (arrowsWrap) {
       arrowsWrap.classList.toggle('is-hidden', !hasMultipleSlides);
     }
+    var overlay = slideEl.querySelector('.hero-slide__link-overlay');
+    if (!overlay) {
+      overlay = document.createElement('a');
+      overlay.className = 'hero-slide__link-overlay';
+      overlay.setAttribute('aria-label', 'Перейти по ссылке баннера');
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.setAttribute('tabindex', '-1');
+      slideEl.appendChild(overlay);
+    }
     window.__heroSlides = slides;
     window.__heroCurrent = 0;
+    updateHeroLink(first ? first.link : '');
+    bindHeroClick();
     document.dispatchEvent(new CustomEvent('heroSlidesUpdated', {
       detail: {
         count: slides.length
@@ -529,6 +646,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     var i = (index % slides.length + slides.length) % slides.length;
     window.__heroCurrent = i;
     var slide = slides[i];
+    updateHeroLink(slide ? slide.link : '');
     var slider = document.querySelector('.hero-slider');
     var titleEl = document.querySelector('.hero-slide__title');
     var subEl = document.querySelector('.hero-slide__subtitle');
@@ -613,13 +731,12 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       }
       applyPromoTypographyStyles(dateEl, banner.dateFontSize, banner.dateFontWeight, banner.dateItalic, banner.dateUnderline);
     }
-    if (banner.link) {
-      el.style.cursor = 'pointer';
-      el.dataset.href = banner.link;
+    var safeLink = sanitizeBannerUrl(banner.link);
+    if (safeLink) {
+      el.dataset.href = safeLink;
       el.setAttribute('role', 'link');
       el.setAttribute('tabindex', '0');
     } else {
-      el.style.cursor = '';
       delete el.dataset.href;
       el.removeAttribute('role');
       el.removeAttribute('tabindex');
@@ -695,7 +812,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     var el = document.querySelector('.promo-banner');
     if (!el) return;
     var go = function go() {
-      var href = el.dataset.href;
+      var href = sanitizeBannerUrl(el.dataset.href);
       if (href) window.location.href = href;
     };
     el.addEventListener('click', go);
@@ -748,6 +865,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     renderConsultationPhoto((_data$consultation2 = data.consultation) === null || _data$consultation2 === void 0 ? void 0 : _data$consultation2.photos);
     bindPromoClick();
     if (!shouldSkipLandingHero()) {
+      bindHeroClick();
       window.applyHeroSlide = applyHeroSlide;
     }
     document.dispatchEvent(new CustomEvent('landingContentReady', {

@@ -362,6 +362,38 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   align-items: stretch;
 }
 
+.hero-slider[data-href] {
+  cursor: pointer;
+}
+
+.hero-slide__link-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.hero-slider[data-href] .hero-slide__link-overlay {
+  display: block;
+}
+
+.hero-slide__link-overlay:focus-visible {
+  outline: 2px solid #0faa4b;
+  outline-offset: -2px;
+}
+
+.hero-slider .hero-slide__arrows,
+.hero-slider .hero-slide__dots {
+  cursor: default;
+}
+
+.hero-slider .hero-slide__arrows .arrow-btn,
+.hero-slider .hero-slide__dots .dot {
+  cursor: pointer;
+}
+
 .hero-slide {
   display: flex;
   flex-direction: column;
@@ -952,6 +984,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   height: 253px; /* Точно по Figma */
   width: 100%;
   container-type: inline-size;
+}
+
+.promo-banner[data-href] {
+  cursor: pointer;
 }
 
 .promo-banner--custom {

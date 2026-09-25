@@ -38,7 +38,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       subtitleFontSize: (slide === null || slide === void 0 ? void 0 : slide.subtitleFontSize) || '',
       subtitleFontWeight: (slide === null || slide === void 0 ? void 0 : slide.subtitleFontWeight) || '',
       subtitleItalic: Boolean(slide === null || slide === void 0 ? void 0 : slide.subtitleItalic),
-      subtitleUnderline: Boolean(slide === null || slide === void 0 ? void 0 : slide.subtitleUnderline)
+      subtitleUnderline: Boolean(slide === null || slide === void 0 ? void 0 : slide.subtitleUnderline),
+      link: (slide === null || slide === void 0 ? void 0 : slide.link) || ''
     };
   }
   function migrateHeroSlides(raw, defaults) {
