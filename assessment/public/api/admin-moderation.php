@@ -45,6 +45,7 @@ if ($method === 'GET') {
 
     $stmt = $pdo->prepare(
         "SELECT uo.id, uo.status, uo.requested_at, uo.moderated_at, uo.moderator_comment,
+                uo.is_resubmitted, uo.resubmitted_at, uo.previous_moderator_comment,
                 u.id AS user_id, u.last_name, u.first_name, u.middle_name,
                 u.email_normalized, u.phone_normalized, u.position,
                 u.experience_level, u.education, u.specialty, u.customer_level,
@@ -64,6 +65,7 @@ if ($method === 'GET') {
          WHERE {$sqlWhere}
          ORDER BY
             CASE uo.status WHEN 'pending' THEN 0 WHEN 'needs_info' THEN 1 ELSE 2 END,
+            uo.is_resubmitted DESC,
             uo.requested_at ASC
          LIMIT ? OFFSET ?"
     );
@@ -85,6 +87,9 @@ if ($method === 'GET') {
                 'requestedAt' => $r['requested_at'],
                 'moderatedAt' => $r['moderated_at'],
                 'comment' => $r['moderator_comment'],
+                'isResubmitted' => !empty($r['is_resubmitted']),
+                'resubmittedAt' => $r['resubmitted_at'],
+                'previousComment' => $r['previous_moderator_comment'],
                 'user' => [
                     'id' => (int)$r['user_id'],
                     'lastName' => $r['last_name'],
@@ -155,7 +160,7 @@ if ($method === 'POST') {
     $newStatus = $map[$action];
     $pdo->prepare(
         'UPDATE asmt_user_organizations
-         SET status = ?, moderated_at = NOW(), moderated_by = ?, moderator_comment = ?
+         SET status = ?, moderated_at = NOW(), moderated_by = ?, moderator_comment = ?, is_resubmitted = FALSE
          WHERE id = ?'
     )->execute([$newStatus, (int)$user['id'], $comment, $id]);
 

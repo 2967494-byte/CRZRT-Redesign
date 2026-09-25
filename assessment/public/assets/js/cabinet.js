@@ -21,7 +21,8 @@
   let state = {
     loading: true,
     data: null,
-    activeTab: 'main'
+    activeTab: 'main',
+    isEditingProfile: false,
   };
 
   let allRegionsList = [];
@@ -115,6 +116,10 @@
 
     return Object.assign({}, raw, {
       userOrgStatus: raw.userOrgStatus || (org && org.moderationStatus) || null,
+      moderatorComment: raw.moderatorComment || (org && org.moderatorComment) || null,
+      previousModeratorComment: raw.previousModeratorComment || (org && org.previousModeratorComment) || null,
+      isResubmitted: !!(raw.isResubmitted || (org && org.isResubmitted)),
+      resubmittedAt: raw.resubmittedAt || (org && org.resubmittedAt) || null,
       regionBanners: banners,
       activeCampaign,
       activeCampaigns,
@@ -133,7 +138,10 @@
     return (l + f).toUpperCase() || 'УС';
   }
 
-  function badge(status) {
+  function badge(status, isResubmitted) {
+    if (isResubmitted && (status === 'pending' || status === 'needs_info')) {
+      return `<span class="badge" style="background:#fef3c7; color:#b45309; font-weight:700;">🔄 На повторной проверке</span>`;
+    }
     const map = {
       pending: ['Ожидает проверки', 'pending'],
       approved: ['Утверждено', 'approved'],
@@ -226,27 +234,288 @@
     `;
   }
 
+  async function loadProfileDistricts(regionId, selectedDistrictId = null) {
+    const distSelect = document.getElementById('profDistrictSelect');
+    if (!distSelect) return;
+    distSelect.innerHTML = '<option value="">Загрузка районов…</option>';
+    try {
+      const url = regionId ? `api/districts.php?regionId=${encodeURIComponent(regionId)}` : 'api/districts.php';
+      const res = await AsmtApi.get(url);
+      const items = res.districts || [];
+      const hasOther = !selectedDistrictId && !!(state.data?.user?.districtOtherText);
+      distSelect.innerHTML = '<option value="">Выберите район / город</option>' +
+        items.map(d => `<option value="${esc(d.id)}" ${selectedDistrictId && Number(d.id) === Number(selectedDistrictId) ? 'selected' : ''}>${esc(d.name)}</option>`).join('') +
+        `<option value="other" ${hasOther ? 'selected' : ''}>Иное (указать вручную)</option>`;
+
+      const custLevel = document.getElementById('profCustomerLevel');
+      const otherWrap = document.getElementById('profDistrictOtherWrap');
+      if (otherWrap) {
+        const isFed = custLevel && custLevel.value === 'federal';
+        const isOther = distSelect.value === 'other';
+        otherWrap.classList.toggle('hidden', !(isFed || isOther));
+      }
+    } catch (e) {
+      distSelect.innerHTML = '<option value="">Ошибка загрузки районов</option><option value="other" selected>Иное (указать вручную)</option>';
+      const otherWrap = document.getElementById('profDistrictOtherWrap');
+      if (otherWrap) otherWrap.classList.remove('hidden');
+    }
+  }
+
+  function renderModerationAlert(data) {
+    const status = data.userOrgStatus;
+    const comment = data.moderatorComment || (data.organization && data.organization.moderatorComment) || data.previousModeratorComment || (data.organization && data.organization.previousModeratorComment);
+    const isResubmitted = data.isResubmitted || (data.organization && data.organization.isResubmitted);
+
+    if (status === 'rejected' || status === 'needs_info') {
+      const isRej = status === 'rejected';
+      return `
+        <div class="asmt-card" style="background:${isRej ? '#fff5f5' : '#fffbeb'}; border:2px solid ${isRej ? '#fca5a5' : '#fcd34d'}; margin-bottom:20px; padding:18px 22px; border-radius:14px;">
+          <div style="display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;">
+            <div style="width:40px; height:40px; border-radius:10px; background:${isRej ? '#fee2e2' : '#fef3c7'}; display:flex; align-items:center; justify-content:center; color:${isRej ? '#dc2626' : '#d97706'}; flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div style="flex:1; min-width:240px;">
+              <h3 style="margin:0 0 6px; font-size:1.15rem; font-weight:800; color:${isRej ? '#991b1b' : '#92400e'};">
+                ${isRej ? 'Заявка на участие отклонена модератором' : 'Требуется исправление данных профиля'}
+              </h3>
+              ${comment ? `
+                <div style="background:#ffffff; border-radius:8px; border:1px solid ${isRej ? '#fecaca' : '#fde68a'}; padding:10px 14px; margin:8px 0; font-size:0.92rem; color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+                  <strong style="color:${isRej ? '#dc2626' : '#d97706'};">Замечание модератора:</strong> «${esc(comment)}»
+                </div>
+              ` : ''}
+              <p style="margin:6px 0 12px; font-size:0.88rem; color:${isRej ? '#991b1b' : '#92400e'};">
+                Пожалуйста, скорректируйте данные профиля (например, должность или организацию) и направьте заявку на повторное рассмотрение.
+              </p>
+              <button type="button" class="btn btn--primary btn--sm" id="btnGoEditProfileFromAlert" style="background:${isRej ? '#dc2626' : '#d97706'}; border-color:${isRej ? '#dc2626' : '#d97706'};">
+                ✏️ Исправить данные и отправить повторно
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (isResubmitted && status === 'pending') {
+      return `
+        <div class="asmt-card" style="background:#f0fdf4; border:1.5px solid #86efac; margin-bottom:20px; padding:16px 20px; border-radius:14px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:36px; height:36px; border-radius:10px; background:#dcfce7; display:flex; align-items:center; justify-content:center; color:#16a34a; flex-shrink:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            </div>
+            <div>
+              <strong style="color:#166534; font-size:0.95rem;">Заявка отправлена на повторную модерацию</strong>
+              <div style="color:#15803d; font-size:0.85rem; margin-top:2px;">
+                Ваши исправленные данные находятся на проверке у модератора. Доступ к тестированию откроется после подтверждения.
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return '';
+  }
+
   function renderProfileTab(data) {
-    const u = data.user;
-    const org = data.organization;
+    const u = data.user || {};
+    const org = data.organization || {};
+    const status = data.userOrgStatus;
+    const comment = data.moderatorComment || (org && org.moderatorComment) || data.previousModeratorComment || (org && org.previousModeratorComment);
+    const isRejected = status === 'rejected';
+    const isNeedsInfo = status === 'needs_info';
+    const isResubmitted = data.isResubmitted || (org && org.isResubmitted);
+    const isEditing = state.isEditingProfile || isRejected || isNeedsInfo;
+
+    const noticeBanner = (isRejected || isNeedsInfo) ? `
+      <div style="background:${isRejected ? '#fff5f5' : '#fffbeb'}; border:1.5px solid ${isRejected ? '#fca5a5' : '#fcd34d'}; border-radius:12px; padding:16px 20px; margin-bottom:20px;">
+        <div style="font-weight:800; color:${isRejected ? '#991b1b' : '#92400e'}; font-size:1.05rem; display:flex; align-items:center; gap:8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          ${isRejected ? 'Заявка отклонена модератором' : 'Требуется исправление данных профиля'}
+        </div>
+        ${comment ? `
+          <div style="background:#ffffff; border-radius:8px; border:1px solid ${isRejected ? '#fecaca' : '#fde68a'}; padding:10px 14px; margin:10px 0; font-size:0.92rem; color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <strong style="color:${isRejected ? '#dc2626' : '#d97706'};">Замечание модератора:</strong> «${esc(comment)}»
+          </div>
+        ` : ''}
+        <p style="margin:6px 0 0; font-size:0.88rem; color:${isRejected ? '#991b1b' : '#92400e'}; line-height:1.4;">
+          Внесите необходимые исправления в поля ниже и нажмите кнопку «Сохранить и отправить на повторную модерацию».
+        </p>
+      </div>
+    ` : (isResubmitted && status === 'pending') ? `
+      <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:14px 18px; margin-bottom:20px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:1.2rem;">🔄</span>
+          <div>
+            <strong style="color:#166534; font-size:0.95rem;">Заявка находится на повторной проверке модератором</strong>
+            <div style="color:#15803d; font-size:0.85rem; margin-top:2px;">
+              ${comment ? `Предыдущее замечание («${esc(comment)}») отправлено на повторную проверку.` : 'Ваши изменения сохранены и проверяются администратором.'}
+            </div>
+          </div>
+        </div>
+      </div>
+    ` : '';
+
+    if (isEditing) {
+      const isApproved = data.userOrgStatus === 'approved';
+      const submitBtnText = isApproved
+        ? '💾 Сохранить изменения в профиле'
+        : '💾 Сохранить и отправить на повторную модерацию';
+
+      return `
+        <div class="asmt-card profile-card" style="max-width: 820px; margin: 0 auto;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-light); padding-bottom:12px;">
+            <div>
+              <h2 style="margin: 0; font-size: 1.3rem; font-weight: 800;">${isApproved ? 'Редактирование данных профиля' : 'Исправление данных и повторная подача'}</h2>
+              <p class="lead" style="margin:4px 0 0; font-size:0.85rem; color:var(--muted);">
+                ${isApproved ? 'Обновите вашу должность или квалификационные данные' : 'Скорректируйте данные с учётом замечаний модератора'}
+              </p>
+            </div>
+            <div>
+              ${badge(data.userOrgStatus, isResubmitted)}
+            </div>
+          </div>
+
+          ${noticeBanner}
+
+          <form id="formProfileEdit" data-mode="${isApproved ? 'update' : 'resubmit'}">
+            <div id="profFormStatus" class="status hidden" style="margin-bottom:14px;"></div>
+
+            <h3 style="margin:0 0 12px; font-size:1.05rem; font-weight:700; color:var(--text);">1. Личные и контактные данные</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px;">
+              <label class="field">
+                <span class="field__label">ФИО</span>
+                <input type="text" value="${esc(cleanName(u.lastName))} ${esc(cleanName(u.firstName))} ${esc(cleanName(u.middleName))}" disabled style="background:#f8fafc; color:var(--muted);">
+              </label>
+              <label class="field">
+                <span class="field__label">Email (Логин)</span>
+                <input type="email" value="${esc(u.email)}" disabled style="background:#f8fafc; color:var(--muted);">
+              </label>
+              <label class="field">
+                <span class="field__label">Телефон</span>
+                <input type="tel" value="${esc(u.phone || 'Не указан')}" disabled style="background:#f8fafc; color:var(--muted);">
+              </label>
+              <label class="field">
+                <span class="field__label">Занимаемая должность <span class="req">*</span></span>
+                <input type="text" id="profPosition" name="position" value="${esc(u.position || '')}" required placeholder="Например: Главный специалист отдела закупок" style="border-color:${isRejected ? '#f87171' : 'var(--border)'}; font-weight:600;">
+              </label>
+            </div>
+
+            <h3 style="margin:0 0 12px; font-size:1.05rem; font-weight:700; color:var(--text);">2. Организация работодателя</h3>
+            ${isApproved ? `
+              <div style="background:#f8fafc; border:1px solid var(--border-light); border-radius:10px; padding:12px 16px; margin-bottom:14px; font-size:0.88rem; color:var(--muted);">
+                ℹ️ Организация подтверждена модератором. Изменение организации производится по обращению к администратору.
+              </div>
+            ` : ''}
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px;">
+              <label class="field">
+                <span class="field__label">ИНН организации <span class="req">*</span></span>
+                <input type="text" id="profInn" name="inn" value="${esc(org?.inn || '')}" required pattern="\\d{10}|\\d{12}" placeholder="10 или 12 цифр ИНН" ${isApproved ? 'disabled style="background:#f8fafc; color:var(--muted);"' : ''}>
+              </label>
+              <label class="field">
+                <span class="field__label">Уровень заказчика <span class="req">*</span></span>
+                <select id="profCustomerLevel" name="customerLevel" required ${isApproved ? 'disabled style="background:#f8fafc; color:var(--muted);"' : ''}>
+                  <option value="state" ${u.customerLevel === 'state' ? 'selected' : ''}>Государственный заказчик</option>
+                  <option value="municipal" ${u.customerLevel === 'municipal' ? 'selected' : ''}>Муниципальный заказчик</option>
+                  <option value="federal" ${u.customerLevel === 'federal' ? 'selected' : ''}>Федеральный заказчик</option>
+                </select>
+              </label>
+              <label class="field" style="grid-column:1 / -1;">
+                <span class="field__label">Наименование организации <span class="req">*</span></span>
+                <input type="text" id="profOrgName" name="organizationName" value="${esc(cleanName(org?.name) || '')}" required placeholder="Полное наименование организации" ${isApproved ? 'disabled style="background:#f8fafc; color:var(--muted);"' : ''}>
+              </label>
+              <label class="field">
+                <span class="field__label">Субъект (Регион) РФ <span class="req">*</span></span>
+                <select id="profRegionSelect" name="regionId" required ${isApproved ? 'disabled style="background:#f8fafc; color:var(--muted);"' : ''}>
+                  ${(allRegionsList || []).map(r => `
+                    <option value="${r.id}" ${Number(r.id) === Number(u.regionId) ? 'selected' : ''}>
+                      ${esc(r.code)} — ${esc(r.name)}
+                    </option>
+                  `).join('')}
+                </select>
+              </label>
+              <label class="field">
+                <span class="field__label">Муниципальный район / Город</span>
+                <select id="profDistrictSelect" name="districtId">
+                  <option value="">Загрузка районов…</option>
+                </select>
+              </label>
+              <label class="field ${u.customerLevel === 'federal' || (!u.districtId && u.districtOtherText) ? '' : 'hidden'}" id="profDistrictOtherWrap" style="grid-column:1 / -1;">
+                <span class="field__label">Регион / Город (для федерального уровня или иного)</span>
+                <input type="text" id="profDistrictOther" name="districtOtherText" value="${esc(u.districtOtherText || '')}" placeholder="Укажите субъект РФ или город">
+              </label>
+            </div>
+
+            <h3 style="margin:0 0 12px; font-size:1.05rem; font-weight:700; color:var(--text);">3. Квалификационные данные</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:24px;">
+              <label class="field">
+                <span class="field__label">Опыт работы в закупках</span>
+                <select id="profExpLevel" name="experienceLevel">
+                  <option value="up_to_1" ${u.experienceLevel === 'up_to_1' ? 'selected' : ''}>до 1 года</option>
+                  <option value="1_to_3" ${u.experienceLevel === '1_to_3' ? 'selected' : ''}>от 1 года до 3 лет</option>
+                  <option value="more_than_3" ${u.experienceLevel === 'more_than_3' ? 'selected' : ''}>более 3 лет</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field__label">Уровень образования</span>
+                <select id="profEducation" name="education">
+                  <option value="высшее" ${u.education === 'высшее' ? 'selected' : ''}>высшее</option>
+                  <option value="среднее профессиональное" ${u.education === 'среднее профессиональное' ? 'selected' : ''}>среднее профессиональное</option>
+                  <option value="среднее" ${u.education === 'среднее' ? 'selected' : ''}>среднее</option>
+                  <option value="послевузовское" ${u.education === 'послевузовское' ? 'selected' : ''}>послевузовское</option>
+                </select>
+              </label>
+              <label class="field" style="grid-column:1 / -1;">
+                <span class="field__label">Специальность по диплому</span>
+                <input type="text" id="profSpecialty" name="specialty" value="${esc(u.specialty || '')}" placeholder="Юриспруденция / Экономика / Закупки">
+              </label>
+            </div>
+
+            <div style="display:flex; gap:12px; align-items:center; border-top:1px solid var(--border-light); padding-top:16px;">
+              <button type="submit" class="btn btn--primary" id="btnSaveProfile">
+                ${submitBtnText}
+              </button>
+              ${(!isRejected && !isNeedsInfo) ? `
+                <button type="button" class="btn btn--ghost" id="btnCancelEditProfile">Отмена</button>
+              ` : ''}
+            </div>
+          </form>
+        </div>
+      `;
+    }
+
     return `
       <div class="asmt-card profile-card" style="max-width: 800px; margin: 0 auto;">
-        <h2 style="margin: 0 0 20px; font-size: 1.3rem; font-weight: 800;">Мой профиль и привязки</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-light); padding-bottom:12px;">
+          <div>
+            <h2 style="margin: 0; font-size: 1.3rem; font-weight: 800;">Мой профиль и привязки</h2>
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm" id="btnStartEditProfile">
+            ✏️ Редактировать данные
+          </button>
+        </div>
+
+        ${noticeBanner}
+
         <div class="profile-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
           <div><strong>Фамилия:</strong> ${esc(cleanName(u.lastName))}</div>
           <div><strong>Имя:</strong> ${esc(cleanName(u.firstName))}</div>
           <div><strong>Отчество:</strong> ${esc(cleanName(u.middleName))}</div>
           <div><strong>Email:</strong> ${esc(u.email)}</div>
           <div><strong>Телефон:</strong> ${esc(u.phone || 'Не указан')}</div>
-          <div><strong>Должность:</strong> ${esc(u.position || '—')}</div>
+          <div><strong>Должность:</strong> <strong style="color:var(--text);">${esc(u.position || '—')}</strong></div>
           <div><strong>Регион:</strong> ${esc(u.regionName || (currentRegionObj ? currentRegionObj.name : 'Республика Татарстан'))}</div>
+          <div><strong>Муниципальный район:</strong> ${esc(u.districtName || u.districtOtherText || '—')}</div>
+          <div><strong>Опыт в закупках:</strong> ${esc(u.experienceLevel || '—')}</div>
+          <div><strong>Образование:</strong> ${esc(u.education || '—')}</div>
+          <div><strong>Специальность:</strong> ${esc(u.specialty || '—')}</div>
           <div><strong>Статус пользователя:</strong> <span class="badge badge--approved">Активен</span></div>
         </div>
         <hr style="border:none; border-top:1px solid var(--border-light); margin:20px 0;">
         <h3 style="margin:0 0 12px; font-size:1.1rem;">Организация</h3>
         <p><strong>Наименование:</strong> ${esc(cleanName(org?.name) || 'Частное лицо')}</p>
         <p><strong>ИНН:</strong> ${esc(org?.inn || '—')}</p>
-        <p><strong>Статус заявки:</strong> ${badge(data.userOrgStatus)}</p>
+        <p><strong>Уровень заказчика:</strong> ${esc(u.customerLevel || org?.customerLevel || '—')}</p>
+        <p><strong>Статус заявки:</strong> ${badge(data.userOrgStatus, isResubmitted)}</p>
       </div>
     `;
   }
@@ -376,6 +645,7 @@
       : `<p class="lead">В данный момент нет активных кампаний для вашего региона.</p>`;
 
     return `
+      ${renderModerationAlert(data)}
       ${renderUserHeroCard(data)}
       ${bannersHtml(data.regionBanners)}
 
@@ -465,6 +735,108 @@
     }
   }
 
+  function bindProfileEvents() {
+    const btnStartEdit = document.getElementById('btnStartEditProfile');
+    if (btnStartEdit) {
+      btnStartEdit.addEventListener('click', () => {
+        state.isEditingProfile = true;
+        render();
+      });
+    }
+
+    const btnCancelEdit = document.getElementById('btnCancelEditProfile');
+    if (btnCancelEdit) {
+      btnCancelEdit.addEventListener('click', () => {
+        state.isEditingProfile = false;
+        render();
+      });
+    }
+
+    const distSelect = document.getElementById('profDistrictSelect');
+    const custLevel = document.getElementById('profCustomerLevel');
+    const otherWrap = document.getElementById('profDistrictOtherWrap');
+
+    function syncDistrictOther() {
+      if (!otherWrap) return;
+      const isFed = custLevel && custLevel.value === 'federal';
+      const isOther = distSelect && distSelect.value === 'other';
+      otherWrap.classList.toggle('hidden', !(isFed || isOther));
+    }
+
+    if (distSelect) {
+      distSelect.addEventListener('change', syncDistrictOther);
+    }
+    if (custLevel) {
+      custLevel.addEventListener('change', syncDistrictOther);
+    }
+
+    const regSelect = document.getElementById('profRegionSelect');
+    if (regSelect) {
+      const currentDistrictId = (state.data && state.data.user && state.data.user.districtId) || null;
+      loadProfileDistricts(regSelect.value, currentDistrictId);
+
+      regSelect.addEventListener('change', () => {
+        loadProfileDistricts(regSelect.value);
+      });
+    }
+
+    const form = document.getElementById('formProfileEdit');
+    if (form) {
+      const isUpdate = form.dataset.mode === 'update';
+      const defaultBtnText = isUpdate
+        ? '💾 Сохранить изменения в профиле'
+        : '💾 Сохранить и отправить на повторную модерацию';
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnSaveProfile');
+        const status = document.getElementById('profFormStatus');
+        btn.disabled = true;
+        btn.textContent = 'Сохранение…';
+        status.classList.remove('hidden');
+        status.textContent = 'Отправка данных…';
+        status.className = 'status status--info';
+
+        try {
+          const selectedDistVal = distSelect ? distSelect.value : '';
+          const districtId = (selectedDistVal && selectedDistVal !== 'other') ? Number(selectedDistVal) : null;
+          const otherInput = document.getElementById('profDistrictOther');
+          const districtOtherText = otherInput ? otherInput.value.trim() : '';
+
+          const payload = {
+            action: isUpdate ? 'update_profile' : 'resubmit_profile',
+            position: document.getElementById('profPosition').value.trim(),
+            experienceLevel: document.getElementById('profExpLevel').value,
+            education: document.getElementById('profEducation').value,
+            specialty: document.getElementById('profSpecialty').value.trim(),
+            districtId,
+            districtOtherText,
+          };
+
+          if (!isUpdate) {
+            payload.inn = document.getElementById('profInn').value.trim();
+            payload.organizationName = document.getElementById('profOrgName').value.trim();
+            payload.customerLevel = document.getElementById('profCustomerLevel').value;
+            payload.regionId = Number(document.getElementById('profRegionSelect').value);
+          }
+
+          const res = await AsmtApi.post('api/cabinet.php', payload);
+          status.textContent = res.message || (isUpdate ? 'Данные профиля успешно обновлены!' : 'Данные успешно отправлены на повторную модерацию!');
+          status.className = 'status status--ok';
+          state.isEditingProfile = false;
+          setTimeout(() => {
+            loadCabinetData();
+          }, 1200);
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = defaultBtnText;
+          status.textContent = err.message || 'Ошибка сохранения';
+          status.className = 'status status--error';
+        }
+      });
+    }
+  }
+
   function render() {
     if (state.loading) {
       root.innerHTML = `<div class="asmt-card"><p class="lead">Загрузка личного кабинета…</p></div>`;
@@ -478,41 +850,54 @@
 
     if (state.activeTab === 'profile') {
       root.innerHTML = renderProfileTab(state.data);
+      bindProfileEvents();
     } else {
-      
-    let bannerHtml = '';
-    if (state.data && state.data.isImpersonating) {
-      bannerHtml = `
-        <div class="impersonate-bar">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            <span>Вы вошли в личный кабинет в режиме просмотра от имени: <strong>${esc(cleanName(state.data.user.lastName))} ${esc(cleanName(state.data.user.firstName))}</strong></span>
+      let bannerHtml = '';
+      if (state.data && state.data.isImpersonating) {
+        bannerHtml = `
+          <div class="impersonate-bar">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>Вы вошли в личный кабинет в режиме просмотра от имени: <strong>${esc(cleanName(state.data.user.lastName))} ${esc(cleanName(state.data.user.firstName))}</strong></span>
+            </div>
+            <button type="button" id="btnStopImpersonation" class="btn-stop">
+              ← Вернуться в админку
+            </button>
           </div>
-          <button type="button" id="btnStopImpersonation" class="btn-stop">
-            ← Вернуться в админку
-          </button>
-        </div>
-      `;
-    }
-    root.innerHTML = bannerHtml + renderMainTab(state.data);
-    const stopBtn = document.getElementById('btnStopImpersonation');
-    if (stopBtn) {
-      stopBtn.addEventListener('click', async () => {
-        stopBtn.disabled = true;
-        stopBtn.textContent = 'Возврат…';
-        try {
-          const res = await AsmtApi.post('api/auth.php?action=stop-impersonation', {});
-          if (res.success && res.redirect) {
-            location.href = res.redirect;
-          } else {
+        `;
+      }
+      root.innerHTML = bannerHtml + renderMainTab(state.data);
+
+      const goEdit = document.getElementById('btnGoEditProfileFromAlert');
+      if (goEdit) {
+        goEdit.addEventListener('click', () => {
+          if (btnTabProfile) {
+            btnTabProfile.classList.add('is-active');
+            if (btnTabMain) btnTabMain.classList.remove('is-active');
+          }
+          state.activeTab = 'profile';
+          state.isEditingProfile = true;
+          render();
+        });
+      }
+
+      const stopBtn = document.getElementById('btnStopImpersonation');
+      if (stopBtn) {
+        stopBtn.addEventListener('click', async () => {
+          stopBtn.disabled = true;
+          stopBtn.textContent = 'Возврат…';
+          try {
+            const res = await AsmtApi.post('api/auth.php?action=stop-impersonation', {});
+            if (res.success && res.redirect) {
+              location.href = res.redirect;
+            } else {
+              location.href = 'admin-users.html';
+            }
+          } catch (err) {
             location.href = 'admin-users.html';
           }
-        } catch (err) {
-          location.href = 'admin-users.html';
-        }
-      });
-    }
-
+        });
+      }
 
       root.querySelectorAll('[data-start-campaign]').forEach((btn) => {
         btn.addEventListener('click', () => {

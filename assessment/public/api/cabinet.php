@@ -13,11 +13,184 @@ $pdo = Db::pdo();
 $userId = (int)$user['id'];
 $regionId = !empty($user['region_id']) ? (int)$user['region_id'] : null;
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $payload = Http::readJson();
+    $action = trim((string)($payload['action'] ?? $_GET['action'] ?? 'resubmit_profile'));
+
+    if ($action === 'resubmit_profile') {
+        $findLink = $pdo->prepare('SELECT id, status, moderator_comment, previous_moderator_comment, organization_id FROM asmt_user_organizations WHERE user_id = ? ORDER BY requested_at DESC LIMIT 1');
+        $findLink->execute([$userId]);
+        $link = $findLink->fetch();
+
+        if (!$link || !in_array($link['status'], ['rejected', 'needs_info'], true)) {
+            Http::json(['success' => false, 'error' => 'Повторная отправка на модерацию доступна только для отклонённых заявок или требующих уточнения'], 400);
+        }
+
+        $position = trim((string)($payload['position'] ?? ''));
+        $experienceLevel = trim((string)($payload['experienceLevel'] ?? ''));
+        $education = trim((string)($payload['education'] ?? ''));
+        $specialty = trim((string)($payload['specialty'] ?? ''));
+        $customerLevel = trim((string)($payload['customerLevel'] ?? ''));
+        $organizationName = trim((string)($payload['organizationName'] ?? ''));
+        $inn = preg_replace('/\D+/', '', (string)($payload['inn'] ?? '')) ?? '';
+        $newRegionId = !empty($payload['regionId']) ? (int)$payload['regionId'] : null;
+        $districtId = !empty($payload['districtId']) ? (int)$payload['districtId'] : null;
+        $districtOtherText = trim((string)($payload['districtOtherText'] ?? ''));
+
+        if ($position === '') {
+            Http::json(['success' => false, 'error' => 'Укажите занимаемую должность'], 400);
+        }
+        if ($organizationName === '' || !in_array(strlen($inn), [10, 12], true)) {
+            Http::json(['success' => false, 'error' => 'Укажите корректный ИНН и наименование организации'], 400);
+        }
+
+        $pdo->beginTransaction();
+        try {
+            // 1. Update user profile
+            $updUser = $pdo->prepare('
+                UPDATE asmt_users
+                SET position = ?,
+                    experience_level = COALESCE(NULLIF(?, \'\'), experience_level),
+                    education = COALESCE(NULLIF(?, \'\'), education),
+                    specialty = COALESCE(NULLIF(?, \'\'), specialty),
+                    customer_level = COALESCE(NULLIF(?, \'\'), customer_level),
+                    region_id = COALESCE(?, region_id),
+                    district_id = ?,
+                    district_other_text = ?
+                WHERE id = ?
+            ');
+            $updUser->execute([
+                $position,
+                $experienceLevel,
+                $education,
+                $specialty,
+                $customerLevel,
+                $newRegionId,
+                $districtId,
+                $districtOtherText,
+                $userId
+            ]);
+
+            // 2. Resolve organization by INN and update name if needed
+            $findOrg = $pdo->prepare('SELECT id, name, customer_level, status FROM asmt_organizations WHERE inn = ? AND level = 3 LIMIT 1');
+            $findOrg->execute([$inn]);
+            $existingOrg = $findOrg->fetch();
+            if ($existingOrg) {
+                $orgId = (int)$existingOrg['id'];
+                $pdo->prepare('UPDATE asmt_organizations SET name = ?, customer_level = COALESCE(NULLIF(?, \'\'), customer_level) WHERE id = ?')
+                    ->execute([$organizationName, $customerLevel ?: 'state', $orgId]);
+            } else {
+                $insOrg = $pdo->prepare(
+                    'INSERT INTO asmt_organizations (parent_id, level, name, inn, customer_level, status)
+                     VALUES (NULL, 3, ?, ?, ?, \'pending\') RETURNING id'
+                );
+                $insOrg->execute([$organizationName, $inn, $customerLevel ?: 'state']);
+                $orgId = (int)$insOrg->fetchColumn();
+            }
+
+            // 3. Update user organization link to pending with is_resubmitted = TRUE
+            $prevComment = !empty($link['moderator_comment'])
+                ? $link['moderator_comment']
+                : ($link['previous_moderator_comment'] ?? null);
+
+            $updLink = $pdo->prepare('
+                UPDATE asmt_user_organizations
+                SET organization_id = ?,
+                    status = \'pending\',
+                    is_resubmitted = TRUE,
+                    resubmitted_at = NOW(),
+                    requested_at = NOW(),
+                    previous_moderator_comment = ?,
+                    moderator_comment = \'\'
+                WHERE id = ?
+            ');
+            $updLink->execute([$orgId, $prevComment, (int)$link['id']]);
+
+            // 4. Audit entry (admin_user_id = NULL for specialist self-action)
+            $pdo->prepare('
+                INSERT INTO asmt_admin_audit (admin_user_id, action, entity, entity_id, meta_json)
+                VALUES (NULL, \'user_profile_resubmit\', \'asmt_users\', ?, ?::jsonb)
+            ')->execute([
+                $userId,
+                json_encode([
+                    'actor' => 'specialist',
+                    'user_id' => $userId,
+                    'position' => $position,
+                    'inn' => $inn,
+                    'organization' => $organizationName,
+                    'district_id' => $districtId,
+                    'district_other' => $districtOtherText,
+                ], JSON_UNESCAPED_UNICODE)
+            ]);
+
+            $pdo->commit();
+            Http::json(['success' => true, 'message' => 'Данные успешно сохранены и отправлены на повторную модерацию']);
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            Http::json(['success' => false, 'error' => 'Ошибка сохранения данных: ' . $e->getMessage()], 500);
+        }
+    } elseif ($action === 'update_profile') {
+        $position = trim((string)($payload['position'] ?? ''));
+        $experienceLevel = trim((string)($payload['experienceLevel'] ?? ''));
+        $education = trim((string)($payload['education'] ?? ''));
+        $specialty = trim((string)($payload['specialty'] ?? ''));
+        $districtId = !empty($payload['districtId']) ? (int)$payload['districtId'] : null;
+        $districtOtherText = trim((string)($payload['districtOtherText'] ?? ''));
+
+        if ($position === '') {
+            Http::json(['success' => false, 'error' => 'Укажите занимаемую должность'], 400);
+        }
+
+        try {
+            $updUser = $pdo->prepare('
+                UPDATE asmt_users
+                SET position = ?,
+                    experience_level = COALESCE(NULLIF(?, \'\'), experience_level),
+                    education = COALESCE(NULLIF(?, \'\'), education),
+                    specialty = COALESCE(NULLIF(?, \'\'), specialty),
+                    district_id = ?,
+                    district_other_text = ?
+                WHERE id = ?
+            ');
+            $updUser->execute([
+                $position,
+                $experienceLevel,
+                $education,
+                $specialty,
+                $districtId,
+                $districtOtherText,
+                $userId
+            ]);
+
+            $pdo->prepare('
+                INSERT INTO asmt_admin_audit (admin_user_id, action, entity, entity_id, meta_json)
+                VALUES (NULL, \'user_profile_update\', \'asmt_users\', ?, ?::jsonb)
+            ')->execute([
+                $userId,
+                json_encode([
+                    'actor' => 'specialist',
+                    'user_id' => $userId,
+                    'position' => $position,
+                    'district_id' => $districtId,
+                    'district_other' => $districtOtherText,
+                ], JSON_UNESCAPED_UNICODE)
+            ]);
+
+            Http::json(['success' => true, 'message' => 'Данные профиля успешно обновлены']);
+        } catch (\Throwable $e) {
+            Http::json(['success' => false, 'error' => 'Ошибка обновления профиля: ' . $e->getMessage()], 500);
+        }
+    }
+
+    Http::json(['success' => false, 'error' => 'Неизвестное действие'], 400);
+}
+
 // Leaving the test without finish = results are recorded; no Continue.
 AttemptService::finalizeOpenAttemptsForUser($pdo, $userId);
 
 $org = $pdo->prepare(
     'SELECT o.id, o.name, o.inn, uo.status, uo.moderator_comment,
+            uo.is_resubmitted, uo.resubmitted_at, uo.previous_moderator_comment,
             p2.name AS level2_name, p1.name AS level1_name
      FROM asmt_user_organizations uo
      JOIN asmt_organizations o ON o.id = uo.organization_id
@@ -124,6 +297,22 @@ foreach ($campaignRows as $campaign) {
         }
     } else {
         $canAttempt = true;
+    }
+
+    if ($organization && $organization['status'] === 'pending') {
+        $canAttempt = false;
+        $attemptBlockReason = !empty($organization['is_resubmitted'])
+            ? 'Повторная заявка находится на рассмотрении модератора. Доступ к тестированию откроется после подтверждения.'
+            : 'Регистрация ожидает подтверждения модератором. Доступ к тестированию откроется после проверки.';
+    } elseif ($organization && $organization['status'] === 'rejected') {
+        $canAttempt = false;
+        $attemptBlockReason = 'Заявка отклонена модератором. Исправьте данные в профиле для допуска к тестированию.';
+    } elseif ($organization && $organization['status'] === 'needs_info') {
+        $canAttempt = false;
+        $attemptBlockReason = 'Требуется уточнение данных по замечанию модератора.';
+    } elseif (!$organization || $organization['status'] !== 'approved') {
+        $canAttempt = false;
+        $attemptBlockReason = 'Для прохождения тестирования необходимо подтверждение организации модератором.';
     }
 
     $activeCampaigns[] = [
@@ -236,6 +425,9 @@ $orgPayload = $organization ? [
     'inn' => $organization['inn'],
     'moderationStatus' => $organization['status'],
     'moderatorComment' => $organization['moderator_comment'],
+    'isResubmitted' => !empty($organization['is_resubmitted']),
+    'resubmittedAt' => $organization['resubmitted_at'] ?? null,
+    'previousModeratorComment' => $organization['previous_moderator_comment'] ?? null,
     'level1' => $organization['level1_name'],
     'level2' => $organization['level2_name'],
 ] : null;
@@ -267,6 +459,10 @@ Http::json([
     ],
     'organization' => $orgPayload,
     'userOrgStatus' => $orgPayload['moderationStatus'] ?? null,
+    'moderatorComment' => $orgPayload['moderatorComment'] ?? null,
+    'previousModeratorComment' => $orgPayload['previousModeratorComment'] ?? null,
+    'isResubmitted' => $orgPayload['isResubmitted'] ?? false,
+    'resubmittedAt' => $orgPayload['resubmittedAt'] ?? null,
     'banners' => $mappedBanners,
     'regionBanners' => $mappedBanners,
     'campaign' => $mappedCampaign,

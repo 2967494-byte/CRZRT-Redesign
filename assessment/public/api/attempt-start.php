@@ -115,6 +115,24 @@ if (!$campaign) {
     Http::json(['success' => false, 'error' => 'Нет активной кампании'], 400);
 }
 
+$chkOrg = $pdo->prepare('SELECT status, is_resubmitted, moderator_comment FROM asmt_user_organizations WHERE user_id = ? ORDER BY requested_at DESC LIMIT 1');
+$chkOrg->execute([$userId]);
+$userOrg = $chkOrg->fetch();
+if ($userOrg && $userOrg['status'] !== 'approved') {
+    if ($userOrg['status'] === 'pending') {
+        $msg = !empty($userOrg['is_resubmitted'])
+            ? 'Ваша повторная заявка находится на рассмотрении модератора. Доступ к тестированию откроется после подтверждения.'
+            : 'Ваша регистрация ожидает подтверждения модератором. Доступ к тестированию откроется после проверки.';
+    } elseif ($userOrg['status'] === 'rejected') {
+        $msg = 'Ваша заявка отклонена модератором. Внесите исправления в профиле для допуска к тестированию.';
+    } elseif ($userOrg['status'] === 'needs_info') {
+        $msg = 'Требуется исправление данных профиля по замечанию модератора.';
+    } else {
+        $msg = 'Для прохождения тестирования необходимо подтверждение организации модератором.';
+    }
+    Http::json(['success' => false, 'error' => $msg], 403);
+}
+
 $campaignId = (int)$campaign['id'];
 
 // 4. Check if user already finished this campaign

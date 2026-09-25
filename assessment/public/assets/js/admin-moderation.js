@@ -60,7 +60,7 @@
     return [u.lastName, u.firstName, u.middleName].filter(Boolean).join(' ');
   }
 
-  function statusBadge(status) {
+  function statusBadge(status, isResubmitted) {
     const bg = status === 'pending' ? 'var(--amber-light)'
       : status === 'approved' ? '#eefbf3'
       : status === 'rejected' ? '#fff1f1'
@@ -69,7 +69,11 @@
       : status === 'approved' ? '#0c6b34'
       : status === 'rejected' ? '#9b1c1c'
       : 'inherit';
-    return `<span class="badge" style="background:${bg}; color:${color};">${esc(STATUS_LABEL[status] || status)}</span>`;
+    let html = `<span class="badge" style="background:${bg}; color:${color};">${esc(STATUS_LABEL[status] || status)}</span>`;
+    if (isResubmitted && (status === 'pending' || status === 'needs_info')) {
+      html += ` <span class="badge" style="background:#fef3c7; color:#b45309; font-weight:700;" title="Пользователь исправил данные и отправил повторно">🔄 Повторно</span>`;
+    }
+    return html;
   }
 
   function actionButtons(id) {
@@ -95,8 +99,29 @@
     const hier = [o.level1, o.level2, o.name].filter(Boolean).join(' → ') || '—';
     const district = u.districtOther || u.district || '—';
 
+    const isPendingResubmission = it.isResubmitted && it.status === 'pending';
+    const resubmitNotice = isPendingResubmission ? `
+      <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:12px 16px; margin-bottom:18px;">
+        <div style="font-weight:700; color:#b45309; font-size:0.95rem; display:flex; align-items:center; gap:8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Заявка отправлена на повторную модерацию
+        </div>
+        ${it.previousComment ? `
+          <div style="margin-top:6px; font-size:0.9rem; color:#92400e;">
+            <strong>Предыдущее замечание модератора:</strong> «${esc(it.previousComment)}»
+          </div>
+        ` : ''}
+        ${it.resubmittedAt ? `
+          <div style="margin-top:4px; font-size:0.8rem; color:#b45309;">
+            Дата повторной отправки: ${formatDt(it.resubmittedAt)}
+          </div>
+        ` : ''}
+      </div>
+    ` : '';
+
     els.detailTitle.textContent = `Заявка #${it.id}`;
     els.detailBody.innerHTML = `
+      ${resubmitNotice}
       <h3 class="mod-detail-section">Участник</h3>
       <div class="mod-detail-grid">
         ${detailField('ФИО', fioOf(u), true)}
@@ -126,6 +151,7 @@
         ${detailField('Подана', formatDt(it.requestedAt))}
         ${detailField('Модерация', formatDt(it.moderatedAt))}
         ${detailField('Комментарий модератора', it.comment || '—', true)}
+        ${(!isPendingResubmission && it.previousComment) ? detailField('Предыдущее замечание (история)', it.previousComment, true) : ''}
       </div>
     `;
 
@@ -182,7 +208,7 @@
             <span class="cell-muted">${it.organization.inn ? 'ИНН ' + esc(it.organization.inn) : '—'}</span>
           </div>
         </td>
-        <td class="col-status">${statusBadge(it.status)}</td>
+        <td class="col-status">${statusBadge(it.status, it.isResubmitted)}</td>
         <td class="col-date cell-muted">${esc(formatDt(it.requestedAt).slice(0, 16))}</td>
         <td class="col-actions">${actionButtons(it.id)}</td>
       </tr>`;

@@ -74,7 +74,13 @@ $queries = [
     "CREATE INDEX IF NOT EXISTS asmt_districts_region_idx ON asmt_districts (region_id);",
     "CREATE UNIQUE INDEX IF NOT EXISTS asmt_districts_region_name_uidx ON asmt_districts (region_id, name) WHERE region_id IS NOT NULL;",
 
-    // 7. Analyze statistics
+    // 7. Resubmission support in asmt_user_organizations
+    "ALTER TABLE asmt_user_organizations ADD COLUMN IF NOT EXISTS is_resubmitted BOOLEAN NOT NULL DEFAULT FALSE;",
+    "ALTER TABLE asmt_user_organizations ADD COLUMN IF NOT EXISTS resubmitted_at TIMESTAMPTZ NULL;",
+    "ALTER TABLE asmt_user_organizations ADD COLUMN IF NOT EXISTS previous_moderator_comment TEXT NULL;",
+    "CREATE INDEX IF NOT EXISTS asmt_user_org_resubmitted_idx ON asmt_user_organizations (status, is_resubmitted);",
+
+    // 8. Analyze statistics
     "ANALYZE asmt_attempts;",
     "ANALYZE asmt_attempt_answers;",
     "ANALYZE asmt_user_organizations;",

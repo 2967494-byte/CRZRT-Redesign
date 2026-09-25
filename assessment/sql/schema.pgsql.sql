@@ -106,8 +106,13 @@ CREATE TABLE IF NOT EXISTS asmt_user_organizations (
     moderated_at        TIMESTAMPTZ NULL,
     moderated_by        BIGINT NULL REFERENCES asmt_users(id) ON DELETE SET NULL,
     moderator_comment   TEXT NOT NULL DEFAULT '',
+    is_resubmitted      BOOLEAN NOT NULL DEFAULT FALSE,
+    resubmitted_at      TIMESTAMPTZ NULL,
+    previous_moderator_comment TEXT NULL,
     UNIQUE (user_id, organization_id)
 );
+
+CREATE INDEX IF NOT EXISTS asmt_user_org_resubmitted_idx ON asmt_user_organizations (status, is_resubmitted);
 
 CREATE TABLE IF NOT EXISTS asmt_questions (
     id              BIGSERIAL PRIMARY KEY,
