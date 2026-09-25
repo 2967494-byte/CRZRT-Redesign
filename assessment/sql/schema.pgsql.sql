@@ -24,11 +24,16 @@ CREATE TABLE IF NOT EXISTS asmt_region_banners (
 
 CREATE TABLE IF NOT EXISTS asmt_districts (
     id              BIGSERIAL PRIMARY KEY,
+    region_id       BIGINT NULL REFERENCES asmt_regions(id) ON DELETE RESTRICT,
     name            VARCHAR(255) NOT NULL,
     sort_order      INT NOT NULL DEFAULT 0,
     is_separate_city BOOLEAN NOT NULL DEFAULT FALSE,
     is_active       BOOLEAN NOT NULL DEFAULT TRUE
 );
+
+CREATE INDEX IF NOT EXISTS asmt_districts_region_idx ON asmt_districts (region_id);
+CREATE UNIQUE INDEX IF NOT EXISTS asmt_districts_region_name_uidx ON asmt_districts (region_id, name) WHERE region_id IS NOT NULL;
+
 
 CREATE TABLE IF NOT EXISTS asmt_campaigns (
     id                      BIGSERIAL PRIMARY KEY,

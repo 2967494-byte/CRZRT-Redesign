@@ -134,8 +134,24 @@ if ($method === 'GET') {
     $user = Auth::requireRole(['superadmin', 'region_admin']);
 
     if ($type === 'districts') {
-        $stmt = $pdo->query('SELECT id, name, sort_order, is_separate_city, is_active FROM asmt_districts ORDER BY sort_order, name');
-        Http::json(['success' => true, 'items' => $stmt->fetchAll()]);
+        $filterReg = !empty($_GET['region_id']) ? (int)$_GET['region_id'] : 0;
+        if ($filterReg <= 0) {
+            $filterReg = (int)($pdo->query("SELECT id FROM asmt_regions WHERE code = '16' LIMIT 1")->fetchColumn() ?: 1);
+        }
+        $stmt = $pdo->prepare('
+            SELECT d.id, d.name, d.sort_order, d.is_separate_city, d.is_active, d.region_id,
+                   r.name AS region_name, r.code AS region_code
+            FROM asmt_districts d
+            LEFT JOIN asmt_regions r ON r.id = d.region_id
+            WHERE d.region_id = ?
+            ORDER BY (d.name = \'Иное\')::int ASC, d.is_separate_city DESC, d.sort_order ASC, d.name ASC
+        ');
+        $stmt->execute([$filterReg]);
+        Http::json([
+            'success' => true,
+            'regionId' => $filterReg,
+            'items' => $stmt->fetchAll(PDO::FETCH_ASSOC),
+        ]);
     }
 
     if ($type === 'banners') {
@@ -148,14 +164,16 @@ if ($method === 'GET') {
         Http::json(['success' => true, 'items' => $stmt->fetchAll()]);
     }
 
-    // Default: regions
+    // Default: regions (single pass LEFT JOIN with GROUP BY instead of correlated subquery)
     $stmt = $pdo->query('
-        SELECT r.*,
-               (SELECT COUNT(*) FROM asmt_districts) AS districts_count
+        SELECT r.id, r.code, r.name, r.is_active, r.created_at,
+               COUNT(d.id) AS districts_count
         FROM asmt_regions r
-        ORDER BY r.name
+        LEFT JOIN asmt_districts d ON d.region_id = r.id AND d.is_active = TRUE
+        GROUP BY r.id, r.code, r.name, r.is_active, r.created_at
+        ORDER BY CAST(r.code AS INTEGER), r.name
     ');
-    Http::json(['success' => true, 'items' => $stmt->fetchAll()]);
+    Http::json(['success' => true, 'items' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
 }
 
 if ($method === 'POST') {
@@ -185,6 +203,7 @@ if ($method === 'POST') {
 
     if ($type === 'district') {
         $id = (int)($payload['id'] ?? 0);
+        $regionId = isset($payload['regionId']) && (int)$payload['regionId'] > 0 ? (int)$payload['regionId'] : null;
         $name = trim((string)($payload['name'] ?? ''));
         $isSeparate = !empty($payload['isSeparateCity']);
         $isActive = !empty($payload['isActive']);
@@ -195,11 +214,11 @@ if ($method === 'POST') {
         }
 
         if ($id > 0) {
-            $pdo->prepare('UPDATE asmt_districts SET name = ?, is_separate_city = ?, is_active = ?, sort_order = ? WHERE id = ?')
-                ->execute([$name, $isSeparate ? 'true' : 'false', $isActive ? 'true' : 'false', $sortOrder, $id]);
+            $pdo->prepare('UPDATE asmt_districts SET name = ?, is_separate_city = ?, is_active = ?, sort_order = ?, region_id = COALESCE(?, region_id) WHERE id = ?')
+                ->execute([$name, $isSeparate ? 'true' : 'false', $isActive ? 'true' : 'false', $sortOrder, $regionId, $id]);
         } else {
-            $pdo->prepare('INSERT INTO asmt_districts (name, is_separate_city, is_active, sort_order) VALUES (?, ?, ?, ?)')
-                ->execute([$name, $isSeparate ? 'true' : 'false', $isActive ? 'true' : 'false', $sortOrder]);
+            $pdo->prepare('INSERT INTO asmt_districts (name, is_separate_city, is_active, sort_order, region_id) VALUES (?, ?, ?, ?, ?)')
+                ->execute([$name, $isSeparate ? 'true' : 'false', $isActive ? 'true' : 'false', $sortOrder, $regionId]);
         }
         Http::json(['success' => true]);
     }

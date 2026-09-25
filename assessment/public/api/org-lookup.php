@@ -80,6 +80,9 @@ if ($ext) {
             'kpp' => $ext['kpp'],
             'ogrn' => $ext['ogrn'],
             'address' => $ext['address'],
+            'regionCode' => $ext['regionCode'] ?? null,
+            'area' => $ext['area'] ?? null,
+            'city' => $ext['city'] ?? null,
             'hierarchy' => null,
         ],
     ]);

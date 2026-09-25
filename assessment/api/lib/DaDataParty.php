@@ -49,11 +49,6 @@ final class DaDataParty
             return null;
         }
 
-        $ch = curl_init('https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party');
-        if ($ch === false) {
-            return null;
-        }
-
         $headers = [
             'Content-Type: application/json',
             'Accept: application/json',
@@ -64,18 +59,41 @@ final class DaDataParty
             $headers[] = 'X-Secret: ' . $secret;
         }
 
-        curl_setopt_array($ch, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 3,
-            CURLOPT_TIMEOUT => 5,
-        ]);
-
-        $raw = curl_exec($ch);
-        $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $raw = false;
+        $code = 0;
+        if (\function_exists('curl_init')) {
+            $ch = \curl_init('https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party');
+            if ($ch !== false) {
+                \curl_setopt_array($ch, [
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => $payload,
+                    CURLOPT_HTTPHEADER => $headers,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_CONNECTTIMEOUT => 3,
+                    CURLOPT_TIMEOUT => 5,
+                ]);
+                $raw = \curl_exec($ch);
+                $code = (int)\curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                \curl_close($ch);
+            }
+        }
+        if ($raw === false && \ini_get('allow_url_fopen')) {
+            $ctx = \stream_context_create([
+                'http' => [
+                    'method' => 'POST',
+                    'header' => implode("\r\n", $headers),
+                    'content' => $payload,
+                    'timeout' => 5,
+                    'ignore_errors' => true,
+                ],
+            ]);
+            $raw = @\file_get_contents('https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', false, $ctx);
+            if (isset($http_response_header[0]) && preg_match('/\s(\d{3})\s/', $http_response_header[0], $m)) {
+                $code = (int)$m[1];
+            } else {
+                $code = $raw !== false ? 200 : 500;
+            }
+        }
 
         if ($raw === false || $code < 200 || $code >= 300) {
             return null;
@@ -100,6 +118,11 @@ final class DaDataParty
         }
 
         $addr = $d['address']['unrestricted_value'] ?? $d['address']['value'] ?? null;
+        $addrData = is_array($d['address']['data'] ?? null) ? $d['address']['data'] : [];
+        $regionKladr = (string)($addrData['region_kladr_id'] ?? '');
+        $regionCode = strlen($regionKladr) >= 2 ? substr($regionKladr, 0, 2) : (strlen($foundInn) >= 2 ? substr($foundInn, 0, 2) : null);
+        $area = (string)($addrData['area'] ?? $addrData['area_with_type'] ?? '');
+        $city = (string)($addrData['city'] ?? $addrData['city_with_type'] ?? '');
 
         $result = [
             'name' => $name,
@@ -109,6 +132,9 @@ final class DaDataParty
             'type' => isset($d['type']) ? (string)$d['type'] : null,
             'status' => isset($d['state']['status']) ? (string)$d['state']['status'] : null,
             'address' => is_string($addr) ? $addr : null,
+            'regionCode' => $regionCode,
+            'area' => $area !== '' ? $area : null,
+            'city' => $city !== '' ? $city : null,
         ];
 
         // 3. Save into cache (UPSERT)

@@ -100,6 +100,14 @@
           <button type="button" class="sub-tab-btn" data-tab="banners">Региональные баннеры</button>
         </div>
 
+        <div id="districtsFilterBar" class="hidden" style="margin-bottom:14px; display:flex; align-items:center; gap:12px; background:#f8fafc; padding:10px 14px; border-radius:10px; border:1px solid var(--border);">
+          <label for="districtRegionFilter" style="font-weight:600; font-size:0.9rem; color:var(--text); white-space:nowrap;">Субъект РФ:</label>
+          <select id="districtRegionFilter" class="field__input" style="max-width:420px; padding:6px 10px; border-radius:6px; border:1px solid var(--border); font-size:0.9rem;">
+            <option value="">Загрузка списка регионов…</option>
+          </select>
+          <span id="districtsCountBadge" style="font-size:0.85rem; color:var(--muted);"></span>
+        </div>
+
         <div id="dictStatus" class="status"></div>
 
         <div class="admin-table-wrap--full" style="margin-top:14px;">
@@ -128,6 +136,6 @@
 
   <script src="assets/js/asmt-api.js"></script>
   <script src="assets/js/admin-badges.js"></script>
-  <script src="assets/js/admin-dicts.js"></script>
+  <script src="assets/js/admin-dicts.js?v=2"></script>
 </body>
 </html>

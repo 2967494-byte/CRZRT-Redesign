@@ -58,7 +58,23 @@ $queries = [
     "CREATE INDEX IF NOT EXISTS asmt_user_org_user_req_idx ON asmt_user_organizations (user_id, requested_at DESC);",
     "CREATE INDEX IF NOT EXISTS asmt_attempts_status_expires_idx ON asmt_attempts (status, expires_at) WHERE status = 'in_progress';",
 
-    // 6. Analyze statistics
+    // 6. Districts table region_id support
+    "ALTER TABLE asmt_districts ADD COLUMN IF NOT EXISTS region_id BIGINT NULL REFERENCES asmt_regions(id) ON DELETE RESTRICT;",
+    "DO \$\$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 FROM information_schema.referential_constraints rc
+            JOIN information_schema.table_constraints tc ON tc.constraint_name = rc.constraint_name
+            WHERE tc.table_name = 'asmt_districts' AND rc.delete_rule = 'CASCADE'
+        ) THEN
+            ALTER TABLE asmt_districts DROP CONSTRAINT IF EXISTS asmt_districts_region_id_fkey;
+            ALTER TABLE asmt_districts ADD CONSTRAINT asmt_districts_region_id_fkey FOREIGN KEY (region_id) REFERENCES asmt_regions(id) ON DELETE RESTRICT;
+        END IF;
+    END \$\$;",
+    "CREATE INDEX IF NOT EXISTS asmt_districts_region_idx ON asmt_districts (region_id);",
+    "CREATE UNIQUE INDEX IF NOT EXISTS asmt_districts_region_name_uidx ON asmt_districts (region_id, name) WHERE region_id IS NOT NULL;",
+
+    // 7. Analyze statistics
     "ANALYZE asmt_attempts;",
     "ANALYZE asmt_attempt_answers;",
     "ANALYZE asmt_user_organizations;",

@@ -21,6 +21,15 @@
   let lookupTimer = null;
   let fromDirectory = false;
   let consentTime = null;
+  let districtLoadSeq = 0;
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
 
   function showStatus(msg, type) {
     status.textContent = msg;
@@ -96,9 +105,9 @@
     }
     const h = org.hierarchy;
     const lines = [];
-    if (h.level1) lines.push(`<div><span class="org-hierarchy__lvl">Ур. 1</span> ${h.level1.name}</div>`);
-    if (h.level2) lines.push(`<div><span class="org-hierarchy__lvl">Ур. 2</span> ${h.level2.name}</div>`);
-    lines.push(`<div><span class="org-hierarchy__lvl">Ур. 3</span> ${h.level3.name} · ИНН ${h.level3.inn}</div>`);
+    if (h.level1) lines.push(`<div><span class="org-hierarchy__lvl">Ур. 1</span> ${escapeHtml(h.level1.name)}</div>`);
+    if (h.level2) lines.push(`<div><span class="org-hierarchy__lvl">Ур. 2</span> ${escapeHtml(h.level2.name)}</div>`);
+    lines.push(`<div><span class="org-hierarchy__lvl">Ур. 3</span> ${escapeHtml(h.level3.name)} · ИНН ${escapeHtml(h.level3.inn)}</div>`);
     orgHierarchy.innerHTML = '<strong>Найдено в ведомственном справочнике</strong>' + lines.join('');
     orgHierarchy.classList.remove('hidden');
   }
@@ -127,21 +136,25 @@
         } else {
           orgHierarchy.classList.remove('hidden');
           const extra = [];
-          if (data.organization.inn) extra.push('ИНН ' + data.organization.inn);
-          if (data.organization.ogrn) extra.push('ОГРН ' + data.organization.ogrn);
-          if (data.organization.address) extra.push(data.organization.address);
+          if (data.organization.inn) extra.push('ИНН ' + escapeHtml(data.organization.inn));
+          if (data.organization.ogrn) extra.push('ОГРН ' + escapeHtml(data.organization.ogrn));
+          if (data.organization.address) extra.push(escapeHtml(data.organization.address));
           orgHierarchy.innerHTML =
             '<strong>Найдено в ЕГРЮЛ / ЕГРИП</strong>' +
-            '<div>' + (data.organization.name || '') + '</div>' +
+            '<div>' + escapeHtml(data.organization.name || '') + '</div>' +
             (extra.length ? '<div style="margin-top:4px;color:var(--muted);font-size:0.85rem;">' + extra.join(' · ') + '</div>' : '') +
             '<div style="margin-top:6px;font-size:0.85rem;color:var(--muted);">Организации нет в ведомственном справочнике — заявка уйдёт на модерацию.</div>';
         }
+        await autoMatchRegionAndDistrict(inn, data.organization);
       } else {
         fromDirectory = false;
         orgName.readOnly = false;
         renderHierarchy(null);
         orgHierarchy.classList.remove('hidden');
         orgHierarchy.innerHTML = '<strong>ИНН не найден</strong><div>Укажите наименование организации вручную. Заявка уйдёт на модерацию.</div>';
+        if (inn.length >= 2) {
+          await autoMatchRegionAndDistrict(inn, null);
+        }
       }
     } catch (e) {
       /* ignore transient lookup errors */
@@ -154,10 +167,91 @@
   });
   innInput.addEventListener('blur', lookupInn);
 
-  async function loadDistricts() {
-    const data = await AsmtApi.get('api/districts.php');
-    districtSelect.innerHTML = '<option value="">Выберите район</option>' +
-      data.districts.map((d) => `<option value="${d.id}">${d.name}</option>`).join('');
+  const regRegion = document.getElementById('regRegion');
+  let currentRegionDistricts = [];
+
+  async function loadDistricts(regionId, selectedDistrictId = null) {
+    if (!districtSelect) return;
+    const seq = ++districtLoadSeq;
+    districtSelect.innerHTML = '<option value="">Загрузка районов…</option>';
+    try {
+      const url = regionId ? `api/districts.php?regionId=${encodeURIComponent(regionId)}` : 'api/districts.php';
+      const data = await AsmtApi.get(url);
+      if (seq !== districtLoadSeq) return; // Discard stale response
+      currentRegionDistricts = data.districts || [];
+      if (!currentRegionDistricts.length) {
+        districtSelect.innerHTML = '<option value="">(нет данных для региона)</option>';
+        return;
+      }
+      districtSelect.innerHTML = '<option value="">Выберите район / город</option>' +
+        currentRegionDistricts.map((d) => `<option value="${escapeHtml(d.id)}" data-city="${d.isSeparateCity ? '1' : '0'}">${escapeHtml(d.name)}</option>`).join('');
+
+      if (selectedDistrictId) {
+        districtSelect.value = String(selectedDistrictId);
+      }
+    } catch (e) {
+      if (seq !== districtLoadSeq) return;
+      districtSelect.innerHTML = '<option value="">Ошибка загрузки районов</option>';
+    }
+  }
+
+  async function autoMatchRegionAndDistrict(inn, org) {
+    if (!regRegion) return;
+    const innDigits = String(inn || '').replace(/\D+/g, '');
+    let targetCode = null;
+    if (org && org.regionCode) {
+      targetCode = String(org.regionCode).padStart(2, '0');
+    } else if (innDigits.length >= 2) {
+      targetCode = innDigits.slice(0, 2);
+    }
+
+    let regionChanged = false;
+    if (targetCode) {
+      const opt = Array.from(regRegion.options).find((o) =>
+        (o.dataset && o.dataset.code === targetCode) || o.textContent.trim().startsWith(targetCode + ' —')
+      );
+      if (opt && regRegion.value !== opt.value) {
+        regRegion.value = opt.value;
+        regionChanged = true;
+        await loadDistricts(opt.value);
+      }
+    }
+
+    if (!regionChanged && (!districtSelect || !districtSelect.options.length || districtSelect.options.length <= 1)) {
+      if (regRegion.value) {
+        await loadDistricts(regRegion.value);
+      }
+    }
+
+    // Auto-select matching district / city from org address if available
+    if (org && districtSelect && districtSelect.options.length > 1) {
+      const addrLower = (org.address || '').toLowerCase();
+      const areaLower = (org.area || '').toLowerCase();
+      const cityLower = (org.city || '').toLowerCase();
+
+      if (addrLower || areaLower || cityLower) {
+        let bestMatch = null;
+        let bestLen = 0;
+        Array.from(districtSelect.options).forEach((o) => {
+          if (!o.value || o.text === 'Иное' || o.text.startsWith('Выберите')) return;
+          const cleanName = o.text.toLowerCase()
+            .replace(/^(город|г\.|р-н|район)\s+/i, '')
+            .replace(/\s+(городской округ|муниципальный округ|район|улус|округ)$/i, '')
+            .trim();
+          if (cleanName.length >= 3) {
+            if (addrLower.includes(cleanName) || areaLower.includes(cleanName) || cityLower.includes(cleanName)) {
+              if (cleanName.length > bestLen) {
+                bestLen = cleanName.length;
+                bestMatch = o;
+              }
+            }
+          }
+        });
+        if (bestMatch) {
+          districtSelect.value = bestMatch.value;
+        }
+      }
+    }
   }
 
   function syncDistrictUi() {
@@ -167,18 +261,26 @@
   }
 
   customerLevel.addEventListener('change', syncDistrictUi);
-  const regRegion = document.getElementById('regRegion');
+
+  if (regRegion) {
+    regRegion.addEventListener('change', () => {
+      loadDistricts(regRegion.value);
+    });
+  }
 
   async function loadRegions() {
     try {
       const data = await AsmtApi.get('api/admin-dicts.php?type=regions_public');
       const items = data.items || [];
       if (regRegion) {
-        regRegion.innerHTML = items.map(r => `
-          <option value="${r.id}" ${r.code === '16' || r.name.includes('Татарстан') ? 'selected' : ''}>
-            ${r.code} — ${r.name}
+        regRegion.innerHTML = items.map((r) => `
+          <option value="${escapeHtml(r.id)}" data-code="${escapeHtml(r.code)}" ${r.code === '16' || (r.name && r.name.includes('Татарстан')) ? 'selected' : ''}>
+            ${escapeHtml(r.code)} — ${escapeHtml(r.name)}
           </option>
         `).join('');
+
+        // Initial load of districts for the currently selected region
+        await loadDistricts(regRegion.value);
       }
     } catch (e) {
       if (regRegion) regRegion.innerHTML = '<option value="">Ошибка загрузки регионов</option>';
@@ -186,8 +288,7 @@
   }
 
   syncDistrictUi();
-  loadDistricts().catch((e) => showStatus(e.message, 'error'));
-  loadRegions();
+  loadRegions().catch((e) => showStatus(e.message, 'error'));
 
   function openModal() {
     modal.classList.remove('hidden');
