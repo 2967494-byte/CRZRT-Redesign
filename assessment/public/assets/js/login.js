@@ -1,6 +1,20 @@
 (function () {
   const form = document.getElementById('loginForm');
   const status = document.getElementById('formStatus');
+  const btnTogglePassword = document.getElementById('btnTogglePassword');
+  const passwordInput = document.getElementById('loginPassword') || (form && form.password);
+
+  if (btnTogglePassword && passwordInput) {
+    btnTogglePassword.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      btnTogglePassword.classList.toggle('is-visible', isPassword);
+      btnTogglePassword.setAttribute('aria-label', isPassword ? 'Скрыть пароль' : 'Показать пароль');
+      btnTogglePassword.setAttribute('title', isPassword ? 'Скрыть пароль' : 'Показать пароль');
+      passwordInput.focus();
+    });
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

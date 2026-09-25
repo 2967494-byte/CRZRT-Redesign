@@ -693,6 +693,60 @@ a:hover { text-decoration: underline; }
   box-shadow: 0 0 0 3px rgba(15, 170, 75, 0.15);
 }
 
+.field-password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.field-password-wrap input {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.btn-toggle-password {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color 0.15s ease, background 0.15s ease;
+  padding: 0;
+  -webkit-appearance: none;
+}
+
+.btn-toggle-password:hover {
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.btn-toggle-password:focus-visible {
+  outline: 2px solid var(--green);
+}
+
+.btn-toggle-password .icon-eye-off {
+  display: none;
+}
+
+.btn-toggle-password.is-visible .icon-eye {
+  display: none;
+}
+
+.btn-toggle-password.is-visible .icon-eye-off {
+  display: block;
+  color: var(--green);
+}
+
 .checkbox-group {
   display: flex;
   flex-direction: column;
