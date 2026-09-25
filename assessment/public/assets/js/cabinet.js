@@ -295,18 +295,38 @@
       `;
     }
 
-    if (isResubmitted && status === 'pending') {
-      return `
-        <div class="asmt-card" style="background:#f0fdf4; border:1.5px solid #86efac; margin-bottom:20px; padding:16px 20px; border-radius:14px;">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <div style="width:36px; height:36px; border-radius:10px; background:#dcfce7; display:flex; align-items:center; justify-content:center; color:#16a34a; flex-shrink:0;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-            </div>
-            <div>
-              <strong style="color:#166534; font-size:0.95rem;">Заявка отправлена на повторную модерацию</strong>
-              <div style="color:#15803d; font-size:0.85rem; margin-top:2px;">
-                Ваши исправленные данные находятся на проверке у модератора. Доступ к тестированию откроется после подтверждения.
+    if (status === 'pending') {
+      if (isResubmitted) {
+        return `
+          <div class="asmt-card" style="background:#f0fdf4; border:1.5px solid #86efac; margin-bottom:20px; padding:16px 20px; border-radius:14px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:36px; height:36px; border-radius:10px; background:#dcfce7; display:flex; align-items:center; justify-content:center; color:#16a34a; flex-shrink:0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
               </div>
+              <div>
+                <strong style="color:#166534; font-size:0.95rem;">Заявка отправлена на повторную модерацию</strong>
+                <div style="color:#15803d; font-size:0.85rem; margin-top:2px;">
+                  Ваши исправленные данные находятся на проверке у модератора. Доступ к тестированию откроется после подтверждения.
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="asmt-card" style="background:#fffbeb; border:1.5px solid #fde68a; margin-bottom:20px; padding:18px 22px; border-radius:14px;">
+          <div style="display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;">
+            <div style="width:40px; height:40px; border-radius:10px; background:#fef3c7; display:flex; align-items:center; justify-content:center; color:#d97706; flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div style="flex:1; min-width:240px;">
+              <h3 style="margin:0 0 6px; font-size:1.15rem; font-weight:800; color:#92400e;">
+                Регистрация ожидает подтверждения модератором
+              </h3>
+              <p style="margin:0; font-size:0.9rem; color:#92400e; line-height:1.4;">
+                Ваша анкета находится на проверке. Тестирование станет доступно сразу после того, как модератор подтвердит организацию и должность.
+              </p>
             </div>
           </div>
         </div>
@@ -581,7 +601,8 @@
   }
 
   function renderCampaignCard(camp) {
-    const canStart = !!camp && camp.canAttempt !== false;
+    const isApproved = state.data?.userOrgStatus === 'approved';
+    const canStart = !!camp && camp.canAttempt !== false && isApproved;
     const blockReason = camp.attemptBlockReason || '';
     const canRequestRetake = !!camp.canRequestRetake;
     const retake = camp.retakeRequest;
@@ -628,12 +649,16 @@
             Вопросов: <strong>${camp.questionsPerAttempt}</strong> · Время: <strong>${camp.timeLimitMinutes} мин.</strong>
           </p>
           ${resultBlock}
-          ${showBlockReason ? `<p class="lead" style="margin:8px 0 0; color:var(--danger);">${esc(blockReason)}</p>` : ''}
+          ${showBlockReason ? `<p class="lead" style="margin:8px 0 0; color:${!isApproved ? '#b45309' : 'var(--danger)'};">${esc(blockReason)}</p>` : ''}
           ${retakeBlock}
         </div>
         ${canStart
           ? `<button type="button" class="btn btn--primary" data-start-campaign="${camp.id}">Пройти тестирование</button>`
-          : ''}
+          : (!isApproved
+              ? `<button type="button" class="btn btn--ghost" disabled style="opacity:0.85; cursor:not-allowed; background:#f8fafc; border:1px solid #cbd5e1; color:#64748b; font-weight:600;">
+                   🔒 Доступно после модерации
+                 </button>`
+              : '')}
       </div>
     `;
   }
@@ -711,6 +736,10 @@
   }
 
   async function startCampaign(campaignId, btn) {
+    if (state.data && state.data.userOrgStatus !== 'approved') {
+      alert('Тестирование доступно только после подтверждения заявки модератором.');
+      return;
+    }
     try {
       if (btn) {
         btn.disabled = true;

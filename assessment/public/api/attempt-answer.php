@@ -28,6 +28,13 @@ $attempt = $att->fetch();
 if (!$attempt || $attempt['status'] !== 'in_progress') {
     Http::json(['success' => false, 'error' => 'Попытка недоступна'], 400);
 }
+
+$chkOrg = $pdo->prepare('SELECT status FROM asmt_user_organizations WHERE user_id = ? ORDER BY requested_at DESC LIMIT 1');
+$chkOrg->execute([(int)$user['id']]);
+$userOrg = $chkOrg->fetch();
+if (!$userOrg || $userOrg['status'] !== 'approved') {
+    Http::json(['success' => false, 'error' => 'Доступ к тестированию заблокирован модератором'], 403);
+}
 if (strtotime((string)$attempt['expires_at']) <= time()) {
     $pdo->prepare("UPDATE asmt_attempts SET status = 'expired', finished_at = NOW() WHERE id = ?")
         ->execute([$attemptId]);

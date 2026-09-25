@@ -17,6 +17,30 @@ $pdo = Db::pdo();
 $userId = (int)$user['id'];
 $regionId = !empty($user['region_id']) ? (int)$user['region_id'] : null;
 
+// Gating: Testing is strictly allowed only after moderator approval
+$chkOrg = $pdo->prepare('SELECT organization_id, status, is_resubmitted, moderator_comment FROM asmt_user_organizations WHERE user_id = ? ORDER BY requested_at DESC LIMIT 1');
+$chkOrg->execute([$userId]);
+$userOrg = $chkOrg->fetch();
+
+if (!$userOrg) {
+    Http::json(['success' => false, 'error' => 'Для прохождения тестирования необходимо подтверждение организации модератором.'], 403);
+}
+
+if ($userOrg['status'] !== 'approved') {
+    if ($userOrg['status'] === 'pending') {
+        $msg = !empty($userOrg['is_resubmitted'])
+            ? 'Повторная заявка находится на рассмотрении модератора. Доступ к тестированию откроется после подтверждения.'
+            : 'Регистрация ожидает подтверждения модератором. Доступ к тестированию откроется после проверки.';
+    } elseif ($userOrg['status'] === 'rejected') {
+        $msg = 'Ваша заявка отклонена модератором. Внесите исправления в профиле для допуска к тестированию.';
+    } elseif ($userOrg['status'] === 'needs_info') {
+        $msg = 'Требуется исправление данных профиля по замечанию модератора.';
+    } else {
+        $msg = 'Для прохождения тестирования необходимо подтверждение организации модератором.';
+    }
+    Http::json(['success' => false, 'error' => $msg], 403);
+}
+
 $payload = Http::readJson();
 $requestedCampaignId = isset($payload['campaignId']) ? (int)$payload['campaignId'] : 0;
 $requestedAttemptId = isset($payload['attemptId']) ? (int)$payload['attemptId'] : 0;
@@ -115,24 +139,6 @@ if (!$campaign) {
     Http::json(['success' => false, 'error' => 'Нет активной кампании'], 400);
 }
 
-$chkOrg = $pdo->prepare('SELECT status, is_resubmitted, moderator_comment FROM asmt_user_organizations WHERE user_id = ? ORDER BY requested_at DESC LIMIT 1');
-$chkOrg->execute([$userId]);
-$userOrg = $chkOrg->fetch();
-if ($userOrg && $userOrg['status'] !== 'approved') {
-    if ($userOrg['status'] === 'pending') {
-        $msg = !empty($userOrg['is_resubmitted'])
-            ? 'Ваша повторная заявка находится на рассмотрении модератора. Доступ к тестированию откроется после подтверждения.'
-            : 'Ваша регистрация ожидает подтверждения модератором. Доступ к тестированию откроется после проверки.';
-    } elseif ($userOrg['status'] === 'rejected') {
-        $msg = 'Ваша заявка отклонена модератором. Внесите исправления в профиле для допуска к тестированию.';
-    } elseif ($userOrg['status'] === 'needs_info') {
-        $msg = 'Требуется исправление данных профиля по замечанию модератора.';
-    } else {
-        $msg = 'Для прохождения тестирования необходимо подтверждение организации модератором.';
-    }
-    Http::json(['success' => false, 'error' => $msg], 403);
-}
-
 $campaignId = (int)$campaign['id'];
 
 // 4. Check if user already finished this campaign
@@ -181,11 +187,7 @@ shuffle($all);
 $picked = array_slice($all, 0, $limit);
 $order = array_map(static fn($q) => (int)$q['id'], $picked);
 
-$org = $pdo->prepare(
-    'SELECT organization_id, status FROM asmt_user_organizations WHERE user_id = ? ORDER BY requested_at DESC LIMIT 1'
-);
-$org->execute([$userId]);
-$orgRow = $org->fetch() ?: null;
+$orgRow = $userOrg;
 
 $minutes = max(1, (int)$campaign['time_limit_minutes']);
 $ua = Http::userAgent();

@@ -27,6 +27,13 @@ if (!$attempt) {
     Http::json(['success' => false, 'error' => 'Попытка не найдена'], 404);
 }
 
+$chkOrg = $pdo->prepare('SELECT status FROM asmt_user_organizations WHERE user_id = ? ORDER BY requested_at DESC LIMIT 1');
+$chkOrg->execute([(int)$user['id']]);
+$userOrg = $chkOrg->fetch();
+if (!$userOrg || $userOrg['status'] !== 'approved') {
+    Http::json(['success' => false, 'error' => 'Доступ к тестированию заблокирован модератором'], 403);
+}
+
 $answers = $payload['answers'] ?? null;
 if (!is_array($answers)) {
     $answers = null;
