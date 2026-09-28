@@ -2,6 +2,8 @@
 declare(strict_types=1);
 
 // CLI bootstrap (scripts/*.php)
+date_default_timezone_set('Europe/Moscow');
+
 spl_autoload_register(static function (string $class): void {
     if (!str_starts_with($class, 'Asmt\\')) {
         return;

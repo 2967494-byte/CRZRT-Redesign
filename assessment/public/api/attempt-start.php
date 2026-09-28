@@ -82,6 +82,7 @@ if ($activeAttempt) {
         'expiresAt' => $activeAttempt['expires_at'],
         'startedAt' => $activeAttempt['started_at'],
         'serverNow' => gmdate('c'),
+        'remainingSec' => max(0, (int)strtotime((string)$activeAttempt['expires_at']) - time()),
         'timeLimitMinutes' => (int)$activeAttempt['time_limit_minutes'],
         'questions' => $questions,
     ]);
@@ -289,6 +290,7 @@ Http::json([
     'expiresAt' => $attempt['expires_at'],
     'startedAt' => $attempt['started_at'],
     'serverNow' => gmdate('c'),
+    'remainingSec' => max(0, (int)strtotime((string)$attempt['expires_at']) - time()),
     'timeLimitMinutes' => $minutes,
     'questions' => $questions,
 ]);

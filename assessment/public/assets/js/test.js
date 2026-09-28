@@ -364,7 +364,11 @@
 
       attemptId = res.attemptId || (res.attempt && res.attempt.id);
       const rawExp = res.expiresAt || (res.attempt && res.attempt.expiresAt);
-      expiresAt = rawExp ? new Date(rawExp) : null;
+      if (typeof res.remainingSec === 'number') {
+        expiresAt = new Date(Date.now() + res.remainingSec * 1000);
+      } else {
+        expiresAt = rawExp ? new Date(rawExp) : null;
+      }
       questions = res.questions || [];
 
       if (!questions.length) {
