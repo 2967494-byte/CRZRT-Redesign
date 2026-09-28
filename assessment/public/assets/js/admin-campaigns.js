@@ -30,10 +30,8 @@
 
   function formatIsoForInput(dtStr) {
     if (!dtStr) return '';
-    const d = new Date(dtStr);
-    if (isNaN(d.getTime())) return '';
-    const pad = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const m = String(dtStr).match(/^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})/);
+    return m ? `${m[1]}T${m[2]}` : '';
   }
 
   function formatDatesText(startsAt, endsAt) {

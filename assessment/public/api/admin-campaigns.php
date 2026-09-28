@@ -14,6 +14,8 @@ $pdo = Db::pdo();
 if ($method === 'GET') {
     $stmt = $pdo->query('
         SELECT c.*, r.name AS region_name,
+               to_char(c.starts_at AT TIME ZONE \'Europe/Moscow\', \'YYYY-MM-DD"T"HH24:MI\') AS starts_at_msk,
+               to_char(c.ends_at AT TIME ZONE \'Europe/Moscow\', \'YYYY-MM-DD"T"HH24:MI\') AS ends_at_msk,
                (SELECT COUNT(*) FROM asmt_attempts a WHERE a.campaign_id = c.id) AS total_attempts
         FROM asmt_campaigns c
         LEFT JOIN asmt_regions r ON r.id = c.region_id
@@ -40,8 +42,8 @@ if ($method === 'GET') {
                 'name' => $c['name'],
                 'regionId' => $c['region_id'] ? (int)$c['region_id'] : null,
                 'regionName' => $c['region_name'] ?? 'Все регионы',
-                'startsAt' => $c['starts_at'],
-                'endsAt' => $c['ends_at'],
+                'startsAt' => $c['starts_at_msk'],
+                'endsAt' => $c['ends_at_msk'],
                 'timeLimitMinutes' => (int)$c['time_limit_minutes'],
                 'questionsPerAttempt' => (int)$c['questions_per_attempt'],
                 'poolSize' => (int)$c['pool_size'],
@@ -70,6 +72,16 @@ if ($method === 'POST') {
         Http::json(['success' => false, 'error' => 'Заполните код и наименование кампании'], 400);
     }
 
+    $dtPattern = '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/';
+    foreach ([$startsAt, $endsAt] as $dt) {
+        if ($dt !== null && !preg_match($dtPattern, (string)$dt)) {
+            Http::json(['success' => false, 'error' => 'Некорректный формат даты проведения'], 400);
+        }
+    }
+    if ($startsAt !== null && $endsAt !== null && strcmp((string)$startsAt, (string)$endsAt) >= 0) {
+        Http::json(['success' => false, 'error' => 'Дата окончания должна быть позже даты начала'], 400);
+    }
+
     if ($id > 0) {
         $stmt = $pdo->prepare('
             UPDATE asmt_campaigns SET
@@ -80,8 +92,8 @@ if ($method === 'POST') {
                 questions_per_attempt = ?,
                 pool_size = ?,
                 is_active = ?,
-                starts_at = ?,
-                ends_at = ?
+                starts_at = CAST(? AS timestamp) AT TIME ZONE \'Europe/Moscow\',
+                ends_at = CAST(? AS timestamp) AT TIME ZONE \'Europe/Moscow\'
             WHERE id = ?
         ');
         $stmt->execute([
@@ -99,7 +111,7 @@ if ($method === 'POST') {
     } else {
         $stmt = $pdo->prepare('
             INSERT INTO asmt_campaigns (code, name, region_id, time_limit_minutes, questions_per_attempt, pool_size, is_active, starts_at, ends_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, CAST(? AS timestamp) AT TIME ZONE \'Europe/Moscow\', CAST(? AS timestamp) AT TIME ZONE \'Europe/Moscow\')
         ');
         $stmt->execute([
             $code,
