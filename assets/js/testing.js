@@ -249,8 +249,14 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       q.options.forEach(function (opt) {
         var div = document.createElement('div');
         var isSelected = answers[q.id] === opt.letter;
-        div.className = "quiz-option".concat(isSelected ? ' quiz-option--selected' : '');
-        div.innerHTML = "\n          <div class=\"quiz-option__radio\">\n            <div class=\"quiz-option__radio-inner\"></div>\n          </div>\n          <div class=\"quiz-option__text\"><strong>".concat(opt.letter, ")</strong> ").concat(escapeHtml(opt.text), "</div>\n        ");
+        div.className = "quiz-option no-copy".concat(isSelected ? ' quiz-option--selected' : '');
+        div.setAttribute('unselectable', 'on');
+        div.setAttribute('oncopy', 'return false;');
+        div.setAttribute('oncut', 'return false;');
+        div.setAttribute('oncontextmenu', 'return false;');
+        div.style.userSelect = 'none';
+        div.style.webkitUserSelect = 'none';
+        div.innerHTML = "\n          <div class=\"quiz-option__radio\">\n            <div class=\"quiz-option__radio-inner\"></div>\n          </div>\n          <div class=\"quiz-option__text no-copy\" style=\"-webkit-user-select:none;user-select:none;\"><strong>".concat(opt.letter, ")</strong> ").concat(escapeHtml(opt.text), "</div>\n        ");
         div.addEventListener('click', function () {
           selectOption(q.id, opt.letter);
         });
@@ -437,9 +443,78 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       showScreen('start');
     }
   }
+  function initCopyProtection() {
+    function clearSelection() {
+      try {
+        if (window.getSelection) {
+          window.getSelection().removeAllRanges();
+        }
+      } catch (_e) {}
+    }
+
+    function isQuizTarget(target) {
+      if (!target) return false;
+      return Boolean(
+        target.closest && target.closest('#question-text, #options-container, .quiz-card__question, .quiz-option, .quiz-card, #review-panel')
+      );
+    }
+
+    document.addEventListener('contextmenu', function (e) {
+      if (isQuizTarget(e.target)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    document.addEventListener('copy', function (e) {
+      e.preventDefault();
+      if (e.clipboardData) {
+        e.clipboardData.setData('text/plain', '');
+      }
+      clearSelection();
+      return false;
+    });
+
+    document.addEventListener('cut', function (e) {
+      e.preventDefault();
+      clearSelection();
+      return false;
+    });
+
+    document.addEventListener('selectstart', function (e) {
+      if (isQuizTarget(e.target)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    document.addEventListener('dragstart', function (e) {
+      if (isQuizTarget(e.target)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      var isCtrlOrCmd = e.ctrlKey || e.metaKey;
+      if (!isCtrlOrCmd) return;
+      var key = (e.key || '').toLowerCase();
+      if (key === 'c' || key === 'a' || key === 'x' || key === 'p' || key === 'u' || key === 's') {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.target.type !== 'radio') {
+          return;
+        }
+        e.preventDefault();
+        clearSelection();
+        return false;
+      }
+    });
+  }
+
   function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
+
+  initCopyProtection();
   init();
 })();

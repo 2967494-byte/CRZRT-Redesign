@@ -51,6 +51,82 @@
   }
 
   // =========================================================================
+  // ANTI-COPY & CONTENT PROTECTION
+  // =========================================================================
+  function initCopyProtection() {
+    function clearSelection() {
+      try {
+        if (window.getSelection) {
+          window.getSelection().removeAllRanges();
+        }
+      } catch (_e) {}
+    }
+
+    function isQuizTarget(target) {
+      if (!target) return false;
+      return Boolean(
+        target.closest && target.closest('#questionText, #optionsList, .quiz-card__question, .option-card, .quiz-option, .asmt-main')
+      );
+    }
+
+    // Запрет вызова контекстного меню на карточке теста
+    document.addEventListener('contextmenu', (e) => {
+      if (isQuizTarget(e.target)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // Запрет копирования
+    document.addEventListener('copy', (e) => {
+      e.preventDefault();
+      if (e.clipboardData) {
+        e.clipboardData.setData('text/plain', '');
+      }
+      clearSelection();
+      return false;
+    });
+
+    // Запрет вырезания
+    document.addEventListener('cut', (e) => {
+      e.preventDefault();
+      clearSelection();
+      return false;
+    });
+
+    // Запрет начала выделения текста
+    document.addEventListener('selectstart', (e) => {
+      if (isQuizTarget(e.target)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // Запрет перетаскивания текста мышью
+    document.addEventListener('dragstart', (e) => {
+      if (isQuizTarget(e.target)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // Блокировка сочетаний клавиш: Ctrl/Cmd + C, A, X, P, U, S
+    document.addEventListener('keydown', (e) => {
+      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+      if (!isCtrlOrCmd) return;
+      const key = (e.key || '').toLowerCase();
+      if (['c', 'a', 'x', 'p', 'u', 's'].includes(key)) {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.target.type !== 'radio') {
+          return;
+        }
+        e.preventDefault();
+        clearSelection();
+        return false;
+      }
+    });
+  }
+
+  // =========================================================================
   // CONNECTION & TELEMETRY MONITOR
   // =========================================================================
   const ConnectionMonitor = {
@@ -243,7 +319,13 @@
         const isSelected = (chosen === opt.letter);
 
         const row = document.createElement('label');
-        row.className = 'option-card quiz-option' + (isSelected ? ' is-selected quiz-option--selected' : '');
+        row.className = 'option-card quiz-option no-copy' + (isSelected ? ' is-selected quiz-option--selected' : '');
+        row.setAttribute('unselectable', 'on');
+        row.setAttribute('oncopy', 'return false;');
+        row.setAttribute('oncut', 'return false;');
+        row.setAttribute('oncontextmenu', 'return false;');
+        row.style.userSelect = 'none';
+        row.style.webkitUserSelect = 'none';
         
         const radio = document.createElement('input');
         radio.type = 'radio';
@@ -271,12 +353,18 @@
         radio.addEventListener('change', onSelect);
 
         const letterBadge = document.createElement('span');
-        letterBadge.className = 'option-card__letter quiz-option__letter';
+        letterBadge.className = 'option-card__letter quiz-option__letter no-copy';
         letterBadge.textContent = displayLetter;
+        letterBadge.setAttribute('unselectable', 'on');
+        letterBadge.style.userSelect = 'none';
+        letterBadge.style.webkitUserSelect = 'none';
 
         const textSpan = document.createElement('span');
-        textSpan.className = 'option-card__text quiz-option__text';
+        textSpan.className = 'option-card__text quiz-option__text no-copy';
         textSpan.textContent = opt.text;
+        textSpan.setAttribute('unselectable', 'on');
+        textSpan.style.userSelect = 'none';
+        textSpan.style.webkitUserSelect = 'none';
 
         row.appendChild(radio);
         row.appendChild(letterBadge);
@@ -420,5 +508,6 @@
     }
   }
 
+  initCopyProtection();
   init();
 })();

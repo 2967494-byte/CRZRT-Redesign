@@ -5,8 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
   <title>Тестирование | Assessment</title>
-  <link rel="stylesheet" href="assets/css/assessment.css?v=11">
+  <link rel="stylesheet" href="assets/css/assessment.css?v=12">
   <style>
+    /* Запрет выделения и копирования вопросов и ответов */
+    .quiz-card__question,
+    #questionText,
+    #optionsList,
+    .option-card,
+    .quiz-option,
+    .option-card__text,
+    .quiz-option__text,
+    .option-card__letter,
+    .quiz-option__letter,
+    .no-copy {
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      user-select: none !important;
+      -webkit-touch-callout: none !important;
+    }
+    @media print {
+      .quiz-card__question,
+      #questionText,
+      #optionsList,
+      .option-card,
+      .quiz-option {
+        display: none !important;
+      }
+    }
     .net-pill {
       display: inline-flex;
       align-items: center;
@@ -71,9 +97,9 @@
   </header>
 
   <main class="asmt-main">
-    <div class="asmt-card" style="margin-bottom:20px; padding:28px;">
-      <h2 class="quiz-card__question" id="questionText" style="margin:0 0 20px; font-size:1.2rem; font-weight:700; line-height:1.45; color:var(--text);">Загрузка билета…</h2>
-      <div id="optionsList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:24px;"></div>
+    <div class="asmt-card no-copy" style="margin-bottom:20px; padding:28px;" oncopy="return false;" oncut="return false;" oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
+      <h2 class="quiz-card__question no-copy" id="questionText" style="margin:0 0 20px; font-size:1.2rem; font-weight:700; line-height:1.45; color:var(--text); -webkit-user-select:none; user-select:none;">Загрузка билета…</h2>
+      <div id="optionsList" class="no-copy" style="display:flex; flex-direction:column; gap:8px; margin-bottom:24px; -webkit-user-select:none; user-select:none;"></div>
       <div class="actions" style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; border-top:1px solid var(--border-light); padding-top:20px;">
         <button type="button" class="btn btn--ghost" id="btnPrev">← Назад</button>
         <div style="display:flex; gap:10px;">
@@ -91,6 +117,6 @@
   </main>
 
   <script src="assets/js/asmt-api.js"></script>
-  <script src="assets/js/test.js?v=12"></script>
+  <script src="assets/js/test.js?v=13"></script>
 </body>
 </html>

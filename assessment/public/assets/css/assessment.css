@@ -1693,6 +1693,41 @@ textarea:focus, .field textarea:focus {
   color: var(--text);
   font-size: 0.95rem;
   line-height: 1.45;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* ЗАПРЕТ ВЫДЕЛЕНИЯ И КОПИРОВАНИЯ ВОПРОСОВ И ОТВЕТОВ */
+.quiz-card__question,
+#questionText,
+#question-text,
+#optionsList,
+#options-container,
+.option-card,
+.quiz-option,
+.option-card__text,
+.quiz-option__text,
+.option-card__letter,
+.quiz-option__letter,
+.no-copy {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+@media print {
+  .quiz-card__question,
+  #questionText,
+  #optionsList,
+  .option-card,
+  .quiz-option {
+    display: none !important;
+  }
 }
 
 /* NAV GRID & DOTS */

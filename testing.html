@@ -14,7 +14,32 @@
   
   <link rel="stylesheet" href="assets/css/landing.css?v=27">
   <link rel="stylesheet" href="assets/css/obuchenie.css?v=36">
-  <link rel="stylesheet" href="assets/css/testing.css?v=2">
+  <link rel="stylesheet" href="assets/css/testing.css?v=3">
+  <style>
+    /* Запрет выделения и копирования вопросов и ответов */
+    .quiz-card__question,
+    #question-text,
+    #options-container,
+    .quiz-options-list,
+    .quiz-option,
+    .quiz-option__text,
+    .no-copy {
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      user-select: none !important;
+      -webkit-touch-callout: none !important;
+    }
+    @media print {
+      .quiz-card__question,
+      #question-text,
+      #options-container,
+      .quiz-options-list,
+      .quiz-card {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
 <body class="theme-purple" data-page="testing">
 
@@ -92,15 +117,15 @@
       
       <!-- Left side: Current Question & Options -->
       <div class="quiz-main">
-        <div class="testing-card quiz-card">
+        <div class="testing-card quiz-card no-copy" oncopy="return false;" oncut="return false;" oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
           <div class="quiz-card__header">
             <span class="quiz-progress-text" id="question-progress-label">Вопрос 1 из 20</span>
             <span class="quiz-id-tag" id="question-id-tag">ID: 1</span>
           </div>
           
-          <h2 class="quiz-card__question" id="question-text">Текст вопроса загружается...</h2>
+          <h2 class="quiz-card__question no-copy" id="question-text" style="-webkit-user-select:none; user-select:none;">Текст вопроса загружается...</h2>
           
-          <div class="quiz-options-list" id="options-container">
+          <div class="quiz-options-list no-copy" id="options-container" style="-webkit-user-select:none; user-select:none;">
             <!-- Dynamic choice cards go here -->
           </div>
           
@@ -256,7 +281,7 @@
 </footer>
 
 <script src="assets/js/testing-questions.js"></script>
-<script src="assets/js/testing.js?v=9"></script>
+<script src="assets/js/testing.js?v=10"></script>
 <script src="assets/js/landing.js?v=13" defer></script>
 </body>
 </html>
