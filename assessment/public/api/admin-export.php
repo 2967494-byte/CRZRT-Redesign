@@ -128,7 +128,7 @@ foreach ($rows as $r) {
         $r['correct_count'],
         $r['incorrect_count'],
         $r['score'],
-        $r['percent_correct'],
+        number_format((float)$r['percent_correct'], 2, ',', ''),
         $r['total_questions'],
         $r['answered_count'],
         $r['status'],
