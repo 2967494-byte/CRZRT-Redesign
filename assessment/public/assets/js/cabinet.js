@@ -80,6 +80,7 @@
         canRequestRetake: !!c.canRequestRetake,
         retakeRequest: c.retakeRequest || null,
         lastResult: c.lastResult || null,
+        openAttempt: c.openAttempt || null,
       };
     }
 
@@ -574,7 +575,9 @@
           <td style="text-align:right;">
             ${isFinished
               ? `<a href="complete.html?attemptId=${a.id}" class="btn btn--ghost btn--sm">Результат</a>`
-              : `<span class="lead" style="font-size:0.85rem;margin:0;">—</span>`}
+              : (a.status === 'in_progress'
+                  ? `<a href="test.html?attemptId=${a.id}" class="btn btn--primary btn--sm">Продолжить</a>`
+                  : `<span class="lead" style="font-size:0.85rem;margin:0;">—</span>`)}
           </td>
         </tr>
       `;
@@ -606,6 +609,7 @@
     const blockReason = camp.attemptBlockReason || '';
     const canRequestRetake = !!camp.canRequestRetake;
     const retake = camp.retakeRequest;
+    const openAttempt = camp.openAttempt;
 
     let retakeBlock = '';
     if (retake && retake.status === 'pending') {
@@ -652,7 +656,12 @@
           ${showBlockReason ? `<p class="lead" style="margin:8px 0 0; color:${!isApproved ? '#b45309' : 'var(--danger)'};">${esc(blockReason)}</p>` : ''}
           ${retakeBlock}
         </div>
-        ${canStart
+        ${openAttempt && isApproved
+          ? `<div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+               <a class="btn btn--primary" href="test.html?attemptId=${openAttempt.id}">Продолжить тестирование</a>
+               <span style="font-size:0.82rem; color:#b45309;">Осталось ≈ ${Math.max(1, Math.ceil(openAttempt.remainingSec / 60))} мин.</span>
+             </div>`
+          : canStart
           ? `<button type="button" class="btn btn--primary" data-start-campaign="${camp.id}">Пройти тестирование</button>`
           : (!isApproved
               ? `<button type="button" class="btn btn--ghost" disabled style="opacity:0.85; cursor:not-allowed; background:#f8fafc; border:1px solid #cbd5e1; color:#64748b; font-weight:600;">

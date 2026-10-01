@@ -189,13 +189,15 @@ final class AttemptService
     }
 
     /**
-     * Close all in_progress attempts for user without N+1 queries.
+     * Close in_progress attempts for user without N+1 queries.
+     * $onlyExpired: close only attempts whose time limit has run out.
      */
-    public static function finalizeOpenAttemptsForUser(PDO $pdo, int $userId): int
+    public static function finalizeOpenAttemptsForUser(PDO $pdo, int $userId, bool $onlyExpired = false): int
     {
         $stmt = $pdo->prepare(
             "SELECT * FROM asmt_attempts
-             WHERE user_id = ? AND status = 'in_progress'
+             WHERE user_id = ? AND status = 'in_progress'"
+             . ($onlyExpired ? ' AND expires_at <= NOW()' : '') . "
              ORDER BY campaign_id ASC, id DESC"
         );
         $stmt->execute([$userId]);

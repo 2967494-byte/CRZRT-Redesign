@@ -185,8 +185,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     Http::json(['success' => false, 'error' => 'Неизвестное действие'], 400);
 }
 
-// Leaving the test without finish = results are recorded; no Continue.
-AttemptService::finalizeOpenAttemptsForUser($pdo, $userId);
+// Unexpired in_progress attempts stay open so the user can continue them from the cabinet.
+AttemptService::finalizeOpenAttemptsForUser($pdo, $userId, true);
 
 $org = $pdo->prepare(
     'SELECT o.id, o.name, o.inn, uo.status, uo.moderator_comment,
@@ -240,6 +240,13 @@ $rqStmt = $pdo->prepare(
        AND status IN ('pending', 'approved', 'rejected')
      ORDER BY id DESC LIMIT 1"
 );
+$openStmt = $pdo->prepare(
+    "SELECT id, GREATEST(0, EXTRACT(EPOCH FROM (expires_at - NOW())))::int AS remaining_sec
+     FROM asmt_attempts
+     WHERE user_id = ? AND campaign_id = ? AND status = 'in_progress' AND expires_at > NOW()
+     ORDER BY id DESC LIMIT 1"
+);
+$orgApproved = $organization && $organization['status'] === 'approved';
 
 $activeCampaigns = [];
 foreach ($campaignRows as $campaign) {
@@ -315,6 +322,18 @@ foreach ($campaignRows as $campaign) {
         $attemptBlockReason = 'Для прохождения тестирования необходимо подтверждение организации модератором.';
     }
 
+    $openAttempt = null;
+    if ($orgApproved) {
+        $openStmt->execute([$userId, $campId]);
+        $openRow = $openStmt->fetch() ?: null;
+        if ($openRow) {
+            $openAttempt = [
+                'id' => (int)$openRow['id'],
+                'remainingSec' => (int)$openRow['remaining_sec'],
+            ];
+        }
+    }
+
     $activeCampaigns[] = [
         'id' => $campId,
         'code' => $campaign['code'],
@@ -332,6 +351,7 @@ foreach ($campaignRows as $campaign) {
         'canRequestRetake' => $canRequestRetake,
         'retakeRequest' => $retakeRequest,
         'lastResult' => $lastResult,
+        'openAttempt' => $openAttempt,
     ];
 }
 
