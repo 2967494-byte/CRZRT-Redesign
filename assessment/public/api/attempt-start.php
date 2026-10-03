@@ -232,7 +232,7 @@ try {
         $form = $pdo->prepare(
             'SELECT id FROM asmt_question_formulations
              WHERE question_id = ? AND is_active = TRUE
-             ORDER BY random()
+             ORDER BY sort_order, id
              LIMIT 1'
         );
         $form->execute([$qid]);
@@ -300,10 +300,9 @@ function loadAttemptQuestions(PDO $pdo, int $attemptId): array
     $stmt = $pdo->prepare(
         'SELECT aa.question_id, aa.formulation_id, aa.options_order_json, aa.option_letter_chosen,
                 q.external_id,
-                COALESCE(f.text, q.text) AS text
+                q.text
          FROM asmt_attempt_answers aa
          JOIN asmt_questions q ON q.id = aa.question_id
-         LEFT JOIN asmt_question_formulations f ON f.id = aa.formulation_id
          WHERE aa.attempt_id = ?
          ORDER BY aa.id'
     );

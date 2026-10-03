@@ -55,10 +55,9 @@ if (!$isSuperseded || $isAdmin) {
         "SELECT aa.id AS answer_id, aa.question_id, aa.option_letter_chosen, aa.is_correct,
                 aa.options_order_json, aa.answered_at,
                 q.text AS base_question_text, q.correct_letter,
-                COALESCE(f.text, q.text) AS question_text
+                q.text AS question_text
          FROM asmt_attempt_answers aa
          JOIN asmt_questions q ON q.id = aa.question_id
-         LEFT JOIN asmt_question_formulations f ON f.id = aa.formulation_id
          WHERE aa.attempt_id = ?
          ORDER BY aa.id ASC"
     );

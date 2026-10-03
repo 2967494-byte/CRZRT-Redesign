@@ -220,6 +220,16 @@ if ($method === 'POST') {
                  SET text = ?, correct_letter = ?, difficulty = ?, is_active = ?, updated_at = NOW()
                  WHERE id = ?'
             )->execute([$text, $correct, $difficulty, $isActive ? 'true' : 'false', $questionId]);
+
+            $pdo->prepare(
+                'UPDATE asmt_question_formulations SET text = ?
+                 WHERE id = (
+                     SELECT id FROM asmt_question_formulations
+                     WHERE question_id = ? AND is_active = TRUE
+                     ORDER BY sort_order, id
+                     LIMIT 1
+                 )'
+            )->execute([$text, $questionId]);
         } else {
             $extStmt = $pdo->query('SELECT COALESCE(MAX(external_id), 0) + 1 FROM asmt_questions');
             $nextExtId = (int)$extStmt->fetchColumn();
