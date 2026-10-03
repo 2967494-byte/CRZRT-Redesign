@@ -203,7 +203,8 @@
 
     async ping() {
       if (!attemptId) return;
-      const eventsToSend = [...this.bufferedEvents];
+      // Take events out of the buffer before sending so overlapping pings never send the same event twice.
+      const eventsToSend = this.bufferedEvents.splice(0);
 
       try {
         const res = await AsmtApi.post('api/attempt-ping.php', {
@@ -211,10 +212,11 @@
           events: eventsToSend,
         });
 
+        if (!res || !res.success) {
+          this.bufferedEvents.unshift(...eventsToSend);
+        }
+
         if (res && res.success) {
-          // Clear sent events
-          this.bufferedEvents = this.bufferedEvents.filter((ev) => !eventsToSend.includes(ev));
-          
           if (this.isOffline) {
             this.handleNetworkRestored('ping_recovery');
           } else {
@@ -228,6 +230,7 @@
           }
         }
       } catch (err) {
+        this.bufferedEvents.unshift(...eventsToSend);
         this.handleNetworkLost('ping_failed');
       }
     },

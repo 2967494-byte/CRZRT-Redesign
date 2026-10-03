@@ -27,60 +27,60 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   var CONTENT_READY_CLASS = 'obuchenie-content-ready';
   var MORE_ARROW_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 1L11 11M11 11V3M11 11H3" stroke="#0FAA4B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var DEFAULT_NAV_CARDS = [{
-    label: 'Популярные\nпрограммы обучения',
-    href: '#courses',
-    icon: 'assets/img/obuchenie/icon-programs.png?v=2'
+      label: 'Популярные\nпрограммы обучения',
+      href: '#courses',
+      icon: 'assets/img/obuchenie/icon-programs.png?v=2'
   }, {
-    label: 'Для\nпоставщиков',
-    href: '#suppliers',
-    icon: 'assets/img/obuchenie/icon-distance.png?v=2'
+      label: 'Для\nпоставщиков',
+      href: '#suppliers',
+      icon: 'assets/img/obuchenie/icon-distance.png?v=2'
   }, {
-    label: 'Для\nзаказчиков',
-    href: '#customers',
-    icon: 'assets/img/obuchenie/icon-corporate.png?v=2'
+      label: 'Для\nзаказчиков',
+      href: '#customers',
+      icon: 'assets/img/obuchenie/icon-corporate.png?v=2'
   }, {
-    label: 'Календарь\nкурсов',
-    href: '#schedule',
-    icon: 'assets/img/obuchenie/icon-schedule.png?v=2'
+      label: 'Календарь\nкурсов',
+      href: '#schedule',
+      icon: 'assets/img/obuchenie/icon-schedule.png?v=2'
   }, {
-    label: 'Тестирование',
-    href: '#testing',
-    icon: 'assets/img/obuchenie/icon-certificates.png?v=2'
+      label: 'Тестирование',
+      href: '#testing',
+      icon: 'assets/img/obuchenie/icon-certificates.png?v=2'
   }, {
-    label: 'Помощь\nс выбором',
-    href: '#help',
-    icon: 'assets/img/obuchenie/icon-faq.png?v=2'
+      label: 'Помощь\nс выбором',
+      href: '#help',
+      icon: 'assets/img/obuchenie/icon-faq.png?v=2'
   }];
   var DEFAULT_COURSE_CARDS = [{
-    title: 'Очный курс повышения квалификации',
-    price: 'от 7 830 руб.',
-    durationNum: '1,5',
-    durationUnit: 'месяца',
-    scheduleNum: '2',
-    scheduleUnit: 'раза в неделю',
-    btnText: 'Записаться',
-    btnLink: '#contacts',
-    moreLink: '#courses'
+      title: 'Очный курс повышения квалификации',
+      price: 'от 7 830 руб.',
+      durationNum: '1,5',
+      durationUnit: 'месяца',
+      scheduleNum: '2',
+      scheduleUnit: 'раза в неделю',
+      btnText: 'Записаться',
+      btnLink: '#contacts',
+      moreLink: '#courses'
   }, {
-    title: 'Дистанционный курс повышения квалификации',
-    price: 'от 10 890 руб.',
-    durationNum: '1,5',
-    durationUnit: 'месяца',
-    scheduleNum: '2',
-    scheduleUnit: 'раза в неделю',
-    btnText: 'Записаться',
-    btnLink: '#contacts',
-    moreLink: '#courses'
+      title: 'Дистанционный курс повышения квалификации',
+      price: 'от 10 890 руб.',
+      durationNum: '1,5',
+      durationUnit: 'месяца',
+      scheduleNum: '2',
+      scheduleUnit: 'раза в неделю',
+      btnText: 'Записаться',
+      btnLink: '#contacts',
+      moreLink: '#courses'
   }, {
-    title: 'Очный курс для поставщиков',
-    price: 'от 20 256 руб.',
-    durationNum: '1,5',
-    durationUnit: 'месяца',
-    scheduleNum: '2',
-    scheduleUnit: 'раза в неделю',
-    btnText: 'Записаться',
-    btnLink: '#contacts',
-    moreLink: '#courses'
+      title: 'Очный курс для поставщиков',
+      price: 'от 20 256 руб.',
+      durationNum: '1,5',
+      durationUnit: 'месяца',
+      scheduleNum: '2',
+      scheduleUnit: 'раза в неделю',
+      btnText: 'Записаться',
+      btnLink: '#contacts',
+      moreLink: '#courses'
   }];
   var DEFAULT_TAGS = ['Онлайн-курсы', 'Онлайн-курсы', 'Онлайн-курсы', 'Онлайн-курсы', 'Онлайн-курсы', 'Онлайн-курсы', 'Онлайн-курсы', 'Программирование', 'Программирование', 'Программирование', 'Программирование', 'Программирование', 'Программирование', 'Программирование', 'Дизайн', 'Дизайн', 'Дизайн', 'Дизайн', 'Дизайн', 'Дизайн'];
   var MONTH_NAMES_RU = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
@@ -157,7 +157,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   };
   var isObucheniePage = document.body.dataset.page === 'obuchenie';
   if (isObucheniePage) {
-    document.documentElement.classList.add(CONTENT_PENDING_CLASS);
+  document.documentElement.classList.add(CONTENT_PENDING_CLASS);
   }
   function escapeHtml(str) {
     if (!str) return '';
@@ -1424,7 +1424,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     if (!el) return;
     if (size) {
       el.style.fontSize = "clamp(calc(".concat(size, "px * 0.5), calc(").concat(size, "px * (100cqw / 1520)), ").concat(size, "px)");
-    } else {
+      } else {
       el.style.removeProperty('font-size');
     }
     if (weight) el.style.fontWeight = weight;else el.style.removeProperty('font-weight');
@@ -1735,7 +1735,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       var primaryBtn = enrollOpen
         ? "<a href=\"".concat(escapeHtml(getCoursePagePath(c)), "\" class=\"occ-card__btn\">\u0417\u0430\u043F\u0438\u0441\u0430\u0442\u044C\u0441\u044F</a>")
         : '';
-      return `<article class="occ-card">
+        return `<article class="occ-card">
           <div class="occ-card__top" style="flex-grow: 1; margin-bottom: auto;">
             <h3 class="occ-card__title">${escapeHtml(c.title)}</h3>
             ${priceHtml}
@@ -1841,7 +1841,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     }
     if (bannerEl) {
       bannerEl.classList.toggle('obuchenie-testing-banner--has-image', Boolean(image));
-    }
+  }
   }
   function renderObucheniePage(data) {
     var isApi = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -1873,29 +1873,29 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
             localData = loadObuchenieDataFromLocal();
             initialData = localData || migrateObucheniePageData(null);
             renderObucheniePage(initialData, false);
-            markObuchenieContentReady();
+      markObuchenieContentReady();
             _context0.n = 1;
             return loadObuchenieDataFromApi();
           case 1:
             apiData = _context0.v;
-            if (apiData) {
+      if (apiData) {
               renderObucheniePage(apiData, true);
-              try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(apiData));
-              } catch (error) {
-                console.warn('Obuchenie: localStorage update failed', error);
-              }
-            }
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(apiData));
+        } catch (error) {
+          console.warn('Obuchenie: localStorage update failed', error);
+        }
+      }
             _context0.n = 3;
             break;
           case 2:
             _context0.p = 2;
             _t5 = _context0.v;
             console.error('Obuchenie content init failed', _t5);
-            markObuchenieContentReady();
+      markObuchenieContentReady();
           case 3:
             return _context0.a(2);
-        }
+    }
       }, _callee0, null, [[0, 2]]);
     }));
     return _initObuchenieContent.apply(this, arguments);
@@ -1941,10 +1941,10 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     renderLandingUpcomingEvents: renderLandingUpcomingEvents
   };
   if (isObucheniePage) {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initObuchenieContent);
-    } else {
-      initObuchenieContent();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initObuchenieContent);
+  } else {
+    initObuchenieContent();
     }
   }
 })();
