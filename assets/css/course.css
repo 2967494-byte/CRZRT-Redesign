@@ -765,6 +765,10 @@ body[data-page="course"] .footer {
 }
 
 /* CTA */
+.course-cta {
+  background: linear-gradient(135deg, #009341 0%, #00AE4D 100%);
+}
+
 .course-cta__inner {
   display: flex;
   align-items: center;

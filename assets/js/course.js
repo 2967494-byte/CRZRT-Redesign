@@ -1,6 +1,12 @@
 var courseEnrollMetaCache = null;
 
 function initCoursePage() {
+  try {
+    const ctaSection = document.querySelector('.course-cta, [class*="course-cta"]');
+    if (ctaSection && !ctaSection.classList.contains('bg-green')) {
+      ctaSection.classList.add('bg-green');
+    }
+  } catch (e) {}
   try { wireCourseProgramPdfLinks(); } catch (e) { console.warn('wireCourseProgramPdfLinks error', e); }
   try { initCourseEnrollModal(); } catch (e) { console.warn('initCourseEnrollModal error', e); }
   try { initCourseEnrollSubmit(); } catch (e) { console.warn('initCourseEnrollSubmit error', e); }

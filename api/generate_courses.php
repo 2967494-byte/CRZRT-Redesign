@@ -239,8 +239,8 @@ function generate_static_courses($courseRegistry) {
         );
         if ($enrollUntil !== '') {
             $html = preg_replace(
-                '/(<section\b[^>]*\bcourse-cta\b)([^>]*>)/si',
-                '$1 data-enroll-until="' . htmlspecialchars($enrollUntil, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"$2',
+                '/<section\b([^>]*\bclass="[^"]*\bcourse-cta\b[^"]*")/si',
+                '<section data-enroll-until="' . htmlspecialchars($enrollUntil, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"$1',
                 $html,
                 1
             );
