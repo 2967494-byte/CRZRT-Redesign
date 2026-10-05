@@ -114,15 +114,18 @@ function initCoursePage() {
   if (enrollModal) {
     enrollBtns.forEach(btn => {
       btn.addEventListener('click', async () => {
+        let course = null;
         try {
-          const course = await loadCourseEnrollMeta();
+          course = await loadCourseEnrollMeta();
           if (!isCourseEnrollOpen(course)) {
             applyCourseEnrollAvailability(course);
             return;
           }
           configureCourseEnrollModalAudience(course);
+          configureCourseEnrollModalDays(course);
         } catch (_e) {
           configureCourseEnrollModalAudience(null);
+          configureCourseEnrollModalDays(null);
         }
 
         // Find course title
@@ -130,7 +133,7 @@ function initCoursePage() {
         if (titleEl && enrollTitle) {
           enrollTitle.textContent = titleEl.textContent;
         }
-        if (enrollDate) {
+        if (enrollDate && (!course || !course.enrollByDays)) {
           enrollDate.textContent = getCourseStartDateLabel();
         }
         if (enrollForm) {
@@ -404,6 +407,133 @@ function configureCourseEnrollModalSource(showSource) {
   }
 }
 
+function formatRussianDateLong(isoStr) {
+  if (!isoStr) return '';
+  const p = String(isoStr).trim().split('-');
+  if (p.length !== 3) return isoStr;
+  const y = parseInt(p[0], 10);
+  const m = parseInt(p[1], 10) - 1;
+  const d = parseInt(p[2], 10);
+  const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  if (!y || m < 0 || m > 11 || !d) return isoStr;
+  return d + ' ' + MONTHS[m] + ' ' + y;
+}
+
+function configureCourseEnrollModalDays(course) {
+  let daysWrap = document.getElementById('enroll-modal-days-wrap');
+  const dateEl = document.getElementById('enroll-modal-date');
+  const modalHeader = document.querySelector('.enroll-modal__header');
+
+  if (!daysWrap && modalHeader) {
+    daysWrap = document.createElement('div');
+    daysWrap.id = 'enroll-modal-days-wrap';
+    daysWrap.className = 'enroll-modal__days-wrap';
+    daysWrap.style.display = 'none';
+    daysWrap.innerHTML = '<span class="enroll-modal__days-title">Выберите дату:</span><div id="enroll-modal-days-list" class="enroll-modal__days-list"></div>';
+    modalHeader.appendChild(daysWrap);
+  }
+
+  const daysList = document.getElementById('enroll-modal-days-list');
+  const isByDays = Boolean(course && (course.enrollByDays === true || course.enrollByDays === 'true' || course.enrollByDays === 1));
+
+  if (!isByDays) {
+    if (daysList) daysList.innerHTML = '';
+    if (daysWrap) daysWrap.style.display = 'none';
+    if (dateEl) dateEl.style.display = '';
+    return;
+  }
+
+  // Calculate stream start date and day offsets
+  const firstStreamDate = (course.dateFrom || '').split(',')[0].trim();
+  const selectedStreamDate = resolveSelectedCourseDate(course) || firstStreamDate;
+  const duration = Math.max(1, parseInt(course.durationDays || 1, 10));
+
+  let allowedOffsets = null;
+  if (Array.isArray(course.availableDays) && course.availableDays.length > 0 && /^\d{4}-\d{2}-\d{2}$/.test(firstStreamDate)) {
+    allowedOffsets = [];
+    const p1 = firstStreamDate.split('-');
+    const dt1 = new Date(parseInt(p1[0], 10), parseInt(p1[1], 10) - 1, parseInt(p1[2], 10));
+    course.availableDays.forEach(ad => {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(ad)) {
+        const p2 = ad.split('-');
+        const dt2 = new Date(parseInt(p2[0], 10), parseInt(p2[1], 10) - 1, parseInt(p2[2], 10));
+        const diff = Math.round((dt2 - dt1) / 86400000);
+        if (diff >= 0 && diff < duration) {
+          allowedOffsets.push(diff);
+        }
+      }
+    });
+  }
+
+  let available = [];
+  if (/^\d{4}-\d{2}-\d{2}$/.test(selectedStreamDate) && duration > 1) {
+    const ps = selectedStreamDate.split('-');
+    const ys = parseInt(ps[0], 10);
+    const ms = parseInt(ps[1], 10) - 1;
+    const ds = parseInt(ps[2], 10);
+    for (let i = 0; i < duration; i++) {
+      if (allowedOffsets && !allowedOffsets.includes(i)) continue;
+      const cur = new Date(ys, ms, ds + i);
+      const iso = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0') + '-' + String(cur.getDate()).padStart(2, '0');
+      available.push(iso);
+    }
+  }
+
+  if (!available || available.length <= 1) {
+    if (daysList) daysList.innerHTML = '';
+    if (daysWrap) daysWrap.style.display = 'none';
+    if (dateEl) dateEl.style.display = '';
+    return;
+  }
+
+  // Filter out past days if course is underway
+  let today = '';
+  try {
+    today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  } catch (e) {
+    today = new Date().toISOString().split('T')[0];
+  }
+  const validDays = available.filter(d => !today || d >= today);
+  if (validDays.length === 0) {
+    if (dateEl) dateEl.style.display = 'none';
+    if (daysWrap) daysWrap.style.display = 'block';
+    if (daysList) {
+      daysList.innerHTML = '<span style="font-size: 0.9rem; color: #dc2626; padding: 4px 0; display: block;">Приём заявок завершён (все дни курса уже прошли)</span>';
+    }
+    const submitBtn = document.querySelector('#enroll-form .enroll-modal__submit');
+    if (submitBtn) submitBtn.disabled = true;
+    return;
+  }
+  const submitBtn = document.querySelector('#enroll-form .enroll-modal__submit');
+  if (submitBtn) submitBtn.disabled = false;
+  const displayDays = validDays;
+
+  if (dateEl) dateEl.style.display = 'none';
+  if (daysWrap) daysWrap.style.display = 'block';
+
+  if (daysList) {
+    daysList.innerHTML = '';
+    displayDays.forEach((isoDate, idx) => {
+      const label = document.createElement('label');
+      label.className = 'enroll-modal__day-option' + (idx === 0 ? ' is-selected' : '');
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'enrollSelectedDay';
+      radio.value = isoDate;
+      if (idx === 0) radio.checked = true;
+      radio.addEventListener('change', () => {
+        document.querySelectorAll('.enroll-modal__day-option').forEach(el => el.classList.remove('is-selected'));
+        if (radio.checked) label.classList.add('is-selected');
+      });
+      const span = document.createElement('span');
+      span.textContent = formatRussianDateLong(isoDate);
+      label.appendChild(radio);
+      label.appendChild(span);
+      daysList.appendChild(label);
+    });
+  }
+}
+
 function applyCourseFeatures(course) {
   if (!course) return;
   const featuresWrap = document.querySelector('.course-about__features');
@@ -460,6 +590,7 @@ function initCourseEnrollModal() {
     }
     configureCourseEnrollModalAudience(courseEnrollMetaCache);
     configureCourseEnrollModalDistrict(Boolean(courseEnrollMetaCache?.requireDistrict));
+    configureCourseEnrollModalDays(null);
     const currentShowSource = courseEnrollMetaCache
       ? courseEnrollMetaCache.showSource !== false
       : (sourceField ? !sourceField.hidden : true);
@@ -838,7 +969,17 @@ function initCourseEnrollSubmit() {
         applyCourseEnrollAvailability(course);
         throw new Error('Приём заявок на это мероприятие завершён');
       }
-      const selectedDate = resolveSelectedCourseDate(course);
+      let selectedDate = resolveSelectedCourseDate(course);
+      const daysWrap = document.getElementById('enroll-modal-days-wrap');
+      const isDayEnrollActive = Boolean(daysWrap && daysWrap.style.display !== 'none');
+      const dayRadio = isDayEnrollActive
+        ? (form.closest('.enroll-modal__content')?.querySelector('input[name="enrollSelectedDay"]:checked') ||
+           document.querySelector('input[name="enrollSelectedDay"]:checked'))
+        : null;
+      if (dayRadio && dayRadio.value) {
+        selectedDate = dayRadio.value;
+      }
+      const isDay = Boolean(isDayEnrollActive && dayRadio && dayRadio.value);
       const response = await fetch('../api/bitrix-lead-enroll.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -858,8 +999,8 @@ function initCourseEnrollSubmit() {
           courseTitle: course?.title || '',
           selectedDate,
           dateFrom: selectedDate || course?.dateFrom || '',
-          dateTo: course?.dateTo || '',
-          durationDays: course?.durationDays || 1,
+          dateTo: isDay ? selectedDate : (course?.dateTo || ''),
+          durationDays: isDay ? 1 : (course?.durationDays || 1),
           format: course?.format || 'och',
           price: resolveCourseEnrollPrice(course),
           bitrixCourseElementId: course?.bitrixCourseElementId || null,

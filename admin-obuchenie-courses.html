@@ -8,7 +8,7 @@
     <title>Календарь курсов | Админ-панель</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="assets/css/admin.css?v=15">
+    <link rel="stylesheet" href="assets/css/admin.css?v=16">
 </head>
 
 <body>
@@ -124,6 +124,18 @@
                     <div class="form-group">
                         <label for="courseFormPrice">Стоимость</label>
                         <input type="text" class="form-control" id="courseFormPrice" placeholder="23 700 ₽">
+                    </div>
+                </div>
+                <div class="form-group" id="courseFormDaysEnrollGroup" style="margin-bottom: 20px; display: none;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <label class="checkbox-group" style="font-weight: 600; margin-bottom: 0;">
+                            <input type="checkbox" id="courseFormEnrollByDays"> Запись по дням
+                        </label>
+                        <span class="form-hint" style="margin: 0; font-size: 0.8rem; color: var(--text-secondary);">Позволяет участникам выбирать конкретный день участия</span>
+                    </div>
+                    <div id="courseFormDaysList" style="display: none; padding: 10px 14px; background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border-color, #e2e8f0); border-radius: 8px; margin-top: 8px;">
+                        <p style="font-size: 0.85rem; font-weight: 500; margin: 0 0 8px 0; color: var(--text-primary);">Выберите даты, доступные для записи:</p>
+                        <div id="courseFormDaysCheckboxes" style="display: flex; flex-wrap: wrap; gap: 12px;"></div>
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom: 20px;">
@@ -370,8 +382,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
-    <script src="assets/js/obuchenie-content.js?v=49"></script>
-    <script src="assets/js/admin-obuchenie-courses.js?v=23"></script>
+    <script src="assets/js/obuchenie-content.js?v=51"></script>
+    <script src="assets/js/admin-obuchenie-courses.js?v=24"></script>
 </body>
 
 </html>

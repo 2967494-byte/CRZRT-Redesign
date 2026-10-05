@@ -96,6 +96,8 @@ try {
             'featureLaw' => !isset($matched['featureLaw']) || $matched['featureLaw'] !== false,
             'featureHelp' => !isset($matched['featureHelp']) || $matched['featureHelp'] !== false,
             'featureAccess' => !isset($matched['featureAccess']) || $matched['featureAccess'] !== false,
+            'enrollByDays' => !empty($matched['enrollByDays']),
+            'availableDays' => is_array($matched['availableDays'] ?? null) ? $matched['availableDays'] : [],
             'options' => is_array($matched['options'] ?? null) ? $matched['options'] : [],
             'active' => $active,
             'enrollOpen' => $active && crzrt_is_enroll_open($enrollUntil),

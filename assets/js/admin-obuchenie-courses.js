@@ -370,6 +370,63 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.formSlug.value = unique;
     els.formSlug.dataset.manual = '0';
   }
+
+  function computeCourseDays(startDateStr, daysCount) {
+    var rawDate = (startDateStr || '').split(',')[0].trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) return [];
+    var result = [];
+    var p = rawDate.split('-');
+    var y = parseInt(p[0], 10);
+    var m = parseInt(p[1], 10) - 1;
+    var d = parseInt(p[2], 10);
+    var monthNames = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+    for (var i = 0; i < daysCount; i++) {
+      var cur = new Date(y, m, d + i);
+      var iso = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0') + '-' + String(cur.getDate()).padStart(2, '0');
+      var label = cur.getDate() + ' ' + monthNames[cur.getMonth()] + ' ' + cur.getFullYear();
+      result.push({ iso: iso, label: label });
+    }
+    return result;
+  }
+
+  function renderCourseFormDayCheckboxes(selectedDays) {
+    var container = els.formDaysCheckboxes || $('courseFormDaysCheckboxes');
+    if (!container) return;
+    var daysCount = Math.max(1, parseInt(els.formDurationDays ? els.formDurationDays.value : '1', 10) || 1);
+    var dateStr = els.formDateFrom ? els.formDateFrom.value : '';
+    var days = computeCourseDays(dateStr, daysCount);
+    if (!days.length) {
+      container.innerHTML = '<span style="font-size:0.85rem;color:var(--text-secondary);">Укажите дату начала</span>';
+      return;
+    }
+    var html = '';
+    days.forEach(function (day, idx) {
+      var isChecked = !selectedDays || selectedDays.length === 0 || selectedDays.includes(day.iso);
+      html += '<label class="checkbox-group" style="font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; margin: 0; cursor: pointer;">' +
+        '<input type="checkbox" class="course-form-day-checkbox" value="' + day.iso + '" ' + (isChecked ? 'checked' : '') + '> ' +
+        '<span>День ' + (idx + 1) + ' (' + day.label + ')</span>' +
+        '</label>';
+    });
+    container.innerHTML = html;
+  }
+
+  function updateDaysEnrollVisibility() {
+    var daysCount = Math.max(1, parseInt(els.formDurationDays ? els.formDurationDays.value : '1', 10) || 1);
+    var group = els.formDaysEnrollGroup || $('courseFormDaysEnrollGroup');
+    var enrollCb = els.formEnrollByDays || $('courseFormEnrollByDays');
+    var daysList = els.formDaysList || $('courseFormDaysList');
+    if (group) {
+      group.style.display = daysCount > 1 ? 'block' : 'none';
+    }
+    if (daysCount <= 1) {
+      if (enrollCb) enrollCb.checked = false;
+      if (daysList) daysList.style.display = 'none';
+    } else if (enrollCb && enrollCb.checked) {
+      if (daysList) daysList.style.display = 'block';
+      renderCourseFormDayCheckboxes();
+    }
+  }
+
   function openModal(course) {
     var isEdit = Boolean(course);
     els.modalTitle.textContent = isEdit ? 'Редактировать курс' : 'Добавить курс';
@@ -399,7 +456,24 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       els.formEnrollUntil.value = (course === null || course === void 0 ? void 0 : course.enrollUntil) || '';
     }
     els.formFormat.value = (course === null || course === void 0 ? void 0 : course.format) === 'dist' ? 'dist' : 'och';
-    els.formDurationDays.value = String((course === null || course === void 0 ? void 0 : course.durationDays) || 1);
+    var courseDuration = Math.max(1, parseInt((course === null || course === void 0 ? void 0 : course.durationDays) || 1, 10));
+    els.formDurationDays.value = String(courseDuration);
+    var group = els.formDaysEnrollGroup || $('courseFormDaysEnrollGroup');
+    var enrollCb = els.formEnrollByDays || $('courseFormEnrollByDays');
+    var daysList = els.formDaysList || $('courseFormDaysList');
+    if (group) {
+      group.style.display = courseDuration > 1 ? 'block' : 'none';
+    }
+    var hasEnrollByDays = Boolean(course && (course.enrollByDays === true || course.enrollByDays === 'true' || course.enrollByDays === 1));
+    if (enrollCb) {
+      enrollCb.checked = hasEnrollByDays && courseDuration > 1;
+    }
+    if (daysList) {
+      daysList.style.display = (hasEnrollByDays && courseDuration > 1) ? 'block' : 'none';
+      if (hasEnrollByDays && courseDuration > 1) {
+        renderCourseFormDayCheckboxes(Array.isArray(course.availableDays) ? course.availableDays : null);
+      }
+    }
     var descHtml = '';
     var desc = course === null || course === void 0 ? void 0 : course.description;
     if (Array.isArray(desc)) {
@@ -573,6 +647,13 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
             if (!validateEnrollUntilForm()) {
               return _context4.a(2);
             }
+            if (els.formEnrollByDays && els.formEnrollByDays.checked && (parseInt(els.formDurationDays.value, 10) || 1) > 1) {
+              var checkedDaysCount = document.querySelectorAll('.course-form-day-checkbox:checked').length;
+              if (checkedDaysCount === 0) {
+                window.alert('Выберите хотя бы один день для записи по дням или отключите эту опцию.');
+                return _context4.a(2);
+              }
+            }
             audience = readAudienceFromForm();
             bitrixFormFl = api.normalizeBitrixForm ? api.normalizeBitrixForm((_els$formBitrixFl = els.formBitrixFl) === null || _els$formBitrixFl === void 0 ? void 0 : _els$formBitrixFl.value) : api.parseBitrixFormRef ? api.parseBitrixFormRef((_els$formBitrixFl2 = els.formBitrixFl) === null || _els$formBitrixFl2 === void 0 ? void 0 : _els$formBitrixFl2.value) : null;
             bitrixFormUr = api.normalizeBitrixForm ? api.normalizeBitrixForm((_els$formBitrixUr = els.formBitrixUr) === null || _els$formBitrixUr === void 0 ? void 0 : _els$formBitrixUr.value) : api.parseBitrixFormRef ? api.parseBitrixFormRef((_els$formBitrixUr2 = els.formBitrixUr) === null || _els$formBitrixUr2 === void 0 ? void 0 : _els$formBitrixUr2.value) : null;
@@ -626,6 +707,16 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               dateFrom: els.formDateFrom.value,
               enrollUntil: els.formEnrollUntil && els.formEnrollUntil.value ? els.formEnrollUntil.value.trim() : '',
               durationDays: Math.max(1, parseInt(els.formDurationDays.value, 10) || 1),
+              enrollByDays: Boolean(els.formEnrollByDays && els.formEnrollByDays.checked && (parseInt(els.formDurationDays.value, 10) || 1) > 1),
+              availableDays: (function () {
+                if (!els.formEnrollByDays || !els.formEnrollByDays.checked) return [];
+                var checked = [];
+                var cbs = document.querySelectorAll('.course-form-day-checkbox:checked');
+                cbs.forEach(function (cb) {
+                  if (cb.value) checked.push(cb.value);
+                });
+                return checked;
+              })(),
               description: els.formDescription.innerHTML,
               price: els.formPrice.value.trim(),
               bitrixCourseElementId: (_els$formBitrixCatalo = els.formBitrixCatalogId) !== null && _els$formBitrixCatalo !== void 0 && _els$formBitrixCatalo.value ? parseInt(els.formBitrixCatalogId.value, 10) || null : null,
@@ -951,6 +1042,30 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         setAudienceFormError(false);
       }
     });
+    if (els.formDurationDays) {
+      els.formDurationDays.addEventListener('input', updateDaysEnrollVisibility);
+      els.formDurationDays.addEventListener('change', updateDaysEnrollVisibility);
+    }
+    if (els.formDateFrom) {
+      els.formDateFrom.addEventListener('change', function () {
+        var enrollCb = els.formEnrollByDays || $('courseFormEnrollByDays');
+        if (enrollCb && enrollCb.checked) {
+          renderCourseFormDayCheckboxes();
+        }
+      });
+    }
+    var enrollCbEl = els.formEnrollByDays || $('courseFormEnrollByDays');
+    if (enrollCbEl) {
+      enrollCbEl.addEventListener('change', function () {
+        var daysList = els.formDaysList || $('courseFormDaysList');
+        if (daysList) {
+          daysList.style.display = enrollCbEl.checked ? 'block' : 'none';
+        }
+        if (enrollCbEl.checked) {
+          renderCourseFormDayCheckboxes();
+        }
+      });
+    }
     bindBitrixPasteModal();
     (_els$tableBody = els.tableBody) === null || _els$tableBody === void 0 || _els$tableBody.addEventListener('click', function (event) {
       var button = event.target.closest('[data-action]');
@@ -1472,6 +1587,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.formBitrixUr = $('courseFormBitrixUr');
     els.formBitrixFlGroup = $('courseFormBitrixFlGroup');
     els.formBitrixUrGroup = $('courseFormBitrixUrGroup');
+    els.formDaysEnrollGroup = $('courseFormDaysEnrollGroup');
+    els.formEnrollByDays = $('courseFormEnrollByDays');
+    els.formDaysList = $('courseFormDaysList');
+    els.formDaysCheckboxes = $('courseFormDaysCheckboxes');
 
     // Initialize flatpickr datepicker
     if (typeof flatpickr !== 'undefined' && els.formDateFrom) {

@@ -1763,7 +1763,7 @@ body {
 
         .admin-courses-modal__row-5 {
             display: grid;
-            grid-template-columns: auto 1fr 1fr 1fr 1fr;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 16px;
             margin-bottom: 20px;
         }
@@ -1773,13 +1773,22 @@ body {
             min-width: 0;
         }
 
-        .admin-courses-modal__row-5 input[type="date"].form-control {
-            min-width: 130px;
+        .admin-courses-modal__row-5 .form-group label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
         }
 
-        @media (max-width: 1200px) {
+        .admin-courses-modal__row-5 input[type="date"].form-control,
+        .admin-courses-modal__row-5 .flatpickr-input {
+            width: 100%;
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
             .admin-courses-modal__row-5 {
-                grid-template-columns: auto 1fr 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 

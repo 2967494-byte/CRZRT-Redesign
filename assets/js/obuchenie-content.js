@@ -777,7 +777,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       showSource: (raw === null || raw === void 0 ? void 0 : raw.showSource) !== false,
       featureLaw: (raw === null || raw === void 0 ? void 0 : raw.featureLaw) !== false,
       featureHelp: (raw === null || raw === void 0 ? void 0 : raw.featureHelp) !== false,
-      featureAccess: (raw === null || raw === void 0 ? void 0 : raw.featureAccess) !== false
+      featureAccess: (raw === null || raw === void 0 ? void 0 : raw.featureAccess) !== false,
+      enrollByDays: Boolean(raw && (raw.enrollByDays === true || raw.enrollByDays === 'true' || raw.enrollByDays === 1) && durationDays > 1),
+      availableDays: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.availableDays) ? raw.availableDays.filter(function (d) { return /^\d{4}-\d{2}-\d{2}$/.test(String(d).trim()); }) : []
     };
   }
   function moscowTodayIso() {
@@ -1072,6 +1074,11 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
               throw new Error('Приём заявок на это мероприятие завершён');
             }
           case 1:
+            var daysWrapEl = document.getElementById('enroll-modal-days-wrap');
+            var isDayActive = Boolean(daysWrapEl && daysWrapEl.style.display !== 'none');
+            var dayRadio = isDayActive ? document.querySelector('input[name="enrollSelectedDay"]:checked') : null;
+            var customSelectedDate = dayRadio && dayRadio.value ? dayRadio.value : '';
+            var finalDateFrom = customSelectedDate || (course === null || course === void 0 ? void 0 : course.dateFrom) || '';
             _context7.n = 2;
             return fetch(getApiPath('bitrix-lead-enroll.php'), {
               method: 'POST',
@@ -1092,9 +1099,10 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
                 sourceLabel: sourceLabel,
                 courseId: courseId || (course === null || course === void 0 ? void 0 : course.id) || '',
                 courseTitle: (course === null || course === void 0 ? void 0 : course.title) || '',
-                dateFrom: (course === null || course === void 0 ? void 0 : course.dateFrom) || '',
-                dateTo: (course === null || course === void 0 ? void 0 : course.dateTo) || '',
-                durationDays: (course === null || course === void 0 ? void 0 : course.durationDays) || 1,
+                selectedDate: customSelectedDate || undefined,
+                dateFrom: finalDateFrom,
+                dateTo: customSelectedDate ? customSelectedDate : ((course === null || course === void 0 ? void 0 : course.dateTo) || ''),
+                durationDays: customSelectedDate ? 1 : ((course === null || course === void 0 ? void 0 : course.durationDays) || 1),
                 format: (course === null || course === void 0 ? void 0 : course.format) || 'och',
                 price: (course === null || course === void 0 ? void 0 : course.price) || '',
                 bitrixCourseElementId: (course === null || course === void 0 ? void 0 : course.bitrixCourseElementId) || null,
@@ -1209,6 +1217,146 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       }
     }
   }
+  function formatRussianDateLong(isoStr) {
+    if (!isoStr) return '';
+    var p = String(isoStr).trim().split('-');
+    if (p.length !== 3) return isoStr;
+    var y = parseInt(p[0], 10);
+    var m = parseInt(p[1], 10) - 1;
+    var d = parseInt(p[2], 10);
+    var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+    if (!y || m < 0 || m > 11 || !d) return isoStr;
+    return d + ' ' + MONTHS[m] + ' ' + y;
+  }
+  function resolveCourseStreamDate(course, preferredDate) {
+    if (!course) return '';
+    var starts = (course.dateFrom || '').split(',').map(function (s) { return s.trim(); }).filter(function (s) { return /^\d{4}-\d{2}-\d{2}$/.test(s); });
+    if (!starts.length) return '';
+    if (preferredDate && /^\d{4}-\d{2}-\d{2}$/.test(preferredDate) && starts.indexOf(preferredDate) !== -1) {
+      return preferredDate;
+    }
+    if (preferredDate && typeof preferredDate === 'string') {
+      var match = starts.find(function (s) {
+        return formatRussianDateLong(s) === preferredDate || s === preferredDate;
+      });
+      if (match) return match;
+    }
+    var today = '';
+    try {
+      today = moscowTodayIso();
+    } catch (e) {
+      today = new Date().toISOString().split('T')[0];
+    }
+    var upcoming = today ? starts.find(function (d) { return d >= today; }) : null;
+    return upcoming || starts[0];
+  }
+  function configureEnrollModalDays(course, targetDate) {
+    var daysWrap = document.getElementById('enroll-modal-days-wrap');
+    var dateEl = document.getElementById('enroll-modal-date');
+    var modalHeader = document.querySelector('.enroll-modal__header');
+    if (!daysWrap && modalHeader) {
+      daysWrap = document.createElement('div');
+      daysWrap.id = 'enroll-modal-days-wrap';
+      daysWrap.className = 'enroll-modal__days-wrap';
+      daysWrap.style.display = 'none';
+      daysWrap.innerHTML = '<span class="enroll-modal__days-title">Выберите дату:</span><div id="enroll-modal-days-list" class="enroll-modal__days-list"></div>';
+      modalHeader.appendChild(daysWrap);
+    }
+    var daysList = document.getElementById('enroll-modal-days-list');
+    var isByDays = Boolean(course && (course.enrollByDays === true || course.enrollByDays === 'true' || course.enrollByDays === 1));
+    if (!isByDays) {
+      if (daysList) daysList.innerHTML = '';
+      if (daysWrap) daysWrap.style.display = 'none';
+      if (dateEl) dateEl.style.display = '';
+      return;
+    }
+    var firstStreamDate = (course && course.dateFrom ? course.dateFrom : '').split(',')[0].trim();
+    var selectedStreamDate = resolveCourseStreamDate(course, targetDate) || firstStreamDate;
+    var duration = Math.max(1, parseInt((course && course.durationDays) || 1, 10));
+
+    var allowedOffsets = null;
+    if (Array.isArray(course.availableDays) && course.availableDays.length > 0 && /^\d{4}-\d{2}-\d{2}$/.test(firstStreamDate)) {
+      allowedOffsets = [];
+      var p1 = firstStreamDate.split('-');
+      var dt1 = new Date(parseInt(p1[0], 10), parseInt(p1[1], 10) - 1, parseInt(p1[2], 10));
+      course.availableDays.forEach(function (ad) {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(ad)) {
+          var p2 = ad.split('-');
+          var dt2 = new Date(parseInt(p2[0], 10), parseInt(p2[1], 10) - 1, parseInt(p2[2], 10));
+          var diff = Math.round((dt2 - dt1) / 86400000);
+          if (diff >= 0 && diff < duration) {
+            allowedOffsets.push(diff);
+          }
+        }
+      });
+    }
+
+    var available = [];
+    if (/^\d{4}-\d{2}-\d{2}$/.test(selectedStreamDate) && duration > 1) {
+      var ps = selectedStreamDate.split('-');
+      var ys = parseInt(ps[0], 10);
+      var ms = parseInt(ps[1], 10) - 1;
+      var ds = parseInt(ps[2], 10);
+      for (var i = 0; i < duration; i++) {
+        if (allowedOffsets && !allowedOffsets.includes(i)) continue;
+        var cur = new Date(ys, ms, ds + i);
+        var iso = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0') + '-' + String(cur.getDate()).padStart(2, '0');
+        available.push(iso);
+      }
+    }
+    if (!available || available.length <= 1) {
+      if (daysList) daysList.innerHTML = '';
+      if (daysWrap) daysWrap.style.display = 'none';
+      if (dateEl) dateEl.style.display = '';
+      return;
+    }
+    var today = '';
+    try {
+      today = moscowTodayIso();
+    } catch (e) {
+      today = new Date().toISOString().split('T')[0];
+    }
+    var validDays = available.filter(function (d) { return !today || d >= today; });
+    if (validDays.length === 0) {
+      if (dateEl) dateEl.style.display = 'none';
+      if (daysWrap) daysWrap.style.display = 'block';
+      if (daysList) {
+        daysList.innerHTML = '<span style="font-size: 0.9rem; color: #dc2626; padding: 4px 0; display: block;">Приём заявок завершён (все дни курса уже прошли)</span>';
+      }
+      var submitBtnClosed = document.querySelector('#enroll-form .enroll-modal__submit');
+      if (submitBtnClosed) submitBtnClosed.disabled = true;
+      return;
+    }
+    var submitBtnActive = document.querySelector('#enroll-form .enroll-modal__submit');
+    if (submitBtnActive) submitBtnActive.disabled = false;
+    var displayDays = validDays;
+
+    if (dateEl) dateEl.style.display = 'none';
+    if (daysWrap) daysWrap.style.display = 'block';
+    if (daysList) {
+      daysList.innerHTML = '';
+      displayDays.forEach(function (isoDate, idx) {
+        var label = document.createElement('label');
+        label.className = 'enroll-modal__day-option' + (idx === 0 ? ' is-selected' : '');
+        var radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'enrollSelectedDay';
+        radio.value = isoDate;
+        if (idx === 0) radio.checked = true;
+        radio.addEventListener('change', function () {
+          document.querySelectorAll('.enroll-modal__day-option').forEach(function (el) {
+            el.classList.remove('is-selected');
+          });
+          if (radio.checked) label.classList.add('is-selected');
+        });
+        var span = document.createElement('span');
+        span.textContent = formatRussianDateLong(isoDate);
+        label.appendChild(radio);
+        label.appendChild(span);
+        daysList.appendChild(label);
+      });
+    }
+  }
   function openEnrollModal(_x6) {
     return _openEnrollModal.apply(this, arguments);
   }
@@ -1259,6 +1407,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
                 : (courseForDist === null || courseForDist === void 0 ? void 0 : courseForDist.showSource) !== false
             );
             configureEnrollModalSource(showSrc);
+            var prefDate = (options && (options.selectedDate || options.date)) || '';
+            configureEnrollModalDays(courseForDist, prefDate);
             calendarModal = document.getElementById('calendar-course-modal');
             if (calendarModal && calendarModal.style.display !== 'none') {
               calendarModal.style.display = 'none';
@@ -1295,6 +1445,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         forLegalEntities: true
       });
       configureEnrollModalDistrict(false);
+      configureEnrollModalDays(null);
+      configureEnrollModalSource(true);
     }
     if (closeBtn) closeBtn.addEventListener('click', closeEnrollModal);
     if (overlay) overlay.addEventListener('click', closeEnrollModal);
@@ -1346,6 +1498,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       openEnrollModal({
         title: btn.getAttribute('data-title') || '',
         date: btn.getAttribute('data-date') || '',
+        selectedDate: btn.getAttribute('data-selected-date') || btn.getAttribute('data-date-iso') || '',
         courseId: btn.getAttribute('data-course-id') || '',
         forIndividuals: btn.getAttribute('data-for-individuals') !== 'false',
         forLegalEntities: btn.getAttribute('data-for-legal') !== 'false'

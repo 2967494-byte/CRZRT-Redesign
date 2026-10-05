@@ -60,6 +60,7 @@ if ($audienceType === 'legal') {
 }
 
 $matchedCourse = null;
+$selectedDate = trim((string)($payload['selectedDate'] ?? $payload['dateFrom'] ?? ''));
 
 try {
     require_once __DIR__ . '/db.php';
@@ -123,7 +124,12 @@ try {
             exit;
         }
         $selectedDate = trim((string)($payload['selectedDate'] ?? $payload['dateFrom'] ?? ''));
-        if (!crzrt_is_valid_course_start_date($matchedCourse['dateFrom'] ?? '', $selectedDate)) {
+        if (!empty($matchedCourse['enrollByDays']) && $selectedDate === '') {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'error' => 'Пожалуйста, выберите дату участия'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        if (!crzrt_is_valid_course_date($matchedCourse, $selectedDate)) {
             http_response_code(422);
             echo json_encode(['success' => false, 'error' => 'Выбранная дата не относится к этому курсу'], JSON_UNESCAPED_UNICODE);
             exit;
@@ -143,6 +149,10 @@ try {
 }
 
 $commentParts = ['Заявка на обучение с сайта zakupki.tatar'];
+$isDayEnroll = !empty($matchedCourse['enrollByDays']) && !empty($selectedDate);
+if ($isDayEnroll) {
+    $commentParts[] = 'Запись по дням: участие на дату ' . $selectedDate;
+}
 
 $fields = bitrix_build_enroll_lead_fields([
     'name' => $name,
@@ -157,10 +167,11 @@ $fields = bitrix_build_enroll_lead_fields([
     'courseTitle' => $courseTitle,
     'sourceId' => $sourceId,
     'audienceType' => $audienceType,
-    'selectedDate' => $payload['selectedDate'] ?? '',
-    'dateFrom' => $payload['dateFrom'] ?? '',
-    'dateTo' => $payload['dateTo'] ?? '',
-    'durationDays' => (int)($payload['durationDays'] ?? 1),
+    'isDayEnroll' => $isDayEnroll,
+    'selectedDate' => $selectedDate,
+    'dateFrom' => $selectedDate !== '' ? $selectedDate : ($payload['dateFrom'] ?? ''),
+    'dateTo' => $isDayEnroll ? $selectedDate : ($payload['dateTo'] ?? ''),
+    'durationDays' => $isDayEnroll ? 1 : (int)($payload['durationDays'] ?? 1),
     'format' => ($payload['format'] ?? '') === 'dist' ? 'dist' : 'och',
     'price' => $payload['price'] ?? '',
     'courseElementId' => (int)($payload['bitrixCourseElementId'] ?? 0),

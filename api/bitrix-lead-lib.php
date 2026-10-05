@@ -278,11 +278,15 @@ function bitrix_format_course_application_label(array $input): string
     $title = trim((string)($input['title'] ?? ''));
     $dateFrom = bitrix_normalize_iso_date($input['selectedDate'] ?? '')
         ?: bitrix_normalize_iso_date($input['dateFrom'] ?? '');
-    $dateTo = bitrix_course_end_iso(
-        $dateFrom,
-        $input['dateTo'] ?? '',
-        (int)($input['durationDays'] ?? 1)
-    );
+    $isDayEnroll = !empty($input['isDayEnroll']);
+    $durationDays = $isDayEnroll ? 1 : (int)($input['durationDays'] ?? 1);
+    $dateTo = $isDayEnroll
+        ? $dateFrom
+        : bitrix_course_end_iso(
+            $dateFrom,
+            $input['dateTo'] ?? '',
+            $durationDays
+        );
     $formatLabel = (($input['format'] ?? '') === 'dist') ? 'Дист.' : 'Оч.';
     $range = bitrix_format_date_range_ru($dateFrom, $dateTo);
 
@@ -349,19 +353,23 @@ function bitrix_build_enroll_lead_fields(array $input): array
     $rawDateFrom = (string)($input['dateFrom'] ?? '');
     $selectedDate = bitrix_normalize_iso_date($input['selectedDate'] ?? '');
     $dateFrom = $selectedDate !== '' ? $selectedDate : bitrix_normalize_iso_date($rawDateFrom);
-    $durationDays = max(1, (int)($input['durationDays'] ?? 1));
+    $isDayEnroll = !empty($input['isDayEnroll']);
+    $durationDays = $isDayEnroll ? 1 : max(1, (int)($input['durationDays'] ?? 1));
     // При нескольких датах старта (или выбранной дате из URL) конец считаем от длительности, иначе берём dateTo курса
-    $useCourseDateTo = $selectedDate === '' && strpos($rawDateFrom, ',') === false;
-    $dateTo = bitrix_course_end_iso(
-        $dateFrom,
-        $useCourseDateTo ? ($input['dateTo'] ?? '') : '',
-        $durationDays
-    );
+    $useCourseDateTo = !$isDayEnroll && $selectedDate === '' && strpos($rawDateFrom, ',') === false;
+    $dateTo = $isDayEnroll
+        ? $dateFrom
+        : bitrix_course_end_iso(
+            $dateFrom,
+            $useCourseDateTo ? ($input['dateTo'] ?? '') : '',
+            $durationDays
+        );
 
     $courseLabel = trim((string)($input['courseLabel'] ?? ''));
     if ($courseLabel === '') {
         $courseLabel = bitrix_format_course_application_label([
             'title' => $courseTitle,
+            'isDayEnroll' => $isDayEnroll,
             'selectedDate' => $dateFrom,
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
