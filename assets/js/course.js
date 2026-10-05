@@ -379,6 +379,52 @@ function configureCourseEnrollModalDistrict(requireDistrict) {
   }
 }
 
+function configureCourseEnrollModalSource(showSource) {
+  if (window.ObuchenieContent && typeof window.ObuchenieContent.configureEnrollModalSource === 'function') {
+    window.ObuchenieContent.configureEnrollModalSource(showSource);
+    return;
+  }
+  const sourceField = document.getElementById('enroll-source-field');
+  const sourceSelect = document.getElementById('enroll-source');
+  const visible = showSource !== false;
+  if (sourceField) {
+    sourceField.hidden = !visible;
+  }
+  if (sourceSelect) {
+    sourceSelect.required = visible;
+    if (!visible) {
+      sourceSelect.value = '';
+    }
+  }
+}
+
+function applyCourseFeatures(course) {
+  if (!course) return;
+  const featuresWrap = document.querySelector('.course-about__features');
+  if (!featuresWrap) return;
+  const lawItem = featuresWrap.querySelector('[data-feature="law"]');
+  const helpItem = featuresWrap.querySelector('[data-feature="help"]');
+  const accessItem = featuresWrap.querySelector('[data-feature="access"]');
+
+  if (lawItem && course.featureLaw !== undefined) {
+    lawItem.style.display = course.featureLaw === false ? 'none' : '';
+  }
+  if (helpItem && course.featureHelp !== undefined) {
+    helpItem.style.display = course.featureHelp === false ? 'none' : '';
+  }
+  if (accessItem && course.featureAccess !== undefined) {
+    accessItem.style.display = course.featureAccess === false ? 'none' : '';
+  }
+
+  const allHidden = (!lawItem || lawItem.style.display === 'none') &&
+                    (!helpItem || helpItem.style.display === 'none') &&
+                    (!accessItem || accessItem.style.display === 'none');
+  const grid = document.querySelector('.course-about__grid');
+  if (grid) {
+    grid.classList.toggle('course-about__grid--full', allHidden);
+  }
+}
+
 function initCourseEnrollModal() {
   const modal = document.getElementById('enroll-modal');
   if (!modal || modal.dataset.courseEnrollBound === 'true') return;
@@ -390,8 +436,14 @@ function initCourseEnrollModal() {
   const form = document.getElementById('enroll-form');
   const audienceToggle = document.getElementById('enroll-audience-toggle');
 
+  const sourceField = document.getElementById('enroll-source-field');
+  const initialShowSource = courseEnrollMetaCache
+    ? courseEnrollMetaCache.showSource !== false
+    : (sourceField ? !sourceField.hidden : true);
+
   configureCourseEnrollModalAudience(courseEnrollMetaCache);
   configureCourseEnrollModalDistrict(Boolean(courseEnrollMetaCache?.requireDistrict));
+  configureCourseEnrollModalSource(initialShowSource);
 
   const closeEnrollModal = () => {
     modal.classList.remove('calendar-modal--visible');
@@ -402,6 +454,10 @@ function initCourseEnrollModal() {
     }
     configureCourseEnrollModalAudience(courseEnrollMetaCache);
     configureCourseEnrollModalDistrict(Boolean(courseEnrollMetaCache?.requireDistrict));
+    const currentShowSource = courseEnrollMetaCache
+      ? courseEnrollMetaCache.showSource !== false
+      : (sourceField ? !sourceField.hidden : true);
+    configureCourseEnrollModalSource(currentShowSource);
     const status = document.getElementById('enroll-form-status');
     if (status) {
       status.hidden = true;
@@ -606,6 +662,8 @@ async function loadCourseEnrollMeta() {
   const staticForLegalEntities = switchWrap ? switchWrap.dataset.forLegalEntities !== 'false' : true;
   const districtField = document.getElementById('enroll-district-field');
   const staticRequireDistrict = districtField ? !districtField.hidden : false;
+  const sourceField = document.getElementById('enroll-source-field');
+  const staticShowSource = sourceField ? !sourceField.hidden : true;
   const domEnrollUntil = readDomEnrollUntil();
   const fallback = {
     id: courseId,
@@ -625,6 +683,7 @@ async function loadCourseEnrollMeta() {
     is44fz: false,
     is223fz: false,
     requireDistrict: staticRequireDistrict,
+    showSource: staticShowSource,
     options: []
   };
 
@@ -632,6 +691,7 @@ async function loadCourseEnrollMeta() {
     courseEnrollMetaCache = fallback;
     applyCourseEnrollAvailability(fallback);
     syncCourseStartDateDisplay(fallback);
+    configureCourseEnrollModalSource(courseEnrollMetaCache.showSource !== false);
     return fallback;
   }
 
@@ -649,6 +709,7 @@ async function loadCourseEnrollMeta() {
       }
       applyCourseEnrollAvailability(courseEnrollMetaCache);
       syncCourseStartDateDisplay(courseEnrollMetaCache);
+      configureCourseEnrollModalSource(courseEnrollMetaCache.showSource !== false);
       return courseEnrollMetaCache;
     }
     const data = await resp.json();
@@ -656,6 +717,7 @@ async function loadCourseEnrollMeta() {
       courseEnrollMetaCache = { ...fallback, enrollClosed: true, enrollUntil: domEnrollUntil || '1970-01-01' };
       applyCourseEnrollAvailability(courseEnrollMetaCache);
       syncCourseStartDateDisplay(courseEnrollMetaCache);
+      configureCourseEnrollModalSource(courseEnrollMetaCache.showSource !== false);
       return courseEnrollMetaCache;
     }
     const course = data.course;
@@ -669,6 +731,8 @@ async function loadCourseEnrollMeta() {
     syncCourseEventTexts(courseEnrollMetaCache.eventType === 'event');
     configureCourseEnrollModalAudience(courseEnrollMetaCache);
     configureCourseEnrollModalDistrict(Boolean(courseEnrollMetaCache.requireDistrict));
+    configureCourseEnrollModalSource(courseEnrollMetaCache.showSource !== false);
+    applyCourseFeatures(courseEnrollMetaCache);
     applyCourseEnrollAvailability(courseEnrollMetaCache);
     syncCourseStartDateDisplay(courseEnrollMetaCache);
     if (course.btnText) {
@@ -688,6 +752,7 @@ async function loadCourseEnrollMeta() {
     }
     applyCourseEnrollAvailability(courseEnrollMetaCache);
     syncCourseStartDateDisplay(courseEnrollMetaCache);
+    configureCourseEnrollModalSource(courseEnrollMetaCache.showSource !== false);
     return courseEnrollMetaCache;
   }
 }
@@ -723,7 +788,9 @@ function initCourseEnrollSubmit() {
     }
 
     try {
+      const lastName = (document.getElementById('enroll-last-name')?.value || '').trim();
       const name = (document.getElementById('enroll-name')?.value || '').trim();
+      const patronymic = (document.getElementById('enroll-patronymic')?.value || '').trim();
       const phone = (document.getElementById('enroll-phone')?.value || '').trim();
       const email = (document.getElementById('enroll-email')?.value || '').trim();
       const company = (document.getElementById('enroll-company')?.value || '').trim();
@@ -732,12 +799,21 @@ function initCourseEnrollSubmit() {
       const districtSelect = document.getElementById('enroll-district');
       const districtValue = districtSelect ? districtSelect.value.trim() : '';
       const isDistrictRequired = districtSelect && districtSelect.required;
+      const sourceField = document.getElementById('enroll-source-field');
+      const isSourceVisible = sourceField ? !sourceField.hidden : true;
       const sourceSelect = document.getElementById('enroll-source');
-      const sourceValue = sourceSelect?.value || '';
-      const sourceLabel = sourceSelect?.selectedOptions?.[0]?.textContent?.trim() || '';
+      const sourceValue = isSourceVisible ? (sourceSelect?.value || '') : '';
+      const sourceLabel = isSourceVisible ? (sourceSelect?.selectedOptions?.[0]?.textContent?.trim() || '') : '';
 
-      if (!name || !phone) {
+      if (document.getElementById('enroll-last-name')) {
+        if (!lastName || !name || !phone) {
+          throw new Error('Укажите фамилию, имя и телефон');
+        }
+      } else if (!name || !phone) {
         throw new Error('Укажите имя и телефон');
+      }
+      if (isSourceVisible && sourceSelect?.required && !sourceValue) {
+        throw new Error('Укажите, откуда узнали о мероприятии');
       }
       if (isDistrictRequired && !districtValue) {
         throw new Error('Выберите район');
@@ -761,7 +837,9 @@ function initCourseEnrollSubmit() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          lastName,
           name,
+          patronymic,
           phone,
           email,
           company,

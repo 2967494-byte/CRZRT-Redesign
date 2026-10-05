@@ -28,6 +28,8 @@ if (!is_array($payload)) {
 }
 
 $name = trim((string)($payload['name'] ?? ''));
+$lastName = trim((string)($payload['lastName'] ?? ''));
+$patronymic = trim((string)($payload['patronymic'] ?? $payload['middleName'] ?? ''));
 $phone = trim((string)($payload['phone'] ?? ''));
 $email = trim((string)($payload['email'] ?? ''));
 $company = trim((string)($payload['organization'] ?? $payload['company'] ?? ''));
@@ -38,9 +40,9 @@ $courseId = trim((string)($payload['courseId'] ?? ''));
 $sourceId = trim((string)($payload['source'] ?? ''));
 $audienceType = ($payload['audienceType'] ?? '') === 'individual' ? 'individual' : 'legal';
 
-if ($name === '' || $phone === '') {
+if ($name === '' || $lastName === '' || $phone === '') {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Укажите имя и телефон'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['success' => false, 'error' => 'Укажите фамилию, имя и телефон'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -144,6 +146,8 @@ $commentParts = ['Заявка на обучение с сайта zakupki.tatar
 
 $fields = bitrix_build_enroll_lead_fields([
     'name' => $name,
+    'lastName' => $lastName,
+    'patronymic' => $patronymic,
     'phone' => $phone,
     'email' => $email,
     'company' => $company,

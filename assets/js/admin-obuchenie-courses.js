@@ -421,6 +421,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       reqDistrictEl.checked = Boolean(course && (course.requireDistrict === true || course.requireDistrict === 'true' || course.requireDistrict === 1 || course.requireDistrict === '1'));
       console.log('[Courses Admin] openModal: set requireDistrict checked =', reqDistrictEl.checked, 'from course:', course ? course.requireDistrict : null);
     }
+    var showSourceEl = els.formShowSource || $('courseFormShowSource');
+    if (showSourceEl) {
+      showSourceEl.checked = course ? course.showSource !== false : true;
+    }
 
     // Render dynamic checkboxes
     var dynamicContainer = document.getElementById('courseFormDynamicOptions');
@@ -464,6 +468,12 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (els.formIssueDocument) {
       els.formIssueDocument.checked = course ? (course === null || course === void 0 ? void 0 : course.issueDocument) !== false : true;
     }
+    var featLawEl = els.formFeatureLaw || $('courseFormFeatureLaw');
+    if (featLawEl) featLawEl.checked = course ? course.featureLaw !== false : true;
+    var featHelpEl = els.formFeatureHelp || $('courseFormFeatureHelp');
+    if (featHelpEl) featHelpEl.checked = course ? course.featureHelp !== false : true;
+    var featAccessEl = els.formFeatureAccess || $('courseFormFeatureAccess');
+    if (featAccessEl) featAccessEl.checked = course ? course.featureAccess !== false : true;
     if (els.formProgramContainer) {
       els.formProgramContainer.innerHTML = '';
       if (Array.isArray(course === null || course === void 0 ? void 0 : course.program)) {
@@ -512,6 +522,8 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (els.formForLegalEntities) els.formForLegalEntities.checked = true;
     var reqDistrictElClose = els.formRequireDistrict || $('courseFormRequireDistrict');
     if (reqDistrictElClose) reqDistrictElClose.checked = false;
+    var showSourceElClose = els.formShowSource || $('courseFormShowSource');
+    if (showSourceElClose) showSourceElClose.checked = true;
     var dynamicContainer = document.getElementById('courseFormDynamicOptions');
     if (dynamicContainer) dynamicContainer.innerHTML = '';
     if (els.formBitrixFl) {
@@ -527,6 +539,12 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     if (els.formOutcomes) els.formOutcomes.value = '';
     if (els.formDocumentType) els.formDocumentType.value = '';
     if (els.formIssueDocument) els.formIssueDocument.checked = true;
+    var featLawClose = els.formFeatureLaw || $('courseFormFeatureLaw');
+    if (featLawClose) featLawClose.checked = true;
+    var featHelpClose = els.formFeatureHelp || $('courseFormFeatureHelp');
+    if (featHelpClose) featHelpClose.checked = true;
+    var featAccessClose = els.formFeatureAccess || $('courseFormFeatureAccess');
+    if (featAccessClose) featAccessClose.checked = true;
     if (els.formProgramContainer) els.formProgramContainer.innerHTML = '';
     if (els.formProgramPdf) els.formProgramPdf.value = '';
     if (els.formDocumentImage) els.formDocumentImage.value = '';
@@ -631,6 +649,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               speakers: extractSpeakersData(),
               program: extractProgramData(),
               requireDistrict: Boolean((els.formRequireDistrict || $('courseFormRequireDistrict')) && (els.formRequireDistrict || $('courseFormRequireDistrict')).checked),
+              showSource: Boolean((els.formShowSource || $('courseFormShowSource')) ? (els.formShowSource || $('courseFormShowSource')).checked : true),
+              featureLaw: Boolean((els.formFeatureLaw || $('courseFormFeatureLaw')) ? (els.formFeatureLaw || $('courseFormFeatureLaw')).checked : true),
+              featureHelp: Boolean((els.formFeatureHelp || $('courseFormFeatureHelp')) ? (els.formFeatureHelp || $('courseFormFeatureHelp')).checked : true),
+              featureAccess: Boolean((els.formFeatureAccess || $('courseFormFeatureAccess')) ? (els.formFeatureAccess || $('courseFormFeatureAccess')).checked : true),
               active: true
             };
             console.log('[Courses Admin] handleFormSubmit: course ID =', payload.id, 'requireDistrict =', payload.requireDistrict);
@@ -1439,6 +1461,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.formForIndividuals = $('courseFormForIndividuals');
     els.formForLegalEntities = $('courseFormForLegalEntities');
     els.formRequireDistrict = $('courseFormRequireDistrict');
+    els.formShowSource = $('courseFormShowSource');
+    els.formFeatureLaw = $('courseFormFeatureLaw');
+    els.formFeatureHelp = $('courseFormFeatureHelp');
+    els.formFeatureAccess = $('courseFormFeatureAccess');
     console.log('[Courses Admin v20] Initialized, formRequireDistrict element:', els.formRequireDistrict);
     els.formAudienceGroup = $('courseFormAudienceGroup');
     els.formAudienceError = $('courseFormAudienceError');

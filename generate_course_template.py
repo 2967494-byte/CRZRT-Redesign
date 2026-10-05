@@ -111,19 +111,19 @@ course_content = """
           <p>Обучение проходит на современной образовательной платформе с круглосуточным доступом к материалам. Вы можете учиться в удобное время без отрыва от производства.</p>
         </div>
         <div class="course-about__features">
-          <div class="feature-item">
+          <div class="feature-item" data-feature="law">
             <div class="feature-item__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
             </div>
             <span>Актуальная нормативная база со всеми изменениями</span>
           </div>
-          <div class="feature-item">
+          <div class="feature-item" data-feature="help">
             <div class="feature-item__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             </div>
             <span>Помощь в решении сложных рабочих ситуаций во время обучения</span>
           </div>
-          <div class="feature-item">
+          <div class="feature-item" data-feature="access">
             <div class="feature-item__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
             </div>

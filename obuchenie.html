@@ -603,7 +603,13 @@
     <input type="hidden" id="enroll-audience-type" name="audienceType" value="legal">
     <form class="enroll-modal__form" id="enroll-form">
       <div class="enroll-modal__field">
+        <input type="text" id="enroll-last-name" class="enroll-modal__input" placeholder="Фамилия *" required>
+      </div>
+      <div class="enroll-modal__field">
         <input type="text" id="enroll-name" class="enroll-modal__input" placeholder="Имя *" required>
+      </div>
+      <div class="enroll-modal__field">
+        <input type="text" id="enroll-patronymic" class="enroll-modal__input" placeholder="Отчество (при наличии)">
       </div>
       <div class="enroll-modal__field">
         <input type="tel" id="enroll-phone" class="enroll-modal__input" placeholder="Телефон *" required>
@@ -667,7 +673,7 @@
           <option value="Ютазинский район">Ютазинский район</option>
         </select>
       </div>
-      <div class="enroll-modal__field">
+      <div class="enroll-modal__field" id="enroll-source-field">
         <select id="enroll-source" class="enroll-modal__select" required>
           <option value="" disabled selected hidden>Откуда узнали о мероприятии *</option>
           <option value="1156">Реклама</option>
@@ -696,7 +702,7 @@
 <script src="assets/js/hero-slides.js?v=11" defer></script>
 <script src="assets/js/landing-content.js?v=16" defer></script>
 <script src="assets/js/obuchenie-calendar.js?v=22" defer></script>
-<script src="assets/js/obuchenie-content.js?v=48" defer></script>
+<script src="assets/js/obuchenie-content.js?v=49" defer></script>
 <script src="assets/js/asmt-portal-config.js"></script>
 <script src="assets/js/landing.js?v=13" defer></script>
 <script src="assets/js/csr-dropdown.js?v=2" defer></script>

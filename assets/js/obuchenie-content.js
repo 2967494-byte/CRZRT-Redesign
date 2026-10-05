@@ -773,7 +773,11 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       documentImage: String((raw === null || raw === void 0 ? void 0 : raw.documentImage) || '').trim(),
       programPdf: String((raw === null || raw === void 0 ? void 0 : raw.programPdf) || '').trim(),
       program: Array.isArray(raw === null || raw === void 0 ? void 0 : raw.program) ? raw.program : [],
-      requireDistrict: Boolean(raw && (raw.requireDistrict === true || raw.requireDistrict === 'true' || raw.requireDistrict === 1 || raw.requireDistrict === '1'))
+      requireDistrict: Boolean(raw && (raw.requireDistrict === true || raw.requireDistrict === 'true' || raw.requireDistrict === 1 || raw.requireDistrict === '1')),
+      showSource: (raw === null || raw === void 0 ? void 0 : raw.showSource) !== false,
+      featureLaw: (raw === null || raw === void 0 ? void 0 : raw.featureLaw) !== false,
+      featureHelp: (raw === null || raw === void 0 ? void 0 : raw.featureHelp) !== false,
+      featureAccess: (raw === null || raw === void 0 ? void 0 : raw.featureAccess) !== false
     };
   }
   function moscowTodayIso() {
@@ -1028,10 +1032,14 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
               return item.id === courseId;
             });
             audienceType = ((_document$getElementB7 = document.getElementById('enroll-audience-type')) === null || _document$getElementB7 === void 0 ? void 0 : _document$getElementB7.value) === 'individual' ? 'individual' : 'legal';
+            var sourceField = document.getElementById('enroll-source-field');
+            var isSourceVisible = sourceField ? !sourceField.hidden : true;
             sourceSelect = document.getElementById('enroll-source');
-            sourceValue = (sourceSelect === null || sourceSelect === void 0 ? void 0 : sourceSelect.value) || '';
-            sourceLabel = (sourceSelect === null || sourceSelect === void 0 || (_sourceSelect$selecte = sourceSelect.selectedOptions) === null || _sourceSelect$selecte === void 0 || (_sourceSelect$selecte = _sourceSelect$selecte[0]) === null || _sourceSelect$selecte === void 0 || (_sourceSelect$selecte = _sourceSelect$selecte.text) === null || _sourceSelect$selecte === void 0 ? void 0 : _sourceSelect$selecte.trim()) || '';
+            sourceValue = isSourceVisible && sourceSelect ? sourceSelect.value || '' : '';
+            sourceLabel = isSourceVisible && (sourceSelect === null || sourceSelect === void 0 || (_sourceSelect$selecte = sourceSelect.selectedOptions) === null || _sourceSelect$selecte === void 0 || (_sourceSelect$selecte = _sourceSelect$selecte[0]) === null || _sourceSelect$selecte === void 0 || (_sourceSelect$selecte = _sourceSelect$selecte.text) === null || _sourceSelect$selecte === void 0 ? void 0 : _sourceSelect$selecte.trim()) || '';
+            var lastName = (document.getElementById('enroll-last-name') ? document.getElementById('enroll-last-name').value.trim() : '');
             name = ((_document$getElementB8 = document.getElementById('enroll-name')) === null || _document$getElementB8 === void 0 ? void 0 : _document$getElementB8.value.trim()) || '';
+            var patronymic = (document.getElementById('enroll-patronymic') ? document.getElementById('enroll-patronymic').value.trim() : '');
             phone = ((_document$getElementB9 = document.getElementById('enroll-phone')) === null || _document$getElementB9 === void 0 ? void 0 : _document$getElementB9.value.trim()) || '';
             email = ((_document$getElementB0 = document.getElementById('enroll-email')) === null || _document$getElementB0 === void 0 ? void 0 : _document$getElementB0.value.trim()) || '';
             company = ((_document$getElementB1 = document.getElementById('enroll-company')) === null || _document$getElementB1 === void 0 ? void 0 : _document$getElementB1.value.trim()) || '';
@@ -1039,8 +1047,15 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
             var districtSelect = document.getElementById('enroll-district');
             var districtValue = districtSelect ? districtSelect.value.trim() : '';
             var isDistrictRequired = districtSelect && districtSelect.required;
-            if (!name || !phone) {
+            if (document.getElementById('enroll-last-name')) {
+              if (!lastName || !name || !phone) {
+                throw new Error('Заполните фамилию, имя и телефон');
+              }
+            } else if (!name || !phone) {
               throw new Error('Заполните имя и телефон');
+            }
+            if (isSourceVisible && sourceSelect && sourceSelect.required && !sourceValue) {
+              throw new Error('Укажите, откуда узнали о мероприятии');
             }
             if (isDistrictRequired && !districtValue) {
               throw new Error('Выберите район');
@@ -1064,7 +1079,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
+                lastName: lastName,
                 name: name,
+                patronymic: patronymic,
                 phone: phone,
                 email: email,
                 company: company,
@@ -1178,6 +1195,20 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       }
     }
   }
+  function configureEnrollModalSource(showSource) {
+    var field = document.getElementById('enroll-source-field');
+    var select = document.getElementById('enroll-source');
+    var visible = showSource !== false;
+    if (field) {
+      field.hidden = !visible;
+    }
+    if (select) {
+      select.required = visible;
+      if (!visible) {
+        select.value = '';
+      }
+    }
+  }
   function openEnrollModal(_x6) {
     return _openEnrollModal.apply(this, arguments);
   }
@@ -1222,6 +1253,12 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
                 : (courseForDist === null || courseForDist === void 0 ? void 0 : courseForDist.requireDistrict)
             );
             configureEnrollModalDistrict(reqDistrict);
+            var showSrc = Boolean(
+              (options === null || options === void 0 ? void 0 : options.showSource) !== undefined
+                ? options.showSource !== false
+                : (courseForDist === null || courseForDist === void 0 ? void 0 : courseForDist.showSource) !== false
+            );
+            configureEnrollModalSource(showSrc);
             calendarModal = document.getElementById('calendar-course-modal');
             if (calendarModal && calendarModal.style.display !== 'none') {
               calendarModal.style.display = 'none';
@@ -1931,6 +1968,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     getBitrixFieldMap: getBitrixFieldMap,
     configureEnrollModalAudience: configureEnrollModalAudience,
     configureEnrollModalDistrict: configureEnrollModalDistrict,
+    configureEnrollModalSource: configureEnrollModalSource,
     openEnrollModal: openEnrollModal,
     setEnrollAudienceMode: setEnrollAudienceMode,
     loadObuchenieDataFromApi: loadObuchenieDataFromApi,

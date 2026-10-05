@@ -336,6 +336,57 @@ function generate_static_courses($courseRegistry) {
         $aboutText = nl2br($course['description'] ?? '');
         $html = preg_replace('/<div class="course-about__text">.*?<\/div>/s', '<div class="course-about__text">' . $aboutText . '</div>', $html);
 
+        // 6.2 Индикаторы (преимущества)
+        $featureLaw = !isset($course['featureLaw']) || $course['featureLaw'] !== false;
+        $featureHelp = !isset($course['featureHelp']) || $course['featureHelp'] !== false;
+        $featureAccess = !isset($course['featureAccess']) || $course['featureAccess'] !== false;
+
+        $featuresHtml = '';
+        if ($featureLaw) {
+            $featuresHtml .= '<div class="feature-item" data-feature="law">'
+                . '<div class="feature-item__icon">'
+                . '<svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'
+                . '</div>'
+                . '<span>Актуальная нормативная база со всеми изменениями</span>'
+                . '</div>';
+        }
+        if ($featureHelp) {
+            $featuresHtml .= '<div class="feature-item" data-feature="help">'
+                . '<div class="feature-item__icon">'
+                . '<svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>'
+                . '</div>'
+                . '<span>Помощь в решении сложных рабочих ситуаций во время обучения</span>'
+                . '</div>';
+        }
+        if ($featureAccess) {
+            $featuresHtml .= '<div class="feature-item" data-feature="access">'
+                . '<div class="feature-item__icon">'
+                . '<svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>'
+                . '</div>'
+                . '<span>Доступ к материалам курса на 6 месяцев после окончания</span>'
+                . '</div>';
+        }
+
+        if ($featuresHtml !== '') {
+            $html = preg_replace(
+                '/<div class="course-about__features">.*?<\/div>\s*<\/div>\s*<\/div>\s*<\/section>/s',
+                '<div class="course-about__features">' . $featuresHtml . '</div></div></div></section>',
+                $html
+            );
+        } else {
+            $html = preg_replace(
+                '/<div class="course-about__features">.*?<\/div>\s*<\/div>\s*<\/div>\s*<\/section>/s',
+                '<div class="course-about__features" style="display:none;"></div></div></div></section>',
+                $html
+            );
+            $html = preg_replace(
+                '/<div class="course-about__grid">/',
+                '<div class="course-about__grid course-about__grid--full">',
+                $html,
+                1
+            );
+        }
+
         // 6.5 Для кого (Целевая аудитория)
         $audienceHtml = '';
         if (!empty($course['targetAudience'])) {
@@ -510,6 +561,13 @@ function generate_static_courses($courseRegistry) {
         if (!empty($course['requireDistrict'])) {
             $html = preg_replace('/<div class="enroll-modal__field" id="enroll-district-field"\s*hidden>/', '<div class="enroll-modal__field" id="enroll-district-field">', $html, 1);
             $html = preg_replace('/<select id="enroll-district" class="enroll-modal__select">/', '<select id="enroll-district" class="enroll-modal__select" required>', $html, 1);
+        }
+
+        // 8.7 Поле «Откуда узнали о мероприятии»
+        $showSource = !isset($course['showSource']) || $course['showSource'] !== false;
+        if (!$showSource) {
+            $html = preg_replace('/<div class="enroll-modal__field" id="enroll-source-field"[^>]*>/', '<div class="enroll-modal__field" id="enroll-source-field" hidden>', $html, 1);
+            $html = preg_replace('/(<select\b[^>]*\bid="enroll-source"[^>]*?)\srequired\b([^>]*>)/us', '$1$2', $html, 1);
         }
 
         // 9. Относительные пути (так как мы теперь в папке courses/)

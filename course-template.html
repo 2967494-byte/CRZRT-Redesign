@@ -17,7 +17,7 @@
   <link rel="preload" href="assets/css/obuchenie.css?v=60" as="style">
   <link rel="stylesheet" href="assets/css/landing.css?v=27">
   <link rel="stylesheet" href="assets/css/obuchenie.css?v=60">
-  <link rel="stylesheet" href="assets/css/course.css?v=7">
+  <link rel="stylesheet" href="assets/css/course.css?v=8">
   <script>document.documentElement.classList.add('landing-content-pending', 'obuchenie-content-pending');</script>
 </head>
 <body data-page="course">
@@ -178,19 +178,19 @@
           <p>Обучение проходит на современной образовательной платформе с круглосуточным доступом к материалам. Вы можете учиться в удобное время без отрыва от производства.</p>
         </div>
         <div class="course-about__features">
-          <div class="feature-item">
+          <div class="feature-item" data-feature="law">
             <div class="feature-item__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
             </div>
             <span>Актуальная нормативная база со всеми изменениями</span>
           </div>
-          <div class="feature-item">
+          <div class="feature-item" data-feature="help">
             <div class="feature-item__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             </div>
             <span>Помощь в решении сложных рабочих ситуаций во время обучения</span>
           </div>
-          <div class="feature-item">
+          <div class="feature-item" data-feature="access">
             <div class="feature-item__icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="#00AE4D" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
             </div>
@@ -485,7 +485,13 @@
     <input type="hidden" id="enroll-audience-type" name="audienceType" value="legal">
     <form class="enroll-modal__form" id="enroll-form">
       <div class="enroll-modal__field">
+        <input type="text" id="enroll-last-name" class="enroll-modal__input" placeholder="Фамилия *" required>
+      </div>
+      <div class="enroll-modal__field">
         <input type="text" id="enroll-name" class="enroll-modal__input" placeholder="Имя *" required>
+      </div>
+      <div class="enroll-modal__field">
+        <input type="text" id="enroll-patronymic" class="enroll-modal__input" placeholder="Отчество (при наличии)">
       </div>
       <div class="enroll-modal__field">
         <input type="tel" id="enroll-phone" class="enroll-modal__input" placeholder="Телефон *" required>
@@ -549,7 +555,7 @@
           <option value="Ютазинский район">Ютазинский район</option>
         </select>
       </div>
-      <div class="enroll-modal__field">
+      <div class="enroll-modal__field" id="enroll-source-field">
         <select id="enroll-source" class="enroll-modal__select" required>
           <option value="" disabled selected hidden>Откуда узнали о мероприятии *</option>
           <option value="1156">Реклама</option>
@@ -578,7 +584,7 @@
 <script src="assets/js/hero-slides.js?v=11" defer></script>
 <script src="assets/js/landing-content.js?v=18" defer></script>
 <script src="assets/js/obuchenie-calendar.js?v=22" defer></script>
-<script src="assets/js/obuchenie-content.js?v=48" defer></script>
+<script src="assets/js/obuchenie-content.js?v=49" defer></script>
 <script src="assets/js/asmt-portal-config.js"></script>
 <script src="assets/js/landing.js?v=14" defer></script>
 <script src="assets/js/csr-dropdown.js?v=2" defer></script>
@@ -637,6 +643,6 @@
   });
 })();
 </script>
-<script src="assets/js/course.js?v=33" defer></script>
+<script src="assets/js/course.js?v=34" defer></script>
 </body>
 </html>

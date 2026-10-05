@@ -400,6 +400,16 @@ body[data-page="course"] .footer {
   gap: 60px;
 }
 
+.course-about__grid--full,
+.course-about__grid:has(.course-about__features:empty),
+.course-about__grid:has(.course-about__features[style*="display:none"]) {
+  grid-template-columns: 1fr;
+}
+
+.course-about__features:empty {
+  display: none;
+}
+
 .course-about__text {
   min-width: 0;
   overflow-wrap: anywhere;

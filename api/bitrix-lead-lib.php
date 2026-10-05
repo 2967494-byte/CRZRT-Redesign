@@ -337,6 +337,7 @@ function bitrix_build_enroll_lead_fields(array $input): array
 {
     $name = trim((string)($input['name'] ?? ''));
     $lastName = trim((string)($input['lastName'] ?? ''));
+    $patronymic = trim((string)($input['patronymic'] ?? $input['secondName'] ?? $input['middleName'] ?? ''));
     $phone = trim((string)($input['phone'] ?? ''));
     $email = trim((string)($input['email'] ?? ''));
     $company = trim((string)($input['organization'] ?? $input['company'] ?? ''));
@@ -387,6 +388,9 @@ function bitrix_build_enroll_lead_fields(array $input): array
     }
     if ($lastName !== '') {
         $fields['LAST_NAME'] = $lastName;
+    }
+    if ($patronymic !== '') {
+        $fields['SECOND_NAME'] = $patronymic;
     }
     if ($phone !== '') {
         $fields['PHONE'] = [['VALUE' => $phone, 'VALUE_TYPE' => 'WORK']];
