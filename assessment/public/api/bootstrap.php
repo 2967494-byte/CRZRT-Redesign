@@ -14,8 +14,9 @@ require_once __DIR__ . '/../../api/lib/Http.php';
 require_once __DIR__ . '/../../api/lib/RateLimit.php';
 require_once __DIR__ . '/../../api/lib/Mailer.php';
 require_once __DIR__ . '/../../api/lib/DaDataParty.php';
-require_once __DIR__ . '/../../api/lib/AttemptService.php';
-require_once __DIR__ . '/../../api/lib/RegRuService.php';
+if (is_file(__DIR__ . '/../../api/lib/RegRuService.php')) {
+    require_once __DIR__ . '/../../api/lib/RegRuService.php';
+}
 
 use Asmt\Auth;
 use Asmt\Config;

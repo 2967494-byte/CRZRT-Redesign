@@ -139,7 +139,9 @@ function getLiveSessions(PDO $pdo, ?int $regionId = null): array
 {
     $where = ["a.status = 'in_progress'", "a.expires_at > NOW()"];
     $params = [];
-    if ($regionId !== null) {
+    if ($regionId === -1) {
+        $where[] = "1=0";
+    } elseif ($regionId !== null) {
         $where[] = "u.region_id = ?";
         $params[] = $regionId;
     }
@@ -177,7 +179,7 @@ function getLiveSessions(PDO $pdo, ?int $regionId = null): array
         $progressPct = round(($ansQ / $totalQ) * 100, 1);
 
         $lastPingTs = $r['last_ping_at'] ? strtotime((string)$r['last_ping_at']) : null;
-        $isOnline = $lastPingTs ? (($now - $lastPingTs) <= 45) : true;
+        $isOnline = $lastPingTs ? (($now - $lastPingTs) <= 75) : true;
 
         $sessions[] = [
             'attemptId' => (int)$r['id'],
@@ -209,8 +211,16 @@ function getLiveSessions(PDO $pdo, ?int $regionId = null): array
 // --------------------------------------------------------------------------
 function getPlatformKPIs(PDO $pdo, ?int $regionId = null): array
 {
-    $regionFilterUsers = $regionId !== null ? " WHERE region_id = " . (int)$regionId : "";
-    $regionFilterUserAnd = $regionId !== null ? " AND u.region_id = " . (int)$regionId : "";
+    if ($regionId === -1) {
+        $regionFilterUsers = " WHERE 1=0";
+        $regionFilterUserAnd = " AND 1=0";
+    } elseif ($regionId !== null) {
+        $regionFilterUsers = " WHERE region_id = " . (int)$regionId;
+        $regionFilterUserAnd = " AND u.region_id = " . (int)$regionId;
+    } else {
+        $regionFilterUsers = "";
+        $regionFilterUserAnd = "";
+    }
 
     // Пользователи
     $uRow = $pdo->query("SELECT
@@ -251,7 +261,13 @@ function getPlatformKPIs(PDO $pdo, ?int $regionId = null): array
     // Очереди заявок
     $pendingModeration = (int)$pdo->query("SELECT COUNT(*) FROM asmt_user_organizations uo JOIN asmt_users u ON u.id = uo.user_id WHERE uo.status = 'pending'{$regionFilterUserAnd}")->fetchColumn();
     $pendingRetakes = (int)$pdo->query("SELECT COUNT(*) FROM asmt_retake_requests r JOIN asmt_users u ON u.id = r.user_id WHERE r.status = 'pending'{$regionFilterUserAnd}")->fetchColumn();
-    $mailSent24h = (int)$pdo->query("SELECT COUNT(*) FROM asmt_mail_log WHERE created_at >= NOW() - INTERVAL '24 hours'")->fetchColumn();
+
+    $mailSent24h = 0;
+    try {
+        $mailSent24h = (int)$pdo->query(
+            "SELECT COUNT(*) FROM asmt_mail_queue WHERE status = 'sent' AND (sent_at >= NOW() - INTERVAL '24 hours' OR (sent_at IS NULL AND created_at >= NOW() - INTERVAL '24 hours'))"
+        )->fetchColumn();
+    } catch (\Throwable $_) {}
 
     return [
         'users' => [
@@ -293,7 +309,13 @@ function getPlatformKPIs(PDO $pdo, ?int $regionId = null): array
 // --------------------------------------------------------------------------
 function getDailyTrends(PDO $pdo, ?int $regionId = null): array
 {
-    $regionFilter = $regionId !== null ? " AND u.region_id = " . (int)$regionId : "";
+    if ($regionId === -1) {
+        $regionFilter = " AND 1=0";
+    } elseif ($regionId !== null) {
+        $regionFilter = " AND u.region_id = " . (int)$regionId;
+    } else {
+        $regionFilter = "";
+    }
 
     $sql = "SELECT date_trunc('day', a.finished_at)::date AS day,
                    COUNT(*) AS total_finished,
@@ -390,14 +412,23 @@ function getCampaignsAndRegions(PDO $pdo, ?int $regionId = null): array
 // --------------------------------------------------------------------------
 // Ответ контроллера
 // --------------------------------------------------------------------------
-$regionFilterId = ($user['role'] === 'region_admin' && !empty($user['region_id'])) ? (int)$user['region_id'] : null;
+$regionFilterId = null;
+if ($user['role'] === 'region_admin') {
+    $regionFilterId = !empty($user['region_id']) ? (int)$user['region_id'] : -1;
+}
 
-$serverResources = getServerResources($pdo);
+$isSuperAdmin = ($user['role'] === 'superadmin');
+$serverResources = $isSuperAdmin ? getServerResources($pdo) : null;
 $liveSessions = getLiveSessions($pdo, $regionFilterId);
 $kpis = getPlatformKPIs($pdo, $regionFilterId);
 $dailyTrends = getDailyTrends($pdo, $regionFilterId);
 $extraStats = getCampaignsAndRegions($pdo, $regionFilterId);
-$regruBalance = \Asmt\RegRuService::getBalance(isset($_GET['refresh_regru']));
+
+$regruBalance = null;
+if ($isSuperAdmin && class_exists('Asmt\RegRuService')) {
+    $forceRegru = isset($_GET['refresh_regru']);
+    $regruBalance = \Asmt\RegRuService::getBalance($forceRegru);
+}
 
 Http::json([
     'success' => true,
@@ -413,3 +444,4 @@ Http::json([
     'userRole' => $user['role'],
     'timestamp' => date('c'),
 ]);
+

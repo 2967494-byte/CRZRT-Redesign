@@ -118,32 +118,42 @@ final class RegRuService
         }
 
         if ($raw === false || $raw === '') {
-            return [
+            $errData = [
                 'configured' => true,
                 'balance' => null,
                 'credit' => null,
                 'currency' => 'RUB',
                 'is_low' => false,
                 'cached' => false,
-                'updated_at' => null,
+                'updated_at' => date('d.m.Y H:i'),
                 'error' => 'Сетевая ошибка при обращении к API REG.RU',
                 'username' => $username,
             ];
+            @file_put_contents($cacheFile, json_encode([
+                'timestamp' => time(),
+                'data' => $errData,
+            ], JSON_UNESCAPED_UNICODE));
+            return $errData;
         }
 
         $json = json_decode($raw, true);
         if (!is_array($json)) {
-            return [
+            $errData = [
                 'configured' => true,
                 'balance' => null,
                 'credit' => null,
                 'currency' => 'RUB',
                 'is_low' => false,
                 'cached' => false,
-                'updated_at' => null,
+                'updated_at' => date('d.m.Y H:i'),
                 'error' => 'Некорректный ответ от REG.RU API',
                 'username' => $username,
             ];
+            @file_put_contents($cacheFile, json_encode([
+                'timestamp' => time(),
+                'data' => $errData,
+            ], JSON_UNESCAPED_UNICODE));
+            return $errData;
         }
 
         if (($json['result'] ?? '') !== 'success') {
@@ -155,17 +165,22 @@ final class RegRuService
             } elseif ($errCode === 'PASSWORD_AUTH_FAILED' || $errCode === 'AUTHENTICATION_FAILED') {
                 $hint = ' (проверьте логин и пароль API в .env)';
             }
-            return [
+            $errData = [
                 'configured' => true,
                 'balance' => null,
                 'credit' => null,
                 'currency' => 'RUB',
                 'is_low' => false,
                 'cached' => false,
-                'updated_at' => null,
+                'updated_at' => date('d.m.Y H:i'),
                 'error' => "REG.RU: {$errCode} — {$errText}{$hint}",
                 'username' => $username,
             ];
+            @file_put_contents($cacheFile, json_encode([
+                'timestamp' => time(),
+                'data' => $errData,
+            ], JSON_UNESCAPED_UNICODE));
+            return $errData;
         }
 
         $answer = $json['answer'] ?? [];

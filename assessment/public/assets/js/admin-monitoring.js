@@ -61,13 +61,15 @@
     queueRetakeBadge: document.getElementById('queueRetakeBadge'),
     queueMailBadge: document.getElementById('queueMailBadge'),
 
-    // REG.RU
+    // REG.RU & Server Section
+    regruWrapper: document.getElementById('regruBalanceWrapper'),
     regruCard: document.getElementById('regruBalanceCard'),
     regruBalanceVal: document.getElementById('regruBalanceVal'),
     regruBalancePill: document.getElementById('regruBalancePill'),
     regruBalanceWarning: document.getElementById('regruBalanceWarning'),
     regruWarningText: document.getElementById('regruWarningText'),
     regruTopupBtn: document.getElementById('regruTopupBtn'),
+    sectionServerResources: document.getElementById('sectionServerResources'),
   };
 
   function esc(s) {
@@ -122,6 +124,10 @@
       const url = forceRegru ? 'api/admin-monitoring.php?refresh_regru=1' : 'api/admin-monitoring.php';
       const res = await AsmtApi.get(url);
       if (!res.success) {
+        if (res.error === 'Unauthorized' || res.status === 401 || (typeof res.error === 'string' && res.error.toLowerCase().includes('auth'))) {
+          location.href = 'login.html';
+          return;
+        }
         console.error('Monitoring API error:', res.error);
         return;
       }
@@ -138,6 +144,10 @@
         els.lastUpdatedTime.textContent = d.toLocaleTimeString();
       }
     } catch (err) {
+      if (err && (err.status === 401 || String(err).includes('Unauthorized'))) {
+        location.href = 'login.html';
+        return;
+      }
       console.error('Failed to load monitoring data:', err);
     } finally {
       if (els.refreshSvg) {
@@ -150,10 +160,10 @@
     if (!els.regruCard) return;
 
     if (!reg) {
-      if (els.regruBalanceVal) els.regruBalanceVal.textContent = '— ₽';
-      if (els.regruBalancePill) els.regruBalancePill.textContent = 'Нет данных';
+      if (els.regruWrapper) els.regruWrapper.style.display = 'none';
       return;
     }
+    if (els.regruWrapper) els.regruWrapper.style.display = 'flex';
 
     // Если не настроен в .env
     if (!reg.configured) {
