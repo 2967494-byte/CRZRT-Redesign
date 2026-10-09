@@ -23,9 +23,13 @@ if ($method === 'GET') {
     $where = ['1=1'];
     $params = [];
 
-    if ($admin['role'] === 'region_admin' && !empty($admin['region_id'])) {
-        $where[] = 'u.region_id = ?';
-        $params[] = (int)$admin['region_id'];
+    if ($admin['role'] === 'region_admin') {
+        if (!empty($admin['region_id'])) {
+            $where[] = 'u.region_id = ?';
+            $params[] = (int)$admin['region_id'];
+        } else {
+            $where[] = '1=0';
+        }
     }
 
     if ($status !== '' && $status !== 'all') {
@@ -105,6 +109,8 @@ if ($method === 'GET') {
         'success' => true,
         'total' => $total,
         'canManage' => $canManage,
+        'currentUserRole' => $admin['role'],
+        'currentUserId' => (int)$admin['id'],
         'items' => array_map(static function($r) {
             return [
                 'id' => (int)$r['id'],
@@ -163,10 +169,23 @@ if ($method === 'POST') {
         Http::json(['success' => false, 'error' => 'Пользователь не найден'], 404);
     }
 
-    // Check region boundaries for region_admin
-    if ($admin['role'] === 'region_admin' && !empty($admin['region_id'])
-        && !empty($targetUser['region_id']) && (int)$targetUser['region_id'] !== (int)$admin['region_id']) {
-        Http::json(['success' => false, 'error' => 'Пользователь из другого региона'], 403);
+    // Security checks:
+    // 1. Не-суперадминам категорически запрещено управлять суперадминами
+    if ($admin['role'] !== 'superadmin' && $targetUser['role'] === 'superadmin') {
+        Http::json(['success' => false, 'error' => 'Запрещено управление главным администратором'], 403);
+    }
+
+    // 2. Ограничения для регионального администратора
+    if ($admin['role'] === 'region_admin') {
+        // Региональный админ может управлять только пользователями своего региона
+        if (empty($admin['region_id']) || empty($targetUser['region_id']) || (int)$targetUser['region_id'] !== (int)$admin['region_id']) {
+            Http::json(['success' => false, 'error' => 'Пользователь не относится к вашему региону'], 403);
+        }
+
+        // Региональный админ может управлять ТОЛЬКО обычными участниками (все, кто не participant, кроме себя, закрыты)
+        if ($targetUser['role'] !== 'participant' && (int)$admin['id'] !== $userId) {
+            Http::json(['success' => false, 'error' => 'Управление сотрудниками доступно только главному администратору'], 403);
+        }
     }
 
     if ($action === 'toggle-block') {
@@ -203,6 +222,11 @@ if ($method === 'POST') {
             Http::json(['success' => false, 'error' => 'Недостаточно прав для входа под пользователем'], 403);
         }
 
+        // КРИТИЧНО: Всем, кроме суперадмина, разрешен вход ТОЛЬКО под обычными участниками!
+        if ($admin['role'] !== 'superadmin' && $targetUser['role'] !== 'participant') {
+            Http::json(['success' => false, 'error' => 'Входить можно только под участниками'], 403);
+        }
+
         if ($targetUser['status'] !== 'active') {
             Http::json(['success' => false, 'error' => 'Пользователь заблокирован. Разблокируйте перед входом.'], 400);
         }
@@ -228,6 +252,222 @@ if ($method === 'POST') {
             'success' => true,
             'redirect' => 'cabinet.html',
             'message' => 'Вход под пользователем выполнен'
+        ]);
+    }
+
+    if ($action === 'update') {
+        if (!in_array($admin['role'], ['superadmin', 'region_admin'], true)) {
+            Http::json(['success' => false, 'error' => 'Недостаточно прав для редактирования пользователей'], 403);
+        }
+
+        $lastName = trim((string)($payload['lastName'] ?? ''));
+        $firstName = trim((string)($payload['firstName'] ?? ''));
+        $middleName = trim((string)($payload['middleName'] ?? ''));
+        $email = Auth::normalizeEmail((string)($payload['email'] ?? ''));
+        $phone = Auth::normalizePhone((string)($payload['phone'] ?? ''));
+
+        // Валидация обязательных полей и их длины
+        if ($lastName === '' || $firstName === '') {
+            Http::json(['success' => false, 'error' => 'Укажите фамилию и имя пользователя'], 400);
+        }
+        if (mb_strlen($lastName) > 120) {
+            Http::json(['success' => false, 'error' => 'Фамилия не может быть длиннее 120 символов'], 400);
+        }
+        if (mb_strlen($firstName) > 120) {
+            Http::json(['success' => false, 'error' => 'Имя не может быть длиннее 120 символов'], 400);
+        }
+        if (mb_strlen($middleName) > 120) {
+            Http::json(['success' => false, 'error' => 'Отчество не может быть длиннее 120 символов'], 400);
+        }
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Http::json(['success' => false, 'error' => 'Укажите корректный адрес электронной почты'], 400);
+        }
+        if (mb_strlen($email) > 255) {
+            Http::json(['success' => false, 'error' => 'Email не может быть длиннее 255 символов'], 400);
+        }
+        if (strlen($phone) !== 11 || $phone[0] !== '7') {
+            Http::json(['success' => false, 'error' => 'Укажите корректный номер телефона (10 или 11 цифр)'], 400);
+        }
+
+        // Проверка уникальности email среди других пользователей
+        $chkEmail = $pdo->prepare('SELECT id FROM asmt_users WHERE email_normalized = ? AND id <> ? LIMIT 1');
+        $chkEmail->execute([$email, $userId]);
+        if ($chkEmail->fetch()) {
+            Http::json(['success' => false, 'error' => 'Пользователь с таким email уже существует в системе'], 409);
+        }
+
+        // Проверка уникальности телефона среди других пользователей
+        $chkPhone = $pdo->prepare('SELECT id FROM asmt_users WHERE phone_normalized = ? AND id <> ? LIMIT 1');
+        $chkPhone->execute([$phone, $userId]);
+        if ($chkPhone->fetch()) {
+            Http::json(['success' => false, 'error' => 'Пользователь с таким номером телефона уже существует в системе'], 409);
+        }
+
+        $position = trim((string)($payload['position'] ?? ''));
+        $experienceLevel = trim((string)($payload['experienceLevel'] ?? ''));
+        $education = trim((string)($payload['education'] ?? ''));
+        $specialty = trim((string)($payload['specialty'] ?? ''));
+        $customerLevel = trim((string)($payload['customerLevel'] ?? ''));
+
+        if (mb_strlen($position) > 255) {
+            Http::json(['success' => false, 'error' => 'Должность не может быть длиннее 255 символов'], 400);
+        }
+        if (mb_strlen($experienceLevel) > 64) {
+            Http::json(['success' => false, 'error' => 'Опыт работы не может быть длиннее 64 символов'], 400);
+        }
+        if (mb_strlen($education) > 255) {
+            Http::json(['success' => false, 'error' => 'Образование не может быть длиннее 255 символов'], 400);
+        }
+        if (mb_strlen($specialty) > 255) {
+            Http::json(['success' => false, 'error' => 'Специальность не может быть длиннее 255 символов'], 400);
+        }
+        if (mb_strlen($customerLevel) > 64) {
+            Http::json(['success' => false, 'error' => 'Уровень заказчика не может быть длиннее 64 символов'], 400);
+        }
+
+        // Роль
+        $role = trim((string)($payload['role'] ?? ''));
+        $allowedRoles = ['participant', 'moderator', 'region_admin', 'analyst', 'superadmin'];
+        if ($role === '' || !in_array($role, $allowedRoles, true)) {
+            $role = (string)$targetUser['role'];
+        }
+
+        // Ограничения по ролям:
+        // Только суперадмин может создавать и редактировать администраторов и персонал (superadmin, region_admin, moderator, analyst)
+        if ($admin['role'] !== 'superadmin') {
+            if ($role !== 'participant' && $targetUser['role'] !== $role) {
+                Http::json(['success' => false, 'error' => 'Региональный администратор может назначать только роль участника'], 403);
+            }
+            if ($targetUser['role'] !== 'participant' && (int)$admin['id'] !== $userId) {
+                Http::json(['success' => false, 'error' => 'Редактировать персонал может только главный администратор'], 403);
+            }
+        }
+        if ((int)$admin['id'] === $userId && $role !== $admin['role']) {
+            Http::json(['success' => false, 'error' => 'Вы не можете изменить свою собственную роль'], 400);
+        }
+
+        // Статус
+        $status = trim((string)($payload['status'] ?? ''));
+        if (!in_array($status, ['active', 'blocked'], true)) {
+            $status = (string)$targetUser['status'];
+        }
+        if ((int)$admin['id'] === $userId && $status === 'blocked') {
+            Http::json(['success' => false, 'error' => 'Вы не можете заблокировать свою учётную запись'], 400);
+        }
+
+        // Новый пароль (если передан)
+        $newPassword = trim((string)($payload['newPassword'] ?? ''));
+        $passwordUpdateSql = '';
+        $updateParams = [
+            $lastName,
+            $firstName,
+            $middleName,
+            $email,
+            $phone,
+            $position,
+            $experienceLevel,
+            $education,
+            $specialty,
+            $customerLevel,
+            $role,
+            $status,
+        ];
+
+        if ($newPassword !== '') {
+            if (mb_strlen($newPassword) < 6) {
+                Http::json(['success' => false, 'error' => 'Новый пароль должен содержать минимум 6 символов'], 400);
+            }
+            $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+            $passwordUpdateSql = ', password_hash = ?';
+            $updateParams[] = $passwordHash;
+        }
+
+        $updateParams[] = $userId;
+
+        // Фиксация старых и новых значений для журнала аудита
+        $changes = [];
+        $fieldsToTrack = [
+            'last_name' => [$targetUser['last_name'], $lastName],
+            'first_name' => [$targetUser['first_name'], $firstName],
+            'middle_name' => [$targetUser['middle_name'], $middleName],
+            'email_normalized' => [$targetUser['email_normalized'], $email],
+            'phone_normalized' => [$targetUser['phone_normalized'], $phone],
+            'position' => [$targetUser['position'], $position],
+            'experience_level' => [$targetUser['experience_level'], $experienceLevel],
+            'education' => [$targetUser['education'], $education],
+            'specialty' => [$targetUser['specialty'], $specialty],
+            'customer_level' => [$targetUser['customer_level'], $customerLevel],
+            'role' => [$targetUser['role'], $role],
+            'status' => [$targetUser['status'], $status],
+        ];
+
+        foreach ($fieldsToTrack as $field => [$oldVal, $newVal]) {
+            if ((string)$oldVal !== (string)$newVal) {
+                $changes[$field] = ['old' => (string)$oldVal, 'new' => (string)$newVal];
+            }
+        }
+        if ($newPassword !== '') {
+            $changes['password'] = ['changed' => true];
+        }
+
+        // Выполняем обновление в транзакции
+        $pdo->beginTransaction();
+        try {
+            $stmt = $pdo->prepare(
+                "UPDATE asmt_users
+                 SET last_name = ?,
+                     first_name = ?,
+                     middle_name = ?,
+                     email_normalized = ?,
+                     phone_normalized = ?,
+                     position = ?,
+                     experience_level = ?,
+                     education = ?,
+                     specialty = ?,
+                     customer_level = ?,
+                     role = ?,
+                     status = ?
+                     {$passwordUpdateSql}
+                 WHERE id = ?"
+            );
+            $stmt->execute($updateParams);
+
+            // Если пароль изменен — отзываем все активные одноразовые токены пользователя
+            if ($newPassword !== '') {
+                $pdo->prepare('UPDATE asmt_auth_tokens SET used_at = NOW() WHERE user_id = ? AND used_at IS NULL')
+                    ->execute([$userId]);
+            }
+
+            // Аудит с детальным логом изменений
+            $pdo->prepare(
+                "INSERT INTO asmt_admin_audit (admin_user_id, action, entity, entity_id, meta_json)
+                 VALUES (?, 'user_update', 'user', ?, ?::jsonb)"
+            )->execute([
+                (int)$admin['id'],
+                $userId,
+                json_encode([
+                    'changes' => $changes,
+                    'target_email' => $email,
+                ], JSON_UNESCAPED_UNICODE),
+            ]);
+
+            $pdo->commit();
+
+            // Если администратор изменил пароль своей собственной учетной записи —
+            // обновляем отпечаток в текущей сессии, чтобы его не выкинуло из системы
+            if ((int)$admin['id'] === $userId && $newPassword !== '') {
+                Auth::updateSessionPasswordHash($passwordHash);
+            }
+        } catch (\Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $e;
+        }
+
+        Http::json([
+            'success' => true,
+            'message' => 'Данные пользователя успешно обновлены',
         ]);
     }
 

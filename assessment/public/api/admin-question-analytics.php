@@ -38,9 +38,13 @@ if ($campaignId) {
     $where[] = 'a.campaign_id = ?';
     $params[] = $campaignId;
 }
-if ($user['role'] === 'region_admin' && !empty($user['region_id'])) {
-    $where[] = 'u.region_id = ?';
-    $params[] = (int)$user['region_id'];
+if ($user['role'] === 'region_admin') {
+    if (!empty($user['region_id'])) {
+        $where[] = 'u.region_id = ?';
+        $params[] = (int)$user['region_id'];
+    } else {
+        $where[] = '1=0';
+    }
 }
 if ($q !== '') {
     $where[] = '(qq.text ILIKE ? OR CAST(qq.external_id AS TEXT) ILIKE ?)';

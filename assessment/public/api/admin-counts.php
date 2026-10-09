@@ -15,12 +15,17 @@ $regionFilterRetake = '';
 $paramsUser = [];
 $paramsRetake = [];
 
-if ($user['role'] === 'region_admin' && !empty($user['region_id'])) {
-    $regionFilterUser = ' AND u.region_id = ?';
-    $paramsUser[] = (int)$user['region_id'];
+if ($user['role'] === 'region_admin') {
+    if (!empty($user['region_id'])) {
+        $regionFilterUser = ' AND u.region_id = ?';
+        $paramsUser[] = (int)$user['region_id'];
 
-    $regionFilterRetake = ' AND u.region_id = ?';
-    $paramsRetake[] = (int)$user['region_id'];
+        $regionFilterRetake = ' AND u.region_id = ?';
+        $paramsRetake[] = (int)$user['region_id'];
+    } else {
+        $regionFilterUser = ' AND 1=0';
+        $regionFilterRetake = ' AND 1=0';
+    }
 }
 
 // 1. Pending moderation requests

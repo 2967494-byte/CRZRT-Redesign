@@ -68,8 +68,23 @@ final class Auth
             Http::json(['success' => false, 'error' => 'Сессия недействительна'], 401);
         }
 
+        // Если пароль учетной записи был изменен после авторизации сессии — немедленно отзываем сессию
+        if (isset($_SESSION['asmt_user_pw_hash']) && !empty($user['password_hash'])) {
+            $expectedFingerprint = hash('sha256', (string)$user['password_hash']);
+            if (!hash_equals((string)$_SESSION['asmt_user_pw_hash'], $expectedFingerprint)) {
+                self::logout();
+                Http::json(['success' => false, 'error' => 'Пароль учетной записи был изменен. Пожалуйста, выполните вход повторно.'], 401);
+            }
+        }
+
         self::$cachedUser = $user;
         return self::$cachedUser;
+    }
+
+    public static function updateSessionPasswordHash(string $newPasswordHash): void
+    {
+        self::startSession();
+        $_SESSION['asmt_user_pw_hash'] = hash('sha256', $newPasswordHash);
     }
 
     /** @param string[] $roles */
@@ -120,6 +135,9 @@ final class Auth
         if (!headers_sent() && session_status() === PHP_SESSION_ACTIVE) { @session_regenerate_id(true); }
         $_SESSION['asmt_user_id'] = (int)$user['id'];
         $_SESSION['asmt_user_role'] = $user['role'];
+        $_SESSION['asmt_user_pw_hash'] = !empty($user['password_hash'])
+            ? hash('sha256', (string)$user['password_hash'])
+            : '';
         $_SESSION['asmt_csrf_token'] = bin2hex(random_bytes(32));
         self::$cachedUser = $user;
 

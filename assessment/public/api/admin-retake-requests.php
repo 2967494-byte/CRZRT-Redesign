@@ -22,9 +22,13 @@ if ($method === 'GET') {
         $where[] = 'r.status = ?';
         $params[] = $status;
     }
-    if ($user['role'] === 'region_admin' && !empty($user['region_id'])) {
-        $where[] = 'u.region_id = ?';
-        $params[] = (int)$user['region_id'];
+    if ($user['role'] === 'region_admin') {
+        if (!empty($user['region_id'])) {
+            $where[] = 'u.region_id = ?';
+            $params[] = (int)$user['region_id'];
+        } else {
+            $where[] = '1=0';
+        }
     }
     $sqlWhere = implode(' AND ', $where);
 

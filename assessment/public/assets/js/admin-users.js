@@ -18,10 +18,24 @@
     modalLeftAction: document.getElementById('modalUserLeftAction'),
     btnCloseModal: document.getElementById('btnCloseUserModal'),
     btnCloseModal2: document.getElementById('btnCloseUserModal2'),
+
+    // Edit Modal elements
+    editModal: document.getElementById('userEditModal'),
+    editTitle: document.getElementById('modalEditUserTitle'),
+    editForm: document.getElementById('formEditUser'),
+    editStatusMsg: document.getElementById('editUserStatusMsg'),
+    btnCancelEdit: document.getElementById('btnCancelEditUser'),
+    btnCloseEditModal: document.getElementById('btnCloseEditUserModal'),
+    btnSubmitEdit: document.getElementById('btnSubmitEditUser'),
+    editNewPassword: document.getElementById('editNewPassword'),
+    btnTogglePassword: document.getElementById('btnTogglePassword'),
+    pwEyeIcon: document.getElementById('pwEyeIcon'),
   };
 
   let debounceTimer = null;
   let cachedUsers = [];
+  let currentUserRole = 'moderator';
+  let currentUserId = 0;
 
   function showMsg(text, type) {
     if (!els.statusMsg) return;
@@ -93,6 +107,8 @@
         els.totalVal.textContent = String(res.total || 0);
       }
 
+      currentUserRole = res.currentUserRole || 'moderator';
+      currentUserId = Number(res.currentUserId) || 0;
       cachedUsers = res.items || [];
       renderTable(cachedUsers, res.canManage);
     } catch (err) {
@@ -258,18 +274,47 @@
     `;
 
     if (els.modalLeftAction) {
-      if (!isBlocked) {
-        els.modalLeftAction.innerHTML = `
+      let actionsHtml = '';
+      const canImpersonate = !isBlocked && (currentUserRole === 'superadmin' || user.role === 'participant');
+      if (canImpersonate) {
+        actionsHtml += `
           <button type="button" class="btn btn--primary" id="btnModalImpersonate" style="display:inline-flex; align-items:center; gap:6px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
             <span>Войти под пользователем</span>
           </button>
         `;
-        document.getElementById('btnModalImpersonate').addEventListener('click', () => {
+      } else if (isBlocked) {
+        actionsHtml += `<span style="color:var(--danger); font-size:0.85rem; font-weight:700;">Пользователь заблокирован</span>`;
+      }
+
+      const canManageThisUser = canManage && (currentUserRole === 'superadmin' || user.role === 'participant' || user.id === currentUserId);
+      if (canManageThisUser) {
+        actionsHtml += `
+          <button type="button" class="btn btn--ghost" id="btnModalEditUser" style="display:inline-flex; align-items:center; gap:6px; color:#d97706; border-color:#fde68a; background:#fffbeb;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <span>Редактировать</span>
+          </button>
+        `;
+      }
+
+      els.modalLeftAction.innerHTML = actionsHtml;
+
+      const btnImp = document.getElementById('btnModalImpersonate');
+      if (btnImp) {
+        btnImp.addEventListener('click', () => {
           doImpersonate(user.id, fullName);
         });
-      } else {
-        els.modalLeftAction.innerHTML = `<span style="color:var(--danger); font-size:0.85rem; font-weight:700;">Пользователь заблокирован</span>`;
+      }
+
+      const btnEdit = document.getElementById('btnModalEditUser');
+      if (btnEdit) {
+        btnEdit.addEventListener('click', () => {
+          closeModal();
+          openEditUserModal(user);
+        });
       }
     }
 
@@ -278,6 +323,193 @@
 
   function closeModal() {
     if (els.modal) els.modal.classList.add('hidden');
+  }
+
+  function setSelectWithFallback(selectEl, value) {
+    if (!selectEl) return;
+    const strVal = value != null ? String(value).trim() : '';
+    if (!strVal) {
+      selectEl.value = '';
+      return;
+    }
+    const exists = Array.from(selectEl.options).some(opt => opt.value === strVal);
+    if (!exists) {
+      const opt = document.createElement('option');
+      opt.value = strVal;
+      opt.textContent = `${strVal}`;
+      selectEl.appendChild(opt);
+    }
+    selectEl.value = strVal;
+  }
+
+  function updatePasswordToggleIcon(isVisible) {
+    if (!els.pwEyeIcon) return;
+    if (isVisible) {
+      els.pwEyeIcon.innerHTML = `
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+      `;
+    } else {
+      els.pwEyeIcon.innerHTML = `
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      `;
+    }
+  }
+
+  function openEditUserModal(user) {
+    if (!els.editModal || !els.editForm) return;
+
+    const fullName = [user.lastName, user.firstName, user.middleName].filter(Boolean).join(' ') || 'Пользователь';
+    if (els.editTitle) {
+      els.editTitle.textContent = `Редактирование: ${fullName} (#${user.id})`;
+    }
+
+    const setVal = (id, val) => {
+      const input = document.getElementById(id);
+      if (input) input.value = val != null ? String(val) : '';
+    };
+
+    setVal('editUserId', user.id);
+    setVal('editLastName', user.lastName || '');
+    setVal('editFirstName', user.firstName || '');
+    setVal('editMiddleName', user.middleName || '');
+    setVal('editEmail', user.email || '');
+    setVal('editPhone', user.phone || '');
+    setVal('editPosition', user.position || '');
+    setVal('editSpecialty', user.specialty || '');
+
+    // Выпадающие списки с fallback для нестандартных значений из базы
+    setSelectWithFallback(document.getElementById('editExperienceLevel'), user.experienceLevel);
+    setSelectWithFallback(document.getElementById('editEducation'), user.education);
+    setSelectWithFallback(document.getElementById('editCustomerLevel'), user.customerLevel);
+    
+    // Настройка селекта роли в зависимости от прав текущего админа
+    const roleSelect = document.getElementById('editRole');
+    if (roleSelect) {
+      if (currentUserRole !== 'superadmin') {
+        Array.from(roleSelect.options).forEach(opt => {
+          if (opt.value !== 'participant') {
+            opt.disabled = true;
+            opt.style.display = 'none';
+          } else {
+            opt.disabled = false;
+            opt.style.display = '';
+          }
+        });
+        roleSelect.disabled = (user.role !== 'participant');
+      } else {
+        Array.from(roleSelect.options).forEach(opt => {
+          opt.disabled = false;
+          opt.style.display = '';
+        });
+        roleSelect.disabled = false;
+      }
+    }
+    setSelectWithFallback(roleSelect, user.role || 'participant');
+    setSelectWithFallback(document.getElementById('editStatus'), user.status || 'active');
+
+    // Сброс пароля в режим скрытого ввода
+    if (els.editNewPassword) {
+      els.editNewPassword.value = '';
+      els.editNewPassword.type = 'password';
+    }
+    updatePasswordToggleIcon(false);
+
+    // Блок организации (показывается ТОЛЬКО при наличии привязанной организации)
+    const orgSec = document.getElementById('editOrgSection');
+    const orgPrev = document.getElementById('editOrgPreviewInfo');
+    if (user.organization && user.organization.name) {
+      if (orgSec) orgSec.style.display = 'block';
+      if (orgPrev) {
+        orgPrev.innerHTML = `
+          <div>
+            <strong style="color:var(--text); font-size:0.9rem;">${esc(user.organization.name)}</strong>
+            <span style="color:var(--muted); font-size:0.78rem; margin-left:8px;">ИНН: ${esc(user.organization.inn || '—')}</span>
+          </div>
+          <div style="margin-top:6px;">
+            ${orgBadge(user.organization.status)}
+          </div>
+        `;
+      }
+    } else {
+      if (orgSec) orgSec.style.display = 'none';
+      if (orgPrev) orgPrev.innerHTML = '';
+    }
+
+    if (els.editStatusMsg) {
+      els.editStatusMsg.textContent = '';
+      els.editStatusMsg.style.color = '';
+    }
+
+    els.editModal.classList.remove('hidden');
+  }
+
+  function closeEditModal() {
+    if (els.editModal) els.editModal.classList.add('hidden');
+  }
+
+  async function handleEditFormSubmit(e) {
+    e.preventDefault();
+    if (!els.editForm) return;
+
+    const fd = new FormData(els.editForm);
+    const userId = Number(fd.get('userId'));
+    if (!userId) return;
+
+    const payload = {
+      action: 'update',
+      userId,
+      lastName: fd.get('lastName'),
+      firstName: fd.get('firstName'),
+      middleName: fd.get('middleName'),
+      email: fd.get('email'),
+      phone: fd.get('phone'),
+      position: fd.get('position'),
+      experienceLevel: fd.get('experienceLevel'),
+      education: fd.get('education'),
+      specialty: fd.get('specialty'),
+      customerLevel: fd.get('customerLevel'),
+      role: fd.get('role'),
+      status: fd.get('status'),
+      newPassword: fd.get('newPassword'),
+    };
+
+    const submitBtn = els.btnSubmitEdit;
+    const prevBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>Сохранение…</span>`;
+    }
+
+    if (els.editStatusMsg) {
+      els.editStatusMsg.textContent = 'Сохранение данных…';
+      els.editStatusMsg.style.color = 'var(--muted)';
+    }
+
+    try {
+      const res = await AsmtApi.post('api/admin-users.php', payload);
+      if (res.success) {
+        closeEditModal();
+        showMsg(res.message || 'Данные пользователя успешно обновлены', 'success');
+        await loadUsers();
+      } else {
+        if (els.editStatusMsg) {
+          els.editStatusMsg.textContent = res.error || 'Ошибка сохранения';
+          els.editStatusMsg.style.color = '#ef4444';
+        }
+      }
+    } catch (err) {
+      if (els.editStatusMsg) {
+        els.editStatusMsg.textContent = err.message || 'Ошибка соединения с сервером';
+        els.editStatusMsg.style.color = '#ef4444';
+      }
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = prevBtnHtml;
+      }
+    }
   }
 
   async function doImpersonate(userId, userName) {
@@ -348,6 +580,7 @@ ${userName}?`)) {
       const orgInn = org && org.inn ? `ИНН: ${esc(org.inn)}` : '';
       const orgStatus = org ? org.status : null;
       const isBlocked = u.status === 'blocked';
+      const canManageUser = canManage && (currentUserRole === 'superadmin' || u.role === 'participant' || u.id === currentUserId);
 
       return `
         <tr>
@@ -391,15 +624,25 @@ ${userName}?`)) {
                 </svg>
               </button>
 
-              <!-- Button 2: Impersonate (Login) -->
-              ${!isBlocked ? `
+              <!-- Button 2: Edit (Pencil) -->
+              ${canManageUser ? `
+                <button type="button" class="btn-icon-action btn-icon-edit" data-edit-user="${u.id}" title="Редактировать данные пользователя">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+              ` : ''}
+
+              <!-- Button 3: Impersonate (Login) -->
+              ${(!isBlocked && (currentUserRole === 'superadmin' || u.role === 'participant')) ? `
                 <button type="button" class="btn-icon-action btn-icon-login" data-impersonate="${u.id}" data-name="${esc(fullName)}" title="Войти в личный кабинет от имени этого пользователя">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
                 </button>
               ` : ''}
 
-              <!-- Button 3: Block / Unblock -->
-              ${canManage ? `
+              <!-- Button 4: Block / Unblock -->
+              ${(canManageUser && u.id !== currentUserId) ? `
                 ${isBlocked ? `
                   <button type="button" class="btn-icon-action btn-icon-success" data-toggle-block="${u.id}" data-blocked="true" title="Разблокировать пользователя">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -423,6 +666,17 @@ ${userName}?`)) {
         const user = cachedUsers.find((x) => x.id === userId);
         if (user) {
           openUserModal(user, canManage);
+        }
+      });
+    });
+
+    // Attach click handler for Edit
+    els.tbody.querySelectorAll('[data-edit-user]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const userId = Number(btn.getAttribute('data-edit-user'));
+        const user = cachedUsers.find((x) => x.id === userId);
+        if (user) {
+          openEditUserModal(user);
         }
       });
     });
@@ -468,6 +722,7 @@ ${userName}?`)) {
     });
   }
 
+  // Info Modal events
   if (els.btnCloseModal) els.btnCloseModal.addEventListener('click', closeModal);
   if (els.btnCloseModal2) els.btnCloseModal2.addEventListener('click', closeModal);
   if (els.modal) {
@@ -476,8 +731,31 @@ ${userName}?`)) {
     });
   }
 
+  // Edit Modal events
+  if (els.btnCloseEditModal) els.btnCloseEditModal.addEventListener('click', closeEditModal);
+  if (els.btnCancelEdit) els.btnCancelEdit.addEventListener('click', closeEditModal);
+  if (els.editModal) {
+    els.editModal.addEventListener('click', (e) => {
+      if (e.target === els.editModal) closeEditModal();
+    });
+  }
+  if (els.editForm) {
+    els.editForm.addEventListener('submit', handleEditFormSubmit);
+  }
+
+  if (els.btnTogglePassword && els.editNewPassword) {
+    els.btnTogglePassword.addEventListener('click', () => {
+      const isCurrentlyPassword = els.editNewPassword.type === 'password';
+      els.editNewPassword.type = isCurrentlyPassword ? 'text' : 'password';
+      updatePasswordToggleIcon(isCurrentlyPassword);
+    });
+  }
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') {
+      closeModal();
+      closeEditModal();
+    }
   });
 
   if (els.btnLogout) {

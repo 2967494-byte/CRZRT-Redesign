@@ -28,9 +28,13 @@ if ($method === 'GET') {
         $like = '%' . $q . '%';
         array_push($params, $like, $like, $like, $like, $like);
     }
-    if ($user['role'] === 'region_admin' && !empty($user['region_id'])) {
-        $where[] = 'u.region_id = ?';
-        $params[] = (int)$user['region_id'];
+    if ($user['role'] === 'region_admin') {
+        if (!empty($user['region_id'])) {
+            $where[] = 'u.region_id = ?';
+            $params[] = (int)$user['region_id'];
+        } else {
+            $where[] = '1=0';
+        }
     }
 
     $sqlWhere = implode(' AND ', $where);
@@ -152,9 +156,10 @@ if ($method === 'POST') {
     if (!$row) {
         Http::json(['success' => false, 'error' => 'Заявка не найдена'], 404);
     }
-    if ($user['role'] === 'region_admin' && !empty($user['region_id'])
-        && (int)$row['user_region_id'] !== (int)$user['region_id']) {
-        Http::json(['success' => false, 'error' => 'Чужой регион'], 403);
+    if ($user['role'] === 'region_admin') {
+        if (empty($user['region_id']) || empty($row['user_region_id']) || (int)$row['user_region_id'] !== (int)$user['region_id']) {
+            Http::json(['success' => false, 'error' => 'Чужой регион'], 403);
+        }
     }
 
     $newStatus = $map[$action];

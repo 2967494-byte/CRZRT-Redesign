@@ -169,12 +169,12 @@
     }
 
     /* Proportional Column Widths */
-    .col-id { width: 48px; text-align: center; }
-    .col-user { width: 28%; }
-    .col-contacts { width: 22%; }
-    .col-org { width: 26%; }
+    .col-id { width: 44px; text-align: center; }
+    .col-user { width: 27%; }
+    .col-contacts { width: 21%; }
+    .col-org { width: 24%; }
     .col-status { width: 11%; }
-    .col-actions { width: 13%; text-align: right; }
+    .col-actions { width: 17%; min-width: 156px; text-align: right; }
 
     /* Cells Styling */
     .user-cell {
@@ -297,6 +297,17 @@
       border-color: #1d4ed8;
       box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
     }
+    .btn-icon-edit {
+      background: #fffbeb;
+      color: #d97706;
+      border-color: #fde68a;
+    }
+    .btn-icon-edit:hover {
+      background: #f59e0b;
+      color: #ffffff;
+      border-color: #d97706;
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+    }
     .btn-icon-danger {
       background: #fff1f2;
       color: #e11d48;
@@ -318,6 +329,102 @@
       color: #ffffff;
       border-color: #15803d;
       box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+    }
+
+    /* Edit User Modal Form */
+    .edit-form-section {
+      background: #f8fafc;
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    .edit-form-section:last-child {
+      margin-bottom: 0;
+    }
+    .edit-form-section__title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin: 0 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .edit-form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 640px) {
+      .edit-form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    .edit-form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 640px) {
+      .edit-form-grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+    .edit-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+    .edit-field:last-child {
+      margin-bottom: 0;
+    }
+    .edit-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #475569;
+    }
+    .edit-label .req {
+      color: #ef4444;
+      margin-left: 2px;
+    }
+    .edit-input, .edit-select, .edit-textarea {
+      width: 100%;
+      height: 38px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #ffffff;
+      font-size: 0.86rem;
+      color: var(--text);
+      transition: all 0.15s ease;
+      box-sizing: border-box;
+    }
+    .edit-textarea {
+      height: auto;
+      min-height: 60px;
+      resize: vertical;
+    }
+    .edit-input:focus, .edit-select:focus, .edit-textarea:focus {
+      border-color: var(--green);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(15, 170, 75, 0.12);
+    }
+    .edit-hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .edit-org-preview {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 0.84rem;
     }
 
     /* Modal Details Grid */
@@ -541,14 +648,189 @@
       </div>
       <div class="asmt-modal__body" id="modalUserBody"></div>
       <div class="asmt-modal__footer" id="modalUserFooter" style="display:flex; justify-content:space-between; align-items:center;">
-        <div id="modalUserLeftAction"></div>
+        <div id="modalUserLeftAction" style="display:flex; gap:8px; align-items:center;"></div>
         <button type="button" class="btn btn--ghost" id="btnCloseUserModal2">Закрыть</button>
       </div>
     </div>
   </div>
 
+  <!-- Modal: Edit User -->
+  <div class="asmt-modal-overlay hidden" id="userEditModal" role="dialog" aria-modal="true" aria-labelledby="modalEditUserTitle">
+    <div class="asmt-modal" style="max-width: 760px;">
+      <div class="asmt-modal__header">
+        <div class="asmt-modal__title-wrap">
+          <h2 class="asmt-modal__title" id="modalEditUserTitle">Редактирование пользователя</h2>
+        </div>
+        <button type="button" class="asmt-modal__close" id="btnCloseEditUserModal" title="Закрыть">&times;</button>
+      </div>
+      <form id="formEditUser">
+        <input type="hidden" id="editUserId" name="userId">
+        <div class="asmt-modal__body" style="max-height: calc(85vh - 150px); overflow-y: auto; padding-right: 6px;">
+          
+          <!-- СЕКЦИЯ 1: Персональные данные -->
+          <div class="edit-form-section">
+            <div class="edit-form-section__title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <span>Персональные данные</span>
+            </div>
+            <div class="edit-form-grid-3">
+              <div class="edit-field">
+                <label class="edit-label" for="editLastName">Фамилия <span class="req">*</span></label>
+                <input type="text" class="edit-input" id="editLastName" name="lastName" required placeholder="Иванов">
+              </div>
+              <div class="edit-field">
+                <label class="edit-label" for="editFirstName">Имя <span class="req">*</span></label>
+                <input type="text" class="edit-input" id="editFirstName" name="firstName" required placeholder="Иван">
+              </div>
+              <div class="edit-field">
+                <label class="edit-label" for="editMiddleName">Отчество</label>
+                <input type="text" class="edit-input" id="editMiddleName" name="middleName" placeholder="Иванович">
+              </div>
+            </div>
+          </div>
+
+          <!-- СЕКЦИЯ 2: Контактные данные -->
+          <div class="edit-form-section">
+            <div class="edit-form-section__title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              <span>Контакты</span>
+            </div>
+            <div class="edit-form-grid-2">
+              <div class="edit-field">
+                <label class="edit-label" for="editEmail">Email (логин) <span class="req">*</span></label>
+                <input type="email" class="edit-input" id="editEmail" name="email" required placeholder="user@example.com">
+              </div>
+              <div class="edit-field">
+                <label class="edit-label" for="editPhone">Телефон <span class="req">*</span></label>
+                <input type="tel" class="edit-input" id="editPhone" name="phone" required placeholder="+7 (999) 000-00-00">
+                <span class="edit-hint">11 цифр (начиная с 7 или 8)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- СЕКЦИЯ 3: Должность и образование -->
+          <div class="edit-form-section">
+            <div class="edit-form-section__title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+              <span>Должность и квалификация</span>
+            </div>
+            <div class="edit-form-grid-2">
+              <div class="edit-field">
+                <label class="edit-label" for="editPosition">Занимаемая должность</label>
+                <input type="text" class="edit-input" id="editPosition" name="position" placeholder="Главный специалист по закупкам">
+              </div>
+              <div class="edit-field">
+                <label class="edit-label" for="editExperienceLevel">Опыт работы в закупках</label>
+                <select class="edit-select" id="editExperienceLevel" name="experienceLevel">
+                  <option value="">Не указано</option>
+                  <option value="up_to_1">до 1 года</option>
+                  <option value="1_to_3">от 1 года до 3 лет</option>
+                  <option value="more_than_3">более 3 лет</option>
+                </select>
+              </div>
+            </div>
+            <div class="edit-form-grid-2" style="margin-top:10px;">
+              <div class="edit-field">
+                <label class="edit-label" for="editEducation">Уровень образования</label>
+                <select class="edit-select" id="editEducation" name="education">
+                  <option value="">Не указано</option>
+                  <option value="среднее">среднее</option>
+                  <option value="среднее профессиональное">среднее профессиональное</option>
+                  <option value="высшее">высшее</option>
+                  <option value="послевузовское">послевузовское</option>
+                </select>
+              </div>
+              <div class="edit-field">
+                <label class="edit-label" for="editSpecialty">Специальность по диплому</label>
+                <input type="text" class="edit-input" id="editSpecialty" name="specialty" placeholder="Юриспруденция / Экономика">
+              </div>
+            </div>
+            <div class="edit-field" style="margin-top:10px;">
+              <label class="edit-label" for="editCustomerLevel">Уровень заказчика</label>
+              <select class="edit-select" id="editCustomerLevel" name="customerLevel">
+                <option value="">Не указано</option>
+                <option value="state">Государственный заказчик</option>
+                <option value="municipal">Муниципальный заказчик</option>
+                <option value="federal">Федеральный заказчик</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- СЕКЦИЯ 4: Учетная запись, безопасность и роль -->
+          <div class="edit-form-section">
+            <div class="edit-form-section__title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span>Роль и безопасность</span>
+            </div>
+            <div class="edit-form-grid-2">
+              <div class="edit-field">
+                <label class="edit-label" for="editRole">Роль в системе <span class="req">*</span></label>
+                <select class="edit-select" id="editRole" name="role" required>
+                  <option value="participant">Участник (participant)</option>
+                  <option value="moderator">Модератор (moderator)</option>
+                  <option value="region_admin">Региональный админ (region_admin)</option>
+                  <option value="superadmin">Суперадмин (superadmin)</option>
+                  <option value="analyst">Аналитик (analyst)</option>
+                </select>
+              </div>
+              <div class="edit-field">
+                <label class="edit-label" for="editStatus">Статус учётной записи <span class="req">*</span></label>
+                <select class="edit-select" id="editStatus" name="status" required>
+                  <option value="active">Активен</option>
+                  <option value="blocked">Заблокирован</option>
+                </select>
+              </div>
+            </div>
+            <div class="edit-field" style="margin-top:10px;">
+              <label class="edit-label" for="editNewPassword">Новый пароль (сброс)</label>
+              <div style="position:relative; display:flex; align-items:center;">
+                <input type="password" class="edit-input" id="editNewPassword" name="newPassword" placeholder="Оставьте пустым, если пароль менять не нужно" autocomplete="new-password" style="padding-right:42px;">
+                <button type="button" id="btnTogglePassword" title="Показать или скрыть пароль" aria-label="Показать пароль" style="position:absolute; right:8px; border:none; background:transparent; cursor:pointer; color:var(--muted); padding:4px; display:inline-flex; align-items:center; justify-content:center;">
+                  <svg id="pwEyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+              <span class="edit-hint">Если заполнить, у пользователя установится этот пароль (минимум 6 символов).</span>
+            </div>
+          </div>
+
+          <!-- СЕКЦИЯ 5: Организация (информационный блок) -->
+          <div class="edit-form-section" id="editOrgSection" style="display:none;">
+            <div class="edit-form-section__title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 3h12a2 2 0 0 1 2 2v2H4V5a2 2 0 0 1 2-2z"></path></svg>
+              <span>Организация</span>
+            </div>
+            <div class="edit-org-preview" id="editOrgPreview" style="margin-bottom:8px;">
+              <div id="editOrgPreviewInfo">Организация не привязана</div>
+            </div>
+            <div style="font-size:0.78rem; color:var(--muted); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+              <span>Модерация и проверка заявок организаций выполняется в отдельном разделе.</span>
+              <a href="admin-moderation.html" target="_blank" style="color:var(--green); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                <span>Раздел модерации</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </a>
+            </div>
+          </div>
+
+        </div>
+        <div class="asmt-modal__footer" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+          <div id="editUserStatusMsg" style="font-size:0.85rem; font-weight:600;"></div>
+          <div style="display:flex; gap:10px; align-items:center; margin-left:auto;">
+            <button type="button" class="btn btn--ghost" id="btnCancelEditUser">Отмена</button>
+            <button type="submit" class="btn btn--primary" id="btnSubmitEditUser" style="display:inline-flex; align-items:center; gap:6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              <span>Сохранить изменения</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="assets/js/asmt-api.js"></script>
   <script src="assets/js/admin-badges.js"></script>
-  <script src="assets/js/admin-users.js?v=3"></script>
+  <script src="assets/js/admin-users.js?v=6"></script>
 </body>
 </html>
