@@ -262,7 +262,11 @@
   }
 
   function renderServer(srv) {
-    if (!srv) return;
+    if (!srv) {
+      if (els.sectionServerResources) els.sectionServerResources.style.display = 'none';
+      return;
+    }
+    if (els.sectionServerResources) els.sectionServerResources.style.display = 'block';
 
     // CPU
     const cpu = srv.cpu || {};
