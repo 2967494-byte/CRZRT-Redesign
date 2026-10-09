@@ -43,12 +43,35 @@
     return `${m} мин ${rem} сек`;
   }
 
+  const CONNECTION_LOST_THRESHOLD_SEC = 180;
+
+  function formatTime(v) {
+    if (!v) return '—';
+    return String(v).replace('T', ' ').slice(11, 16);
+  }
+
   function telemetryBadge(it) {
     if (!it.attemptId) return '<span style="color:var(--muted); font-size:0.75rem;">—</span>';
     
     const drops = it.disconnectCount || 0;
     const offSec = it.totalOfflineSeconds || 0;
     const hideSec = it.tabHiddenSeconds || 0;
+    const silentSec = it.silentSeconds || 0;
+
+    if (silentSec >= CONNECTION_LOST_THRESHOLD_SEC) {
+      const progress = it.attemptTotal ? `${it.answeredCount || 0} из ${it.attemptTotal}` : String(it.answeredCount || 0);
+      return `
+        <div style="display:flex; flex-direction:column; gap:2px;" title="Браузер участника перестал выходить на связь задолго до конца теста. Возможные причины: отключение электричества, выключение или зависание компьютера, закрытие браузера.">
+          <span class="badge" style="background:#fee2e2; color:#b91c1c; font-weight:700; font-size:0.72rem;">
+             Связь потеряна в ${esc(formatTime(it.lastActivityAt))}
+          </span>
+          <span style="font-size:0.7rem; color:#b91c1c; font-weight:600;">До конца оставалось ${Math.round(silentSec / 60)} мин</span>
+          <span style="font-size:0.7rem; color:var(--muted);">Отвечено: ${progress}${it.lastAnswerAt ? `, последний ответ в ${esc(formatTime(it.lastAnswerAt))}` : ''}</span>
+          ${drops > 0 ? `<span style="font-size:0.7rem; color:var(--muted);">Обрывы сети: ${drops} (${formatSec(offSec)})</span>` : ''}
+          ${hideSec > 5 ? `<span style="font-size:0.7rem; color:var(--muted);">Вне вкладки: ${formatSec(hideSec)}</span>` : ''}
+        </div>
+      `;
+    }
 
     if (drops > 0) {
       return `

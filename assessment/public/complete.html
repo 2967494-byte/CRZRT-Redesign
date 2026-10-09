@@ -335,9 +335,12 @@
         const campaign = r.campaignName || 'Аттестация';
 
         const isPassed = percent >= 70;
-        const statusBadge = isPassed
-          ? `<span class="badge" style="background:var(--green-light); color:var(--green-dark); font-size:0.9rem; padding:6px 14px; font-weight:700;">Попытка зачтена (${percent}%)</span>`
-          : `<span class="badge" style="background:#fee2e2; color:#dc2626; font-size:0.9rem; padding:6px 14px; font-weight:700;">Попытка не зачтена (${percent}%)</span>`;
+        const statusBadge = !isAdmin
+          ? ''
+          : isPassed
+            ? `<span class="badge" style="background:var(--green-light); color:var(--green-dark); font-size:0.9rem; padding:6px 14px; font-weight:700;">Попытка зачтена (${percent}%)</span>`
+            : `<span class="badge" style="background:#fee2e2; color:#dc2626; font-size:0.9rem; padding:6px 14px; font-weight:700;">Попытка не зачтена (${percent}%)</span>`;
+        const percentColor = !isAdmin ? 'var(--text)' : (isPassed ? 'var(--green-dark)' : '#dc2626');
 
         const userTitle = isAdmin && r.userName
           ? `<div style="font-size:0.92rem; color:var(--muted); margin-bottom:6px;">Пользователь: <strong style="color:var(--text);">${esc(r.userName)}</strong> (${esc(r.userEmail || '')})</div>`
@@ -365,7 +368,7 @@
               <div class="result-stat__lbl">Ошибок</div>
             </div>
             <div class="result-stat">
-              <div class="result-stat__val" style="color:${isPassed ? 'var(--green-dark)' : '#dc2626'};">${percent}%</div>
+              <div class="result-stat__val" style="color:${percentColor};">${percent}%</div>
               <div class="result-stat__lbl">Результат</div>
             </div>
           </div>

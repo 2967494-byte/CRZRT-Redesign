@@ -568,7 +568,7 @@
           <td>${doneLabel}</td>
           <td style="text-align:center;"><strong>${a.score}</strong> / ${a.totalQuestions}</td>
           <td style="text-align:center;">
-            <span class="badge" style="background:${pct >= 70 ? 'var(--green-light)' : '#fee2e2'}; color:${pct >= 70 ? 'var(--green-dark)' : '#dc2626'}; font-weight:700;">
+            <span class="badge" style="background:#f1f5f9; color:var(--text); font-weight:700;">
               ${pct}%
             </span>
           </td>
@@ -633,9 +633,6 @@
         <div style="margin-top:10px; padding:8px 14px; background:#f8fafc; border-radius:10px; border:1px solid var(--border-light); display:inline-flex; align-items:center; flex-wrap:wrap; gap:10px;">
           <span style="font-size:0.85rem; color:var(--muted); font-weight:600;">Ваш результат:</span>
           <strong style="font-size:0.92rem; color:var(--text);">${lastResult.score} / ${lastResult.totalQuestions} (${lastResult.percentCorrect}%)</strong>
-          <span class="badge" style="background:${lastResult.isPassed ? 'var(--green-light)' : '#fee2e2'}; color:${lastResult.isPassed ? 'var(--green-dark)' : '#dc2626'}; font-weight:700;">
-            ${lastResult.isPassed ? 'Зачтено' : 'Не зачтено'}
-          </span>
           <a href="complete.html?attemptId=${lastResult.attemptId}" class="btn btn--ghost btn--sm" style="margin-left:4px;">Посмотреть результат</a>
         </div>
       `;

@@ -150,3 +150,18 @@ k6 run -e BASE_URL=https://test.zakupki.tatar -e VUS=100 -e DURATION=1m load/k6-
 - `docs/ESIA_DEFERRED.md` — отложение ЕСИА  
 - `docs/ACCEPTANCE_CHECKLIST.md` — критерии §7.2  
 - `LOCAL_WINDOWS.md` — локальный стенд  
+
+## 10. Мониторинг баланса REG.RU (виджет в admin-monitoring.html)
+
+На странице мониторинга по центру вверху выводится баланс счёта REG.RU. Если остаток < 500 ₽, он выделяется **красным и жирным** шрифтом с предупреждением.
+
+Для подключения:
+1. В личном кабинете REG.RU: **Настройки → Управление доступом к API**.
+2. Включите API и задайте API-пароль.
+3. В поле «Разрешённые IP-адреса» укажите внешний IP боевого сервера (REG.RU блокирует неавторизованные IP с ошибкой `ACCESS_DENIED_FROM_IP`).
+4. В файле `assessment/.env` укажите:
+   ```env
+   ASMT_REGRU_USERNAME=ваш_логин_в_regru
+   ASMT_REGRU_PASSWORD=ваш_пароль_api
+   ```
+Баланс кэшируется на 5 минут в `storage/regru_balance_cache.json`, чтобы не превышать лимиты запросов REG.RU.

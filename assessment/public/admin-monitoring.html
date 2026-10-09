@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+  <title>Мониторинг системы и активности | Assessment</title>
+  <link rel="stylesheet" href="assets/css/assessment.css">
+  <style>
+    /* MONITORING PAGE SPECIFIC STYLES */
+    .mon-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .mon-live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #047857;
+    }
+    .mon-live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: monPulse 2s infinite;
+    }
+    @keyframes monPulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    /* GRID LAYOUTS */
+    .mon-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .mon-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1024px) {
+      .mon-grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .mon-grid-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .mon-grid-4 { grid-template-columns: 1fr; }
+    }
+
+    /* SERVER METRIC CARD */
+    .mon-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(30, 51, 76, 0.04);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .mon-card:hover {
+      box-shadow: 0 8px 24px rgba(30, 51, 76, 0.08);
+    }
+    .mon-card__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .mon-card__label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+    .mon-card__icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mon-card__icon--blue { background: #eff6ff; color: #2563eb; }
+    .mon-card__icon--green { background: #ecfdf5; color: #059669; }
+    .mon-card__icon--purple { background: #f5f3ff; color: #7c3aed; }
+    .mon-card__icon--amber { background: #fffbeb; color: #d97706; }
+    .mon-card__icon--slate { background: #f1f5f9; color: #475569; }
+
+    .mon-card__value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+    .mon-card__sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* PROGRESS BAR */
+    .mon-bar {
+      width: 100%;
+      height: 7px;
+      background: #f1f5f9;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .mon-bar__fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+    .mon-bar__fill--green { background: #10b981; }
+    .mon-bar__fill--amber { background: #f59e0b; }
+    .mon-bar__fill--red { background: #ef4444; }
+    .mon-bar__fill--blue { background: #3b82f6; }
+
+    /* SECTION CARD */
+    .mon-section {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(30, 51, 76, 0.04);
+    }
+    .mon-section__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .mon-section__title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mon-section__desc {
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin: 4px 0 0;
+    }
+
+    /* LIVE SESSIONS TABLE */
+    .mon-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.88rem;
+    }
+    .mon-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .mon-table th:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+    .mon-table th:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+    .mon-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+      color: var(--text);
+    }
+    .mon-table tr:hover td {
+      background: #fafbfd;
+    }
+
+    /* CHART STYLES (SVG/CSS) */
+    .mon-chart-container {
+      position: relative;
+      margin-top: 14px;
+    }
+    .mon-bars-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      height: 180px;
+      padding: 10px 0;
+      border-bottom: 2px solid var(--border);
+    }
+    .mon-bars-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      min-width: 28px;
+      position: relative;
+      cursor: pointer;
+    }
+    .mon-bars-stack {
+      width: 100%;
+      max-width: 38px;
+      display: flex;
+      flex-direction: column-reverse;
+      border-radius: 6px 6px 0 0;
+      overflow: hidden;
+      transition: opacity 0.2s;
+    }
+    .mon-bars-col:hover .mon-bars-stack {
+      opacity: 0.85;
+      filter: brightness(1.05);
+    }
+    .mon-bar-segment {
+      width: 100%;
+      transition: height 0.3s;
+    }
+    .mon-bar-segment--passed { background: #10b981; }
+    .mon-bar-segment--failed { background: #f87171; }
+    .mon-bar-date {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 8px;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    /* TOOLTIP */
+    .mon-tooltip {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      line-height: 1.4;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      display: none;
+    }
+    .mon-bars-col:hover .mon-tooltip {
+      display: block;
+    }
+
+    /* ROTATING REFRESH ICON */
+    .is-spinning {
+      animation: monSpin 0.7s linear infinite;
+    }
+    @keyframes monSpin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* REG.RU BALANCE WIDGET (CENTER TOP) */
+    .mon-regru-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+    .mon-regru-card {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 22px;
+      box-shadow: 0 4px 18px rgba(30, 51, 76, 0.05);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mon-regru-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .mon-regru-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .mon-regru-logo-badge {
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      padding: 5px 12px;
+      border-radius: 8px;
+      background: #0284c7;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+    }
+    .mon-regru-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .mon-regru-val-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .mon-regru-amount {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      transition: color 0.2s;
+    }
+    .mon-regru-status-pill {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .mon-regru-topup-btn {
+      font-size: 0.82rem;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      background: #f8fafc;
+      color: var(--text);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .mon-regru-topup-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    /* NORMAL STATE (>= 500 RUB) */
+    .mon-regru-card--ok .mon-regru-amount {
+      color: #059669;
+    }
+    .mon-regru-card--ok .mon-regru-status-pill {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    /* CRITICAL LOW STATE (< 500 RUB) - BOLD AND RED */
+    .mon-regru-card--critical {
+      background: #fef2f2 !important;
+      border: 2px solid #ef4444 !important;
+      box-shadow: 0 8px 30px rgba(239, 68, 68, 0.25) !important;
+      animation: monRegruAlertPulse 2s infinite ease-in-out;
+    }
+    .mon-regru-card--critical .mon-regru-amount {
+      color: #dc2626 !important;
+      font-weight: 900 !important;
+      font-size: 2.1rem !important;
+      letter-spacing: -0.02em;
+      text-shadow: 0 1px 2px rgba(220, 38, 38, 0.15);
+    }
+    .mon-regru-card--critical .mon-regru-status-pill {
+      background: #fee2e2 !important;
+      color: #991b1b !important;
+      border: 1px solid #fca5a5 !important;
+      font-weight: 800 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .mon-regru-card--critical .mon-regru-logo-badge {
+      background: #dc2626 !important;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35) !important;
+    }
+    .mon-regru-card--critical .mon-regru-topup-btn {
+      background: #dc2626 !important;
+      color: #ffffff !important;
+      border-color: #b91c1c !important;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+      font-weight: 800;
+    }
+    .mon-regru-card--critical .mon-regru-topup-btn:hover {
+      background: #b91c1c !important;
+      box-shadow: 0 6px 18px rgba(220, 38, 38, 0.45);
+    }
+    .mon-regru-warning {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #991b1b;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.4;
+    }
+
+    @keyframes monRegruAlertPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45);
+      }
+      70% {
+        box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="asmt-header">
+    <div class="asmt-header__inner">
+      <a href="admin.html" class="asmt-logo" title="Центр развития закупок">
+        <img src="assets/img/logo.svg" alt="Центр развития закупок" style="height:38px; width:auto; display:block;">
+      </a>
+      <div class="actions" style="margin:0; gap:10px;">
+        <div class="admin-nav-dropdown" id="adminNavDropdown">
+          <button type="button" class="admin-burger-btn" id="btnAdminBurger" title="Меню разделов">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+            <span>Разделы</span>
+            <span class="nav-badge" data-badge="total"></span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:2px; opacity:0.6;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="admin-dropdown-menu" id="adminDropdownMenu">
+            <a href="admin.html" class="admin-dropdown-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span>Дашборд</span>
+            </a>
+            <a href="admin-monitoring.html" class="admin-dropdown-item is-active">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              <span>Мониторинг</span>
+            </a>
+            <a href="admin-campaigns.html" class="admin-dropdown-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+              <span>Кампании</span>
+            </a>
+            <a href="admin-questions.html" class="admin-dropdown-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <span>Вопросы</span>
+            </a>
+            <a href="admin-moderation.html" class="admin-dropdown-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span>Модерация</span>
+              <span class="nav-badge" data-badge="moderation"></span>
+            </a>
+            <a href="admin-requests.html" class="admin-dropdown-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span>Запросы</span>
+              <span class="nav-badge" data-badge="requests"></span>
+            </a>
+            <a href="admin-users.html" class="admin-dropdown-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span>Пользователи</span>
+            </a>
+            <a href="admin-mail.html" class="admin-dropdown-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+              <span>Почта</span>
+            </a>
+            <a href="admin-stats.html" class="admin-dropdown-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              <span>Статистика</span>
+            </a>
+            <a href="admin-dicts.html" class="admin-dropdown-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              <span>Справочники</span>
+            </a>
+          </div>
+        </div>
+        <span class="user-hero-card__role-tag" id="userRoleTag" style="background:#eef6ff; color:#2563eb;">Администратор</span>
+        <a class="btn btn--ghost" href="cabinet.html">ЛК Участника</a>
+        <button type="button" class="btn btn--ghost" id="btnLogout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="asmt-main">
+    <div class="asmt-container" style="max-width:1120px;">
+      
+      <!-- REG.RU BALANCE WIDGET (CENTER TOP) -->
+      <div class="mon-regru-wrap" id="regruBalanceWrapper">
+        <div class="mon-regru-card" id="regruBalanceCard">
+          <div class="mon-regru-body">
+            <div class="mon-regru-left">
+              <span class="mon-regru-logo-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                REG.RU
+              </span>
+              <span class="mon-regru-title" id="regruBalanceTitle">Баланс лицевого счёта:</span>
+            </div>
+            <div class="mon-regru-val-wrap">
+              <span class="mon-regru-amount" id="regruBalanceVal">— ₽</span>
+              <span class="mon-regru-status-pill" id="regruBalancePill">Загрузка…</span>
+            </div>
+            <div class="mon-regru-actions">
+              <a href="https://www.reg.ru/client/" target="_blank" rel="noopener noreferrer" class="btn btn--sm mon-regru-topup-btn" id="regruTopupBtn" title="Перейти в личный кабинет REG.RU для пополнения">
+                Пополнить баланс ↗
+              </a>
+            </div>
+          </div>
+          <div class="mon-regru-warning" id="regruBalanceWarning" style="display:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <span id="regruWarningText">ВНИМАНИЕ: На счёте REG.RU менее 500 ₽! Срочно пополните баланс во избежание остановки сервиса.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HERO & CONTROLS -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; gap:16px;">
+        <div>
+          <h1 style="font-size: 1.7rem; font-weight: 800; margin: 0 0 6px;">Мониторинг системы</h1>
+          <p class="lead" style="margin:0; color:var(--muted); font-size:0.92rem;">
+            Серверные ресурсы, тестирование в реальном времени и операционные показатели платформы
+          </p>
+        </div>
+
+        <div class="mon-header-actions">
+          <div class="mon-live-indicator" id="liveIndicator">
+            <span class="mon-live-dot"></span>
+            <span>Онлайн</span>
+            <span id="lastUpdatedTime" style="color:var(--muted); font-weight:500; font-size:0.75rem; margin-left:2px;">—</span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:6px;">
+            <select id="selInterval" class="form-control" style="width:auto; padding:6px 12px; font-size:0.82rem; height:36px; border-radius:8px;">
+              <option value="15000">Автообновление: 15 сек</option>
+              <option value="30000" selected>Автообновление: 30 сек</option>
+              <option value="60000">Автообновление: 60 сек</option>
+              <option value="0">Автообновление: выкл</option>
+            </select>
+
+            <button type="button" class="btn btn--primary" id="btnRefresh" style="height:36px; padding:0 14px; font-size:0.82rem; display:inline-flex; align-items:center; gap:6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="refreshSvg">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              <span>Обновить</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 1: СЕРВЕРНЫЕ РЕСУРСЫ -->
+      <div style="margin-bottom:8px;">
+        <h2 style="font-size:0.9rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:800; color:var(--muted); margin:0 0 12px;">
+          Ресурсы сервера
+        </h2>
+      </div>
+      <div class="mon-grid-4">
+        <!-- CPU -->
+        <div class="mon-card">
+          <div class="mon-card__header">
+            <span class="mon-card__label">Процессор (CPU)</span>
+            <div class="mon-card__icon mon-card__icon--blue">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                <rect x="9" y="9" width="6" height="6"></rect>
+                <line x1="9" y1="1" x2="9" y2="4"></line>
+                <line x1="15" y1="1" x2="15" y2="4"></line>
+                <line x1="9" y1="20" x2="9" y2="23"></line>
+                <line x1="15" y1="20" x2="15" y2="23"></line>
+                <line x1="20" y1="9" x2="23" y2="9"></line>
+                <line x1="20" y1="14" x2="23" y2="14"></line>
+                <line x1="1" y1="9" x2="4" y2="9"></line>
+                <line x1="1" y1="14" x2="4" y2="14"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="mon-card__value" id="cpuValue">—</div>
+          <div class="mon-card__sub" id="cpuSub">Загрузка ядер…</div>
+          <div class="mon-bar">
+            <div class="mon-bar__fill mon-bar__fill--blue" id="cpuBar" style="width:0%;"></div>
+          </div>
+        </div>
+
+        <!-- RAM -->
+        <div class="mon-card">
+          <div class="mon-card__header">
+            <span class="mon-card__label">Оперативная память</span>
+            <div class="mon-card__icon mon-card__icon--green">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M6 19v-3"></path><path d="M10 19v-3"></path><path d="M14 19v-3"></path><path d="M18 19v-3"></path>
+                <rect x="2" y="5" width="20" height="11" rx="2"></rect>
+              </svg>
+            </div>
+          </div>
+          <div class="mon-card__value" id="ramValue">—</div>
+          <div class="mon-card__sub" id="ramSub">Использование RAM…</div>
+          <div class="mon-bar">
+            <div class="mon-bar__fill mon-bar__fill--green" id="ramBar" style="width:0%;"></div>
+          </div>
+        </div>
+
+        <!-- DISK -->
+        <div class="mon-card">
+          <div class="mon-card__header">
+            <span class="mon-card__label">Память сервера (Диск)</span>
+            <div class="mon-card__icon mon-card__icon--purple">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <line x1="22" y1="12" x2="2" y2="12"></line>
+                <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+                <line x1="6" y1="16" x2="6.01" y2="16"></line>
+                <line x1="10" y1="16" x2="10.01" y2="16"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="mon-card__value" id="diskValue">—</div>
+          <div class="mon-card__sub" id="diskSub">Свободное место…</div>
+          <div class="mon-bar">
+            <div class="mon-bar__fill mon-bar__fill--purple" id="diskBar" style="width:0%;"></div>
+          </div>
+        </div>
+
+        <!-- ENVIRONMENT / DB -->
+        <div class="mon-card">
+          <div class="mon-card__header">
+            <span class="mon-card__label">База данных и среда</span>
+            <div class="mon-card__icon mon-card__icon--amber">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="mon-card__value" id="dbSizeValue">—</div>
+          <div class="mon-card__sub" id="dbSub">PostgreSQL · Соединения</div>
+          <div style="margin-top:10px; font-size:0.75rem; color:var(--muted); display:flex; justify-content:space-between;">
+            <span id="envPhp">—</span>
+            <span id="envUptime">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ (KPIS) -->
+      <div style="margin-bottom:8px;">
+        <h2 style="font-size:0.9rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:800; color:var(--muted); margin:0 0 12px;">
+          Показатели платформы
+        </h2>
+      </div>
+      <div class="mon-grid-4">
+        <!-- USERS -->
+        <div class="mon-card">
+          <div class="mon-card__header">
+            <span class="mon-card__label">Пользователи</span>
+            <div class="mon-card__icon mon-card__icon--blue">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="mon-card__value" id="usersTotal">—</div>
+          <div class="mon-card__sub" id="usersSub">
+            <span class="badge" id="users24hBadge" style="background:#ecfdf5; color:#047857; font-weight:700; margin-right:4px;">+0 за 24ч</span>
+            <span id="usersActiveDetail">Активных: —</span>
+          </div>
+        </div>
+
+        <!-- ORGANIZATIONS -->
+        <div class="mon-card">
+          <div class="mon-card__header">
+            <span class="mon-card__label">Организации</span>
+            <div class="mon-card__icon mon-card__icon--purple">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                <line x1="9" y1="22" x2="9" y2="22.01"></line>
+                <line x1="15" y1="22" x2="15" y2="22.01"></line>
+                <line x1="8" y1="6" x2="8.01" y2="6"></line>
+                <line x1="12" y1="6" x2="12.01" y2="6"></line>
+                <line x1="16" y1="6" x2="16.01" y2="6"></line>
+                <line x1="8" y1="10" x2="8.01" y2="10"></line>
+                <line x1="12" y1="10" x2="12.01" y2="10"></line>
+                <line x1="16" y1="10" x2="16.01" y2="10"></line>
+                <line x1="8" y1="14" x2="8.01" y2="14"></line>
+                <line x1="12" y1="14" x2="12.01" y2="14"></line>
+                <line x1="16" y1="14" x2="16.01" y2="14"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="mon-card__value" id="orgsTotal">—</div>
+          <div class="mon-card__sub" id="orgsSub">
+            <span style="color:#059669; font-weight:600;" id="orgsApprovedDetail">Подтверждено: —</span> · <span style="color:#d97706; font-weight:600;" id="orgsPendingDetail">В очереди: —</span>
+          </div>
+        </div>
+
+        <!-- ATTEMPTS COMPLETED -->
+        <div class="mon-card">
+          <div class="mon-card__header">
+            <span class="mon-card__label">Пройденные тесты</span>
+            <div class="mon-card__icon mon-card__icon--green">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="mon-card__value" id="attemptsPassed">—</div>
+          <div class="mon-card__sub" id="attemptsSub">
+            Успешность: <strong id="attemptsRate">—%</strong> · Всего: <span id="attemptsTotal">—</span>
+          </div>
+        </div>
+
+        <!-- LIVE NOW -->
+        <div class="mon-card" style="border-color:#a7f3d0; background:linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%);">
+          <div class="mon-card__header">
+            <span class="mon-card__label" style="color:#047857;">Проходят прямо сейчас</span>
+            <div class="mon-card__icon" style="background:#dcfce7; color:#15803d;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="mon-card__value" style="color:#065f46;" id="liveCountValue">0</div>
+          <div class="mon-card__sub" style="color:#047857;" id="liveCountSub">
+            Активных сессий в тестировании
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: ТЕСТИРУЮТСЯ ПРЯМО СЕЙЧАС (LIVE SESSIONS) -->
+      <div class="mon-section">
+        <div class="mon-section__header">
+          <div>
+            <h3 class="mon-section__title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color:#10b981;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Участники в процессе прохождения теста</span>
+              <span class="badge" id="liveBadgeCount" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-size:0.76rem; font-weight:700;">0 онлайн</span>
+            </h3>
+            <p class="mon-section__desc">
+              Данные обновляются в реальном времени. Показывает фактическое число сохраненных ответов и таймер до завершения.
+            </p>
+          </div>
+        </div>
+
+        <div id="liveSessionsContainer">
+          <div style="text-align:center; padding:36px 20px; color:var(--muted);">
+            Загрузка сессий тестирования…
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: ДИНАМИКА ТЕСТОВ ПО ДНЯМ -->
+      <div class="mon-section">
+        <div class="mon-section__header">
+          <div>
+            <h3 class="mon-section__title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color:#3b82f6;">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+              <span>Количество сданных тестов по дням (за 14 дней)</span>
+            </h3>
+            <p class="mon-section__desc">
+              Зеленый — успешная сдача (≥ 70%), Красный — не сдали. Наведите курсор на столбец для просмотра подробностей.
+            </p>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px; font-size:0.8rem; font-weight:600;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="width:12px; height:12px; border-radius:3px; background:#10b981; display:inline-block;"></span>
+              <span>Сдали успешно (≥70%)</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="width:12px; height:12px; border-radius:3px; background:#f87171; display:inline-block;"></span>
+              <span>Не сдали (&lt;70%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BARS CHART -->
+        <div class="mon-chart-container">
+          <div class="mon-bars-chart" id="dailyBarsChart">
+            <!-- Dynamic columns rendered via JS -->
+          </div>
+        </div>
+
+        <!-- DAILY TABLE -->
+        <div style="margin-top:24px; overflow-x:auto;">
+          <table class="mon-table" id="dailyTable">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Завершено тестов</th>
+                <th>Сдали успешно</th>
+                <th>Не сдали</th>
+                <th>Процент сдачи</th>
+                <th>Средний балл</th>
+                <th>Среднее время</th>
+                <th>Новых участников</th>
+              </tr>
+            </thead>
+            <tbody id="dailyTableBody">
+              <tr><td colspan="8" style="text-align:center; color:var(--muted); padding:20px;">Загрузка данных…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION 5: ДОПОЛНИТЕЛЬНАЯ АНАЛИТИКА -->
+      <div class="mon-grid-2">
+        <!-- CAMPAIGNS & REGIONS -->
+        <div class="mon-section" style="margin-bottom:0;">
+          <div class="mon-section__header">
+            <div>
+              <h3 class="mon-section__title" style="font-size:1.05rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color:#7c3aed;">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="12" r="6"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+                <span>Активность по кампаниям</span>
+              </h3>
+            </div>
+          </div>
+          <div id="campaignsStatsList" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="color:var(--muted); font-size:0.85rem;">Загрузка кампаний…</div>
+          </div>
+
+          <div style="margin-top:24px; border-top:1px solid var(--border-light); padding-top:18px;">
+            <h4 style="font-size:0.92rem; font-weight:700; margin:0 0 12px; color:var(--text);">Топ регионов по участникам</h4>
+            <div id="topRegionsList" style="display:flex; flex-direction:column; gap:10px;">
+              <div style="color:var(--muted); font-size:0.85rem;">Загрузка регионов…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OPERATIONAL QUEUES & SYSTEM STATUS -->
+        <div class="mon-section" style="margin-bottom:0;">
+          <div class="mon-section__header">
+            <div>
+              <h3 class="mon-section__title" style="font-size:1.05rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color:#d97706;">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+                <span>Операционные очереди</span>
+              </h3>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <!-- QUEUE 1: MODERATION -->
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px; background:#f8fafc; border:1px solid var(--border-light); border-radius:12px;">
+              <div>
+                <strong style="color:var(--text); font-size:0.9rem; display:block;">Модерация организаций</strong>
+                <span style="font-size:0.78rem; color:var(--muted);">Заявки участников, ожидающие проверки</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="badge" id="queueModBadge" style="background:#fffbeb; color:#b45309; border:1px solid #fde68a; font-weight:800; font-size:0.85rem; padding:4px 10px;">0</span>
+                <a href="admin-moderation.html" class="btn btn--ghost" style="padding:4px 10px; font-size:0.78rem;">Открыть →</a>
+              </div>
+            </div>
+
+            <!-- QUEUE 2: RETAKE REQUESTS -->
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px; background:#f8fafc; border:1px solid var(--border-light); border-radius:12px;">
+              <div>
+                <strong style="color:var(--text); font-size:0.9rem; display:block;">Запросы на пересдачу</strong>
+                <span style="font-size:0.78rem; color:var(--muted);">Обращения участников после сбоев или выхода</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="badge" id="queueRetakeBadge" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; font-weight:800; font-size:0.85rem; padding:4px 10px;">0</span>
+                <a href="admin-requests.html" class="btn btn--ghost" style="padding:4px 10px; font-size:0.78rem;">Открыть →</a>
+              </div>
+            </div>
+
+            <!-- QUEUE 3: MAIL LOG -->
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px; background:#f8fafc; border:1px solid var(--border-light); border-radius:12px;">
+              <div>
+                <strong style="color:var(--text); font-size:0.9rem; display:block;">Отправлено писем за сутки</strong>
+                <span style="font-size:0.78rem; color:var(--muted);">Уведомления о регистрации и сбросе пароля</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="badge" id="queueMailBadge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-weight:800; font-size:0.85rem; padding:4px 10px;">0</span>
+                <a href="admin-mail.html" class="btn btn--ghost" style="padding:4px 10px; font-size:0.78rem;">Журнал →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- SYSTEM SUMMARY FOOTER -->
+          <div style="margin-top:20px; padding:14px; background:#ffffff; border:1px dashed var(--border); border-radius:12px; font-size:0.78rem; color:var(--muted); line-height:1.5;">
+            <div><strong>Статус сервера:</strong> Все службы активны (HTTP, PostgreSQL, Cron).</div>
+            <div style="margin-top:4px;">Автоматическая финализация зависших сессий выполняется сервисом <code>AttemptService</code>.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="assets/js/asmt-api.js"></script>
+  <script src="assets/js/admin-badges.js"></script>
+  <script src="assets/js/admin-monitoring.js?v=1"></script>
+</body>
+</html>

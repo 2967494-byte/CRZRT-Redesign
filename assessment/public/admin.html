@@ -30,6 +30,10 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
               <span>Дашборд</span>
             </a>
+            <a href="admin-monitoring.html" class="admin-dropdown-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              <span>Мониторинг</span>
+            </a>
             <a href="admin-campaigns.html" class="admin-dropdown-item">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle></svg>
               <span>Кампании</span>
@@ -82,9 +86,30 @@
         <p class="lead" id="adminMeta" style="margin: 0; color: var(--muted); font-size: 0.95rem;">Загрузка данных профиля администратора…</p>
       </div>
 
-      <!-- 4 MAIN NAVIGATION BLOCKS -->
+      <!-- MAIN NAVIGATION BLOCKS -->
       <div class="admin-tiles-grid">
         
+        <!-- BLOCK 0: MONITORING -->
+        <div class="admin-tile" style="border-color:#a7f3d0; background:linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%);">
+          <div>
+            <div class="admin-tile__header">
+              <div class="admin-tile__icon" style="background:#dcfce7; color:#15803d;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </div>
+              <h3 class="admin-tile__title" style="display:flex;align-items:center;">
+                Мониторинг
+                <span style="background:#10b981; color:#ffffff; font-size:0.68rem; font-weight:800; padding:2px 7px; border-radius:999px; margin-left:8px; text-transform:uppercase; letter-spacing:0.04em;">Live</span>
+              </h3>
+            </div>
+            <p class="admin-tile__desc">Состояние сервера (CPU, RAM, диск), активность тестирования в реальном времени, тесты онлайн и расширенная аналитика.</p>
+          </div>
+          <div class="admin-tile__footer" style="justify-content:center; margin-top:16px;">
+            <a href="admin-monitoring.html" class="btn btn--primary" style="width:100%; text-align:center; justify-content:center; background:#10b981; border-color:#059669;">Перейти →</a>
+          </div>
+        </div>
+
         <!-- BLOCK 1: QUESTIONS -->
         <div class="admin-tile">
           <div>

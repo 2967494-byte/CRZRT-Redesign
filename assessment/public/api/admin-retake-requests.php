@@ -50,11 +50,33 @@ if ($method === 'GET') {
                     COALESCE(a.disconnect_count, 0) AS disconnect_count,
                     COALESCE(a.total_offline_seconds, 0) AS total_offline_seconds,
                     COALESCE(a.tab_hidden_seconds, 0) AS tab_hidden_seconds,
-                    COALESCE(a.telemetry_json, '[]'::jsonb) AS telemetry_json
+                    COALESCE(a.telemetry_json, '[]'::jsonb) AS telemetry_json,
+                    COALESCE(ans.answered, 0) AS answered_real,
+                    ans.last_answer_at,
+                    act.last_activity_at,
+                    CASE WHEN a.id IS NOT NULL
+                         THEN GREATEST(0, EXTRACT(EPOCH FROM (
+                                  LEAST(COALESCE(a.finished_at, NOW()), a.expires_at) - act.last_activity_at
+                              )))::int
+                    END AS silent_seconds
              FROM asmt_retake_requests r
              JOIN asmt_users u ON u.id = r.user_id
              JOIN asmt_campaigns c ON c.id = r.campaign_id
              LEFT JOIN asmt_attempts a ON a.id = r.attempt_id
+             LEFT JOIN LATERAL (
+                 SELECT COUNT(*) FILTER (WHERE aa.answered_at IS NOT NULL) AS answered,
+                        MAX(aa.answered_at) AS last_answer_at
+                 FROM asmt_attempt_answers aa
+                 WHERE aa.attempt_id = a.id
+             ) ans ON TRUE
+             LEFT JOIN LATERAL (
+                 -- Пинг после окончания времени — это возврат участника к уже истёкшему тесту, а не признак связи во время теста
+                 SELECT GREATEST(
+                            a.started_at,
+                            ans.last_answer_at,
+                            CASE WHEN a.last_ping_at <= a.expires_at + INTERVAL '60 seconds' THEN a.last_ping_at END
+                        ) AS last_activity_at
+             ) act ON TRUE
              WHERE {$sqlWhere}
              ORDER BY
                 CASE r.status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 ELSE 2 END,
@@ -95,6 +117,10 @@ if ($method === 'GET') {
                 'totalOfflineSeconds' => (int)($r['total_offline_seconds'] ?? 0),
                 'tabHiddenSeconds' => (int)($r['tab_hidden_seconds'] ?? 0),
                 'telemetryLog' => $telemetryLog,
+                'answeredCount' => (int)($r['answered_real'] ?? 0),
+                'lastAnswerAt' => $r['last_answer_at'],
+                'lastActivityAt' => $r['last_activity_at'],
+                'silentSeconds' => $r['silent_seconds'] !== null ? (int)$r['silent_seconds'] : null,
                 'user' => [
                     'id' => (int)$r['user_id'],
                     'lastName' => $r['last_name'],
