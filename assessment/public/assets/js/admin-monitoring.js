@@ -222,6 +222,12 @@
       els.regruBalanceVal.textContent = formatted;
     }
 
+    if (els.regruTopupBtn) {
+      els.regruTopupBtn.href = (reg.type === 'cloud') ? 'https://reg.cloud/' : 'https://www.reg.ru/client/';
+    }
+
+    const daysText = (reg.days_left != null) ? ` · ~${reg.days_left} дн.` : '';
+
     if (bal < 500) {
       // КРАСНЫМ И ЖИРНЫМ!
       els.regruCard.className = 'mon-regru-card mon-regru-card--critical';
@@ -230,12 +236,14 @@
         els.regruBalanceVal.style.color = '';
       }
       if (els.regruBalancePill) {
-        els.regruBalancePill.textContent = 'КРИТИЧЕСКИЙ ОСТАТОК (< 500 ₽)';
+        els.regruBalancePill.textContent = `КРИТИЧЕСКИЙ ОСТАТОК (< 500 ₽)${daysText}`;
         els.regruBalancePill.style.background = '';
         els.regruBalancePill.style.color = '';
       }
       if (els.regruWarningText) {
-        els.regruWarningText.innerHTML = `<strong>ВНИМАНИЕ:</strong> На счёте REG.RU осталось <strong>${formatted}</strong> (менее 500 ₽)! Срочно пополните счёт хостинга во избежание блокировки услуг.`;
+        const cloudName = reg.type === 'cloud' ? 'рег.облака (Cloud VPS)' : 'REG.RU';
+        const leftMsg = reg.days_left != null ? ` (хватит примерно на ${reg.days_left} дн.)` : '';
+        els.regruWarningText.innerHTML = `<strong>ВНИМАНИЕ:</strong> На счёте ${cloudName} осталось <strong>${formatted}</strong>${leftMsg} — менее 500 ₽! Срочно пополните баланс во избежание остановки сервера.`;
         if (els.regruBalanceWarning) {
           els.regruBalanceWarning.style.display = 'flex';
           els.regruBalanceWarning.style.background = '';
@@ -251,7 +259,7 @@
         els.regruBalanceVal.style.color = '';
       }
       if (els.regruBalancePill) {
-        els.regruBalancePill.textContent = `Счёт активен${reg.cached ? ' · кэш' : ''}`;
+        els.regruBalancePill.textContent = `Счёт активен${daysText}${reg.cached ? ' · кэш' : ''}`;
         els.regruBalancePill.style.background = '';
         els.regruBalancePill.style.color = '';
       }
