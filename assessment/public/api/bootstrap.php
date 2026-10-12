@@ -43,5 +43,11 @@ if (PHP_SAPI !== 'cli') {
     }
 }
 
-// Verify CSRF on state-mutating requests
-Http::verifyCsrf();
+// Verify CSRF on state-mutating requests.
+// Login and password reset replace the session instead of acting with its rights, and guests already
+// skip the check, so a stale token from another tab must not block someone who is simply signing in again.
+$csrfExemptAuthAction = basename((string)($_SERVER['SCRIPT_NAME'] ?? '')) === 'auth.php'
+    && in_array((string)($_GET['action'] ?? 'login'), ['login', 'request-reset', 'reset-password'], true);
+if (!$csrfExemptAuthAction) {
+    Http::verifyCsrf();
+}
