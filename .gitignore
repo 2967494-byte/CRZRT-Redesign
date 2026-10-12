@@ -7,3 +7,4 @@ dist/
 .gemini/
 api/bitrix-config.local.php
 deploy/bitrix-prod/bitrix-config.local.php
+assessment/storage/ratelimit/

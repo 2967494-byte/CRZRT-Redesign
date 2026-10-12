@@ -90,13 +90,30 @@ if ($action === 'login') {
     if ($email === '' || $password === '') {
         Http::json(['success' => false, 'error' => 'Укажите email и пароль'], 400);
     }
+    // Keyed by email + IP so a third party cannot lock someone else out by failing logins on purpose.
+    $failureKey = $email . '|' . (Http::clientIp() ?? '0.0.0.0');
+    $tooManyFailures = [
+        'success' => false,
+        'error' => 'Слишком много неудачных попыток входа. Подождите 15 минут.',
+    ];
+    if (\Asmt\RateLimit::isBlocked('login-fail', $failureKey, 10, 900)) {
+        Http::json($tooManyFailures, 429);
+    }
 
     $stmt = $pdo->prepare('SELECT * FROM asmt_users WHERE email_normalized = ? LIMIT 1');
     $stmt->execute([$email]);
     $user = $stmt->fetch();
-    if (!$user || !password_verify($password, $user['password_hash'])) {
+    if (!$user || !password_verify($password, (string)$user['password_hash'])) {
+        $withinLimit = \Asmt\RateLimit::check('login-fail', $failureKey, 10, 900);
+        if (!\Asmt\RateLimit::check('login-fail-account', $email, 50, 3600)) {
+            error_log('[ASMT][security] distributed login failures for ' . $email . ' ip=' . (Http::clientIp() ?? 'unknown'));
+        }
+        if (!$withinLimit) {
+            Http::json($tooManyFailures, 429);
+        }
         Http::json(['success' => false, 'error' => 'Неверный email или пароль'], 401);
     }
+    \Asmt\RateLimit::clear('login-fail', $failureKey);
     if ($user['status'] !== 'active') {
         Http::json(['success' => false, 'error' => 'Учётная запись заблокирована'], 403);
     }
@@ -124,7 +141,12 @@ if ($action === 'request-reset') {
     $stmt = $pdo->prepare('SELECT * FROM asmt_users WHERE email_normalized = ? AND status = \'active\' LIMIT 1');
     $stmt->execute([$email]);
     $user = $stmt->fetch();
-    if ($user) {
+    // The response stays identical either way so the limits do not reveal which emails are registered.
+    $resetDailyCap = max(1, (int)(\Asmt\Config::get('ASMT_RESET_MAIL_DAILY_CAP', '150') ?? '150'));
+    if ($user
+        && \Asmt\RateLimit::check('reset-mail-account', $email, 3, 3600)
+        && \Asmt\RateLimit::check('reset-mail-daily', 'all', $resetDailyCap, 86400)
+    ) {
         $token = Auth::createAuthToken((int)$user['id'], 'reset', 86400);
         $link = \Asmt\Config::appUrl() . '/reset.html?token=' . urlencode($token);
         \Asmt\Mailer::send(

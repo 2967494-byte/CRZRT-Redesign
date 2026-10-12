@@ -31,5 +31,17 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 
+// Ceiling for every API method. Signed-in users are counted per account, not per IP:
+// a whole office taking a test behind one NAT address must not share a single budget.
+// Expensive routes add a tighter bucket of their own.
+if (PHP_SAPI !== 'cli') {
+    $rateLimitUserId = Auth::userId();
+    if ($rateLimitUserId !== null) {
+        \Asmt\RateLimit::hitKey('api-user', (string)$rateLimitUserId, 600, 300);
+    } else {
+        \Asmt\RateLimit::hit('api', 300, 300);
+    }
+}
+
 // Verify CSRF on state-mutating requests
 Http::verifyCsrf();

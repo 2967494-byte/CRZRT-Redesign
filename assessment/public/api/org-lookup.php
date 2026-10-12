@@ -10,6 +10,8 @@ use Asmt\Http;
 
 Config::load(dirname(__DIR__, 2));
 
+\Asmt\RateLimit::hit('org-lookup', 30, 600);
+
 $inn = preg_replace('/\D+/', '', (string)($_GET['inn'] ?? '')) ?? '';
 if (!in_array(strlen($inn), [10, 12], true)) {
     Http::json([

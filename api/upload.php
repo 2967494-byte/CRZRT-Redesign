@@ -15,6 +15,16 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Admin forms send original photos (not pre-compressed), so this must fit a modern phone camera shot.
+$maxImageBytes = 20 * 1024 * 1024;
+$maxRequestBytes = (int)($maxImageBytes * 4 / 3) + (64 * 1024);
+$contentLength = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
+if ($contentLength > $maxRequestBytes) {
+    http_response_code(413);
+    echo json_encode(['success' => false, 'error' => 'Изображение больше 20 МБ']);
+    exit;
+}
+
 $raw = file_get_contents('php://input');
 $data = json_decode($raw, true);
 
@@ -59,6 +69,11 @@ if ($binary === false) {
     echo json_encode(['success' => false, 'error' => 'Не удалось декодировать изображение']);
     exit;
 }
+if (strlen($binary) > $maxImageBytes) {
+    http_response_code(413);
+    echo json_encode(['success' => false, 'error' => 'Изображение больше 20 МБ']);
+    exit;
+}
 
 if (!function_exists('imagecreatefromstring') || !function_exists('imagewebp')) {
     http_response_code(500);
@@ -79,6 +94,12 @@ if ($srcW <= 0 || $srcH <= 0) {
     imagedestroy($src);
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'Некорректные размеры изображения']);
+    exit;
+}
+if ($srcW > 12000 || $srcH > 12000 || ($srcW * $srcH) > 50000000) {
+    imagedestroy($src);
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Изображение слишком большое по размеру в пикселях (более 50 Мп). Уменьшите его и загрузите снова.']);
     exit;
 }
 

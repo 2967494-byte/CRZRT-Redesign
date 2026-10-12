@@ -15,6 +15,7 @@ final class Auth
             session_name($name);
             session_start([
                 'cookie_httponly' => true,
+                'cookie_secure' => Http::isHttps(),
                 'cookie_samesite' => 'Lax',
                 'use_strict_mode' => true,
             ]);
@@ -22,15 +23,21 @@ final class Auth
         if (empty($_SESSION['asmt_csrf_token'])) {
             $_SESSION['asmt_csrf_token'] = bin2hex(random_bytes(32));
         }
-        if (!headers_sent()) {
-            setcookie('asmt_csrf_token', (string)$_SESSION['asmt_csrf_token'], [
-                'expires' => 0,
-                'path' => '/',
-                'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-                'httponly' => false, // readable by JavaScript AsmtApi
-                'samesite' => 'Lax',
-            ]);
+        self::emitCsrfCookie();
+    }
+
+    private static function emitCsrfCookie(): void
+    {
+        if (headers_sent() || empty($_SESSION['asmt_csrf_token'])) {
+            return;
         }
+        setcookie('asmt_csrf_token', (string)$_SESSION['asmt_csrf_token'], [
+            'expires' => 0,
+            'path' => '/',
+            'secure' => Http::isHttps(),
+            'httponly' => false, // readable by JavaScript AsmtApi; the cookie itself is not accepted as proof
+            'samesite' => 'Lax',
+        ]);
     }
 
     public static function csrfToken(): string
@@ -139,6 +146,7 @@ final class Auth
             ? hash('sha256', (string)$user['password_hash'])
             : '';
         $_SESSION['asmt_csrf_token'] = bin2hex(random_bytes(32));
+        self::emitCsrfCookie();
         self::$cachedUser = $user;
 
         $stmt = Db::pdo()->prepare('UPDATE asmt_users SET last_login_at = NOW() WHERE id = ?');
