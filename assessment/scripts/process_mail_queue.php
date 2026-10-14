@@ -42,11 +42,22 @@ foreach ($items as $row) {
     $id = (int)$row['id'];
     $attempts = (int)$row['attempts_count'] + 1;
 
+    $lastError = 'SMTP delivery failed';
     try {
-        $success = Mailer::sendSync($row['to_email'], $row['subject'], $row['body_html']);
+        $smtpError = null;
+        $transport = \Asmt\Config::get('ASMT_MAIL_TRANSPORT', 'mail');
+        if ($transport === 'smtp') {
+            $success = Mailer::sendSmtp($row['to_email'], $row['subject'], $row['body_html'], $smtpError);
+            if (!$success && is_string($smtpError) && $smtpError !== '') {
+                $lastError = mb_substr($smtpError, 0, 500);
+            }
+        } else {
+            $success = Mailer::sendSync($row['to_email'], $row['subject'], $row['body_html']);
+        }
     } catch (\Throwable $e) {
         Http::logError('mail_queue_send_exception', $e);
         $success = false;
+        $lastError = mb_substr($e->getMessage(), 0, 500);
     }
 
     if ($success) {
@@ -60,8 +71,8 @@ foreach ($items as $row) {
         $newStatus = $attempts >= 5 ? 'failed' : 'processing';
         $pdo->prepare(
             "UPDATE asmt_mail_queue 
-             SET status = ?, attempts_count = ?, last_error = 'SMTP delivery failed', next_retry_at = NOW() + (? || ' seconds')::interval
+             SET status = ?, attempts_count = ?, last_error = ?, next_retry_at = NOW() + (? || ' seconds')::interval
              WHERE id = ?"
-        )->execute([$newStatus, $attempts, (string)$nextDelay, $id]);
+        )->execute([$newStatus, $attempts, $lastError, (string)$nextDelay, $id]);
     }
 }

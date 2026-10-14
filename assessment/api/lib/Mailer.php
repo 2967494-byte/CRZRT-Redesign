@@ -77,6 +77,26 @@ final class Mailer
         return @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $bodyHtml, implode("\r\n", $headers));
     }
 
+    private static function smtpSslVerifyEnabled(): bool
+    {
+        $raw = strtolower(trim((string)(Config::get('ASMT_SMTP_SSL_VERIFY', '1') ?? '1')));
+        return !in_array($raw, ['0', 'false', 'no', 'off'], true);
+    }
+
+    /** @return resource */
+    private static function smtpStreamContext()
+    {
+        $verify = self::smtpSslVerifyEnabled();
+        return stream_context_create([
+            'ssl' => [
+                'verify_peer' => $verify,
+                'verify_peer_name' => $verify,
+                'allow_self_signed' => !$verify,
+                'crypto_method' => STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT,
+            ],
+        ]);
+    }
+
     public static function sendSmtp(string $to, string $subject, string $bodyHtml, ?string &$errorOut = null): bool
     {
         Config::load();
@@ -89,14 +109,25 @@ final class Mailer
 
         $timeout = 10;
         $remote = ($encryption === 'ssl' ? 'ssl://' : '') . $host . ':' . $port;
-        $socket = @stream_socket_client($remote, $errno, $errstr, $timeout);
+        $context = self::smtpStreamContext();
+        $socket = @stream_socket_client(
+            $remote,
+            $errno,
+            $errstr,
+            $timeout,
+            STREAM_CLIENT_CONNECT,
+            $context
+        );
         if (!$socket) {
-            $errorOut = "Connection failed: {$errstr} ({$errno})";
+            $openssl = function_exists('openssl_error_string') ? (string)openssl_error_string() : '';
+            $errorOut = "Connection failed: {$errstr} ({$errno})"
+                . ($openssl !== '' ? "; openssl={$openssl}" : '')
+                . (!self::smtpSslVerifyEnabled() ? '' : '; try ASMT_SMTP_SSL_VERIFY=0 if the SMTP cert is expired/mismatched');
             return false;
         }
 
         stream_set_timeout($socket, $timeout);
-        $read = static function () use ($socket, &$errorOut): string {
+        $read = static function () use ($socket): string {
             $res = '';
             while ($line = fgets($socket, 512)) {
                 $res .= $line;
@@ -127,8 +158,16 @@ final class Mailer
                 fclose($socket);
                 return false;
             }
-            if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT)) {
-                $errorOut = "Crypto negotiation failed";
+            $cryptoOk = @stream_socket_enable_crypto(
+                $socket,
+                true,
+                STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT
+            );
+            if (!$cryptoOk) {
+                $openssl = function_exists('openssl_error_string') ? (string)openssl_error_string() : '';
+                $errorOut = 'Crypto negotiation failed'
+                    . ($openssl !== '' ? "; openssl={$openssl}" : '')
+                    . '; try ASMT_SMTP_SSL_VERIFY=0 if the SMTP cert is expired/mismatched';
                 fclose($socket);
                 return false;
             }
