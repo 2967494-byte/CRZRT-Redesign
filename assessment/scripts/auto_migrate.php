@@ -80,7 +80,11 @@ $queries = [
     "ALTER TABLE asmt_user_organizations ADD COLUMN IF NOT EXISTS previous_moderator_comment TEXT NULL;",
     "CREATE INDEX IF NOT EXISTS asmt_user_org_resubmitted_idx ON asmt_user_organizations (status, is_resubmitted);",
 
-    // 8. Analyze statistics
+    // 8. Retake: voided status (admin may allow another request after reject)
+    "ALTER TABLE asmt_retake_requests DROP CONSTRAINT IF EXISTS asmt_retake_requests_status_check;",
+    "ALTER TABLE asmt_retake_requests ADD CONSTRAINT asmt_retake_requests_status_check CHECK (status IN ('pending', 'approved', 'rejected', 'used', 'voided'));",
+
+    // 9. Analyze statistics
     "ANALYZE asmt_attempts;",
     "ANALYZE asmt_attempt_answers;",
     "ANALYZE asmt_user_organizations;",

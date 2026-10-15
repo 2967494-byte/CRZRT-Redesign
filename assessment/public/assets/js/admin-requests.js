@@ -14,6 +14,7 @@
     approved: 'Одобрен',
     rejected: 'Отклонён',
     used: 'Использован',
+    voided: 'Повтор разрешён',
   };
 
   function showStatus(msg, type) {
@@ -133,6 +134,15 @@
             </button>
           </div>
         `;
+      } else if (canModerate && it.status === 'rejected') {
+        actionsHtml = `
+          <div class="req-actions-group" style="flex-direction:column; align-items:flex-start; gap:6px;">
+            <button type="button" class="btn btn--ghost btn--sm" data-act="allow_resubmit" data-id="${it.id}" title="Разрешить участнику подать заявку ещё раз">
+              Разрешить повторную заявку
+            </button>
+            ${it.adminComment ? `<span style="font-size:0.8rem; color:var(--muted);">${esc(it.adminComment)}</span>` : ''}
+          </div>
+        `;
       } else if (it.adminComment) {
         actionsHtml = `<span style="font-size:0.8rem; color:var(--muted);">${esc(it.adminComment)}</span>`;
       } else {
@@ -156,7 +166,11 @@
       btn.addEventListener('click', async () => {
         const id = Number(btn.getAttribute('data-id'));
         const act = btn.getAttribute('data-act');
-        const actName = act === 'approve' ? 'одобрить' : 'отклонить';
+        const actName = act === 'approve'
+          ? 'одобрить'
+          : act === 'reject'
+            ? 'отклонить'
+            : 'разрешить повторную заявку по';
 
         const comment = prompt(`Укажите комментарий администратора (необязательно) перед тем как ${actName} запрос:`, '') ?? null;
         if (comment === null) return;

@@ -144,7 +144,7 @@ $id = (int)($payload['id'] ?? 0);
 $action = trim((string)($payload['action'] ?? ''));
 $comment = trim((string)($payload['comment'] ?? ''));
 
-if ($id <= 0 || !in_array($action, ['approve', 'reject'], true)) {
+if ($id <= 0 || !in_array($action, ['approve', 'reject', 'allow_resubmit'], true)) {
     Http::json(['success' => false, 'error' => 'Некорректные параметры'], 400);
 }
 
@@ -155,29 +155,57 @@ try {
     if (!$req) {
         Http::json(['success' => false, 'error' => 'Запрос не найден'], 404);
     }
-    if ($req['status'] !== 'pending') {
-        Http::json(['success' => false, 'error' => 'Запрос уже обработан'], 400);
-    }
 
-    $newStatus = $action === 'approve' ? 'approved' : 'rejected';
-    $pdo->prepare(
-        'UPDATE asmt_retake_requests
-         SET status = ?, admin_comment = ?, reviewed_by = ?, reviewed_at = NOW()
-         WHERE id = ?'
-    )->execute([
-        $newStatus,
-        $comment !== '' ? $comment : null,
-        (int)$user['id'],
-        $id,
-    ]);
+    if ($action === 'allow_resubmit') {
+        if ($req['status'] !== 'rejected') {
+            Http::json(['success' => false, 'error' => 'Повторную заявку можно разрешить только для отклонённого запроса'], 400);
+        }
+        $newStatus = 'voided';
+        $mergedComment = $comment !== ''
+            ? $comment
+            : (trim((string)($req['admin_comment'] ?? '')) !== ''
+                ? (string)$req['admin_comment']
+                : 'Разрешена повторная подача заявки');
+        $pdo->prepare(
+            'UPDATE asmt_retake_requests
+             SET status = ?, admin_comment = ?, reviewed_by = ?, reviewed_at = NOW()
+             WHERE id = ?'
+        )->execute([
+            $newStatus,
+            $mergedComment,
+            (int)$user['id'],
+            $id,
+        ]);
+    } else {
+        if ($req['status'] !== 'pending') {
+            Http::json(['success' => false, 'error' => 'Запрос уже обработан'], 400);
+        }
+        $newStatus = $action === 'approve' ? 'approved' : 'rejected';
+        $pdo->prepare(
+            'UPDATE asmt_retake_requests
+             SET status = ?, admin_comment = ?, reviewed_by = ?, reviewed_at = NOW()
+             WHERE id = ?'
+        )->execute([
+            $newStatus,
+            $comment !== '' ? $comment : null,
+            (int)$user['id'],
+            $id,
+        ]);
+    }
 } catch (\Throwable $e) {
     Http::logError('admin_retake_requests_post_failed', $e, (int)$user['id']);
     Http::json(['success' => false, 'error' => 'Ошибка при обновлении статуса запроса'], 500);
 }
 
+$messages = [
+    'approve' => 'Запрос одобрен',
+    'reject' => 'Запрос отклонён',
+    'allow_resubmit' => 'Повторная подача заявки разрешена',
+];
+
 Http::json([
     'success' => true,
     'id' => $id,
     'status' => $newStatus,
-    'message' => $action === 'approve' ? 'Запрос одобрен' : 'Запрос отклонён',
+    'message' => $messages[$action] ?? 'Запрос обработан',
 ]);

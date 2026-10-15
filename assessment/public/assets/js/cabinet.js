@@ -621,7 +621,7 @@
         ? `Отклонено. Причина: ${esc(retake.adminComment)}`
         : 'Отклонено';
       retakeBlock = `<p class="lead" style="margin:8px 0 0; color:var(--danger); font-weight:700;">${reasonText}</p>
-        <p class="lead" style="margin:4px 0 0; font-size:0.85rem; color:var(--muted);">Повторный запрос по этому тесту недоступен.</p>`;
+        <p class="lead" style="margin:4px 0 0; font-size:0.85rem; color:var(--muted);">Повторный запрос пока недоступен. Если администратор разрешит ещё одну попытку — кнопка появится здесь снова.</p>`;
     } else if (canRequestRetake) {
       retakeBlock = `<button type="button" class="btn btn--ghost" data-retake-campaign="${camp.id}" style="margin-top:10px;">Запросить повторное прохождение</button>`;
     }

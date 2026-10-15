@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS asmt_retake_requests (
     attempt_id      BIGINT NULL REFERENCES asmt_attempts(id) ON DELETE SET NULL,
     reason          TEXT NOT NULL,
     status          VARCHAR(32) NOT NULL DEFAULT 'pending'
-                        CHECK (status IN ('pending', 'approved', 'rejected', 'used')),
+                        CHECK (status IN ('pending', 'approved', 'rejected', 'used', 'voided')),
     admin_comment   TEXT NULL,
     reviewed_by     BIGINT NULL REFERENCES asmt_users(id) ON DELETE SET NULL,
     reviewed_at     TIMESTAMPTZ NULL,
