@@ -7,15 +7,35 @@
   <title>Запросы | Администрирование</title>
   <link rel="stylesheet" href="assets/css/assessment.css">
   <style>
+    .asmt-header__inner,
+    .asmt-container { max-width: 1480px; }
     .admin-filters { display:grid; gap:12px; grid-template-columns:1fr; margin-bottom:18px; }
     @media (min-width:768px){ .admin-filters{ grid-template-columns:1fr auto; } }
-    .admin-table-wrap--full { border:1px solid var(--border); border-radius:12px; background:#fff; overflow-x:auto; }
-    .admin-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
-    .admin-table th,.admin-table td { padding:10px 12px; border-bottom:1px solid var(--border-light); text-align:left; }
-    .admin-table th { background:#f8fafc; font-weight:700; color:var(--muted); text-transform:uppercase; font-size:0.75rem; letter-spacing:0.04em; white-space:nowrap; }
+    .admin-table-wrap--full {
+      border:1px solid var(--border); border-radius:12px; background:#fff;
+      overflow-x: visible;
+    }
+    .admin-table { width:100%; border-collapse:collapse; font-size:0.82rem; table-layout: fixed; }
+    .admin-table th,.admin-table td {
+      padding:8px 10px; border-bottom:1px solid var(--border-light); text-align:left;
+      vertical-align: top; word-break: break-word;
+    }
+    .admin-table th {
+      background:#f8fafc; font-weight:700; color:var(--muted);
+      text-transform:uppercase; font-size:0.72rem; letter-spacing:0.03em;
+      white-space: normal;
+    }
+    .admin-table col.c-id { width: 4%; }
+    .admin-table col.c-user { width: 16%; }
+    .admin-table col.c-camp { width: 14%; }
+    .admin-table col.c-attempt { width: 22%; }
+    .admin-table col.c-reason { width: 18%; }
+    .admin-table col.c-date { width: 8%; }
+    .admin-table col.c-status { width: 8%; }
+    .admin-table col.c-act { width: 10%; }
     .admin-table tbody tr:hover { background: #f8fafc; }
-    .req-actions { display:flex; flex-wrap:wrap; gap:6px; }
-    .req-reason { max-width:280px; white-space:normal; line-height:1.35; }
+    .req-reason { white-space:normal; line-height:1.35; }
+    .req-attempt-cell { display:flex; flex-direction:column; gap:6px; }
   </style>
 </head>
 <body>
@@ -112,12 +132,22 @@
 
         <div class="admin-table-wrap--full">
           <table class="admin-table">
+            <colgroup>
+              <col class="c-id">
+              <col class="c-user">
+              <col class="c-camp">
+              <col class="c-attempt">
+              <col class="c-reason">
+              <col class="c-date">
+              <col class="c-status">
+              <col class="c-act">
+            </colgroup>
             <thead>
               <tr>
                 <th>ID</th>
                 <th>Участник</th>
                 <th>Кампания</th>
-                <th>Попытка</th>
+                <th>Попытка / связь</th>
                 <th>Причина</th>
                 <th>Дата</th>
                 <th>Статус</th>
@@ -135,6 +165,6 @@
 
   <script src="assets/js/asmt-api.js"></script>
   <script src="assets/js/admin-badges.js"></script>
-  <script src="assets/js/admin-requests.js?v=2"></script>
+  <script src="assets/js/admin-requests.js?v=3"></script>
 </body>
 </html>

@@ -153,9 +153,8 @@
         <td><strong>#${it.id}</strong></td>
         <td><strong>${esc(fio)}</strong><br><small style="color:var(--muted);">${esc(u.email || '')}</small></td>
         <td>${esc(it.campaignName)}</td>
-        <td>${score}</td>
-        <td>${telemetryBadge(it)}</td>
-        <td class="req-reason" style="max-width:220px; font-size:0.84rem;">${esc(it.reason)}</td>
+        <td><div class="req-attempt-cell">${score}${telemetryBadge(it)}</div></td>
+        <td class="req-reason">${esc(it.reason)}</td>
         <td>${formatDt(it.createdAt)}</td>
         <td><span class="badge" style="background:${badgeBg}; color:${badgeColor}; font-weight:700;">${esc(statusLabel[it.status] || it.status)}</span></td>
         <td>${actionsHtml}</td>
