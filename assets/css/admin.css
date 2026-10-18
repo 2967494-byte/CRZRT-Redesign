@@ -1763,7 +1763,7 @@ body {
 
         .admin-courses-modal__row-5 {
             display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 16px;
             margin-bottom: 20px;
         }
@@ -1774,13 +1774,15 @@ body {
         }
 
         .admin-courses-modal__row-5 .form-group label {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
             display: block;
+            line-height: 1.25;
         }
 
         .admin-courses-modal__row-5 input[type="date"].form-control,
+        .admin-courses-modal__row-5 input[type="time"].form-control,
         .admin-courses-modal__row-5 .flatpickr-input {
             width: 100%;
             min-width: 0;

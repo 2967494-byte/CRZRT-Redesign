@@ -240,6 +240,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
                 durationDays: course.durationDays,
                 format: course.format,
                 price: course.price,
+                startTime: course.startTime || '',
                 bitrixCourseElementId: course.bitrixCourseElementId || null
               })
             });
@@ -435,6 +436,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       datePickerInstance.setDate((course === null || course === void 0 ? void 0 : course.dateFrom) || '', false);
     } else {
       els.formDateFrom.value = (course === null || course === void 0 ? void 0 : course.dateFrom) || '';
+    }
+    if (els.formStartTime) {
+      els.formStartTime.value = (course === null || course === void 0 ? void 0 : course.startTime) || '';
     }
     els.formTitle.value = (course === null || course === void 0 ? void 0 : course.title) || '';
     if (els.formBtnText) {
@@ -705,6 +709,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
               eventType: els.formEventType && els.formEventType.value === 'event' ? 'event' : 'course',
               format: els.formFormat.value === 'dist' ? 'dist' : 'och',
               dateFrom: els.formDateFrom.value,
+              startTime: els.formStartTime && els.formStartTime.value ? els.formStartTime.value.trim() : '',
               enrollUntil: els.formEnrollUntil && els.formEnrollUntil.value ? els.formEnrollUntil.value.trim() : '',
               durationDays: Math.max(1, parseInt(els.formDurationDays.value, 10) || 1),
               enrollByDays: Boolean(els.formEnrollByDays && els.formEnrollByDays.checked && (parseInt(els.formDurationDays.value, 10) || 1) > 1),
@@ -1543,6 +1548,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     els.form = $('courseForm');
     els.formId = $('courseFormId');
     els.formDateFrom = $('courseFormDateFrom');
+    els.formStartTime = $('courseFormStartTime');
     els.formEnrollUntil = $('courseFormEnrollUntil');
     els.formTitle = $('courseFormTitle');
     els.formBtnText = $('courseFormBtnText');

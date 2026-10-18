@@ -292,12 +292,40 @@ function generate_static_courses($courseRegistry) {
         }
 
         $price = htmlspecialchars($course['price'] ?? '');
-        
+
+        $startTime = '';
+        if (!empty($course['startTime']) && preg_match('/^(\d{1,2}):(\d{2})/', trim((string)$course['startTime']), $tm)) {
+            $h = (int)$tm[1];
+            $m = (int)$tm[2];
+            if ($h >= 0 && $h <= 23 && $m >= 0 && $m <= 59) {
+                $startTime = sprintf('%02d:%02d', $h, $m);
+            }
+        }
+
         // Заменяем значения в виджетах.
         // Длительность
         $html = preg_replace('/<span class="course-widget-item__label">Длительность<\/span>.*?<span class="course-widget-item__val">.*?<\/span>/s', '<span class="course-widget-item__label">Длительность</span><span class="course-widget-item__val">' . $duration . '</span>', $html);
         // Дата
         $html = preg_replace('/<span class="course-widget-item__label">Ближайший старт<\/span>.*?<span class="course-widget-item__val">.*?<\/span>/s', '<span class="course-widget-item__label">Ближайший старт</span><span class="course-widget-item__val">' . $date . '</span>', $html);
+        // Время начала: при пустом значении удаляем весь виджет (с учётом вложенных div)
+        if ($startTime !== '') {
+            $startTimeHtml = htmlspecialchars($startTime);
+            $html = preg_replace(
+                '/<span class="course-widget-item__label">Время начала<\/span>.*?<span class="course-widget-item__val">.*?<\/span>/s',
+                '<span class="course-widget-item__label">Время начала</span><span class="course-widget-item__val">' . $startTimeHtml . '</span>',
+                $html
+            );
+        } else {
+            $html = preg_replace(
+                '/\s*<div\s+class="course-widget-item"[^>]*\bdata-course-start-time-widget\b[^>]*>\s*'
+                . '<div class="course-widget-item__icon">.*?<\/div>\s*'
+                . '<div class="course-widget-item__text">.*?<\/div>\s*'
+                . '<\/div>\s*/s',
+                "\n",
+                $html,
+                1
+            );
+        }
         // Цена
         $html = preg_replace('/<span class="course-widget-item__label">Стоимость<\/span>.*?<span class="course-widget-item__val course-widget-item__price">.*?<\/span>/s', '<span class="course-widget-item__label">Стоимость</span><span class="course-widget-item__val course-widget-item__price">' . $price . '</span>', $html);
 

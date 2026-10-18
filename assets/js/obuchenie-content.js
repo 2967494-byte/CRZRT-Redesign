@@ -720,6 +720,14 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   function normalizeCourseRegistryItem(raw, index) {
     var format = (raw === null || raw === void 0 ? void 0 : raw.format) === 'dist' ? 'dist' : 'och';
     var dateFrom = normalizeDateFrom(raw === null || raw === void 0 ? void 0 : raw.dateFrom);
+    var startTimeRaw = String((raw === null || raw === void 0 ? void 0 : raw.startTime) || '').trim();
+    var startTimeMatch = startTimeRaw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+    var startTime = '';
+    if (startTimeMatch) {
+      var sh = Math.min(23, Math.max(0, parseInt(startTimeMatch[1], 10)));
+      var sm = Math.min(59, Math.max(0, parseInt(startTimeMatch[2], 10)));
+      startTime = String(sh).padStart(2, '0') + ':' + String(sm).padStart(2, '0');
+    }
     var durationDays = Math.max(1, parseInt(raw === null || raw === void 0 ? void 0 : raw.durationDays, 10) || 1);
     var ranges = dateFrom ? getCourseDateRanges({
       dateFrom: dateFrom,
@@ -748,6 +756,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       eventType: (raw && raw.eventType === 'event') ? 'event' : 'course',
       format: format,
       dateFrom: dateFrom,
+      startTime: startTime,
       enrollUntil: parseIsoDate(raw === null || raw === void 0 ? void 0 : raw.enrollUntil) ? String(raw.enrollUntil).trim() : '',
       dateTo: lastRange ? formatIsoDate(lastRange.to) : parseIsoDate(raw === null || raw === void 0 ? void 0 : raw.dateTo) ? String(raw.dateTo).trim() : dateFrom,
       durationDays: durationDays,

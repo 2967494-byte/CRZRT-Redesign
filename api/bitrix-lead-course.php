@@ -59,6 +59,10 @@ if ($catalogElementId <= 0) {
 }
 
 $commentParts = ['Курс создан в админке сайта zakupki.tatar', 'Формат: ' . $formatLabel];
+$startTime = trim((string)($payload['startTime'] ?? ''));
+if ($startTime !== '') {
+    $commentParts[] = 'Время начала: ' . $startTime;
+}
 if ($price !== '') {
     $commentParts[] = 'Стоимость: ' . $price;
 }
