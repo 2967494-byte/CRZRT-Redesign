@@ -51,6 +51,135 @@
   }
 
   // =========================================================================
+  // ANSWER SYNC — each click must reach the server (with retry)
+  // =========================================================================
+  const AnswerSync = {
+    /** @type {Record<string, string>} qid -> letter confirmed by server */
+    synced: {},
+    inflight: false,
+    timer: null,
+    finishing: false,
+
+    pendingCount() {
+      let n = 0;
+      Object.keys(answers).forEach((qid) => {
+        const letter = answers[qid];
+        if (letter && this.synced[qid] !== letter) n++;
+      });
+      return n;
+    },
+
+    isSynced(qid) {
+      const letter = answers[qid];
+      return Boolean(letter) && this.synced[qid] === letter;
+    },
+
+    markServer(qid, letter) {
+      if (qid && letter) this.synced[String(qid)] = letter;
+    },
+
+    queue() {
+      this.updateUi();
+      this.scheduleFlush(250);
+    },
+
+    scheduleFlush(delayMs) {
+      if (this.timer) clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.flush().catch(() => {});
+      }, delayMs);
+    },
+
+    updateUi() {
+      const n = this.pendingCount();
+      if (ConnectionMonitor.isOffline) {
+        ConnectionMonitor.setNetUI(
+          'offline',
+          n > 0 ? `Связь прервана · не сохранено на сервере: ${n}` : 'Связь прервана (ответы в памяти)'
+        );
+      } else if (n > 0 || this.inflight) {
+        ConnectionMonitor.setNetUI('sync', `Сохранение ответов на сервер… (${n || '…'})`);
+      } else {
+        ConnectionMonitor.setNetUI('online', 'Связь стабильна · ответы сохранены');
+      }
+      if (typeof renderNav === 'function') renderNav();
+    },
+
+    async flush() {
+      if (!attemptId) return true;
+      if (this.inflight) {
+        this.scheduleFlush(400);
+        return false;
+      }
+
+      const pending = [];
+      Object.keys(answers).forEach((qid) => {
+        const letter = answers[qid];
+        if (letter && this.synced[qid] !== letter) {
+          pending.push({ qid: Number(qid), letter: String(letter) });
+        }
+      });
+
+      if (!pending.length) {
+        this.updateUi();
+        return true;
+      }
+
+      this.inflight = true;
+      this.updateUi();
+      let networkOk = true;
+
+      for (let i = 0; i < pending.length; i++) {
+        const item = pending[i];
+        if (answers[item.qid] !== item.letter) continue;
+        try {
+          const res = await AsmtApi.post('api/attempt-answer.php', {
+            attemptId,
+            questionId: item.qid,
+            letter: item.letter,
+          });
+          if (res && res.success) {
+            if (answers[item.qid] === item.letter) {
+              this.synced[String(item.qid)] = item.letter;
+            }
+          } else if (res && res.expired) {
+            networkOk = false;
+            break;
+          } else {
+            networkOk = false;
+          }
+        } catch (_err) {
+          networkOk = false;
+          ConnectionMonitor.handleNetworkLost('answer_save_failed');
+          break;
+        }
+      }
+
+      this.inflight = false;
+      this.updateUi();
+
+      if (!networkOk && !this.finishing) {
+        this.scheduleFlush(2000);
+      }
+      return this.pendingCount() === 0;
+    },
+
+    async flushUntilDone(maxMs) {
+      this.finishing = true;
+      const started = Date.now();
+      let ok = this.pendingCount() === 0;
+      while (!ok && Date.now() - started < maxMs) {
+        ok = await this.flush();
+        if (ok) break;
+        await new Promise((r) => setTimeout(r, 1200));
+      }
+      this.finishing = false;
+      this.updateUi();
+      return ok;
+    },
+  };
+
+  // =========================================================================
   // ANTI-COPY & CONTENT PROTECTION
   // =========================================================================
   function initCopyProtection() {
@@ -199,6 +328,7 @@
         this.setNetUI('sync', 'Синхронизация…');
       }
       this.ping();
+      AnswerSync.scheduleFlush(200);
     },
 
     async ping() {
@@ -220,7 +350,7 @@
           if (this.isOffline) {
             this.handleNetworkRestored('ping_recovery');
           } else {
-            this.setNetUI('online', 'Связь стабильна');
+            AnswerSync.updateUi();
           }
 
           if (res.isFinished) {
@@ -288,11 +418,16 @@
       const qid = q.id || q.questionId;
       const isCur = (i === index);
       const isAns = Boolean(answers[qid]);
+      const isSynced = isAns && AnswerSync.isSynced(qid);
 
       btn.className = 'nav-dot nav-grid__btn' +
         (isCur ? ' is-current nav-grid__btn--current' : '') +
-        (isAns ? ' is-answered nav-grid__btn--answered' : '');
+        (isSynced ? ' is-answered nav-grid__btn--answered' : '') +
+        (isAns && !isSynced ? ' is-pending nav-grid__btn--pending' : '');
 
+      btn.title = isAns
+        ? (isSynced ? 'Ответ сохранён на сервере' : 'Ответ пока только на этом устройстве — сохраняем…')
+        : '';
       btn.textContent = String(i + 1);
       btn.addEventListener('click', () => {
         index = i;
@@ -342,13 +477,7 @@
         const onSelect = () => {
           answers[qid] = opt.letter;
           saveBuffer();
-          if (attemptId && qid) {
-            AsmtApi.post('api/attempt-answer.php', {
-              attemptId,
-              questionId: qid,
-              letter: opt.letter,
-            }).catch(() => {});
-          }
+          AnswerSync.queue();
           renderQuestion();
           renderNav();
         };
@@ -392,18 +521,37 @@
       const answeredCount = Object.keys(answers).length;
       const total = questions.length;
       const unans = total - answeredCount;
+      const pending = AnswerSync.pendingCount();
       let msg = 'Вы уверены, что хотите завершить тест?';
       if (unans > 0) {
         msg = `У вас осталось ${unans} неотвеченных вопросов из ${total}. Завершить тестирование?`;
+      } else if (pending > 0) {
+        msg = `Ещё ${pending} ответ(ов) не подтверждены сервером. Сначала попытаемся их сохранить, затем завершим тест. Продолжить?`;
       }
       if (!confirm(msg)) return;
     }
 
     clearInterval(timerId);
-    ConnectionMonitor.stop();
-    showStatus('Сохранение результатов…', 'info');
     if (els.btnFinish) els.btnFinish.disabled = true;
 
+    // Reload from localStorage in case of race / another tab
+    loadBuffer(attemptId);
+
+    showStatus('Сохранение ответов на сервер…', 'info');
+    const syncedOk = await AnswerSync.flushUntilDone(90000);
+    if (!syncedOk) {
+      showStatus(
+        'Не удалось сохранить все ответы на сервер (нет связи). Проверьте интернет — повторяем…',
+        'error'
+      );
+      if (els.btnFinish) els.btnFinish.disabled = false;
+      ConnectionMonitor.start();
+      setTimeout(() => finishAttempt(true), 4000);
+      return;
+    }
+
+    showStatus('Завершение теста…', 'info');
+    ConnectionMonitor.stop();
     const finalTelemetry = ConnectionMonitor.getBufferedEvents();
 
     try {
@@ -412,6 +560,10 @@
         answers,
         telemetryEvents: finalTelemetry,
       });
+
+      if (!res || res.success === false) {
+        throw new Error((res && res.error) || 'Сервер не принял завершение');
+      }
 
       clearBuffer();
       try {
@@ -426,6 +578,8 @@
     } catch (err) {
       showStatus('Ошибка завершения: ' + (err.message || 'Сбой сети') + '. Повторяем отправку…', 'error');
       if (els.btnFinish) els.btnFinish.disabled = false;
+      ConnectionMonitor.start();
+      AnswerSync.scheduleFlush(200);
       setTimeout(() => finishAttempt(true), 3000);
     }
   }
@@ -472,6 +626,7 @@
         const qid = q.id || q.questionId;
         if (q.chosen) {
           answers[qid] = q.chosen;
+          AnswerSync.markServer(qid, q.chosen);
         }
       });
 
@@ -481,6 +636,8 @@
 
       // Start Connection & Heartbeat telemetry
       ConnectionMonitor.start();
+      // Push any answers that were only in localStorage
+      AnswerSync.scheduleFlush(300);
 
       if (els.btnPrev) {
         els.btnPrev.addEventListener('click', () => {

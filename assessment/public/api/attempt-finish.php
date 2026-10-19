@@ -113,6 +113,31 @@ $hasFinished = $pdo->prepare(
 $hasFinished->execute([(int)$user['id'], (int)$attempt['campaign_id'], $attemptId]);
 $status = $hasFinished->fetch() ? 'abandoned' : 'finished';
 
+// Count non-empty letters in the batch from the client
+$batchAnswered = 0;
+if (is_array($answers)) {
+    foreach ($answers as $letter) {
+        if (trim((string)$letter) !== '') {
+            $batchAnswered++;
+        }
+    }
+}
+$cntStmt = $pdo->prepare(
+    'SELECT COUNT(*) FROM asmt_attempt_answers WHERE attempt_id = ? AND answered_at IS NOT NULL'
+);
+$cntStmt->execute([$attemptId]);
+$alreadyOnServer = (int)$cntStmt->fetchColumn();
+
+// Refuse to close as finished with zero answers if the client also sent none —
+// this is almost always a network/sync failure, not a deliberate empty submission.
+if ($status === 'finished' && $batchAnswered === 0 && $alreadyOnServer === 0) {
+    Http::json([
+        'success' => false,
+        'error' => 'Ответы не получены сервером. Проверьте интернет и нажмите «Завершить» ещё раз.',
+        'needsResync' => true,
+    ], 409);
+}
+
 $attempt = AttemptService::finalizeAttempt($pdo, $attempt, $status, $answers);
 
 $fresh = $pdo->prepare(

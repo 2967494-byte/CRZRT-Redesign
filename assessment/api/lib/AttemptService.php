@@ -217,11 +217,22 @@ final class AttemptService
         $n = 0;
         foreach ($rows as $attempt) {
             $cid = (int)$attempt['campaign_id'];
+            $isTimeUp = strtotime((string)$attempt['expires_at']) <= time();
+
             if (isset($finishedCampaigns[$cid])) {
+                // Campaign already has a finished attempt — close extras as abandoned
                 self::finalizeAttempt($pdo, $attempt, 'abandoned');
-            } elseif (!isset($seenCampaign[$cid])) {
+            } elseif ($isTimeUp) {
+                // Time ran out: never mark as finished-with-zero via this path.
+                // Keep whatever answers were already synced and close as expired.
+                self::finalizeAttempt($pdo, $attempt, 'expired');
+                $finishedCampaigns[$cid] = true;
                 $seenCampaign[$cid] = true;
-                self::finalizeAttempt($pdo, $attempt, 'finished');
+            } elseif (!isset($seenCampaign[$cid])) {
+                // Still within time but we are force-closing (e.g. start flow cleanup):
+                // do not invent a "finished 0/40" result.
+                self::finalizeAttempt($pdo, $attempt, 'abandoned');
+                $seenCampaign[$cid] = true;
             } else {
                 self::finalizeAttempt($pdo, $attempt, 'abandoned');
             }
