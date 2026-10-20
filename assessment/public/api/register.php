@@ -109,7 +109,10 @@ try {
          ) RETURNING id'
     );
     $cleanNameFn = static function ($str): string {
-        return trim(preg_replace('/(индивидуальный предприниматель|ип|предприниматель)/ui', '', (string)$str));
+        // Only strip standalone «ИП» / «индивидуальный предприниматель», never substring «ип» inside words
+        $s = preg_replace('/индивидуальный\s+предприниматель/ui', '', (string)$str);
+        $s = preg_replace('/(^|[\s«"\'(])ип(?=$|[\s»"\').,;:])/ui', '$1', (string)$s);
+        return trim(preg_replace('/\s+/u', ' ', (string)$s));
     };
 
     $insUser->execute([

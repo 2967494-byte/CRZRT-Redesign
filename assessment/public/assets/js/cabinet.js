@@ -178,10 +178,12 @@
     }).join('');
   }
 
+  /** Strip standalone «ИП / индивидуальный предприниматель» from FIO — never substring «ип» inside words (ломало «Муниципальное»). */
   function cleanName(str) {
     if (!str) return '';
     return String(str)
-      .replace(/(индивидуальный|предприниматель|ип)/gi, '')
+      .replace(/индивидуальный\s+предприниматель/gi, '')
+      .replace(/(^|[\s«"'(])ип(?=$|[\s»"').,;:])/gi, '$1')
       .replace(/\s+/g, ' ')
       .trim();
   }
@@ -220,7 +222,7 @@
         <div class="user-hero-card__details">
           <div class="user-hero-card__detail-item">
             <span class="user-hero-card__detail-label">Организация</span>
-            <span class="user-hero-card__detail-val">${esc(cleanName(org?.name) || 'Частное лицо')} ${org?.inn ? `(ИНН: ${esc(org.inn)})` : ''}</span>
+            <span class="user-hero-card__detail-val">${esc(org?.name || 'Частное лицо')} ${org?.inn ? `(ИНН: ${esc(org.inn)})` : ''}</span>
           </div>
           <div class="user-hero-card__detail-item">
             <span class="user-hero-card__detail-label">Статус модерации</span>
@@ -442,7 +444,7 @@
               </label>
               <label class="field" style="grid-column:1 / -1;">
                 <span class="field__label">Наименование организации <span class="req">*</span></span>
-                <input type="text" id="profOrgName" name="organizationName" value="${esc(cleanName(org?.name) || '')}" required placeholder="Полное наименование организации" ${isApproved ? 'disabled style="background:#f8fafc; color:var(--muted);"' : ''}>
+                <input type="text" id="profOrgName" name="organizationName" value="${esc(org?.name || '')}" required placeholder="Полное наименование организации" ${isApproved ? 'disabled style="background:#f8fafc; color:var(--muted);"' : ''}>
               </label>
               <label class="field">
                 <span class="field__label">Субъект (Регион) РФ <span class="req">*</span></span>
@@ -533,7 +535,7 @@
         </div>
         <hr style="border:none; border-top:1px solid var(--border-light); margin:20px 0;">
         <h3 style="margin:0 0 12px; font-size:1.1rem;">Организация</h3>
-        <p><strong>Наименование:</strong> ${esc(cleanName(org?.name) || 'Частное лицо')}</p>
+        <p><strong>Наименование:</strong> ${esc(org?.name || 'Частное лицо')}</p>
         <p><strong>ИНН:</strong> ${esc(org?.inn || '—')}</p>
         <p><strong>Уровень заказчика:</strong> ${esc(u.customerLevel || org?.customerLevel || '—')}</p>
         <p><strong>Статус заявки:</strong> ${badge(data.userOrgStatus, isResubmitted)}</p>
