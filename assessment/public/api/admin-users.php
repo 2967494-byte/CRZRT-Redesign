@@ -471,6 +471,189 @@ if ($method === 'POST') {
         ]);
     }
 
+    if ($action === 'retake-info') {
+        if (!in_array($admin['role'], ['superadmin', 'region_admin', 'moderator'], true)) {
+            Http::json(['success' => false, 'error' => 'Недостаточно прав'], 403);
+        }
+
+        $stmt = $pdo->prepare(
+            "SELECT DISTINCT ON (a.campaign_id)
+                    a.campaign_id,
+                    c.name AS campaign_name,
+                    a.id AS attempt_id,
+                    a.status AS attempt_status,
+                    a.score,
+                    a.total_questions,
+                    a.percent_correct,
+                    a.finished_at,
+                    a.started_at,
+                    r.id AS retake_id,
+                    r.status AS retake_status,
+                    r.reason AS retake_reason,
+                    r.admin_comment,
+                    r.created_at AS retake_created_at
+             FROM asmt_attempts a
+             JOIN asmt_campaigns c ON c.id = a.campaign_id
+             LEFT JOIN LATERAL (
+                 SELECT rr.*
+                 FROM asmt_retake_requests rr
+                 WHERE rr.user_id = a.user_id AND rr.campaign_id = a.campaign_id
+                   AND rr.status IN ('pending', 'approved', 'rejected')
+                 ORDER BY rr.id DESC
+                 LIMIT 1
+             ) r ON TRUE
+             WHERE a.user_id = ?
+               AND a.status IN ('finished', 'abandoned', 'expired')
+             ORDER BY a.campaign_id, a.id DESC"
+        );
+        $stmt->execute([$userId]);
+        $rows = $stmt->fetchAll();
+
+        Http::json([
+            'success' => true,
+            'items' => array_map(static function ($r) {
+                $retakeStatus = $r['retake_status'] ?? null;
+                $canGrant = !in_array($retakeStatus, ['pending', 'approved'], true);
+                return [
+                    'campaignId' => (int)$r['campaign_id'],
+                    'campaignName' => $r['campaign_name'],
+                    'attemptId' => (int)$r['attempt_id'],
+                    'attemptStatus' => $r['attempt_status'],
+                    'score' => $r['score'] !== null ? (int)$r['score'] : null,
+                    'totalQuestions' => $r['total_questions'] !== null ? (int)$r['total_questions'] : null,
+                    'percentCorrect' => $r['percent_correct'] !== null ? (float)$r['percent_correct'] : null,
+                    'finishedAt' => $r['finished_at'],
+                    'startedAt' => $r['started_at'],
+                    'retakeId' => $r['retake_id'] !== null ? (int)$r['retake_id'] : null,
+                    'retakeStatus' => $retakeStatus,
+                    'retakeReason' => $r['retake_reason'],
+                    'adminComment' => $r['admin_comment'],
+                    'retakeCreatedAt' => $r['retake_created_at'],
+                    'canGrant' => $canGrant,
+                ];
+            }, $rows),
+        ]);
+    }
+
+    if ($action === 'grant-retake') {
+        if (!in_array($admin['role'], ['superadmin', 'region_admin', 'moderator'], true)) {
+            Http::json(['success' => false, 'error' => 'Недостаточно прав'], 403);
+        }
+
+        $campaignId = (int)($payload['campaignId'] ?? 0);
+        $comment = trim((string)($payload['comment'] ?? ''));
+        if ($campaignId <= 0) {
+            Http::json(['success' => false, 'error' => 'Укажите campaignId'], 400);
+        }
+
+        $camp = $pdo->prepare('SELECT id, name FROM asmt_campaigns WHERE id = ?');
+        $camp->execute([$campaignId]);
+        if (!$camp->fetch()) {
+            Http::json(['success' => false, 'error' => 'Кампания не найдена'], 404);
+        }
+
+        $att = $pdo->prepare(
+            "SELECT id FROM asmt_attempts
+             WHERE user_id = ? AND campaign_id = ?
+               AND status IN ('finished', 'abandoned', 'expired')
+             ORDER BY id DESC LIMIT 1"
+        );
+        $att->execute([$userId, $campaignId]);
+        $lastAttempt = $att->fetch();
+        if (!$lastAttempt) {
+            Http::json(['success' => false, 'error' => 'Нет завершённой попытки по этой кампании'], 400);
+        }
+
+        $existing = $pdo->prepare(
+            "SELECT id, status FROM asmt_retake_requests
+             WHERE user_id = ? AND campaign_id = ?
+               AND status IN ('pending', 'approved', 'rejected')
+             ORDER BY id DESC LIMIT 1"
+        );
+        $existing->execute([$userId, $campaignId]);
+        $existRow = $existing->fetch();
+
+        if ($existRow && $existRow['status'] === 'approved') {
+            Http::json([
+                'success' => true,
+                'alreadyGranted' => true,
+                'id' => (int)$existRow['id'],
+                'status' => 'approved',
+                'message' => 'Повторное прохождение уже разрешено',
+            ]);
+        }
+
+        if ($existRow && $existRow['status'] === 'pending') {
+            Http::json([
+                'success' => false,
+                'error' => 'У участника уже есть заявка на рассмотрении. Одобрите её в разделе «Запросы».',
+            ], 409);
+        }
+
+        $adminComment = $comment !== ''
+            ? $comment
+            : 'Разрешено администратором из реестра пользователей';
+
+        try {
+            $pdo->beginTransaction();
+
+            // Clear rejected blocker (and any stale pending) so a fresh approved row can exist
+            $pdo->prepare(
+                "UPDATE asmt_retake_requests
+                 SET status = 'voided',
+                     admin_comment = COALESCE(NULLIF(?, ''), admin_comment),
+                     reviewed_by = ?,
+                     reviewed_at = NOW()
+                 WHERE user_id = ? AND campaign_id = ?
+                   AND status IN ('pending', 'rejected')"
+            )->execute([$adminComment, (int)$admin['id'], $userId, $campaignId]);
+
+            $ins = $pdo->prepare(
+                "INSERT INTO asmt_retake_requests
+                    (user_id, campaign_id, attempt_id, reason, status, admin_comment, reviewed_by, reviewed_at)
+                 VALUES (?, ?, ?, ?, 'approved', ?, ?, NOW())
+                 RETURNING id"
+            );
+            $ins->execute([
+                $userId,
+                $campaignId,
+                (int)$lastAttempt['id'],
+                'Разрешение выдано администратором (без повторной заявки участника)',
+                $adminComment,
+                (int)$admin['id'],
+            ]);
+            $newId = (int)$ins->fetchColumn();
+
+            $pdo->prepare(
+                "INSERT INTO asmt_admin_audit (admin_user_id, action, entity, entity_id, meta_json)
+                 VALUES (?, 'grant_retake', 'user', ?, ?::jsonb)"
+            )->execute([
+                (int)$admin['id'],
+                $userId,
+                json_encode([
+                    'campaign_id' => $campaignId,
+                    'retake_id' => $newId,
+                    'attempt_id' => (int)$lastAttempt['id'],
+                ], JSON_UNESCAPED_UNICODE),
+            ]);
+
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            Http::logError('admin_users_grant_retake_failed', $e, (int)$admin['id']);
+            Http::json(['success' => false, 'error' => 'Не удалось выдать повторный доступ'], 500);
+        }
+
+        Http::json([
+            'success' => true,
+            'id' => $newId,
+            'status' => 'approved',
+            'message' => 'Повторное прохождение разрешено. Участник может начать тест в кабинете.',
+        ]);
+    }
+
     Http::json(['success' => false, 'error' => 'Неизвестное действие'], 400);
 }
 

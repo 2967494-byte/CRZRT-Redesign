@@ -270,8 +270,19 @@
           </div>
         </div>
 
+        <!-- SECTION 5: Повторное прохождение -->
+        <div class="user-modal-section user-modal-section--full" id="userRetakeSection">
+          <div class="user-modal-section__title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            <span>Повторное прохождение</span>
+          </div>
+          <div id="userRetakeBody" style="font-size:0.88rem; color:var(--muted);">Загрузка…</div>
+        </div>
+
       </div>
     `;
+
+    loadUserRetakeInfo(user.id);
 
     if (els.modalLeftAction) {
       let actionsHtml = '';
@@ -323,6 +334,81 @@
 
   function closeModal() {
     if (els.modal) els.modal.classList.add('hidden');
+  }
+
+  function retakeStatusLabel(st) {
+    const map = {
+      pending: 'Заявка на рассмотрении',
+      approved: 'Повтор уже разрешён',
+      rejected: 'Заявка отклонена',
+      used: 'Разрешение использовано',
+      voided: 'Повтор был снят',
+    };
+    return map[st] || (st ? String(st) : 'Заявок нет');
+  }
+
+  async function loadUserRetakeInfo(userId) {
+    const box = document.getElementById('userRetakeBody');
+    if (!box) return;
+    try {
+      const res = await AsmtApi.post('api/admin-users.php', {
+        action: 'retake-info',
+        userId,
+      });
+      const items = res.items || [];
+      if (!items.length) {
+        box.innerHTML = '<span style="color:var(--muted);">Нет завершённых попыток — повторный доступ пока не нужен.</span>';
+        return;
+      }
+
+      box.innerHTML = items.map((it) => {
+        const score = it.attemptId != null
+          ? `#${it.attemptId} · ${it.score ?? 0}/${it.totalQuestions ?? '—'} (${Math.round(it.percentCorrect || 0)}%) · ${esc(it.attemptStatus)}`
+          : '—';
+        const stColor = it.retakeStatus === 'approved' ? 'var(--green)'
+          : it.retakeStatus === 'rejected' ? 'var(--danger)'
+          : it.retakeStatus === 'pending' ? '#b45309'
+          : 'var(--muted)';
+        const btn = it.canGrant
+          ? `<button type="button" class="btn btn--primary btn--sm" data-grant-retake="${it.campaignId}" style="white-space:nowrap;">Разрешить повтор</button>`
+          : `<span style="font-size:0.8rem; color:${stColor}; font-weight:700;">${esc(retakeStatusLabel(it.retakeStatus))}</span>`;
+
+        return `
+          <div style="display:flex; gap:12px; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; padding:10px 0; border-bottom:1px solid var(--border-light);">
+            <div style="flex:1; min-width:200px;">
+              <div style="font-weight:700; color:var(--text); margin-bottom:4px;">${esc(it.campaignName)}</div>
+              <div style="font-size:0.8rem; color:var(--muted);">Попытка: ${score}</div>
+              <div style="font-size:0.8rem; color:${stColor}; margin-top:2px;">${esc(retakeStatusLabel(it.retakeStatus))}${it.adminComment ? ' · ' + esc(it.adminComment) : ''}</div>
+            </div>
+            <div>${btn}</div>
+          </div>
+        `;
+      }).join('');
+
+      box.querySelectorAll('[data-grant-retake]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const campaignId = Number(btn.getAttribute('data-grant-retake'));
+          const comment = prompt('Комментарий для участника (необязательно):', 'Разрешено администратором') ?? null;
+          if (comment === null) return;
+          btn.disabled = true;
+          try {
+            const grant = await AsmtApi.post('api/admin-users.php', {
+              action: 'grant-retake',
+              userId,
+              campaignId,
+              comment: comment.trim(),
+            });
+            showMsg(grant.message || 'Повтор разрешён', 'success');
+            await loadUserRetakeInfo(userId);
+          } catch (e) {
+            showMsg(e.message || 'Ошибка выдачи доступа', 'error');
+            btn.disabled = false;
+          }
+        });
+      });
+    } catch (e) {
+      box.innerHTML = `<span style="color:var(--danger);">${esc(e.message || 'Не удалось загрузить данные о повторном доступе')}</span>`;
+    }
   }
 
   function setSelectWithFallback(selectEl, value) {
