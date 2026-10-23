@@ -67,6 +67,9 @@ final class Mailer
     private static function sendPhpMail(string $to, string $subject, string $bodyHtml): bool
     {
         $from = Config::get('ASMT_MAIL_FROM', 'no-reply@assessment.local') ?? 'no-reply@assessment.local';
+        // Envelope must match From — otherwise filters (e.g. Kaspersky @tatar.ru) reject as spam:
+        // MAIL FROM:<root@…> vs Header From: noreply@…
+        $envelopeFrom = self::extractEmailAddress($from) ?? $from;
         $headers = [
             'MIME-Version: 1.0',
             'Content-Type: text/html; charset=UTF-8',
@@ -74,7 +77,25 @@ final class Mailer
             'Reply-To: ' . $from,
             'X-Mailer: AsmtMailer/1.0',
         ];
-        return @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $bodyHtml, implode("\r\n", $headers));
+        // Only pass validated address (no shell metacharacters) as sendmail -f
+        $params = '-f' . $envelopeFrom;
+        return @mail(
+            $to,
+            '=?UTF-8?B?' . base64_encode($subject) . '?=',
+            $bodyHtml,
+            implode("\r\n", $headers),
+            $params
+        );
+    }
+
+    private static function extractEmailAddress(string $fromHeader): ?string
+    {
+        if (preg_match('/<([^>]+)>/', $fromHeader, $m)) {
+            $email = trim($m[1]);
+            return filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
+        }
+        $email = trim($fromHeader);
+        return filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
     }
 
     private static function smtpSslVerifyEnabled(): bool
